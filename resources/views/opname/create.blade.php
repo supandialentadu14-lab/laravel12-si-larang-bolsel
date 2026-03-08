@@ -94,8 +94,8 @@
                 <!-- Pihak Pihak -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t pt-6">
                     <!-- Kolom Kiri: Pihak Pertama -->
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
+                    <div class="space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                             <h3 class="font-bold text-gray-800 text-base">Pihak Pertama (Kepala Dinas)</h3>
                             @if(isset($opd) && $opd->kepala_nama)
                                 <button type="button" class="px-3 py-1.5 rounded bg-indigo-100 text-indigo-700 text-xs font-bold hover:bg-indigo-200 transition" @click="
@@ -105,11 +105,32 @@
                                 ">Gunakan Kepala OPD</button>
                             @endif
                         </div>
+                        
+                        <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">Nama</label>
+                            <div class="col-span-12 sm:col-span-9">
+                                <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">NIP</label>
+                            <div class="col-span-12 sm:col-span-9">
+                                <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">Jabatan</label>
+                            <div class="col-span-12 sm:col-span-9">
+                                <input x-ref="pp_jabatan" type="text" name="pihak_pertama[jabatan]" value="Mengetahui, Kepala Dinas Komunikasi dan Informatika" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Kolom Kanan: Pihak Kedua -->
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
+                    <div class="space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                             <h3 class="font-bold text-gray-800 text-base">Pihak Kedua (Pengurus Barang)</h3>
                             @if(isset($opd) && $opd->pengurus_nama)
                                 <button type="button" class="px-3 py-1.5 rounded bg-indigo-100 text-indigo-700 text-xs font-bold hover:bg-indigo-200 transition" @click="
@@ -119,47 +140,26 @@
                                 ">Isi dari Data OPD</button>
                             @endif
                         </div>
-                    </div>
-
-                    <!-- Baris Nama -->
-                    <div class="grid grid-cols-12 gap-4 items-center">
-                        <label class="col-span-3 text-sm font-bold text-gray-700">Nama</label>
-                        <div class="col-span-9">
-                            <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                        
+                        <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">Nama</label>
+                            <div class="col-span-12 sm:col-span-9">
+                                <input x-ref="pk_nama" type="text" name="pihak_kedua[nama]" value="" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                            </div>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-4 items-center">
-                        <label class="col-span-3 text-sm font-bold text-gray-700">Nama</label>
-                        <div class="col-span-9">
-                            <input x-ref="pk_nama" type="text" name="pihak_kedua[nama]" value="" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                        
+                        <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">NIP</label>
+                            <div class="col-span-12 sm:col-span-9">
+                                <input x-ref="pk_nip" type="text" name="pihak_kedua[nip]" value="" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Baris NIP -->
-                    <div class="grid grid-cols-12 gap-4 items-center">
-                        <label class="col-span-3 text-sm font-bold text-gray-700">NIP</label>
-                        <div class="col-span-9">
-                            <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-4 items-center">
-                        <label class="col-span-3 text-sm font-bold text-gray-700">NIP</label>
-                        <div class="col-span-9">
-                            <input x-ref="pk_nip" type="text" name="pihak_kedua[nip]" value="" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                        </div>
-                    </div>
-
-                    <!-- Baris Jabatan -->
-                    <div class="grid grid-cols-12 gap-4 items-center">
-                        <label class="col-span-3 text-sm font-bold text-gray-700">Jabatan</label>
-                        <div class="col-span-9">
-                            <input x-ref="pp_jabatan" type="text" name="pihak_pertama[jabatan]" value="Mengetahui, Kepala Dinas Komunikasi dan Informatika" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-4 items-center">
-                        <label class="col-span-3 text-sm font-bold text-gray-700">Jabatan</label>
-                        <div class="col-span-9">
-                            <input x-ref="pk_jabatan" type="text" name="pihak_kedua[jabatan]" value="Yang Melaksanakan Stock Opname, Pengurus Barang Pengguna" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                        
+                        <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">Jabatan</label>
+                            <div class="col-span-12 sm:col-span-9">
+                                <input x-ref="pk_jabatan" type="text" name="pihak_kedua[jabatan]" value="Yang Melaksanakan Stock Opname, Pengurus Barang Pengguna" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
+                            </div>
                         </div>
                     </div>
                 </div>

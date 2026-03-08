@@ -6,9 +6,9 @@
 <div class="bg-white rounded-lg shadow p-6 mb-6">
 
 
-    <div class="flex justify-between items-center mb-4">
-        <a href="{{ route('users.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
-            <i class="fas fa-user-plus"></i> Tambah Pengguna
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+        <a href="{{ route('users.create') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
+            <i class="fas fa-user-plus"></i> <span class="whitespace-nowrap">Tambah Pengguna</span>
         </a>
     </div>
 

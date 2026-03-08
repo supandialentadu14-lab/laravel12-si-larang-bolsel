@@ -117,10 +117,17 @@
     </div>
 
     <!-- Right Side - Login Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 relative bg-gray-900">
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 relative bg-gray-900 overflow-y-auto">
+        <!-- Background Image for Mobile Only -->
+        <div class="absolute inset-0 lg:hidden block z-0">
+            <img src="{{ asset('images/login-bg-new.jpg') }}" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gray-900/80 backdrop-blur-sm"></div>
+        </div>
+
         <!-- Background Pattern -->
         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 z-0"></div>
-        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-brand-900/20 to-transparent z-0"></div>
+        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-brand-900/20 to-transparent z-0 lg:block hidden"></div>
+        <div class="absolute top-0 right-0 w-full h-full bg-brand-900/40 z-0 lg:hidden block"></div>
         
         <div class="w-full max-w-md relative z-10 animate__animated animate__fadeInRight">
             

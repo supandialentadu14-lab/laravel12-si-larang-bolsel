@@ -34,8 +34,8 @@ Ikuti langkah-langkah berikut untuk menjalankan aplikasi di lingkungan lokal:
 
 ### 2. Clone Repository
 ```bash
-git clone https://github.com/username/si-larang.git
-cd si-larang
+git clone https://github.com/supandialentadu14-lab/laravel12-si-larang-bolsel.git
+cd laravel12-si-larang-bolsel
 ```
 
 ### 3. Instalasi Dependency

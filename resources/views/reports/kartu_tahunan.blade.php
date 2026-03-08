@@ -118,27 +118,27 @@
 
 
     <div class="print:hidden rounded-xl shadow-md border bg-white p-4 mb-6">
-        <form method="GET" action="{{ route('reports.kartu.tahunan') }}" class="flex items-end justify-between gap-4">
-            <div class="flex gap-4 flex-1">
-                <div class="w-1/4">
+        <form method="GET" action="{{ route('reports.kartu.tahunan') }}" class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div class="flex flex-col sm:flex-row gap-4 flex-1">
+                <div class="w-full sm:w-1/4">
                     <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1">From Date</label>
                     <input type="date" name="start_date" value="{{ $startDate }}" class="w-full rounded-lg border-indigo-200 text-sm bg-white shadow-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-500">
                 </div>
-                <div class="w-1/4">
+                <div class="w-full sm:w-1/4">
                     <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1">To Date</label>
                     <input type="date" name="end_date" value="{{ $endDate }}" class="w-full rounded-lg border-indigo-200 text-sm bg-white shadow-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-500">
                 </div>
             </div>
-            <div class="flex gap-2">
-                <a href="{{ route('dashboard') }}" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 shadow-sm transition mr-2">
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('dashboard') }}" class="no-print inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 shadow-sm transition flex-1 sm:flex-none">
                     <i class="fas fa-arrow-left"></i>
                     Kembali
                 </a>
-                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-white font-bold hover:bg-orange-600 shadow-sm">
+                <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-white font-bold hover:bg-orange-600 shadow-sm flex-1 sm:flex-none">
                     <i class="fas fa-filter"></i>
                     Filter
                 </button>
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white font-bold hover:bg-gray-800 shadow-sm">
+                <button type="button" onclick="window.print()" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-black text-white font-bold hover:bg-gray-800 shadow-sm flex-1 sm:flex-none">
                     <i class="fas fa-print"></i>
                     Print
                 </button>
@@ -146,7 +146,8 @@
         </form>
     </div>
 
-    <div id="print-area" class="print-area bg-white shadow-lg border p-8 rounded-lg">
+    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
+        <div id="print-area" class="print-area bg-white shadow-lg border p-4 sm:p-8 rounded-lg mx-auto" style="min-width: 330mm;">
 
         @php
             $grouped = $grouped ?? [];
@@ -308,4 +309,6 @@
 
             @php $current++; @endphp
         @endforeach
-    @endsection
+        </div>
+    </div>
+@endsection

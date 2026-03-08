@@ -585,15 +585,18 @@
     </script>
 </head>
 
-<body class="font-sans antialiased theme-light" x-data="{ sidebarOpen: true, theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }">
+<body class="font-sans antialiased theme-light" x-data="{ sidebarOpen: window.innerWidth >= 1024, theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }" @resize.window="sidebarOpen = window.innerWidth >= 1024;">
     <div class="flex h-screen overflow-hidden">
+
+        <!-- Mobile Sidebar Backdrop -->
+        <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false" x-cloak></div>
 
         <!-- Sidebar -->
         <aside
-            class="sidebar-modern flex-shrink-0 flex flex-col transition-all duration-300 shadow-xl z-30 overflow-x-hidden"
-            :class="[sidebarOpen ? 'w-64' : 'w-20', (theme === 'dark' ? 'theme-dark' : 'theme-light')]">
+            class="sidebar-modern flex-shrink-0 flex flex-col transition-all duration-300 shadow-xl z-30 overflow-x-hidden absolute lg:relative inset-y-0 left-0 h-full"
+            :class="[sidebarOpen ? 'w-64 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0', (theme === 'dark' ? 'theme-dark' : 'theme-light')]">
 
-            <div class="h-16 flex items-center justify-center border-b border-white/20">
+            <div class="h-16 flex items-center justify-center border-b border-white/20 relative">
                 <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 group cursor-pointer"
                     style="color: var(--sidebar-text)">
                     <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo SI-LARANG"

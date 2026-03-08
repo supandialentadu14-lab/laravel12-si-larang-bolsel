@@ -23,17 +23,17 @@
     }
 }" class="bg-white rounded-lg shadow p-6 mb-6">
 
-    <div class="flex justify-between items-start mb-4">
-        <div class="flex items-center gap-2">
-            <a href="{{ route('reports.belanja.modal.form') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
-                <i class="fas fa-plus"></i> Tambah Kontrak
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <a href="{{ route('reports.belanja.modal.form') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
+                <i class="fas fa-plus"></i> <span class="whitespace-nowrap">Tambah Kontrak</span>
             </a>
-            <a href="{{ route('reports.belanja.modal.preview_all') }}" class="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
+            <a href="{{ route('reports.belanja.modal.preview_all') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
                 <i class="fas fa-print"></i> Print
             </a>
         </div>
 
-        <div class="flex flex-col items-end gap-1 w-full max-w-sm">
+        <div class="flex flex-col items-end gap-1 w-full sm:max-w-sm">
             <form action="{{ route('reports.belanja.modal.list') }}" method="GET" class="relative w-full">
                 <div x-data="{ query: '{{ request('search') }}' }" class="relative">
                     <input type="text" name="search" x-model="query" 

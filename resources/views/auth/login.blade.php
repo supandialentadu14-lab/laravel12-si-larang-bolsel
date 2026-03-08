@@ -3,8 +3,9 @@
 
     {{-- Header Form --}}
     <div class="mb-8 text-center">
-        <h3 class="text-2xl font-bold text-gray-800">Selamat Datang</h3>
-        <p class="text-gray-500 text-sm mt-1">Silakan masuk ke akun Anda</p>
+        <p class="text-xs font-black text-brand-500 uppercase tracking-[0.3em] mb-3">Login</p>
+        <h3 class="text-3xl font-extrabold text-white tracking-tight">Selamat Datang</h3>
+        <p class="text-white/40 text-sm mt-2 font-medium">Silakan masuk ke akun Anda</p>
     </div>
 
     {{-- Form login, method POST, dikirim ke route bernama 'login' --}}
@@ -36,22 +37,25 @@
         </div>
 
         {{-- ================= INPUT PASSWORD ================= --}}
-        <div class="group">
-            <label for="password" class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1 tracking-wide">
+        <div class="group" x-data="{ show: false }">
+            <label for="password" class="block text-xs font-bold text-gray-400 uppercase mb-1.5 ml-1 tracking-widest">
                 Password
             </label>
             <div class="relative transition-all duration-300 transform group-hover:-translate-y-0.5">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-brand-600 transition-colors">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 group-focus-within:text-brand-500 transition-colors">
                     <i class="fas fa-lock text-lg"></i>
                 </div>
                 <input 
                     id="password"
-                    type="password"
+                    :type="show ? 'text' : 'password'"
                     name="password"
                     required
                     autocomplete="current-password"
-                    class="form-input pl-12 block w-full rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white py-3.5 px-4 text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:ring-0 transition-all duration-200 shadow-sm"
+                    class="form-input pl-12 pr-12 block w-full rounded-2xl border-white/10 bg-white/5 focus:bg-white/10 py-4 px-4 text-white placeholder-white/20 focus:border-brand-500 focus:ring-0 transition-all duration-200 shadow-sm"
                     placeholder="••••••••">
+                <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-white transition-colors">
+                    <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                </button>
             </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>

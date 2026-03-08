@@ -4,12 +4,12 @@
 @section('content')
 
 <div class="bg-white rounded-lg shadow p-6 mb-6">
-    <div class="flex justify-between items-center mb-4 gap-4">
-        <a href="{{ route('stock.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow whitespace-nowrap">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <a href="{{ route('stock.create') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow whitespace-nowrap">
             <i class="fas fa-exchange-alt"></i> Tambah Transaksi
         </a>
 
-        <div class="relative w-64 mr-4" x-data="{ search: '{{ request('search') }}' }">
+        <div class="relative w-full sm:w-64" x-data="{ search: '{{ request('search') }}' }">
             <form method="GET" action="{{ route('stock.index') }}" x-ref="searchForm">
                 <input 
                     type="text" 

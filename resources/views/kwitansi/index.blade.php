@@ -23,14 +23,14 @@
     }
 }" class="bg-white rounded-lg shadow p-6 mb-6">
 
-    <div class="flex justify-between items-start mb-4">
-        <div class="flex items-center gap-2">
-            <a href="{{ route('reports.kwitansi.form') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
-                <i class="fas fa-plus"></i> Buat Kwitansi
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <a href="{{ route('reports.kwitansi.form') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
+                <i class="fas fa-plus"></i> <span class="whitespace-nowrap">Buat Kwitansi</span>
             </a>
         </div>
 
-        <div class="flex flex-col items-end gap-1 w-full max-w-sm">
+        <div class="flex flex-col items-end gap-1 w-full sm:max-w-sm">
             <form action="{{ route('reports.kwitansi.list') }}" method="GET" class="relative w-full">
                 <div x-data="{ query: '{{ request('search') }}' }" class="relative">
                     <input type="text" name="search" x-model="query" 

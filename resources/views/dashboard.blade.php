@@ -189,7 +189,7 @@
         </div>
 
         <!-- Right Column: Recent Activity & Critical Stock -->
-        <div class="space-y-8">
+        <div class="space-y-8 lg:mt-0 mt-8">
             
             <!-- Recent Activity -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -207,7 +207,7 @@
                                 <p class="text-sm font-semibold text-gray-800 truncate">{{ $transaction->product->name }}</p>
                                 <p class="text-xs text-gray-500">{{ $transaction->date->format('H:i') }} • {{ $transaction->type == 'in' ? 'Masuk' : 'Keluar' }}</p>
                             </div>
-                            <div class="text-right">
+                            <div class="text-right whitespace-nowrap">
                                 <span class="text-sm font-bold {{ $transaction->type == 'in' ? 'text-green-600' : 'text-red-600' }}">
                                     {{ $transaction->type == 'in' ? '+' : '-' }}{{ $transaction->quantity }}
                                 </span>
@@ -236,7 +236,7 @@
                                     <div class="bg-red-500 h-1.5 rounded-full" style="width: {{ $percent }}%"></div>
                                 </div>
                             </div>
-                            <div class="text-right">
+                            <div class="text-right whitespace-nowrap">
                                 <span class="block text-sm font-bold text-red-600">{{ $p->stock_on_date }}</span>
                                 <span class="text-xs text-gray-400">Min: {{ $p->min_stock }}</span>
                             </div>
