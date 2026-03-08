@@ -182,10 +182,26 @@ class PinjamPakaiController extends Controller
         $userDir = 'users/'.Auth::id().'/pinjam_pakai';
         $files = $disk->exists($userDir) ? $disk->files($userDir) : [];
         $items = [];
+        $search = request()->input('search');
         foreach ($files as $file) {
             if (! str_ends_with($file, '.json')) continue;
             $json = $disk->get($file);
             $data = json_decode($json, true) ?: [];
+
+            if ($search) {
+                $searchLower = strtolower($search);
+                $nomor = strtolower($data['nomor'] ?? '');
+                $tempat = strtolower($data['tempat'] ?? '');
+                $p1 = strtolower($data['pihak_pertama']['nama'] ?? '');
+                $p2 = strtolower($data['pihak_kedua']['nama'] ?? '');
+                if (!str_contains($nomor, $searchLower) && 
+                    !str_contains($tempat, $searchLower) && 
+                    !str_contains($p1, $searchLower) && 
+                    !str_contains($p2, $searchLower)) {
+                    continue;
+                }
+            }
+
             $items[] = [
                 'id' => basename($file, '.json'),
                 'updated' => $disk->lastModified($file),

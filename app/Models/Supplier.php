@@ -5,6 +5,7 @@ namespace App\Models;
 
 // Trait untuk mendukung factory (seeding & testing)
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 // Class dasar Model Eloquent
 use Illuminate\Database\Eloquent\Model;
@@ -19,18 +20,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Supplier extends Model
 {
     // Mengaktifkan fitur factory
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity, \App\Traits\Tenantable, SoftDeletes;
 
     /**
      * Field yang boleh diisi menggunakan mass assignment
      * (create / update)
      */
     protected $fillable = [
-        'name',    // Nama supplier
-        'dir',    // Nama pemilik
-        'email',   // Email supplier (opsional)
-        'phone',   // Nomor telepon supplier
-        'address', // Alamat supplier
+        'name',
+        'dir',
+        'email',
+        'phone',
+        'address',
+        'user_id',
     ];
 
     /**

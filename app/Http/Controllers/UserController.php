@@ -51,28 +51,42 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validasi input
-        $validated = $request->validate([
-            'name' => 'required|string|max:255', // Nama wajib
-            'email' => 'required|string|email|max:255|unique:users', // Email wajib & unik
-            'password' => 'required|string|min:8|confirmed', // Password min 8 & harus ada konfirmasi
-            'role' => 'required|in:admin,staff', // Role hanya boleh admin atau staff
-        ]);
+        \Illuminate\Support\Facades\Log::debug('UserController@store: Request received', $request->except(['password','password_confirmation']));
 
-        // Membuat user baru
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'name'     => 'required|string|max:255',
+                'email'    => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'role'     => 'required|in:admin,staff',
+            ]);
 
-            // Password dienkripsi sebelum disimpan
-            'password' => Hash::make($validated['password']),
+            \Illuminate\Support\Facades\Log::debug('UserController@store: Validation passed');
 
-            'role' => $validated['role'],
-        ]);
+            // Membuat user baru
+            $newUser = User::create([
+                'name'     => $validated['name'],
+                'email'    => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role'     => $validated['role'],
+            ]);
 
-        // Redirect dengan pesan sukses
-        return redirect()->route('users.index')
-            ->with('success', 'User created successfully.');
+            \Illuminate\Support\Facades\Log::debug('UserController@store: User created with ID=' . $newUser->id);
+
+            return redirect()->route('users.index')
+                ->with('success', 'Pengguna berhasil ditambahkan.');
+
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            \Illuminate\Support\Facades\Log::debug('UserController@store: Validation FAILED', $ve->errors());
+            throw $ve; // Let Laravel handle it normally
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('UserController@store: EXCEPTION - ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -146,6 +160,49 @@ class UserController extends Controller
     {
         $user = Auth::user();
         return view('users.edit', compact('user'));
+    }
+
+    /**
+     * Mengupdate profil user yang sedang login
+     */
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        // Validasi input
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id)
+            ],
+            'password' => 'nullable|string|min:8|confirmed',
+            'avatar' => 'nullable|image|max:2048',
+        ]);
+
+        $data = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ];
+
+        // Jika password diisi, maka update password
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($validated['password']);
+        }
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = $path;
+        }
+
+        // Update user
+        $user->update($data);
+
+        // Redirect dengan pesan sukses
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
 
     /**

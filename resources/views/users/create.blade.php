@@ -22,6 +22,20 @@
 
                 @csrf {{-- Token keamanan Laravel untuk mencegah CSRF --}}
 
+                {{-- ⚠️ Error Validasi --}}
+                @if ($errors->any())
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <p class="text-sm font-bold text-red-700 mb-2">
+                            <i class="fas fa-exclamation-circle mr-1"></i> Terdapat kesalahan:
+                        </p>
+                        <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 {{-- Input Nama Lengkap --}}
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">

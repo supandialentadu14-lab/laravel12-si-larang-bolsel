@@ -447,11 +447,25 @@ class NotaPesananController extends Controller
         $disk = Storage::disk('local');
         $dir = 'users/'.Auth::id().'/nota-pesanan';
         $files = $disk->exists($dir) ? $disk->files($dir) : [];
+        $search = $request->input('search');
         $items = [];
         foreach ($files as $file) {
             if (! str_ends_with($file, '.json')) continue;
             $json = $disk->get($file);
             $data = json_decode($json, true) ?: [];
+            
+            if ($search) {
+                $searchLower = strtolower($search);
+                $nomor = strtolower($data['nomor'] ?? '');
+                $belanja = strtolower($data['belanja'] ?? '');
+                $penyedia = strtolower($data['penyedia']['toko'] ?? '');
+                if (!str_contains($nomor, $searchLower) && 
+                    !str_contains($belanja, $searchLower) && 
+                    !str_contains($penyedia, $searchLower)) {
+                    continue;
+                }
+            }
+
             $total = 0;
             foreach (($data['items'] ?? []) as $row) {
                 $total += (int)($row['total'] ?? 0);
@@ -557,63 +571,14 @@ class NotaPesananController extends Controller
         $categories = \App\Models\Category::orderBy('name')->get();
         $master = $this->loadNotaMaster();
         $suppliers = Supplier::orderBy('name')->get();
-        return view('nota_pesanan.edit', compact('data', 'opd', 'options', 'products', 'categories', 'master', 'suppliers'));
+        return view('nota_pesanan.edit', compact('data', 'opd', 'options', 'products', 'categories', 'master', 'suppliers', 'id'));
     }
 
     public function delete(string $id): RedirectResponse
     {
-        $disk = Storage::disk('local');
-        $userId = Auth::id();
-        $notaPath = "users/{$userId}/nota-pesanan/{$id}.json";
-        $notaNomor = null;
-        if ($disk->exists($notaPath)) {
-            $json = $disk->get($notaPath);
-            $data = json_decode($json, true) ?: [];
-            $notaNomor = $data['nomor'] ?? null;
-            $disk->delete($notaPath);
-            
-            // Delete database record as well
-            if ($notaNomor) {
-                $dbNota = NotaPesanan::where('user_id', $userId)->where('nomor', $notaNomor)->first();
-                if ($dbNota) {
-                    $dbNota->items()->delete();
-                    $dbNota->delete();
-                }
-            }
-        }
-        if ($notaNomor) {
-            $pemeriksaanDir = "users/{$userId}/bap-pemeriksaan";
-            $pemeriksaanFiles = $disk->exists($pemeriksaanDir) ? $disk->files($pemeriksaanDir) : [];
-            foreach ($pemeriksaanFiles as $file) {
-                if (! str_ends_with($file, '.json')) continue;
-                $doc = json_decode($disk->get($file), true) ?: [];
-                $docNotaNomor = $doc['nota']['nomor'] ?? null;
-                if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
-                    $disk->delete($file);
-                }
-            }
-            $penerimaanDir = "users/{$userId}/bap-penerimaan";
-            $penerimaanFiles = $disk->exists($penerimaanDir) ? $disk->files($penerimaanDir) : [];
-            foreach ($penerimaanFiles as $file) {
-                if (! str_ends_with($file, '.json')) continue;
-                $doc = json_decode($disk->get($file), true) ?: [];
-                $docNotaNomor = $doc['nota']['nomor'] ?? null;
-                if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
-                    $disk->delete($file);
-                }
-            }
-        }
-        return redirect()->route('reports.nota.list')->with('status', 'Nota pesanan dan dokumen terkait dihapus');
-    }
-
-    public function bulkDelete(Request $request): RedirectResponse
-    {
-        $ids = $request->input('ids', []);
-        $count = 0;
-        $disk = Storage::disk('local');
-        $userId = Auth::id();
-        
-        foreach ($ids as $id) {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id) {
+            $disk = Storage::disk('local');
+            $userId = Auth::id();
             $notaPath = "users/{$userId}/nota-pesanan/{$id}.json";
             $notaNomor = null;
             
@@ -623,7 +588,7 @@ class NotaPesananController extends Controller
                 $notaNomor = $data['nomor'] ?? null;
                 $disk->delete($notaPath);
                 
-                // Delete database record
+                // Delete database record as well
                 if ($notaNomor) {
                     $dbNota = NotaPesanan::where('user_id', $userId)->where('nomor', $notaNomor)->first();
                     if ($dbNota) {
@@ -631,11 +596,40 @@ class NotaPesananController extends Controller
                         $dbNota->delete();
                     }
                 }
-                
-                $count++;
             }
             
             if ($notaNomor) {
+                // Find related Penerimaan to get their numbers for Kwitansi deletion
+                $penerimaanNomors = [];
+                $penerimaanDir = "users/{$userId}/bap-penerimaan";
+                $penerimaanFiles = $disk->exists($penerimaanDir) ? $disk->files($penerimaanDir) : [];
+                foreach ($penerimaanFiles as $file) {
+                    if (! str_ends_with($file, '.json')) continue;
+                    $doc = json_decode($disk->get($file), true) ?: [];
+                    $docNotaNomor = $doc['nota']['nomor'] ?? null;
+                    if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
+                        if (!empty($doc['nomor'])) {
+                            $penerimaanNomors[] = trim($doc['nomor']);
+                        }
+                        $disk->delete($file);
+                    }
+                }
+
+                // Delete related Kwitansi
+                if (!empty($penerimaanNomors)) {
+                    $kwitansiDir = "users/{$userId}/kwitansi";
+                    $kwitansiFiles = $disk->exists($kwitansiDir) ? $disk->files($kwitansiDir) : [];
+                    foreach ($kwitansiFiles as $file) {
+                        if (! str_ends_with($file, '.json')) continue;
+                        $doc = json_decode($disk->get($file), true) ?: [];
+                        $docKwtPenerimaanNomor = $doc['penerimaan_nomor'] ?? null;
+                        if ($docKwtPenerimaanNomor && in_array(trim($docKwtPenerimaanNomor), $penerimaanNomors)) {
+                            $disk->delete($file);
+                        }
+                    }
+                }
+
+                // Delete related Pemeriksaan
                 $pemeriksaanDir = "users/{$userId}/bap-pemeriksaan";
                 $pemeriksaanFiles = $disk->exists($pemeriksaanDir) ? $disk->files($pemeriksaanDir) : [];
                 foreach ($pemeriksaanFiles as $file) {
@@ -646,19 +640,88 @@ class NotaPesananController extends Controller
                         $disk->delete($file);
                     }
                 }
-                $penerimaanDir = "users/{$userId}/bap-penerimaan";
-                $penerimaanFiles = $disk->exists($penerimaanDir) ? $disk->files($penerimaanDir) : [];
-                foreach ($penerimaanFiles as $file) {
-                    if (! str_ends_with($file, '.json')) continue;
-                    $doc = json_decode($disk->get($file), true) ?: [];
-                    $docNotaNomor = $doc['nota']['nomor'] ?? null;
-                    if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
-                        $disk->delete($file);
+            }
+            
+            return redirect()->route('reports.nota.list')->with('status', 'Nota pesanan dan seluruh dokumen terkait (Pemeriksaan, Penerimaan, Kwitansi) telah dihapus');
+        });
+    }
+
+    public function bulkDelete(Request $request): RedirectResponse
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $ids = $request->input('ids', []);
+            $count = 0;
+            $disk = Storage::disk('local');
+            $userId = Auth::id();
+            
+            foreach ($ids as $id) {
+                $notaPath = "users/{$userId}/nota-pesanan/{$id}.json";
+                $notaNomor = null;
+                
+                if ($disk->exists($notaPath)) {
+                    $json = $disk->get($notaPath);
+                    $data = json_decode($json, true) ?: [];
+                    $notaNomor = $data['nomor'] ?? null;
+                    $disk->delete($notaPath);
+                    
+                    // Delete database record
+                    if ($notaNomor) {
+                        $dbNota = NotaPesanan::where('user_id', $userId)->where('nomor', $notaNomor)->first();
+                        if ($dbNota) {
+                            $dbNota->items()->delete();
+                            $dbNota->delete();
+                        }
+                    }
+                    
+                    $count++;
+                }
+                
+                if ($notaNomor) {
+                    // Find related Penerimaan to get their numbers for Kwitansi deletion
+                    $penerimaanNomors = [];
+                    $penerimaanDir = "users/{$userId}/bap-penerimaan";
+                    $penerimaanFiles = $disk->exists($penerimaanDir) ? $disk->files($penerimaanDir) : [];
+                    foreach ($penerimaanFiles as $file) {
+                        if (! str_ends_with($file, '.json')) continue;
+                        $doc = json_decode($disk->get($file), true) ?: [];
+                        $docNotaNomor = $doc['nota']['nomor'] ?? null;
+                        if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
+                            if (!empty($doc['nomor'])) {
+                                $penerimaanNomors[] = trim($doc['nomor']);
+                            }
+                            $disk->delete($file);
+                        }
+                    }
+
+                    // Delete related Kwitansi
+                    if (!empty($penerimaanNomors)) {
+                        $kwitansiDir = "users/{$userId}/kwitansi";
+                        $kwitansiFiles = $disk->exists($kwitansiDir) ? $disk->files($kwitansiDir) : [];
+                        foreach ($kwitansiFiles as $file) {
+                            if (! str_ends_with($file, '.json')) continue;
+                            $doc = json_decode($disk->get($file), true) ?: [];
+                            $docKwtPenerimaanNomor = $doc['penerimaan_nomor'] ?? null;
+                            if ($docKwtPenerimaanNomor && in_array(trim($docKwtPenerimaanNomor), $penerimaanNomors)) {
+                                $disk->delete($file);
+                            }
+                        }
+                    }
+
+                    // Delete related Pemeriksaan
+                    $pemeriksaanDir = "users/{$userId}/bap-pemeriksaan";
+                    $pemeriksaanFiles = $disk->exists($pemeriksaanDir) ? $disk->files($pemeriksaanDir) : [];
+                    foreach ($pemeriksaanFiles as $file) {
+                        if (! str_ends_with($file, '.json')) continue;
+                        $doc = json_decode($disk->get($file), true) ?: [];
+                        $docNotaNomor = $doc['nota']['nomor'] ?? null;
+                        if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
+                            $disk->delete($file);
+                        }
                     }
                 }
             }
-        }
-        return redirect()->route('reports.nota.list')->with('status', "{$count} Nota pesanan dan dokumen terkait dihapus");
+            return redirect()->route('reports.nota.list')->with('status', "{$count} Nota pesanan dan seluruh dokumen terkait (Pemeriksaan, Penerimaan, Kwitansi) telah dihapus");
+        });
     }
 
 

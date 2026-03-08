@@ -21,12 +21,23 @@ class SupplierController extends Controller
     /**
      * Menampilkan daftar supplier
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         // Mengambil data supplier dari database
         // latest() → urut berdasarkan data terbaru
         // paginate(10) → tampilkan 10 data per halaman
-        $suppliers = Supplier::latest()->paginate(10);
+        $query = Supplier::latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('dir', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('address', 'like', "%{$search}%");
+        }
+
+        $suppliers = $query->paginate(10)->withQueryString();
 
         // Mengirim data supplier ke view index
         return view('suppliers.index', compact('suppliers'));

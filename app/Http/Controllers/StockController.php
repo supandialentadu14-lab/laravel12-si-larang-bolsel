@@ -9,8 +9,7 @@ use App\Models\Product;
 // Mengimpor model StockTransaction
 use App\Models\StockTransaction;
 
-// Digunakan untuk tipe return redirect
-use App\Models\Transaction;
+// use App\Models\Transaction; // REMOVED: Redundant
 
 // Digunakan untuk menangkap request dari form
 use Illuminate\Http\RedirectResponse;
@@ -28,12 +27,19 @@ class StockController extends Controller
     /**
      * Menampilkan daftar transaksi stok
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         // Mengambil transaksi stok beserta relasi product dan user
         $transactions = StockTransaction::with(['product', 'user'])
+            ->when($request->search, function ($query) use ($request) {
+                $query->whereHas('product', function($q) use ($request) {
+                    $q->where('name', 'like', '%'.$request->search.'%')
+                      ->orWhere('sku', 'like', '%'.$request->search.'%');
+                })->orWhere('nosur', 'like', '%'.$request->search.'%');
+            })
             ->latest()        // Urutkan dari terbaru
-            ->paginate(20);   // Tampilkan 20 data per halaman
+            ->paginate(20)   // Tampilkan 20 data per halaman
+            ->withQueryString(); 
 
         // Ambil semua produk (hanya kolom stock dan price)
         $products = Product::select('stock', 'price')->get();
@@ -97,21 +103,9 @@ class StockController extends Controller
         // Ambil produk berdasarkan ID
         $product = Product::findOrFail($request->product_id);
 
-        // Jika tipe transaksi adalah stok masuk
-        if ($request->type === 'in') {
-
-            // Tambahkan stok produk
-            $product->increment('stock', $request->quantity);
-
-        } else {
-
-            // Jika stok keluar, cek apakah stok mencukupi
-            if ($product->stock < $request->quantity) {
-                return back()->with('error', 'Stok tidak mencukupi.');
-            }
-
-            // Kurangi stok produk
-            $product->decrement('stock', $request->quantity);
+        // Jika tipe transaksi adalah stok keluar, cek apakah stok mencukupi
+        if ($request->type === 'out' && $product->stock < $request->quantity) {
+            return back()->with('error', 'Stok tidak mencukupi.');
         }
 
         // Simpan transaksi stok ke database
@@ -124,6 +118,12 @@ class StockController extends Controller
             'notes' => $request->notes,
             'user_id' => auth()->id(), // Simpan ID user yang login
         ]);
+        
+        if ($request->type === 'in') {
+            $product->increment('stock', $request->quantity);
+        } else {
+            $product->decrement('stock', $request->quantity);
+        }
 
         // Redirect dengan pesan sukses
         return redirect()->route('stock.index')
@@ -132,7 +132,7 @@ class StockController extends Controller
 
     public function update(Request $request, $id)
 {
-    $transaction = Transaction::findOrFail($id);
+    $transaction = StockTransaction::findOrFail($id);
 
     // ===============================
     // VALIDASI DATA
@@ -153,12 +153,12 @@ class StockController extends Controller
     if ($request->type === 'out') {
 
         // Hitung total stok produk saat ini TANPA transaksi lama
-        $totalMasuk = Transaction::where('product_id', $request->product_id)
+        $totalMasuk = StockTransaction::where('product_id', $request->product_id)
             ->where('type', 'in')
             ->where('id', '!=', $transaction->id)
             ->sum('quantity');
 
-        $totalKeluar = Transaction::where('product_id', $request->product_id)
+        $totalKeluar = StockTransaction::where('product_id', $request->product_id)
             ->where('type', 'out')
             ->where('id', '!=', $transaction->id)
             ->sum('quantity');
@@ -173,8 +173,22 @@ class StockController extends Controller
     }
 
     // ===============================
-    // UPDATE DATA TRANSAKSI
+    // UPDATE DATA TRANSAKSI & PRODUK
     // ===============================
+    
+    // Kembalikan stok lama sebelum menghitung ulang
+    $product = Product::findOrFail($transaction->product_id);
+    if ($transaction->type === 'in') {
+        $product->decrement('stock', $transaction->quantity);
+    } else {
+        $product->increment('stock', $transaction->quantity);
+    }
+    
+    // Jika produknya diubah ke produk lain (jarang terjadi, tapi jika iya)
+    if ($request->product_id != $transaction->product_id) {
+        $product = Product::findOrFail($request->product_id); // Ganti fokus ke produk baru
+    }
+
     $transaction->update([
         'product_id' => $request->product_id,
         'date'       => $request->date,
@@ -183,18 +197,33 @@ class StockController extends Controller
         'nosur'      => $request->nosur,
         'notes'      => $request->notes,
     ]);
+    
+    // Terapkan stok baru
+    if ($request->type === 'in') {
+        $product->increment('stock', $request->quantity);
+    } else {
+        $product->decrement('stock', $request->quantity);
+    }
 
     return redirect()->route('stock.index')
         ->with('success', 'Transaksi berhasil diperbarui.');
 }
 
     public function edit($id)
-{
-    $transaction = Transaction::findOrFail($id);
-    $products = Product::all();
+    {
+        $transaction = StockTransaction::findOrFail($id);
+        $products = Product::all();
 
-    return view('stock.edit', compact('transaction', 'products'));
-}
+        return view('stock.edit', compact('transaction', 'products'));
+    }
+
+    /**
+     * Redirect show requests to edit
+     */
+    public function show($id)
+    {
+        return redirect()->route('stock.edit', $id);
+    }
 
 
     /**
@@ -202,20 +231,16 @@ class StockController extends Controller
      */
     public function destroy(StockTransaction $transaction): RedirectResponse
     {
-        $product = $transaction->product;
-        if ($transaction->type === 'in' && $product->stock < $transaction->quantity) {
-            return redirect()->route('stock.index')
-                ->withErrors(['delete' => 'Tidak bisa menghapus transaksi masuk karena stok saat ini lebih kecil dari jumlah transaksi.']);
+        $product = Product::findOrFail($transaction->product_id);
+        
+        // Kembalikan stok seperti sebelum transaksi ini ada
+        if ($transaction->type === 'in') {
+            $product->decrement('stock', $transaction->quantity);
+        } else {
+            $product->increment('stock', $transaction->quantity);
         }
-
-        DB::transaction(function () use ($transaction, $product) {
-            if ($transaction->type === 'in') {
-                $product->decrement('stock', $transaction->quantity);
-            } else {
-                $product->increment('stock', $transaction->quantity);
-            }
-            $transaction->delete();
-        });
+        
+        $transaction->delete();
 
         return redirect()->route('stock.index')
             ->with('success', 'Transaksi berhasil dihapus dan stok telah disesuaikan.');

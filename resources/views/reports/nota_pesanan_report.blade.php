@@ -181,6 +181,9 @@
     </style>
 
     <div class="bg-white rounded-lg shadow p-6 mb-6 print:hidden flex gap-2">
+        <a href="{{ route('reports.nota.list') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
         <button type="button" onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
             <i class="fas fa-print mr-2"></i> Print
         </button>
@@ -229,9 +232,9 @@
                 <input type="hidden" name="items[{{ $idx }}][price]" value="{{ $item['price'] }}">
             @endforeach
 
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
+            <!-- <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
                 <i class="fas fa-save"></i> Simpan
-            </button>
+            </button> -->
         </form>
     </div>
 

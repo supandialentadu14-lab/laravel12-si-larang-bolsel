@@ -181,7 +181,6 @@
 
                 @include('partials.form-actions', [
                     'backRoute' => route('reports.pinjam.list'),
-                    'previewRoute' => route('reports.pinjam.report'),
                 ])
             </form>
         </div>

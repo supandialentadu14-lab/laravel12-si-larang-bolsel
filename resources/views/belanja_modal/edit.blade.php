@@ -122,7 +122,7 @@
 
                 @include('partials.form-actions', [
                     'backRoute' => route('reports.belanja.modal.list'),
-                    'previewRoute' => route('reports.belanja.modal.report'),
+                    'saveText' => 'Perbarui',
                 ])
             </form>
         </div>

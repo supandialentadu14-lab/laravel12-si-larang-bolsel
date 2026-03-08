@@ -61,7 +61,7 @@
                 <h6 class="font-bold text-white">Form Berita Acara Opname</h6>
             </div>
 
-            <form method="POST" action="{{ route('reports.opname.update', $id) }}" x-data="opnameForm()" x-init="$nextTick(() => { updatePembuka(); })" class="p-6 space-y-6">
+            <form method="POST" action="{{ route('reports.opname.save', $id) }}" x-data="opnameForm()" x-init="$nextTick(() => { updatePembuka(); })" class="p-6 space-y-6">
                 @csrf
                 <input type="hidden" name="id" value="{{ $id }}">
 
@@ -139,7 +139,7 @@
 
                 @include('partials.form-actions', [
                     'backRoute' => route('reports.opname.list'),
-                    'previewRoute' => route('reports.opname.report'),
+                    'saveText' => 'Perbarui',
                 ])
             </form>
         </div>

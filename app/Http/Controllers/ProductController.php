@@ -8,6 +8,8 @@ use App\Models\StockTransaction;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ProductsExport;
 
 class ProductController extends Controller
 {
@@ -46,13 +48,26 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
+        $categories = Category::all();
         $products = Product::with(['category', 'transactions'])
             ->when($request->search, function ($query) use ($request) {
-                $query->where('name', 'like', '%'.$request->search.'%');
+                $query->where(function($q) use ($request) {
+                    $q->where('name', 'like', '%'.$request->search.'%')
+                      ->orWhere('sku', 'like', '%'.$request->search.'%')
+                      ->orWhereHas('category', function($cq) use ($request) {
+                          $cq->where('name', 'like', '%'.$request->search.'%');
+                      });
+                });
+            })
+            ->when($request->category_id, function ($query) use ($request) {
+                $query->where('category_id', $request->category_id);
+            })
+            ->when($request->low_stock, function ($query) {
+                $query->whereColumn('stock', '<=', 'min_stock');
             })
             ->paginate(10);
 
-        return view('products.index', compact('products'));
+        return view('products.index', compact('products', 'categories'));
     }
     /**
      * SIMPAN PRODUK
@@ -104,7 +119,6 @@ $slug = Str::slug($request->name);
             'price' => 'required|numeric',
             'unit' => 'required',
             'category_id' => 'required',
-            'supplier_id' => 'required',
         ]);
 
         $product->update([
@@ -167,12 +181,20 @@ $slug = Str::slug($request->name);
     
     public function bulkDestroy(Request $request)
     {
-        $ids = (array) $request->input('ids', []);
-        $ids = array_values(array_filter($ids, fn($v) => is_numeric($v)));
-        if (empty($ids)) {
-            return redirect()->route('products.index')->withErrors(['delete' => 'Tidak ada barang yang dipilih.']);
-        }
-        Product::whereIn('id', $ids)->delete();
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:products,id',
+        ], [
+            'ids.required' => 'Tidak ada barang yang dipilih.',
+        ]);
+
+        Product::whereIn('id', $validated['ids'])->delete();
+
         return redirect()->route('products.index')->with('success', 'Barang terpilih berhasil dihapus.');
+    }
+
+    public function export()
+    {
+        return Excel::download(new ProductsExport, 'daftar-barang-'.date('Ymd').'.xlsx');
     }
 }

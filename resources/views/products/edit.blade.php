@@ -125,19 +125,6 @@
 
                         </div>
 
-                        {{-- Textarea Keterangan --}}
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">
-                                Keterangan
-                            </label>
-
-                            {{-- 
-                                Menampilkan deskripsi lama jika tidak ada error
-                                atau input sebelumnya jika validasi gagal
-                            --}}
-                            <textarea name="description" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-300">
-                                {{ old('description', $product->description) }}
-                            </textarea>
                         </div>
 
                     </div>
@@ -163,24 +150,13 @@
                             </select>
                         </div>
 
-                        {{-- Dropdown Penyedia --}}
+                        {{-- Textarea Keterangan --}}
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">
-                                Penyedia
+                                Keterangan
                             </label>
 
-                            <select name="supplier_id" class="w-full px-4 py-2 rounded-lg border border-gray-300">
-
-                                <option value="">-- Pilih Penyedia --</option>
-
-                                {{-- Looping data supplier --}}
-                                @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}"
-                                        {{ old('supplier_id', $product->supplier_id) == $supplier->id ? 'selected' : '' }}>
-                                        {{ $supplier->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <textarea name="description" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-300">{{ trim(old('description', $product->description)) }}</textarea>
                         </div>
 
                     </div>

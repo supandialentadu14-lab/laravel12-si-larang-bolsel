@@ -181,10 +181,29 @@ class BelanjaModalController extends Controller
         $dir = 'users/'.Auth::id().'/belanja-modal';
         $files = $disk->exists($dir) ? $disk->files($dir) : [];
         $items = [];
+        $search = $request->input('search');
         foreach ($files as $file) {
             if (! str_ends_with($file, '.json')) continue;
             $json = $disk->get($file);
             $data = json_decode($json, true) ?: [];
+
+            if ($search) {
+                $searchLower = strtolower($search);
+                $tahun = (string)($data['tahun'] ?? '');
+                $matchesItems = false;
+                foreach (($data['items'] ?? []) as $it) {
+                    $nm = strtolower($it['nm'] ?? ($it['nama_kegiatan'] ?? ''));
+                    $pk = strtolower($it['pk'] ?? ($it['pekerjaan'] ?? ''));
+                    if (str_contains($nm, $searchLower) || str_contains($pk, $searchLower)) {
+                        $matchesItems = true;
+                        break;
+                    }
+                }
+                if (!str_contains($tahun, $searchLower) && !$matchesItems) {
+                    continue;
+                }
+            }
+
             $total = 0;
             foreach (($data['items'] ?? []) as $row) {
                 $total += (int)($row['nk'] ?? 0);

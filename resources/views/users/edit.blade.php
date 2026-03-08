@@ -18,7 +18,7 @@
             </div>
 
             {{-- Form untuk mengupdate data user --}}
-            <form action="{{ route('users.update', $user) }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
+            <form action="{{ request()->routeIs('profile.edit') ? route('profile.update') : route('users.update', $user) }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
 
                 @csrf {{-- Token keamanan CSRF --}}
                 @method('PUT') {{-- Mengubah method POST menjadi PUT untuk proses update --}}
@@ -52,6 +52,7 @@
                 </div>
 
                 {{-- Dropdown Role --}}
+                @if(auth()->user()->isAdmin() && !request()->routeIs('profile.edit'))
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">
                         Hak Akses <span class="text-red-500">*</span>
@@ -76,6 +77,7 @@
 
                     </select>
                 </div>
+                @endif
 
                 {{-- Section Ganti Password --}}
                 <div class="border-t border-gray-100 pt-4">

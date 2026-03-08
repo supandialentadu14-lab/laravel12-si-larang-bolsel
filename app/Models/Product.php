@@ -5,6 +5,7 @@ namespace App\Models;
 
 // Trait untuk mendukung fitur factory (seeding/testing)
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 // Class dasar Model Eloquent
 use Illuminate\Database\Eloquent\Model;
@@ -13,22 +14,23 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     // Mengaktifkan fitur factory
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity, \App\Traits\Tenantable, SoftDeletes;
 
     /**
      * Kolom yang boleh diisi menggunakan mass assignment
      * (create() / update())
      */
     protected $fillable = [
-        'name',         // Nama produk
-        'slug',         // Slug untuk URL
-        'sku',          // Kode unik produk
-        'price',        // Harga produk
-        'stock',        // Stok saat ini (disimpan langsung di tabel)
-        'unit',         // Satuan (pcs, box, dll)
-        'category_id',  // Relasi ke kategori
-        'supplier_id',  // Relasi ke supplier
-        'description',  // Deskripsi produk
+        'name',
+        'slug',
+        'sku',
+        'price',
+        'stock',
+        'unit',
+        'category_id',
+        'supplier_id',
+        'description',
+        'user_id',
     ];
 
     /**
@@ -60,8 +62,7 @@ class Product extends Model
     {
         // ⚠ Pastikan nama model sesuai.
         // Jika tabelnya stock_transactions, seharusnya:
-        // return $this->hasMany(StockTransaction::class);
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(StockTransaction::class);
     }
 
     /**

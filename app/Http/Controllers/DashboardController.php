@@ -42,6 +42,7 @@ class DashboardController extends Controller
         $selectedDate = request('date') ? Carbon::parse(request('date')) : Carbon::today();
         $agg = DB::table('stock_transactions')
             ->select('product_id', DB::raw('SUM(CASE WHEN type = "in" THEN quantity ELSE -quantity END) as net'))
+            ->where('user_id', Auth::id())
             ->whereDate('date', '<=', $selectedDate)
             ->groupBy('product_id')
             ->get()
@@ -71,10 +72,12 @@ class DashboardController extends Controller
         $outToday = StockTransaction::where('type', 'out')->whereDate('date', $today)->sum('quantity');
         $valueInToday = StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
             ->where('stock_transactions.type', 'in')
+            ->where('stock_transactions.user_id', Auth::id())
             ->whereDate('stock_transactions.date', $today)
             ->sum(DB::raw('stock_transactions.quantity * products.price'));
         $valueOutToday = StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
             ->where('stock_transactions.type', 'out')
+            ->where('stock_transactions.user_id', Auth::id())
             ->whereDate('stock_transactions.date', $today)
             ->sum(DB::raw('stock_transactions.quantity * products.price'));
         $transactionsToday = StockTransaction::whereDate('date', $today)->count();
@@ -112,9 +115,43 @@ class DashboardController extends Controller
 
 
 
+        // ============================
+        // DATA TREN BULANAN (6 BULAN TERAKHIR)
+        // ============================
+        $monthlyLabels = collect();
+        $monthlyIn = collect();
+        $monthlyOut = collect();
+
+        for ($i = 5; $i >= 0; $i--) {
+            $month = Carbon::today()->subMonths($i);
+            $monthlyLabels->push($month->translatedFormat('M Y'));
+            $monthlyIn->push(
+                StockTransaction::where('type', 'in')
+                    ->whereYear('date', $month->year)
+                    ->whereMonth('date', $month->month)
+                    ->sum('quantity')
+            );
+            $monthlyOut->push(
+                StockTransaction::where('type', 'out')
+                    ->whereYear('date', $month->year)
+                    ->whereMonth('date', $month->month)
+                    ->sum('quantity')
+            );
+        }
+
+        // ============================
+        // DISTRIBUSI STOK PER KATEGORI
+        // ============================
+        $categoryDistribution = Category::withCount(['products as total_stock' => function ($query) {
+            $query->select(DB::raw('COALESCE(SUM(stock), 0)'));
+        }])->get()->filter(fn($c) => $c->total_stock > 0);
+
+        $categoryLabels = $categoryDistribution->pluck('name');
+        $categoryValues = $categoryDistribution->pluck('total_stock');
+
         return view('dashboard', compact(
-            'totalProducts',        // Total produk
-            'totalCategories',      // Total kategori
+            'totalProducts',
+            'totalCategories',
             'totalStock',
             'lowStockCount',
             'criticalProducts',
@@ -131,7 +168,12 @@ class DashboardController extends Controller
             'outToday',
             'valueInToday',
             'valueOutToday',
-            'transactionsToday'
+            'transactionsToday',
+            'monthlyLabels',
+            'monthlyIn',
+            'monthlyOut',
+            'categoryLabels',
+            'categoryValues'
         ));
 }
 }

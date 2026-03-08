@@ -74,7 +74,7 @@
         </div>
 
         <!-- Card 3 -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300 group">
+        <a href="{{ route('products.index', ['low_stock' => 1]) }}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300 group">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Stok Menipis</p>
@@ -87,7 +87,7 @@
             <div class="flex items-center text-xs text-gray-500">
                 Perlu <span class="text-orange-600 font-semibold mx-1">Restock</span> segera
             </div>
-        </div>
+        </a>
 
         <!-- Card 4 -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300 group">
@@ -253,6 +253,44 @@
         </div>
     </div>
 
+    {{-- Analitik Lanjutan --}}
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
+        <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h6 class="font-bold text-gray-800 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-violet-500 rounded-full"></span>
+                    Tren Pengadaan 6 Bulan Terakhir
+                </h6>
+                <span class="text-xs px-2 py-1 bg-gray-100 rounded text-gray-500">Per Bulan</span>
+            </div>
+            <div class="p-6 flex-1">
+                <div class="relative h-64 w-full">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <h6 class="font-bold text-gray-800 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-amber-500 rounded-full"></span>
+                    Distribusi Stok per Kategori
+                </h6>
+            </div>
+            <div class="p-6 flex-1 flex items-center justify-center">
+                @if($categoryValues->sum() > 0)
+                <div class="relative w-full max-w-[220px] mx-auto aspect-square">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                @else
+                <div class="text-center text-gray-400 py-10">
+                    <i class="fas fa-chart-pie text-4xl mb-3 block opacity-20"></i>
+                    <p class="text-sm">Belum ada data</p>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <!-- Chart Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -385,6 +423,75 @@
                     }
                 }
             });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ---- Monthly Trend Chart ----
+            const mCanvas = document.getElementById('monthlyChart');
+            if (mCanvas) {
+                new Chart(mCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($monthlyLabels) !!},
+                        datasets: [
+                            {
+                                label: 'Masuk',
+                                data: {!! json_encode($monthlyIn) !!},
+                                backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                                borderRadius: 6,
+                                borderSkipped: false,
+                            },
+                            {
+                                label: 'Keluar',
+                                data: {!! json_encode($monthlyOut) !!},
+                                backgroundColor: 'rgba(251, 113, 133, 0.8)',
+                                borderRadius: 6,
+                                borderSkipped: false,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9ca3af' } },
+                            y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { precision: 0, font: { size: 10 }, color: '#9ca3af' } }
+                        }
+                    }
+                });
+            }
+
+            // ---- Category Distribution Pie Chart ----
+            const cCanvas = document.getElementById('categoryChart');
+            if (cCanvas) {
+                const palette = ['#6366f1','#f59e0b','#10b981','#f43f5e','#3b82f6','#a855f7','#ec4899','#14b8a6'];
+                new Chart(cCanvas.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: {!! json_encode($categoryLabels) !!},
+                        datasets: [{
+                            data: {!! json_encode($categoryValues) !!},
+                            backgroundColor: palette,
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        cutout: '65%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, padding: 8 } }
+                        }
+                    }
+                });
+            }
         });
     </script>
 

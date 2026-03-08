@@ -4,6 +4,8 @@ namespace App\Providers;
 
 // Import model User untuk digunakan di Gate
 use App\Models\User;
+use App\Models\StockTransaction;
+use App\Observers\StockTransactionObserver;
 
 // Facade Gate untuk membuat authorization (hak akses)
 use Illuminate\Support\Facades\Gate;
@@ -39,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Set locale Carbon ke Bahasa Indonesia
         \Carbon\Carbon::setLocale('id');
+
+        // Register Observers
+        StockTransaction::observe(StockTransactionObserver::class);
 
         /**
          * ==========================================

@@ -48,7 +48,6 @@
 
                 @include('partials.form-actions', [
                     'backRoute' => route('reports.penerimaan.list'),
-                    'previewRoute' => route('reports.penerimaan.report'),
                     'saveRoute' => route('reports.penerimaan.save'),
                     'saveText' => 'Perbarui',
                 ])

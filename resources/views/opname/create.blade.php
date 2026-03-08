@@ -166,7 +166,6 @@
 
                 @include('partials.form-actions', [
                     'backRoute' => route('reports.opname.list'),
-                    'previewRoute' => route('reports.opname.report'),
                 ])
             </form>
         </div>

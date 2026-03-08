@@ -45,7 +45,6 @@
 
                 @include('partials.form-actions', [
                     'backRoute' => route('reports.pemeriksaan.list'),
-                    'previewRoute' => route('reports.pemeriksaan.report'),
                     'saveRoute' => route('reports.pemeriksaan.save'),
                 ])
             </form>

@@ -23,20 +23,47 @@
     }
 }" class="bg-white rounded-lg shadow p-6 mb-6">
 
-    <div class="flex justify-between items-start mb-4">
-        <div class="flex items-center gap-2">
-            <a href="{{ route('products.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{{ route('products.create') }}" class=" btn btn-primary h-10 px-4">
                 <i class="fas fa-plus"></i> Tambah Barang
+            </a>
+            <a href="{{ route('import.index') }}" class="btn h-10 px-4">
+                <i class="fas fa-file-import text-indigo-500"></i> Impor
+            </a>
+            <a href="{{ route('products.export') }}" class="btn h-10 px-4">
+                <i class="fas fa-file-excel text-emerald-600"></i> Ekspor Excel
             </a>
         </div>
 
-        <div class="flex flex-col items-end gap-1 w-full max-w-sm">
-            <form action="{{ route('products.index') }}" method="GET" class="relative w-full">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="     Cari barang..."
-                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition text-sm">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-right text-gray-400">
-                    <i class="fas fa-search"></i>
-                </span>
+        <div class="flex flex-col md:flex-row items-center gap-3 w-full max-w-2xl">
+            <form action="{{ route('products.index') }}" method="GET" class="flex items-center gap-2 w-full">
+                <select name="category_id" onchange="this.form.requestSubmit()" 
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none transition">
+                    <option value="">Semua Kategori</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                            {{ $cat->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <div x-data="{ query: '{{ request('search') }}' }" class="relative flex-1">
+                    <input type="text" name="search" x-model="query" 
+                        @input.debounce.750ms="$el.closest('form').requestSubmit()"
+                        x-init="$el.focus(); $el.setSelectionRange($el.value.length, $el.value.length)"
+                        placeholder="     Cari barang..."
+                        class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition text-sm">
+                    <span x-show="!query" class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 pointer-events-none">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+
+                @if(request('category_id') || request('search') || request('low_stock'))
+                    <a href="{{ route('products.index') }}" class="inline-flex items-center px-3 py-2 text-sm text-gray-500 hover:text-red-600 transition" title="Reset">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
+                @endif
             </form>
         </div>
     </div>

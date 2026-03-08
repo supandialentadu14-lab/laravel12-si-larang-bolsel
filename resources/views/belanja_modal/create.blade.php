@@ -134,7 +134,6 @@
 
                 @include('partials.form-actions', [
                     'backRoute' => route('reports.belanja.modal.list'),
-                    'previewRoute' => route('reports.belanja.modal.report'),
                     'saveRoute' => route('reports.belanja.modal.save'),
                 ])
             </form>

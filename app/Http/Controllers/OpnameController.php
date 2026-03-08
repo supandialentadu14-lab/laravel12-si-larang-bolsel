@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OpdSetting;
 use App\Models\Product;
+use App\Models\StockTransaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,12 +59,12 @@ class OpnameController extends Controller
         $items = [];
         $products = Product::orderBy('name')->get();
         foreach ($products as $p) {
-            $in = \App\Models\Transaction::where('product_id', $p->id)
-                ->where('type', 'in')
+            $in = StockTransaction::where('product_id', '=', $p->id)
+                ->where('type', '=', 'in')
                 ->whereDate('date', '<=', $date)
                 ->sum('quantity');
-            $out = \App\Models\Transaction::where('product_id', $p->id)
-                ->where('type', 'out')
+            $out = StockTransaction::where('product_id', '=', $p->id)
+                ->where('type', '=', 'out')
                 ->whereDate('date', '<=', $date)
                 ->sum('quantity');
             $qty = (int) ($in - $out);
@@ -255,7 +256,7 @@ class OpnameController extends Controller
             'opname_current_id' => $id,
         ]);
         $opd = OpdSetting::where('user_id', Auth::id())->first();
-        return view('opname.edit', compact('data', 'opd'));
+        return view('opname.edit', compact('data', 'opd', 'id'));
     }
 
     public function list(Request $request): View
@@ -264,10 +265,24 @@ class OpnameController extends Controller
         $userDir = 'users/'.Auth::id().'/opname';
         $files = $disk->exists($userDir) ? $disk->files($userDir) : [];
         $items = [];
+        $search = $request->input('search');
         foreach ($files as $file) {
             if (! str_ends_with($file, '.json')) continue;
             $json = $disk->get($file);
             $data = json_decode($json, true) ?: [];
+
+            if ($search) {
+                $searchLower = strtolower($search);
+                $nomor = strtolower($data['nomor'] ?? '');
+                $p1 = strtolower($data['pihak_pertama']['nama'] ?? '');
+                $p2 = strtolower($data['pihak_kedua']['nama'] ?? '');
+                if (!str_contains($nomor, $searchLower) && 
+                    !str_contains($p1, $searchLower) && 
+                    !str_contains($p2, $searchLower)) {
+                    continue;
+                }
+            }
+
             $items[] = [
                 'id' => basename($file, '.json'),
                 'updated' => $disk->lastModified($file),

@@ -4,10 +4,27 @@
 @section('content')
 
 <div class="bg-white rounded-lg shadow p-6 mb-6">
-    <div class="flex justify-between items-center mb-4">
-        <a href="{{ route('stock.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
+    <div class="flex justify-between items-center mb-4 gap-4">
+        <a href="{{ route('stock.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow whitespace-nowrap">
             <i class="fas fa-exchange-alt"></i> Tambah Transaksi
         </a>
+
+        <div class="relative w-64 mr-4" x-data="{ search: '{{ request('search') }}' }">
+            <form method="GET" action="{{ route('stock.index') }}" x-ref="searchForm">
+                <input 
+                    type="text" 
+                    name="search" 
+                    x-model="search"
+                    x-init="$el.focus(); $el.setSelectionRange($el.value.length, $el.value.length)"
+                    @input.debounce.750ms="$refs.searchForm.requestSubmit()"
+                    placeholder="Cari transaksi..." 
+                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all"
+                >
+                <div class="absolute left-3 top-2.5 text-gray-400" x-show="!search">
+                    <i class="fas fa-search"></i>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="overflow-x-auto border rounded-lg">

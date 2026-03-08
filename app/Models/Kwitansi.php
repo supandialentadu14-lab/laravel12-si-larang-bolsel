@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kwitansi extends Model
 {
+    use \App\Traits\Tenantable;
+
     protected $guarded = ['id'];
 
     public function user()

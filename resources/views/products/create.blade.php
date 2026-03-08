@@ -46,33 +46,31 @@
                                     <option value="paket" {{ old('unit') == 'paket' ? 'selected' : '' }}>Paket</option>
                                     <option value="liter" {{ old('unit') == 'liter' ? 'selected' : '' }}>Liter</option>
                                 </select> </div>
-                        </div> {{-- Textarea Deskripsi Produk --}} <div> <label class="block text-sm font-bold text-gray-700 mb-1">
-                                Keterangan </label>
-                            <textarea name="description" rows="4" placeholder="Product details..."
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"> {{ old('description') }} </textarea>
                         </div>
                     </div> <!-- ================= RIGHT COLUMN ================= -->
-                    <div class="space-y-6"> {{-- Dropdown Jenis Belanja --}} <div> <label
-                                class="block text-sm font-bold text-gray-700 mb-1"> Jenis Belanja <span
-                                    class="text-red-500">*</span> </label> <select name="category_id"
+                    <div class="space-y-6"> 
+                        {{-- Dropdown Jenis Belanja --}} 
+                        <div> 
+                            <label class="block text-sm font-bold text-gray-700 mb-1"> Jenis Belanja <span class="text-red-500">*</span> </label> 
+                            <select name="category_id"
                                 class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-white"
                                 required>
-                                <option value="">-- Pilih Jenis Belanja --</option> {{-- Looping data kategori dari controller --}}
+                                <option value="">-- Pilih Jenis Belanja --</option> 
+                                {{-- Looping data kategori dari controller --}}
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}"
                                         {{ old('category_id') == $category->id ? 'selected' : '' }}> {{ $category->name }}
                                     </option>
                                 @endforeach
-                            </select> </div> {{-- Dropdown Supplier --}} <div> <label
-                                class="block text-sm font-bold text-gray-700 mb-1"> Penyedia </label> <select
-                                name="supplier_id"
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-white">
-                                <option value="">-- Pilih Penyedia --</option> {{-- Looping data supplier --}} @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}"
-                                        {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}> {{ $supplier->name }}
-                                    </option>
-                                @endforeach
-                            </select> </div>
+                            </select> 
+                        </div> 
+                        
+                        {{-- Textarea Deskripsi Produk --}} 
+                        <div> 
+                            <label class="block text-sm font-bold text-gray-700 mb-1"> Keterangan </label>
+                            <textarea name="description" rows="4" placeholder="Product details..."
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"> {{ old('description') }} </textarea>
+                        </div>
                     </div>
                 </div> @include('partials.form-actions', [
                     'backRoute' => route('products.index'),

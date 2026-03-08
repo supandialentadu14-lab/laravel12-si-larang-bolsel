@@ -44,7 +44,6 @@
                 
                 @include('partials.form-actions', [
                     'backRoute' => route('reports.kwitansi.list'),
-                    'previewRoute' => route('reports.kwitansi.report'),
                     'saveRoute' => route('reports.kwitansi.save'),
                 ])
             </form>

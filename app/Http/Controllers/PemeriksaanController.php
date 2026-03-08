@@ -347,9 +347,20 @@ class PemeriksaanController extends Controller
         $dir = 'users/'.Auth::id().'/bap-pemeriksaan';
         $files = $disk->exists($dir) ? $disk->files($dir) : [];
         $items = [];
+        $search = $request->input('search');
         foreach ($files as $file) {
             if (! str_ends_with($file, '.json')) continue;
             $data = json_decode($disk->get($file), true) ?: [];
+
+            if ($search) {
+                $searchLower = strtolower($search);
+                $nomor = strtolower($data['nomor'] ?? '');
+                $notaNomor = strtolower($data['nota']['nomor'] ?? '');
+                if (!str_contains($nomor, $searchLower) && !str_contains($notaNomor, $searchLower)) {
+                    continue;
+                }
+            }
+
             $total = 0;
             foreach (($data['items'] ?? []) as $row) {
                 $total += (int)($row['jumlah'] ?? 0);
@@ -413,29 +424,101 @@ class PemeriksaanController extends Controller
         ]);
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $notaDocs = $this->listNotaDocs();
-        return view('pemeriksaan.edit', compact('data', 'opd', 'notaDocs'));
+        return view('pemeriksaan.edit', compact('data', 'opd', 'notaDocs', 'id'));
     }
 
     public function delete(string $id): RedirectResponse
     {
-        $path = "users/".Auth::id()."/bap-pemeriksaan/{$id}.json";
-        if (Storage::disk('local')->exists($path)) {
-            Storage::disk('local')->delete($path);
+        $disk = Storage::disk('local');
+        $userId = Auth::id();
+        $path = "users/{$userId}/bap-pemeriksaan/{$id}.json";
+        if ($disk->exists($path)) {
+            $json = $disk->get($path);
+            $data = json_decode($json, true) ?: [];
+            $nomor = $data['nomor'] ?? null;
+            $disk->delete($path);
+            
+            if ($nomor) {
+                // Find and delete related Penerimaan and Kwitansi
+                $penerimaanNomors = [];
+                $penerimaanDir = "users/{$userId}/bap-penerimaan";
+                $penerimaanFiles = $disk->exists($penerimaanDir) ? $disk->files($penerimaanDir) : [];
+                foreach ($penerimaanFiles as $file) {
+                    if (! str_ends_with($file, '.json')) continue;
+                    $doc = json_decode($disk->get($file), true) ?: [];
+                    $docPemeriksaanNomor = $doc['pemeriksaan_nomor'] ?? null;
+                    if ($docPemeriksaanNomor && trim($docPemeriksaanNomor) === trim($nomor)) {
+                        if (!empty($doc['nomor'])) {
+                            $penerimaanNomors[] = trim($doc['nomor']);
+                        }
+                        $disk->delete($file);
+                    }
+                }
+
+                if (!empty($penerimaanNomors)) {
+                    $kwitansiDir = "users/{$userId}/kwitansi";
+                    $kwitansiFiles = $disk->exists($kwitansiDir) ? $disk->files($kwitansiDir) : [];
+                    foreach ($kwitansiFiles as $file) {
+                        if (! str_ends_with($file, '.json')) continue;
+                        $doc = json_decode($disk->get($file), true) ?: [];
+                        $docKwtPenerimaanNomor = $doc['penerimaan_nomor'] ?? null;
+                        if ($docKwtPenerimaanNomor && in_array(trim($docKwtPenerimaanNomor), $penerimaanNomors)) {
+                            $disk->delete($file);
+                        }
+                    }
+                }
+            }
         }
-        return redirect()->route('reports.pemeriksaan.list')->with('status', 'Berita acara dihapus');
+        return redirect()->route('reports.pemeriksaan.list')->with('status', 'Berita acara pemeriksaan dan dokumen terkait dihapus');
     }
 
     public function bulkDelete(Request $request): RedirectResponse
     {
         $ids = $request->input('ids', []);
         $count = 0;
+        $disk = Storage::disk('local');
+        $userId = Auth::id();
         foreach ($ids as $id) {
-            $path = "users/".Auth::id()."/bap-pemeriksaan/{$id}.json";
-            if (Storage::disk('local')->exists($path)) {
-                Storage::disk('local')->delete($path);
+            $path = "users/{$userId}/bap-pemeriksaan/{$id}.json";
+            if ($disk->exists($path)) {
+                $json = $disk->get($path);
+                $data = json_decode($json, true) ?: [];
+                $nomor = $data['nomor'] ?? null;
+                $disk->delete($path);
+                
+                if ($nomor) {
+                    // Find and delete related Penerimaan and Kwitansi
+                    $penerimaanNomors = [];
+                    $penerimaanDir = "users/{$userId}/bap-penerimaan";
+                    $penerimaanFiles = $disk->exists($penerimaanDir) ? $disk->files($penerimaanDir) : [];
+                    foreach ($penerimaanFiles as $file) {
+                        if (! str_ends_with($file, '.json')) continue;
+                        $doc = json_decode($disk->get($file), true) ?: [];
+                        $docPemeriksaanNomor = $doc['pemeriksaan_nomor'] ?? null;
+                        if ($docPemeriksaanNomor && trim($docPemeriksaanNomor) === trim($nomor)) {
+                            if (!empty($doc['nomor'])) {
+                                $penerimaanNomors[] = trim($doc['nomor']);
+                            }
+                            $disk->delete($file);
+                        }
+                    }
+
+                    if (!empty($penerimaanNomors)) {
+                        $kwitansiDir = "users/{$userId}/kwitansi";
+                        $kwitansiFiles = $disk->exists($kwitansiDir) ? $disk->files($kwitansiDir) : [];
+                        foreach ($kwitansiFiles as $file) {
+                            if (! str_ends_with($file, '.json')) continue;
+                            $doc = json_decode($disk->get($file), true) ?: [];
+                            $docKwtPenerimaanNomor = $doc['penerimaan_nomor'] ?? null;
+                            if ($docKwtPenerimaanNomor && in_array(trim($docKwtPenerimaanNomor), $penerimaanNomors)) {
+                                $disk->delete($file);
+                            }
+                        }
+                    }
+                }
                 $count++;
             }
         }
-        return redirect()->route('reports.pemeriksaan.list')->with('status', "{$count} Berita acara dihapus");
+        return redirect()->route('reports.pemeriksaan.list')->with('status', "{$count} Berita acara pemeriksaan dan dokumen terkait dihapus");
     }
 }

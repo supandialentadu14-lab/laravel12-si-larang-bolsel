@@ -16,6 +16,9 @@ use App\Http\Controllers\OpdController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -24,6 +27,10 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Notifications
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
     Route::get('/logout', function () {
         Auth::guard('web')->logout();
         request()->session()->invalidate();
@@ -46,8 +53,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('suppliers/bulk-delete', [SupplierController::class, 'bulkDestroy'])->name('suppliers.bulk_delete');
 
     // Products
+    Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
     Route::resource('products', ProductController::class);
     Route::post('products/bulk-delete', [ProductController::class, 'bulkDestroy'])->name('products.bulk_delete');
+    Route::get('import/products', [ImportController::class, 'index'])->name('import.index');
+    Route::post('import/products', [ImportController::class, 'importProducts'])->name('import.products');
 
     // Stock Management
     Route::get('stock', [StockController::class, 'index'])->name('stock.index');
@@ -154,10 +164,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/nota-master/list', [ReportController::class, 'notaMasterList'])->name('settings.nota.master.list');
 
     Route::get('profile', [UserController::class, 'editSelf'])->name('profile.edit');
+    Route::put('profile', [UserController::class, 'updateProfile'])->name('profile.update');
 
     // User Management (Admin only)
     Route::middleware('can:admin-access')->group(function () {
         Route::resource('users', UserController::class);
+        Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity_log.index');
     });
 });
 

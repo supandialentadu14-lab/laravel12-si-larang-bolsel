@@ -4,7 +4,8 @@
 @section('subheader', 'Nota Pesanan • BAP Pemeriksaan • BAP Penerimaan • Kwitansi')
 
 @section('actions')
-    <button type="button" onclick="window.print()" class="btn btn-neutral"><i class="fas fa-print"></i> Cetak</button>
+    <a href="{{ route('reports.kwitansi.list') }}" class="no-print btn btn-outline"><i class="fas fa-arrow-left"></i> Kembali</a>
+    <button type="button" onclick="window.print()" class="no-print btn btn-neutral ml-2"><i class="fas fa-print"></i> Cetak</button>
 @endsection
 
 @section('content')

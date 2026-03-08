@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OpdSetting extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Tenantable;
 
     protected $fillable = [
         'user_id',

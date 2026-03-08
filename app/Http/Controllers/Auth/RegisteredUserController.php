@@ -74,9 +74,8 @@ class RegisteredUserController extends Controller
             // Password dienkripsi terlebih dahulu sebelum disimpan
             'password' => Hash::make($request->password),
 
-            // Mengatur role default sebagai admin
-            // (Biasanya ini hanya untuk setup awal aplikasi)
-            'role' => 'admin',
+            // Mengatur role default sebagai staff
+            'role' => 'staff',
         ]);
 
         // Memicu event Registered

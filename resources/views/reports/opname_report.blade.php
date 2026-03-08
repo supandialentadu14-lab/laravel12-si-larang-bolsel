@@ -5,17 +5,18 @@
 @section('subheader', 'Pratinjau & cetak')
 
 @section('actions')
-    <button type="button" onclick="openPrintPreview()" class="no-print btn btn-neutral"><i class="fas fa-print"></i> Cetak</button>
+    <a href="{{ route('reports.opname.list') }}" class="no-print btn btn-outline font-bold"><i class="fas fa-arrow-left"></i> Kembali</a>
+    <button type="button" onclick="openPrintPreview()" class="no-print btn btn-neutral ml-2"><i class="fas fa-print"></i> Cetak</button>
     <form method="POST" action="{{ route('reports.opname.save') }}" class="no-print inline-block ml-2">
         @csrf
         <input type="hidden" name="id" value="{{ session('opname_current_id') ?? ($saved_id ?? '') }}">
-        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button>
+        <!-- <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button> -->
     </form>
-    @if (isset($saved_id))
+    <!-- @if (isset($saved_id))
         <a href="{{ route('reports.opname.edit', $saved_id) }}" class="no-print btn btn-outline ml-2">Edit</a>
     @else
         <a href="{{ route('reports.opname.form') }}" class="no-print btn btn-outline ml-2">Edit</a>
-    @endif
+    @endif -->
 @endsection
 
 @section('content')

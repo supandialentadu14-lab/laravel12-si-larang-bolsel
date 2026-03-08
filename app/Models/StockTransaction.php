@@ -5,6 +5,7 @@ namespace App\Models;
 
 // Trait untuk mendukung factory (seeding & testing)
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 // Class dasar Model Eloquent
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class StockTransaction extends Model
 {
     // Mengaktifkan fitur factory
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity, \App\Traits\Tenantable, SoftDeletes;
 
     /**
      * Field yang boleh diisi menggunakan mass assignment

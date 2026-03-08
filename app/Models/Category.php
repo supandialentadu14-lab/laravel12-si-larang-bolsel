@@ -5,6 +5,7 @@ namespace App\Models;
 
 // Trait untuk mendukung fitur factory (digunakan saat seeding/testing)
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 // Class dasar Model Eloquent
 use Illuminate\Database\Eloquent\Model;
@@ -16,16 +17,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Category extends Model
 {
     // Mengaktifkan fitur factory
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity, \App\Traits\Tenantable, SoftDeletes;
 
     /**
      * Menentukan kolom yang boleh diisi secara mass assignment
      * (digunakan saat create() atau update())
      */
     protected $fillable = [
-        'name',        // Nama kategori
-        'slug',        // Slug kategori (URL friendly)
-        'description'  // Deskripsi kategori
+        'name',
+        'slug',
+        'description',
+        'user_id'
     ];
 
     /**

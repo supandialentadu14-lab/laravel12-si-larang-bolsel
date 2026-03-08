@@ -130,6 +130,10 @@
                 </div>
             </div>
             <div class="flex gap-2">
+                <a href="{{ route('dashboard') }}" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 shadow-sm transition mr-2">
+                    <i class="fas fa-arrow-left"></i>
+                    Kembali
+                </a>
                 <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-white font-bold hover:bg-orange-600 shadow-sm">
                     <i class="fas fa-filter"></i>
                     Filter

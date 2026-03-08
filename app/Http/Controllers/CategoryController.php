@@ -24,13 +24,21 @@ class CategoryController extends Controller
     /**
      * Menampilkan daftar semua kategori
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         // Mengambil data kategori
         // withCount('products') → menghitung jumlah produk dalam setiap kategori
         // latest() → urut berdasarkan data terbaru
         // paginate(10) → menampilkan 10 data per halaman
-        $categories = Category::withCount('products')->latest()->paginate(10);
+        $query = Category::withCount('products')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        $categories = $query->paginate(10)->withQueryString();
 
         // Mengirim data ke view categories.index
         return view('categories.index', compact('categories'));
@@ -129,13 +137,15 @@ class CategoryController extends Controller
     
     public function bulkDestroy(Request $request): RedirectResponse
     {
-        $ids = (array) $request->input('ids', []);
-        $ids = array_values(array_filter($ids, fn($v) => is_numeric($v)));
-        if (empty($ids)) {
-            return redirect()->route('categories.index')
-                             ->withErrors(['delete' => 'Tidak ada jenis belanja yang dipilih.']);
-        }
-        Category::whereIn('id', $ids)->delete();
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:categories,id',
+        ], [
+            'ids.required' => 'Tidak ada jenis belanja yang dipilih.',
+        ]);
+
+        Category::whereIn('id', $validated['ids'])->delete();
+
         return redirect()->route('categories.index')
                          ->with('success', 'Jenis belanja terpilih dihapus.');
     }

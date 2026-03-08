@@ -19,7 +19,7 @@
                 </h6>
             </div>
 
-        <form action="{{ route('stock.update', $transaction->id) }}" method="POST">
+        <form action="{{ route('stock.update', $transaction->id) }}" method="POST" class="no-soft">
             @csrf
             @method('PUT')
 
@@ -66,7 +66,7 @@
                     </label>
                     <input type="date"
                         name="date"
-                        value="{{ $transaction->date }}"
+                        value="{{ old('date', $transaction->date ? $transaction->date->format('Y-m-d') : '') }}"
                         class="w-full border border-gray-400 rounded-lg px-4 py-2 
                         focus:border-blue-500 focus:ring-1 focus:ring-blue-300 outline-none">
                 </div>

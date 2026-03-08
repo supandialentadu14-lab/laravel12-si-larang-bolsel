@@ -287,6 +287,8 @@
             color: #374151;
             box-shadow: none;
             transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+            white-space: nowrap !important;
+            flex-shrink: 0;
         }
 
         .btn:hover {
@@ -303,16 +305,15 @@
         }
 
         .btn-primary {
-            background: linear-gradient(90deg, #4F46E5, #7DD3FC);
+            background: #4F46E5;
             color: #ffffff;
             border-color: transparent;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(90deg, #3F37E0, #60A5FA);
+            background: #4338CA;
             color: #ffffff;
             border-color: transparent;
-            box-shadow: 0 6px 16px rgba(96, 165, 250, .35);
         }
 
         .btn-success {
@@ -854,6 +855,11 @@
                                         style="color: var(--sidebar-text)">
                                         Pengguna
                                     </a>
+                                    <a href="{{ route('activity_log.index') }}"
+                                        class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('activity_log.index') ? 'bg-indigo-500 text-white' : '' }}"
+                                        style="color: var(--sidebar-text)">
+                                        Activity Log
+                                    </a>
                                 @endif
                             </div>
                         </div>
@@ -917,58 +923,71 @@
                         <button @click="notifyOpen = !notifyOpen"
                             class="text-gray-400 hover:text-blue-600 transition relative focus:outline-none cursor-pointer">
                             <i class="fas fa-bell text-xl"></i>
-                            @if (isset($lowStockProducts) && $lowStockProducts->count() > 0)
+                            @if (Auth::user()->unreadNotifications->count() > 0)
                                 <span
                                     class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white bg-red-500 transform translate-x-1/2 -translate-y-1/2 animate-pulse"></span>
                             @endif
                         </button>
 
                         <div x-show="notifyOpen" x-cloak @click.away="notifyOpen = false"
-                            class="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
+                            class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
                             x-transition:enter="transition ease-out duration-100"
                             x-transition:enter-start="transform opacity-0 scale-95"
                             x-transition:enter-end="transform opacity-100 scale-100">
 
                             <div
-                                class="px-4 py-2 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                                <span class="text-xs font-bold text-gray-500 uppercase">Notifikasi Stok</span>
+                                class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Notifikasi Sistem</span>
                                 <span
-                                    class="bg-red-100 text--600 py-0.5 px-2 rounded-full text-xs font-bold">{{ isset($lowStockProducts) ? $lowStockProducts->count() : 0 }}</span>
+                                    class="bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold">{{ Auth::user()->unreadNotifications->count() }}</span>
                             </div>
 
-                            <div class="max-h-64 overflow-y-auto">
-                                @if (isset($lowStockProducts) && $lowStockProducts->count() > 0)
-                                    @foreach ($lowStockProducts as $product)
-                                        <a href="{{ route('products.edit', $product) }}"
-                                            class="block px-4 py-3 hover:bg-orange-50 transition border-b border-gray-50 last:border-0">
-                                            <div class="flex items-start">
-                                                <div class="flex-shrink-0 bg-red-100 rounded-full p-1.5">
-                                                    <i class="fas fa-exclamation-triangle text-red-500 text-xs"></i>
-                                                </div>
-                                                <div class="ml-3 w-0 flex-1">
-                                                    <p class="text-sm font-bold text-gray-800 truncate">
-                                                        {{ $product->name }}</p>
-                                                    <p class="text-xs text-gray-500 mt-1">
-                                                        Sisa Stok: <span
-                                                            class="font-bold text-red-600">{{ $product->stock }}</span>
-                                                        <span class="text-gray-400 mx-1">|</span>
-                                                        Min: {{ $product->min_stock }}
+                            <div class="max-h-80 overflow-y-auto custom-scrollbar">
+                                @forelse (Auth::user()->unreadNotifications as $notification)
+                                    <div class="block px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50 last:border-0 relative group">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex-shrink-0 bg-orange-100 rounded-full h-8 w-8 flex items-center justify-center">
+                                                <i class="fas fa-exclamation-triangle text-orange-600 text-xs"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex justify-between items-baseline mb-0.5">
+                                                    <p class="text-[11px] font-bold text-gray-800 truncate">
+                                                        {{ $notification->data['product_name'] ?? 'Peringatan' }}
+                                                    </p>
+                                                    <p class="text-[9px] text-gray-400 whitespace-nowrap ml-2">
+                                                        {{ $notification->created_at->diffForHumans() }}
                                                     </p>
                                                 </div>
+                                                <p class="text-[10px] text-gray-500 line-clamp-2 leading-tight">
+                                                    {{ $notification->data['message'] }}
+                                                </p>
                                             </div>
-                                        </a>
-                                    @endforeach
-                                @else
-                                    <div
-                                        class="px-4 py-8 text-center text-gray-500 text-sm flex flex-col items-center">
-                                        <div class="bg-green-100 p-3 rounded-full mb-3">
-                                            <i class="fas fa-check text-green-500 text-lg"></i>
                                         </div>
-                                        <p class="font-medium">Stok Aman!</p>
-                                        <p class="text-xs text-gray-400 mt-1">Tidak ada produk yang menipis.</p>
+                                        <form action="{{ route('notifications.mark-as-read', $notification->id) }}" method="POST" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition">
+                                            @csrf
+                                            <button type="submit" class="text-gray-300 hover:text-indigo-500 p-1" title="Tandai sudah dibaca">
+                                                <i class="fas fa-check-circle text-[10px]"></i>
+                                            </button>
+                                        </form>
                                     </div>
-                                @endif
+                                @empty
+                                    <div class="py-12 text-center text-gray-400">
+                                        <i class="fas fa-bell-slash text-3xl mb-3 block opacity-20"></i>
+                                        <p class="text-xs font-medium">Tidak ada notifikasi baru</p>
+                                    </div>
+                                @endforelse
                             </div>
+                            
+                            @if(Auth::user()->unreadNotifications->count() > 0)
+                            <div class="p-2 bg-gray-50 border-t border-gray-100 text-center">
+                                <form action="{{ route('notifications.mark-all-read') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-tighter">
+                                        Tandai Semua Sudah Dibaca
+                                    </button>
+                                </form>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
@@ -1035,10 +1054,6 @@
                         <p class="text-sm mt-1" style="color:#6B7280">@yield('subheader')</p>
                     </div>
                     <div class="flex items-center space-x-3">
-                        @if (request()->routeIs('*.edit') || request()->routeIs('*.show'))
-                            <button type="button" class="btn btn-outline" onclick="history.back()"><i
-                                    class="fas fa-arrow-left"></i> Back</button>
-                        @endif
                         @yield('actions')
                     </div>
                 </div>
@@ -1049,6 +1064,16 @@
                         <div class="flex items-center">
                             <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
                             <span class="text-green-700 font-medium">{{ session('success') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div
+                        class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
+                            <span class="text-red-700 font-medium">{{ session('error') }}</span>
                         </div>
                     </div>
                 @endif

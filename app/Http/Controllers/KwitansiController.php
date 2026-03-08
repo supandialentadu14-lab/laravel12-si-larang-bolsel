@@ -369,9 +369,23 @@ class KwitansiController extends Controller
         $dir = 'users/'.Auth::id().'/kwitansi';
         $files = $disk->exists($dir) ? $disk->files($dir) : [];
         $items = [];
+        $search = $request->input('search');
         foreach ($files as $file) {
             if (! str_ends_with($file, '.json')) continue;
             $data = json_decode($disk->get($file), true) ?: [];
+
+            if ($search) {
+                $searchLower = strtolower($search);
+                $nomor = strtolower($data['nomor_kwt'] ?? '');
+                $uraian = strtolower($data['pembayaran_uraian'] ?? '');
+                $penerimaanNomor = strtolower($data['penerimaan_nomor'] ?? '');
+                if (!str_contains($nomor, $searchLower) && 
+                    !str_contains($uraian, $searchLower) && 
+                    !str_contains($penerimaanNomor, $searchLower)) {
+                    continue;
+                }
+            }
+
             $items[] = [
                 'id' => basename($file, '.json'),
                 'nomor_kwt' => $data['nomor_kwt'] ?? '',

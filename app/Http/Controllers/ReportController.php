@@ -380,11 +380,11 @@ class ReportController extends Controller
         $items = [];
         $products = Product::orderBy('name')->get();
         foreach ($products as $p) {
-            $in = \App\Models\Transaction::where('product_id', $p->id)
+            $in = StockTransaction::where('product_id', $p->id)
                 ->where('type', 'in')
                 ->whereDate('date', '<=', $date)
                 ->sum('quantity');
-            $out = \App\Models\Transaction::where('product_id', $p->id)
+            $out = StockTransaction::where('product_id', $p->id)
                 ->where('type', 'out')
                 ->whereDate('date', '<=', $date)
                 ->sum('quantity');
