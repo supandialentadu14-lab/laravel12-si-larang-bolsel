@@ -56,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
     Route::resource('products', ProductController::class);
     Route::post('products/bulk-delete', [ProductController::class, 'bulkDestroy'])->name('products.bulk_delete');
+    Route::get('products/{product}/barcode', [ProductController::class, 'printBarcode'])->name('products.barcode');
     Route::get('import/products', [ImportController::class, 'index'])->name('import.index');
     Route::post('import/products', [ImportController::class, 'importProducts'])->name('import.products');
 
@@ -65,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('stock', [StockController::class, 'store'])->name('stock.store');
 
     // Report biasa (yang lama)
+    Route::get('reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.export_excel');
     Route::get('reports',
         [ReportController::class, 'index']
     )->name('reports.index');

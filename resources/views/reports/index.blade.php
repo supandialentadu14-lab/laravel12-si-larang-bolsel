@@ -33,6 +33,11 @@
                     <i class="fas fa-print"></i>
                     Print
                 </button>
+                <a href="{{ route('reports.export_excel', ['start_date' => $startDate, 'end_date' => $endDate]) }}"
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white font-bold hover:bg-green-700 shadow-sm flex-1 sm:flex-none">
+                    <i class="fas fa-file-excel"></i>
+                    Export Excel
+                </a>
             </div>
         </form>
     </div>

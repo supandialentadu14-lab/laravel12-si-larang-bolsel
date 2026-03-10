@@ -43,6 +43,7 @@ class OpdController extends Controller
             'pengguna_pangkat' => 'nullable|string|max:255',
             'pengguna_jabatan' => 'nullable|string|max:255',
             'pengguna_nip' => 'nullable|string|max:50',
+            'tutup_buku_date' => 'nullable|date',
         ]);
         $setting = OpdSetting::where('user_id', Auth::id())->first();
         $oldSingkatan = $setting->singkatan_opd ?? 'DISKOMINFO';

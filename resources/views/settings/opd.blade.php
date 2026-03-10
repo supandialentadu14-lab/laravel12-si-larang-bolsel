@@ -23,6 +23,11 @@
                     <label class="block text-sm font-bold text-gray-700 mb-1">Alamat OPD</label>
                     <input type="text" name="alamat_opd" value="{{ old('alamat_opd', $setting->alamat_opd) }}" class="w-full px- py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition bg-white">
                 </div>
+                <div class="p-4 bg-red-50 border border-red-100 rounded-lg">
+                    <label class="block text-sm font-bold text-red-700 mb-1"><i class="fas fa-lock mr-2"></i>Batas Tutup Buku</label>
+                    <input type="date" name="tutup_buku_date" value="{{ old('tutup_buku_date', $setting->tutup_buku_date) }}" class="w-full px-4 py-3 rounded-lg border border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition bg-white text-red-900 font-semibold">
+                    <p class="text-xs text-red-500 mt-2">Seluruh transaksi dan laporan barang masuk/keluar yang bertanggal mundur sebelum atau sama dengan tanggal yang dipilih di atas <b>TIDAK AKAN BISA DIUBAH / DIHAPUS</b> untuk keperluan audit.</p>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="space-y-3">

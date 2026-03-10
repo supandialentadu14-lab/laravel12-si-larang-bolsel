@@ -197,4 +197,9 @@ $slug = Str::slug($request->name);
     {
         return Excel::download(new ProductsExport, 'daftar-barang-'.date('Ymd').'.xlsx');
     }
+
+    public function printBarcode(Product $product)
+    {
+        return view('products.barcode', compact('product'));
+    }
 }

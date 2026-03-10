@@ -22,6 +22,25 @@ class StockTransaction extends Model
     // Mengaktifkan fitur factory
     use HasFactory, \App\Traits\LogsActivity, \App\Traits\Tenantable, SoftDeletes;
 
+    protected static function booted()
+    {
+        $guard = function ($transaction) {
+            $userId = \Illuminate\Support\Facades\Auth::id() ?? $transaction->user_id;
+            if ($userId) {
+                $setting = \App\Models\OpdSetting::where('user_id', $userId)->first();
+                if ($setting && $setting->tutup_buku_date) {
+                    if (\Carbon\Carbon::parse($transaction->date)->lte(\Carbon\Carbon::parse($setting->tutup_buku_date))) {
+                        throw new \Exception('TUTUP BUKU AKTIF: Transaksi pada tanggal ' . $transaction->date . ' tidak bisa ditambahkan, diubah, atau dihapus karena sudah melewati Batas Tutup Buku.');
+                    }
+                }
+            }
+        };
+
+        static::creating($guard);
+        static::updating($guard);
+        static::deleting($guard);
+    }
+
     /**
      * Field yang boleh diisi menggunakan mass assignment
      * (create / update)

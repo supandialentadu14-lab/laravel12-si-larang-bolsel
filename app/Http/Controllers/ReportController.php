@@ -24,6 +24,8 @@ use App\Models\BapPemeriksaan;
 use App\Models\BapItem;
 use App\Models\BelanjaModal;
 use App\Models\BelanjaModalItem;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StockTransactionsExport;
 
 // Controller untuk menampilkan laporan stok
 class ReportController extends Controller
@@ -353,6 +355,14 @@ class ReportController extends Controller
             'opd',
             'master'
         ));
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
+        $endDate = $request->input('end_date') ?: now()->toDateString();
+
+        return Excel::download(new StockTransactionsExport($startDate, $endDate), 'laporan-mutasi-stok-' . $startDate . '-to-' . $endDate . '.xlsx');
     }
 
     protected function prefillOpnameItems(): array
