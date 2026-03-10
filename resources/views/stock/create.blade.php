@@ -4,6 +4,11 @@
 
 @section('content')
 
+@php
+    $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
+    $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
+@endphp
+
     {{-- Container utama dengan lebar maksimal --}}
     <div class=" mx-auto">
 
@@ -177,9 +182,9 @@
                         const year = dateVal.getFullYear();
                         const romanMonth = toRoman(month);
                         
-                        // Default format requested: 001/BAPB/DISKOMINFO/III/2026
+                        // Default format requested: 001/BAPB/{singkatan_opd}/III/2026
                         // We use the input number as is (e.g. 001)
-                        const formatted = `${val}/BAPB/DISKOMINFO/${romanMonth}/${year}`;
+                        const formatted = `${val}/BAPB/{{ $singkatanOpd }}/${romanMonth}/${year}`;
                         nosurInput.value = formatted;
                     }
                 }

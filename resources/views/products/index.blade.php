@@ -36,10 +36,10 @@
             </a>
         </div>
 
-        <div class="flex flex-col md:flex-row items-center gap-3 w-full max-w-2xl">
-            <form action="{{ route('products.index') }}" method="GET" class="flex items-center gap-2 w-full">
+        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full max-w-2xl">
+            <form action="{{ route('products.index') }}" method="GET" class="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full">
                 <select name="category_id" onchange="this.form.requestSubmit()" 
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none transition">
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none transition w-full md:w-auto">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>

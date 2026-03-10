@@ -11,7 +11,7 @@ class OpdSetting extends Model
 
     protected $fillable = [
         'user_id',
-        'nama_opd',
+        'nama_opd', 'singkatan_opd',
         'alamat_opd',
         'kepala_nama', 'kepala_pangkat', 'kepala_jabatan', 'kepala_nip',
         'pengurus_nama', 'pengurus_pangkat', 'pengurus_jabatan', 'pengurus_nip',

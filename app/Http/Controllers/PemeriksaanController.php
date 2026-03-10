@@ -187,7 +187,8 @@ class PemeriksaanController extends Controller
             return back()->withErrors(['nomor' => 'Nomor hanya boleh angka'])->withInput();
         }
         $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-        $nomorFormatted = "{$inputNomor}/BAPB/DISKOMINFO/{$bulanRomawi}/{$tahunAnggaran}";
+        $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+        $nomorFormatted = "{$inputNomor}/BAPB/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
 
         $data = [
             'nomor' => $nomorFormatted,
@@ -296,7 +297,9 @@ class PemeriksaanController extends Controller
         }
         $tanggalObj = \Carbon\Carbon::parse($data['tanggal'] ?? now()->toDateString());
         $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-        $nomorFormatted = "{$rawNomor}/BAPB/DISKOMINFO/{$bulanRomawi}/{$tanggalObj->year}";
+        $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+        $nomorFormatted = "{$rawNomor}/BAPB/{$singkatanOpd}/{$bulanRomawi}/{$tanggalObj->year}";
         foreach ($this->listPemeriksaanDocs() as $doc) {
             if (($doc['nomor'] ?? '') === $nomorFormatted && ($doc['id'] ?? '') !== $id) {
                 return back()->withErrors(['nomor' => 'Nomor BAP sudah digunakan'])->withInput();

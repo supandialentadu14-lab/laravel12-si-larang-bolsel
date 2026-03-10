@@ -4,6 +4,11 @@
 
 @section('content')
 
+@php
+    $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
+    $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
+@endphp
+
 {{-- Wrapper agar form berada di tengah --}}
 <div class="flex justify-center">
 
@@ -144,7 +149,7 @@
                     const month = dateVal.getMonth() + 1;
                     const year = dateVal.getFullYear();
                     const romanMonth = toRoman(month);
-                    const formatted = `${val}/BAPB/DISKOMINFO/${romanMonth}/${year}`;
+                    const formatted = `${val}/BAPB/{{ $singkatanOpd }}/${romanMonth}/${year}`;
                     nosurInput.value = formatted;
                 }
             }

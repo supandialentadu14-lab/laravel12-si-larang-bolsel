@@ -16,6 +16,10 @@
                     <input type="text" name="nama_opd" value="{{ old('nama_opd', $setting->nama_opd) }}" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition bg-white">
                 </div>
                 <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Singkatan OPD</label>
+                    <input type="text" name="singkatan_opd" value="{{ old('singkatan_opd', $setting->singkatan_opd) }}" placeholder="Contoh: BKPSDM" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition bg-white">
+                </div>
+                <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Alamat OPD</label>
                     <input type="text" name="alamat_opd" value="{{ old('alamat_opd', $setting->alamat_opd) }}" class="w-full px- py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition bg-white">
                 </div>

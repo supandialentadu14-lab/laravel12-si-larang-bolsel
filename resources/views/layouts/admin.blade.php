@@ -174,6 +174,11 @@
             background: #fff7ed;
         }
 
+        /* Prevent text wrapping in tables on small screens to enforce horizontal scroll */
+        table th, table td {
+            white-space: nowrap;
+        }
+
         input[type="text"],
         input[type="email"],
         input[type="password"],
@@ -899,7 +904,7 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden" :style="{ backgroundColor: 'var(--body-bg)' }">
             <!-- Topbar -->
-            <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-6 z-20 py-2"
+            <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2"
                 :style="{ backgroundColor: '#ffffff', color: 'var(--body-text)' }">
                 <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden focus:outline-none"
                     :style="{ color: '#374151' }">
@@ -933,7 +938,7 @@
                         </button>
 
                         <div x-show="notifyOpen" x-cloak @click.away="notifyOpen = false"
-                            class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
+                            class="absolute right-[-1rem] md:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
                             x-transition:enter="transition ease-out duration-100"
                             x-transition:enter-start="transform opacity-0 scale-95"
                             x-transition:enter-end="transform opacity-100 scale-100">
@@ -1033,7 +1038,7 @@
                                     <i class="fas fa-user-edit text-indigo-600"></i>
                                     Edit Profil
                                 </a>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout') }}" class="no-soft">
                                     @csrf
                                     <button type="submit"
                                         class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
@@ -1049,7 +1054,7 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6" style="color:#111827">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6" style="color:#111827">
                 <!-- Page Header & Actions -->
                 <div id="page-header" class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>

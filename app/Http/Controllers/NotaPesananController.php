@@ -252,7 +252,8 @@ class NotaPesananController extends Controller
         // Jika input hanya angka, format ulang
         if (preg_match('/^\d+$/', $inputNomor)) {
             $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-            $nomorFormatted = "{$inputNomor}/NPB/KOMINFO/{$bulanRomawi}/{$tahunAnggaran}";
+            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+            $nomorFormatted = "{$inputNomor}/NPB/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
         } else {
             // Jika sudah ada format atau kosong, gunakan apa adanya
             $nomorFormatted = $inputNomor;
@@ -363,7 +364,9 @@ class NotaPesananController extends Controller
         // Jika input hanya angka, format ulang
         if (preg_match('/^\d+$/', $inputNomor)) {
             $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-            $nomorFormatted = "{$inputNomor}/NPB/KOMINFO/{$bulanRomawi}/{$tahunAnggaran}";
+            $opd = OpdSetting::where('user_id', Auth::id())->first();
+            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+            $nomorFormatted = "{$inputNomor}/NPB/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
         } else {
             // Jika sudah ada format atau kosong, gunakan apa adanya
             $nomorFormatted = $inputNomor;

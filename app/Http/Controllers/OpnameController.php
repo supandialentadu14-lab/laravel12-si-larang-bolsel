@@ -141,7 +141,8 @@ class OpnameController extends Controller
         $inputNomor = trim((string)($validated['nomor'] ?? '-'));
         if (preg_match('/^\d+$/', $inputNomor)) {
             $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-            $nomorFormatted = "{$inputNomor}/BAHSOP-BHP/DISKOMINFO/{$bulanRomawi}/{$tahunAnggaran}";
+            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+            $nomorFormatted = "{$inputNomor}/BAHSOP-BHP/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
         } else {
             $nomorFormatted = $inputNomor;
         }
@@ -194,7 +195,8 @@ class OpnameController extends Controller
         $inputNomor = trim((string)($validated['nomor'] ?? '-'));
         if (preg_match('/^\d+$/', $inputNomor)) {
             $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-            $nomorFormatted = "{$inputNomor}/BAHSOP-BHP/DISKOMINFO/{$bulanRomawi}/{$tahunAnggaran}";
+            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+            $nomorFormatted = "{$inputNomor}/BAHSOP-BHP/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
         } else {
             $nomorFormatted = $inputNomor;
         }

@@ -77,14 +77,18 @@ class PinjamPakaiController extends Controller
         $inputNomor = trim((string)($validated['nomor'] ?? ''));
         if (preg_match('/^\d+$/', $inputNomor)) {
             $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-            $nomorFormatted = "{$inputNomor}/BASTBI/KOMINFO/{$bulanRomawi}/{$tahunAnggaran}";
+            $opd = OpdSetting::where('user_id', Auth::id())->first();
+            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+            $nomorFormatted = "{$inputNomor}/BASTBI/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
         } else {
             $nomorFormatted = $inputNomor;
         }
         $validated['nomor'] = $nomorFormatted;
 
         session(['pinjam_pakai_current' => $validated]);
-        $opd = OpdSetting::where('user_id', Auth::id())->first();
+        if (!isset($opd)) {
+            $opd = OpdSetting::where('user_id', Auth::id())->first();
+        }
         return view('reports.pinjam_pakai_report', [
             'data' => $validated,
             'opd' => $opd,
