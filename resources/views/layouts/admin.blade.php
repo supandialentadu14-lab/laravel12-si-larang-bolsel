@@ -918,8 +918,7 @@
                         <div class="marquee-text">
                             <span class="inline-flex items-center">
                                 <i class="fas fa-bullhorn mr-2 text-indigo-600 group-hover:text-indigo-700"></i>
-                                Sistem Informasi Pengelolaan Persediaan Barang (SI-LARANG) • Dinas Komunikasi dan
-                                Informatika • Bolaang Mongondow Selatan
+                                Sistem Informasi Pengelolaan Persediaan Barang (SI-LARANG) • {{ \App\Models\OpdSetting::where('user_id', Auth::id())->value('nama_opd') ?? 'Dinas Komunikasi dan Informatika' }} • Bolaang Mongondow Selatan
                             </span>
                         </div>
                     </div>
