@@ -19,19 +19,7 @@
         @endif
     </div>
 
-    {{-- ── Flash Messages ──────────────────────────────────────────── --}}
-    @if(session('success'))
-        <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium">
-            <i class="fas fa-check-circle text-emerald-500"></i>
-            {{ session('success') }}
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
-            <i class="fas fa-exclamation-circle text-red-500"></i>
-            {{ session('error') }}
-        </div>
-    @endif
+
 
     {{-- ── Tabel ────────────────────────────────────────────────────── --}}
     <div class="overflow-x-auto border border-slate-200 rounded-2xl overflow-hidden">
@@ -131,6 +119,28 @@
                                title="Edit pengguna">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
+
+                            @if(auth()->user()->isAdmin())
+                                {{-- Backup DB User --}}
+                                <a href="{{ route('users.backup', $user) }}"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors shadow-sm"
+                                   title="Download Database SQL untuk User ini"
+                                   onclick="return confirm('Download file backup khusus data milik {{ $user->name }}?')">
+                                    <i class="fas fa-download"></i> Backup
+                                </a>
+
+                                {{-- Restore DB User --}}
+                                <form action="{{ route('users.restore', $user) }}" method="POST" enctype="multipart/form-data" class="inline" id="form-restore-{{ $user->id }}">
+                                    @csrf
+                                    <input type="file" name="backup_file" id="backup-file-{{ $user->id }}" class="hidden" accept=".sql" onchange="if(confirm('Pulihkan data milik {{ $user->name }} menggunakan file ini? Data yang ada akan tertimpa.')) document.getElementById('form-restore-{{ $user->id }}').submit(); else this.value = '';">
+                                    <button type="button"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors shadow-sm"
+                                            title="Upload Database SQL untuk User ini"
+                                            onclick="document.getElementById('backup-file-{{ $user->id }}').click();">
+                                        <i class="fas fa-upload"></i> Restore
+                                    </button>
+                                </form>
+                            @endif
 
                             @if(auth()->user()->isAdmin() && $user->id !== auth()->id())
 

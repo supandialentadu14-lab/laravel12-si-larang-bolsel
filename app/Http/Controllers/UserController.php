@@ -60,6 +60,7 @@ class UserController extends Controller
                 'email'    => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8|confirmed',
                 'role'     => 'required|in:admin,staff',
+                'permissions' => 'nullable|array',
             ]);
 
             \Illuminate\Support\Facades\Log::debug('UserController@store: Validation passed');
@@ -70,6 +71,7 @@ class UserController extends Controller
                 'email'    => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'role'     => $validated['role'],
+                'permissions' => $request->role === 'admin' ? [] : $request->input('permissions', []),
             ]);
 
             \Illuminate\Support\Facades\Log::debug('UserController@store: User created with ID=' . $newUser->id);
@@ -125,6 +127,7 @@ class UserController extends Controller
             ],
 
             'role' => 'required|in:admin,staff',
+            'permissions' => 'nullable|array',
 
             // Password boleh kosong (nullable)
             'password' => 'nullable|string|min:8|confirmed',
@@ -136,6 +139,7 @@ class UserController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'role' => $validated['role'],
+            'permissions' => $request->role === 'admin' ? [] : $request->input('permissions', []),
         ];
 
         // Jika password diisi, maka update password

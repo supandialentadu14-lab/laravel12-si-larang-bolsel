@@ -5,6 +5,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- PWA Setup -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
+
     <title>{{ config('app.name', 'Inventory') }}</title>
 
     <!-- Fonts -->
@@ -68,10 +74,16 @@
             }
         </script>
     @endif
+    <!-- Alpine Plugins -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     {{-- CSS laporan global untuk preview F4, KOP, dan tabel --}}
     <link rel="stylesheet" href="{{ asset('css/report.css') }}">
 
@@ -341,8 +353,30 @@
             transition: transform .05s ease, box-shadow .2s ease;
         }
 
+        /* Fix Safari/Mobile input date width bug */
+        input[type="date"] {
+            width: 100% !important;
+            min-width: 100% !important;
+            box-sizing: border-box !important;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
         button:hover {
             transform: translateY(-1px);
+        }
+
+        /* Flatpickr Customizations */
+        .flatpickr-calendar {
+            font-family: inherit !important;
+            border: none !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+            padding: 8px !important;
+        }
+        .flatpickr-day.selected {
+            background: #6366f1 !important;
+            border-color: #6366f1 !important;
         }
 
         /* GLOBAL CURSOR RULES */
@@ -826,18 +860,27 @@
                 </a>
 
                 <div class="w-full space-y-2">
+                    @if(auth()->user()->hasPermission('master_data'))
                     <div x-data="{ key: 'master', open: false, popover: false }" class="relative"
                         @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-                            open = s[key] ?? ({{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'true' : 'false' }}); })()">
+                            open = s[key] ?? ({{ request()->routeIs('categories.*') || request()->routeIs('products.*') || request()->routeIs('suppliers.*') || request()->routeIs('import.index') ? 'true' : 'false' }}); })()">
                         <button
                             @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (popover = !popover)"
-                            class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
+                            class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white group relative"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-                            <span class="flex items-center gap-2">
-                                <i class="fas fa-database"></i>
+                            <span class="flex items-center gap-2 relative">
+                                <i class="fas fa-boxes"></i>
                                 <span x-show="sidebarOpen" x-cloak>Master Data</span>
+                                
+                                @if (isset($lowStockCount) && $lowStockCount > 0)
+                                    <span x-show="!sidebarOpen" x-cloak class="absolute -top-1 -right-1 flex h-3 w-3">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                    </span>
+                                @endif
+                                
                             </span>
                             <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
                                 class="w-4 h-4 transform transition-transform duration-300" fill="none"
@@ -846,24 +889,21 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="sidebarOpen && open" x-cloak
-                            x-transition:enter="transition ease-out duration-300"
-                            x-transition:enter-start="opacity-0 -translate-y-4"
-                            x-transition:enter-end="opacity-100 translate-y-0"
-                            x-transition:leave="transition ease-in duration-200"
-                            x-transition:leave-start="opacity-100 translate-y-0"
-                            x-transition:leave-end="opacity-0 -translate-y-4"
-                            class="mt-2 rounded-lg overflow-hidden submenu-stagger" :class="open ? 'submenu-open' : ''"
-                            style="background: var(--sidebar-hover)">
-                            <a href="{{ route('products.index') }}"
-                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('products.*') ? 'bg-indigo-500 text-white' : '' }}"
-                                style="color: var(--sidebar-text)">
-                                Barang
-                            </a>
+                        <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
+                            class="mt-2 rounded-lg overflow-hidden submenu-stagger"
+                            :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
                             <a href="{{ route('categories.index') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('categories.*') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
-                                Jenis Belanja
+                                Kategori
+                            </a>
+                            <a href="{{ route('products.index') }}"
+                                class="flex items-center justify-between pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('products.*') ? 'bg-indigo-500 text-white' : '' }}"
+                                style="color: var(--sidebar-text)">
+                                <span>Barang</span>
+                                @if (isset($lowStockCount) && $lowStockCount > 0)
+                                    <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $lowStockCount }}</span>
+                                @endif
                             </a>
                             <a href="{{ route('suppliers.index') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('suppliers.*') ? 'bg-indigo-500 text-white' : '' }}"
@@ -875,15 +915,15 @@
                             class="absolute left-full ml-2 top-0 z-50 w-56 rounded-xl shadow-xl ring-1 ring-black/10 p-2"
                             :style="{ backgroundColor: (theme === 'dark' ? '#1B2230' : '#ffffff'), color: (
                                     theme === 'dark' ? '#E5E7EB' : '#111827') }">
+                            <a href="{{ route('categories.index') }}"
+                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Kategori</a>
                             <a href="{{ route('products.index') }}"
                                 class="block px-3 py-2 rounded hover:bg-gray-700/40">Barang</a>
-                            <a href="{{ route('categories.index') }}"
-                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Jenis Belanja</a>
-                            <a href="{{ route('suppliers.index') }}"
-                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Penyedia</a>
                         </div>
                     </div>
+                    @endif
 
+                    @if(auth()->user()->hasPermission('transaksi') || auth()->user()->hasPermission('laporan_belanja'))
                     <div x-data="{ key: 'transaksi', open: false, popover: false }" class="relative"
                         @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
@@ -904,41 +944,46 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="sidebarOpen && open" x-cloak
-                            x-transition:enter="transition ease-out duration-300"
-                            x-transition:enter-start="opacity-0 -translate-y-4"
-                            x-transition:enter-end="opacity-100 translate-y-0"
-                            x-transition:leave="transition ease-in duration-200"
-                            x-transition:leave-start="opacity-100 translate-y-0"
-                            x-transition:leave-end="opacity-0 -translate-y-4"
+                        <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger" :class="open ? 'submenu-open' : ''"
                             style="background: var(--sidebar-hover)">
+                            
+                            @if(auth()->user()->hasPermission('transaksi'))
                             <a href="{{ route('stock.index') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('stock.index') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Mutasi Masuk/Keluar
                             </a>
+                            @endif
+                            
+                            @if(auth()->user()->hasPermission('laporan_belanja'))
                             <a href="{{ route('reports.belanja.modal.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.belanja.modal.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Belanja Modal
                             </a>
+                            @endif
                         </div>
                         <div x-show="!sidebarOpen && popover" x-cloak @click.away="popover=false"
                             class="absolute left-full ml-2 top-0 z-50 w-56 rounded-xl shadow-xl ring-1 ring-black/10 p-2"
                             :style="{ backgroundColor: (theme === 'dark' ? '#1B2230' : '#ffffff'), color: (
                                     theme === 'dark' ? '#E5E7EB' : '#111827') }">
+                            
+                            @if(auth()->user()->hasPermission('transaksi'))
                             <a href="{{ route('stock.index') }}"
                                 class="block px-3 py-2 rounded hover:bg-gray-700/40">Mutasi Masuk/Keluar</a>
-                            <a href="{{ route('reports.belanja.modal.preview_all') }}"
-                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Belanja Modal</a>
-                            <a href="{{ route('reports.nota.list') }}"
-                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Surat Pesanan</a>
+                            @endif
+                            
+                            @if(auth()->user()->hasPermission('laporan_belanja'))
                             <a href="{{ route('reports.belanja.modal.list') }}"
-                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Belanja</a>
+                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Belanja Modal</a>
+                            @endif
+                            
                         </div>
                     </div>
+                    @endif
 
+                    @if(auth()->user()->hasPermission('laporan_persediaan') || auth()->user()->hasPermission('stock_opname') || auth()->user()->hasPermission('pinjam_pakai'))
                     <div x-data="{ key: 'laporan', open: false }"
                         @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
@@ -959,15 +1004,11 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="sidebarOpen && open" x-cloak
-                            x-transition:enter="transition ease-out duration-300"
-                            x-transition:enter-start="opacity-0 -translate-y-4"
-                            x-transition:enter-end="opacity-100 translate-y-0"
-                            x-transition:leave="transition ease-in duration-200"
-                            x-transition:leave-start="opacity-100 translate-y-0"
-                            x-transition:leave-end="opacity-0 -translate-y-4"
+                        <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
+                            
+                            @if(auth()->user()->hasPermission('laporan_persediaan'))
                             <a href="{{ route('reports.index') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.index') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
@@ -978,23 +1019,32 @@
                                 style="color: var(--sidebar-text)">
                                 Kartu Persediaan Tahunan
                             </a>
-                                                        <a href="{{ route('reports.opname.list') }}"
+                            @endif
+                            
+                            @if(auth()->user()->hasPermission('stock_opname'))
+                            <a href="{{ route('reports.opname.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.opname.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Stock Opname
                             </a>
+                            @endif
+                            
+                            @if(auth()->user()->hasPermission('pinjam_pakai'))
                             <a href="{{ route('reports.pinjam.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pinjam.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Pinjam Pakai
                             </a>
+                            @endif
                         </div>
                     </div>
+                    @endif
 
+                    @if(auth()->user()->hasPermission('surat_pesanan') || auth()->user()->hasPermission('pemeriksaan') || auth()->user()->hasPermission('penerimaan') || auth()->user()->hasPermission('berkas_lainnya'))
                     <div x-data="{ key: 'kwitansi', open: false }"
                         @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-                            open = s[key] ?? ({{ request()->routeIs('reports.kwitansi.*') ? 'true' : 'false' }}); })()">
+                            open = s[key] ?? ({{ request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.nota.list') || request()->routeIs('reports.pemeriksaan.list') || request()->routeIs('reports.penerimaan.list') ? 'true' : 'false' }}); })()">
                         <button
                             @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.kwitansi.list') }}')"
                             class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
@@ -1011,43 +1061,51 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="sidebarOpen && open" x-cloak
-                            x-transition:enter="transition ease-out duration-300"
-                            x-transition:enter-start="opacity-0 -translate-y-4"
-                            x-transition:enter-end="opacity-100 translate-y-0"
-                            x-transition:leave="transition ease-in duration-200"
-                            x-transition:leave-start="opacity-100 translate-y-0"
-                            x-transition:leave-end="opacity-0 -translate-y-4"
+                        <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
+                            
+                            @if(auth()->user()->hasPermission('surat_pesanan'))
                             <a href="{{ route('reports.nota.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.nota.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Surat Pesanan
                             </a>
+                            @endif
+                            
+                            @if(auth()->user()->hasPermission('pemeriksaan'))
                             <a href="{{ route('reports.pemeriksaan.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pemeriksaan.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Pemeriksaan
                             </a>
+                            @endif
+                            
+                            @if(auth()->user()->hasPermission('penerimaan'))
                             <a href="{{ route('reports.penerimaan.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.penerimaan.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Penerimaan
                             </a>
+                            @endif
+                            
+                            @if(auth()->user()->hasPermission('berkas_lainnya'))
                             <a href="{{ route('reports.kwitansi.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kwitansi.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Kwitansi
                             </a>
+                            @endif
                         </div>
                     </div>
+                    @endif
 
                     
+                    @if(auth()->user()->isAdmin() || auth()->user()->hasPermission('pengaturan_opd'))
                         <div x-data="{ key: 'settings', open: false }"
                             @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                             x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-                                open = s[key] ?? ({{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') ? 'true' : 'false' }}); })()">
+                                open = s[key] ?? ({{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') || request()->routeIs('settings.backup.*') ? 'true' : 'false' }}); })()">
                             <button
                                 @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('settings.opd.edit') }}')"
                                 class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
@@ -1073,13 +1131,17 @@
                                 x-transition:leave-end="opacity-0 -translate-y-4"
                                 class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                                 :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
+                                
+                                @if(auth()->user()->hasPermission('pengaturan_opd'))
                                 <a href="{{ route('settings.opd.edit') }}"
                                     class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') ? 'bg-indigo-500 text-white' : '' }}"
                                     style="color: var(--sidebar-text)">
                                     Profil & Penandatangan
                                 </a>
+                                @endif
 
                                 @if (Auth::check() && Auth::user()->isAdmin())
+
                                     <a href="{{ route('users.index') }}"
                                         class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('users.*') ? 'bg-indigo-500 text-white' : '' }}"
                                         style="color: var(--sidebar-text)">
@@ -1093,6 +1155,7 @@
                                 @endif
                             </div>
                         </div>
+                    @endif
                                    </div>
             </nav>
 
@@ -1427,6 +1490,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            initDatepickr(document);
             const main = document.querySelector('main');
             const sidebar = document.querySelector('aside nav');
             const isSameOrigin = (url) => {
@@ -1458,6 +1522,17 @@
                 const target = sidebar.querySelector(`a[href="${href}"]`);
                 if (target) target.classList.add('bg-indigo-500', 'text-white');
             };
+            const initDatepickr = (root) => {
+                if (typeof flatpickr !== 'undefined') {
+                    flatpickr(root.querySelectorAll('input[type="date"]'), {
+                        dateFormat: "Y-m-d",
+                        altInput: true,
+                        altFormat: "d M Y",
+                        locale: "id",
+                        disableMobile: "true"
+                    });
+                }
+            };
             const initScripts = (root) => {
                 const scripts = root.querySelectorAll('script');
                 scripts.forEach(s => {
@@ -1471,6 +1546,7 @@
                     root.appendChild(n);
                 });
                 if (window.Alpine && Alpine.initTree) Alpine.initTree(root);
+                initDatepickr(root);
             };
             const swapMain = async (href, push = true) => {
                 try {
@@ -1564,6 +1640,17 @@
         });
     </script>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }).catch((error) => {
+                    console.error('ServiceWorker registration failed: ', error);
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>

@@ -52,30 +52,47 @@
                 </div>
 
                 {{-- Dropdown Role --}}
+                {{-- Dropdown Role --}}
                 @if(auth()->user()->isAdmin() && !request()->routeIs('profile.edit'))
-                <div>
+                <div x-data="{ role: '{{ old('role', $user->role) }}' }" class="border-t border-gray-100 pt-4 mt-6">
                     <label class="block text-sm font-bold text-gray-700 mb-1">
                         Hak Akses <span class="text-red-500">*</span>
                     </label>
 
                     {{-- Select role dengan kondisi selected otomatis --}}
-                    <select name="role"
+                    <select name="role" x-model="role"
                         class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-white"
                         required>
 
                         {{-- Jika role staff maka otomatis selected --}}
-                        <option value="staff" 
-                            {{ old('role', $user->role) == 'staff' ? 'selected' : '' }}>
-                            Staff
-                        </option>
+                        <option value="staff">Staff</option>
 
                         {{-- Jika role admin maka otomatis selected --}}
-                        <option value="admin" 
-                            {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>
-                            Admin
-                        </option>
+                        <option value="admin">Admin</option>
 
                     </select>
+
+                    {{-- Hak Akses Khusus Staff --}}
+                    <div x-show="role === 'staff'" x-transition class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                        <label class="block text-sm font-bold text-gray-700 mb-2 border-b border-slate-200 pb-2">
+                            <i class="fas fa-user-shield text-indigo-500 mr-1"></i> Izin Akses Halaman (Khusus Staff)
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                            @foreach(config('permissions', []) as $key => $label)
+                                @php
+                                    $userPermissions = old('permissions', $user->permissions ?? []);
+                                    if (!is_array($userPermissions)) $userPermissions = [];
+                                @endphp
+                                <label class="flex items-center space-x-3 cursor-pointer group">
+                                    <input type="checkbox" name="permissions[]" value="{{ $key }}" 
+                                           {{ in_array($key, $userPermissions) ? 'checked' : '' }}
+                                           class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 transition-all">
+                                    <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">{{ $label }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="text-xs text-slate-500 mt-3"><i class="fas fa-info-circle"></i> Centang halaman yang boleh diakses oleh user ini. Jika tidak dicentang, user tidak bisa mengakses menu tersebut.</p>
+                    </div>
                 </div>
                 @endif
 

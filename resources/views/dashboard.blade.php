@@ -57,7 +57,7 @@
     {{-- ══════════════════════════════════════════ --}}
     {{-- TOP KPI CARDS (4 cards)                   --}}
     {{-- ══════════════════════════════════════════ --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {{-- Card 1: Total Produk --}}
         <div class="relative overflow-hidden rounded-2xl p-5 group hover:-translate-y-1 transition-all duration-300 cursor-default"
             style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); box-shadow: 0 10px 30px rgba(79, 172, 254, 0.35);">
@@ -88,7 +88,22 @@
             </div>
         </div>
 
-        {{-- Card 3: Stok Menipis --}}
+        {{-- Card 3: Nilai Valuasi --}}
+        <div class="relative overflow-hidden rounded-2xl p-5 group hover:-translate-y-1 transition-all duration-300 cursor-default"
+            style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); box-shadow: 0 10px 30px rgba(253, 160, 133, 0.35);">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
+            <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                    <i class="fas fa-coins text-white text-lg"></i>
+                </div>
+                <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Nilai Persediaan</p>
+                <p class="text-white text-xl md:text-2xl font-black mt-1">Rp {{ number_format($totalInventoryValue, 0, ',', '.') }}</p>
+                <p class="text-white/60 text-xs mt-2 font-medium">Total valuasi aset</p>
+            </div>
+        </div>
+
+        {{-- Card 4: Stok Menipis --}}
         <a href="{{ route('products.index', ['low_stock' => 1]) }}"
             class="relative overflow-hidden rounded-2xl p-5 group hover:-translate-y-1 transition-all duration-300"
             style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); box-shadow: 0 10px 30px rgba(250, 112, 154, 0.35);">
@@ -104,7 +119,7 @@
             </div>
         </a>
 
-        {{-- Card 4: Supplier --}}
+        {{-- Card 5: Supplier --}}
         <div class="relative overflow-hidden rounded-2xl p-5 group hover:-translate-y-1 transition-all duration-300 cursor-default"
             style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); box-shadow: 0 10px 30px rgba(161, 140, 209, 0.35);">
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>

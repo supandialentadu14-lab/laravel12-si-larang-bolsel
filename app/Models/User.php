@@ -33,6 +33,7 @@ class User extends Authenticatable
         'role',
         'last_seen_at',
         'is_active',
+        'permissions',
     ];
 
     /**
@@ -70,6 +71,16 @@ class User extends Authenticatable
         'remember_token', // Token "remember me"
     ];
 
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+        
+        $permissions = $this->permissions ?? [];
+        return in_array($permission, $permissions);
+    }
+
     /**
      * Casting tipe data otomatis
      */
@@ -80,6 +91,7 @@ class User extends Authenticatable
             'password'          => 'hashed',
             'last_seen_at'      => 'datetime',
             'is_active'         => 'boolean',
+            'permissions'       => 'array',
         ];
     }
 }

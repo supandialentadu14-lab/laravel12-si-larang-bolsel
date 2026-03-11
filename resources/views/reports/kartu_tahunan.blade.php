@@ -120,7 +120,7 @@
     <div class="print:hidden bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 p-5 mb-8 sticky top-0 z-10 transition-all duration-300">
         <form method="GET" action="{{ route('reports.kartu.tahunan') }}" class="flex flex-col lg:flex-row lg:items-end gap-6">
             <div class="flex flex-col sm:flex-row gap-5 flex-1">
-                <div class="w-full sm:w-1/2 group">
+                <div class="w-full sm:w-1/3 group">
                     <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 group-focus-within:text-indigo-600 transition-colors">
                         <i class="fas fa-calendar-alt mr-1"></i> Dari Tanggal
                     </label>
@@ -129,13 +129,27 @@
                             class="w-full rounded-xl border-slate-200 text-sm bg-white shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 h-11 px-4">
                     </div>
                 </div>
-                <div class="w-full sm:w-1/2 group">
+                <div class="w-full sm:w-1/3 group">
                     <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 group-focus-within:text-indigo-600 transition-colors">
                         <i class="fas fa-calendar-check mr-1"></i> Sampai Tanggal
                     </label>
                     <div class="relative">
                         <input type="date" name="end_date" value="{{ $endDate }}"
                             class="w-full rounded-xl border-slate-200 text-sm bg-white shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 h-11 px-4">
+                    </div>
+                </div>
+                <div class="w-full sm:w-1/3 group">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 group-focus-within:text-indigo-600 transition-colors">
+                        <i class="fas fa-tags mr-1"></i> Filter Kategori
+                    </label>
+                    <div class="relative">
+                        <select name="category_id" class="w-full rounded-xl border-slate-200 text-sm bg-white shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 h-11 px-4 appearance-none cursor-pointer">
+                            <option value="">Semua Kategori</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ $categoryId == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
             </div>
@@ -153,7 +167,7 @@
                         <i class="far fa-print text-slate-400"></i>
                         Cetak
                     </button>
-                    <a href="{{ route('reports.export_kartu_tahunan', ['start_date' => $startDate, 'end_date' => $endDate]) }}"
+                    <a href="{{ route('reports.export_kartu_tahunan', ['start_date' => $startDate, 'end_date' => $endDate, 'category_id' => $categoryId]) }}"
                         class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:scale-95 flex-1 sm:flex-none"
                         style="background-color: #16a34a; color: white; box-shadow: 0 4px 14px rgba(22,163,74,0.3);"
                         onmouseenter="this.style.backgroundColor='#15803d'"

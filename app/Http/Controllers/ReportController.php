@@ -50,12 +50,19 @@ class ReportController extends Controller
     {
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $master = $this->loadNotaMaster();
+        $categories = \App\Models\Category::all();
 
         $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
         $endDate = $request->input('end_date') ?: now()->toDateString();
+        $categoryId = $request->input('category_id');
 
         $transactions = StockTransaction::with('product')
             ->whereBetween('date', [$startDate, $endDate])
+            ->when($categoryId, function ($q) use ($categoryId) {
+                $q->whereHas('product', function ($q2) use ($categoryId) {
+                    $q2->where('category_id', $categoryId);
+                });
+            })
             ->orderBy('product_id', 'asc')
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
@@ -103,7 +110,7 @@ class ReportController extends Controller
             ];
         }
 
-        return view('reports.kartu_tahunan', compact('grouped', 'startDate', 'endDate', 'opd', 'master'));
+        return view('reports.kartu_tahunan', compact('grouped', 'startDate', 'endDate', 'opd', 'master', 'categories', 'categoryId'));
     }
 
     /**
@@ -113,12 +120,19 @@ class ReportController extends Controller
     {
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $master = $this->loadNotaMaster();
+        $categories = \App\Models\Category::all();
 
         $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
         $endDate = $request->input('end_date') ?: now()->toDateString();
+        $categoryId = $request->input('category_id');
 
         $transactions = StockTransaction::with('product')
             ->whereBetween('date', [$startDate, $endDate])
+            ->when($categoryId, function ($q) use ($categoryId) {
+                $q->whereHas('product', function ($q2) use ($categoryId) {
+                    $q2->where('category_id', $categoryId);
+                });
+            })
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->get();
@@ -145,7 +159,7 @@ class ReportController extends Controller
             ];
         }
 
-        return view('reports.index', compact('reportData', 'startDate', 'endDate', 'opd', 'master'));
+        return view('reports.index', compact('reportData', 'startDate', 'endDate', 'opd', 'master', 'categories', 'categoryId'));
     }
 
     /**
@@ -166,8 +180,9 @@ class ReportController extends Controller
     {
         $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
         $endDate   = $request->input('end_date') ?: now()->toDateString();
+        $categoryId = $request->input('category_id');
         $filename  = 'Laporan-Persediaan-' . $startDate . '-sd-' . $endDate . '.xlsx';
-        return Excel::download(new \App\Exports\LaporanPersediaanExport($startDate, $endDate), $filename);
+        return Excel::download(new \App\Exports\LaporanPersediaanExport($startDate, $endDate, $categoryId), $filename);
     }
 
     /**
@@ -177,11 +192,17 @@ class ReportController extends Controller
     {
         $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
         $endDate   = $request->input('end_date') ?: now()->toDateString();
+        $categoryId = $request->input('category_id');
         $opd    = OpdSetting::where('user_id', Auth::id())->first();
         $master = $this->loadNotaMaster();
 
         $transactions = StockTransaction::with('product')
             ->whereBetween('date', [$startDate, $endDate])
+            ->when($categoryId, function ($q) use ($categoryId) {
+                $q->whereHas('product', function ($q2) use ($categoryId) {
+                    $q2->where('category_id', $categoryId);
+                });
+            })
             ->orderBy('product_id', 'asc')
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')

@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('backup:clean')->dailyAt('01:30');
 Schedule::command('backup:run --only-db')->dailyAt('02:00');
+Schedule::command('backup:users')->dailyAt('02:30');

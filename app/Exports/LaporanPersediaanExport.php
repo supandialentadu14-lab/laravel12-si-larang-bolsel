@@ -19,6 +19,7 @@ class LaporanPersediaanExport implements FromArray, WithTitle, WithColumnWidths,
 {
     protected string $startDate;
     protected string $endDate;
+    protected ?string $categoryId;
     protected array  $reportData;
     protected $opd;
 
@@ -29,10 +30,11 @@ class LaporanPersediaanExport implements FromArray, WithTitle, WithColumnWidths,
     protected int $grandTotalRow = 0; // filled after build
     protected int $ttdRow        = 0; // filled after build
 
-    public function __construct(string $startDate, string $endDate)
+    public function __construct(string $startDate, string $endDate, ?string $categoryId = null)
     {
         $this->startDate  = $startDate;
         $this->endDate    = $endDate;
+        $this->categoryId = $categoryId;
         $this->opd        = OpdSetting::where('user_id', Auth::id())->first();
         $this->reportData = $this->buildReportData();
     }
@@ -44,6 +46,11 @@ class LaporanPersediaanExport implements FromArray, WithTitle, WithColumnWidths,
     {
         $transactions = StockTransaction::with('product')
             ->whereBetween('date', [$this->startDate, $this->endDate])
+            ->when($this->categoryId, function ($q) {
+                $q->whereHas('product', function ($q2) {
+                    $q2->where('category_id', $this->categoryId);
+                });
+            })
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->get();
