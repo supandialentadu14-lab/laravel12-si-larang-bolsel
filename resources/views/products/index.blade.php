@@ -364,7 +364,7 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse($products as $product)
-                    <tr class="hover:bg-indigo-50/30 transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $product->id }}') }">
+                    <tr class="transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $product->id }}') }">
                         <td class="px-5 py-4 text-center">
                             <input type="checkbox" value="{{ $product->id }}" x-model="selected" @click="updateSelectAll()" class="rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all">
                         </td>

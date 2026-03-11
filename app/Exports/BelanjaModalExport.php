@@ -37,15 +37,15 @@ class BelanjaModalExport implements FromArray, WithTitle, WithColumnWidths, With
         $rows[] = ['DAFTAR KONTRAK BELANJA MODAL'];
         $rows[] = ["{$opdNama} KABUPATEN BOLAANG MONGONDOW SELATAN"];
         $rows[] = ["TAHUN {$tahun}"];
-        $rows[] = [];
+        $rows[] = ['', '', '', '', '', '', '', '', '', '', '', '', ''];
 
         // ── Header (2 rows) ────────────────────────────────────────────
         // Row 1
-        $rows[] = ['No', 'Nama Kegiatan', 'Pekerjaan', 'Nilai Kontrak (Rp)', 'Tanggal Mulai', 'Tanggal Akhir Pekerjaan',
+        $rows[] = ['No', 'Nama Kegiatan', 'Pekerjaan', "Nilai Kontrak\n(Rp)", "Tanggal\nMulai", "Tanggal Akhir\nPekerjaan",
                    'SP2D Pembayaran', '', '', '', '',
-                   'Total Pembayaran (Rp)', 'Status Pekerjaan'];
+                   "Total Pembayaran\n(Rp)", "Status\nPekerjaan"];
         // Row 2 (SP2D sub-headers)
-        $rows[] = ['', '', '', '', '', '', 'Uang Muka (Rp)', 'Termin I (Rp)', 'Termin II (Rp)', 'Termin III (Rp)', 'Termin IV (Rp)', '', ''];
+        $rows[] = ['', '', '', '', '', '', "Uang Muka\n(Rp)", "Termin I\n(Rp)", "Termin II\n(Rp)", "Termin III\n(Rp)", "Termin IV\n(Rp)", '', ''];
 
         // ── Data ───────────────────────────────────────────────────────
         $no = 1;
@@ -63,21 +63,9 @@ class BelanjaModalExport implements FromArray, WithTitle, WithColumnWidths, With
                 $row['t3'] ? (int)$row['t3'] : '-',
                 $row['t4'] ? (int)$row['t4'] : '-',
                 (int)($row['ttl'] ?? 0),
-                $row['st'] ?? '-',
+                $row['st'] ?: '-',
             ];
         }
-
-        // ── Tanda Tangan ───────────────────────────────────────────────
-        $rows[] = [];
-        $rows[] = [];
-        $rows[] = ['', '', '', '', '', '', 'Dibuat Oleh', '', '', '', '', 'Mengetahui'];
-        $rows[] = ['', '', '', '', '', '', 'Pengurus Barang', '', '', '', '', 'Kepala Dinas'];
-        $rows[] = [];
-        $rows[] = [];
-        $rows[] = [];
-        $rows[] = [];
-        $rows[] = ['', '', '', '', '', '', $this->opd->pengurus_nama ?? '', '', '', '', '', $this->opd->kepala_nama ?? ''];
-        $rows[] = ['', '', '', '', '', '', 'NIP. ' . ($this->opd->pengurus_nip ?? ''), '', '', '', '', 'NIP. ' . ($this->opd->kepala_nip ?? '')];
 
         return $rows;
     }
@@ -119,27 +107,24 @@ class BelanjaModalExport implements FromArray, WithTitle, WithColumnWidths, With
                 }
 
                 $headerStyle = [
-                    'font'      => ['bold' => true, 'size' => 10],
+                    'font'      => ['bold' => true, 'size' => 11],
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER, 'wrapText' => true],
-                    'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'D1D5DB']],
                     'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
                 ];
                 $sheet->getStyle("A{$headerRow1}:M{$headerRow2}")->applyFromArray($headerStyle);
-                $sheet->getRowDimension($headerRow1)->setRowHeight(24);
-                $sheet->getRowDimension($headerRow2)->setRowHeight(24);
+                $sheet->getRowDimension($headerRow1)->setRowHeight(30);
+                $sheet->getRowDimension($headerRow2)->setRowHeight(30);
 
                 // ── Data rows ─────────────────────────────────────────
                 $lastRow   = $sheet->getHighestRow();
                 $dataStart = $headerRow2 + 1;
-                $dataEnd   = $lastRow - 12; // leave room for signatures
+                $dataEnd   = $lastRow;
 
                 for ($r = $dataStart; $r <= $dataEnd; $r++) {
-                    $valA = $sheet->getCell("A{$r}")->getValue();
-                    if ($valA === '' || $valA === null) break; // reached TTD section
-
                     $sheet->getStyle("A{$r}:M{$r}")->applyFromArray([
-                        'font'    => ['size' => 9],
+                        'font'    => ['size' => 11],
                         'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+                        'alignment' => ['vertical' => Alignment::VERTICAL_CENTER, 'wrapText' => true],
                     ]);
                     $sheet->getStyle("A{$r}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $sheet->getStyle("B{$r}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT)->setWrapText(true);
@@ -153,25 +138,12 @@ class BelanjaModalExport implements FromArray, WithTitle, WithColumnWidths, With
                         if (is_numeric($val)) {
                             $sheet->getStyle("{$col}{$r}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                             $sheet->getStyle("{$col}{$r}")->getNumberFormat()->setFormatCode('#,##0');
+                        } elseif ($val === '-') {
+                            $sheet->getStyle("{$col}{$r}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                         } else {
                             $sheet->getStyle("{$col}{$r}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                         }
                     }
-                }
-
-                // ── TTD styling ───────────────────────────────────────
-                $ttdStart = $dataEnd + 3;
-                for ($r = $ttdStart; $r <= $lastRow; $r++) {
-                    foreach (['G','L'] as $col) {
-                        $sheet->getStyle("{$col}{$r}")->getFont()->setBold(true);
-                        $sheet->getStyle("{$col}{$r}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    }
-                }
-
-                // Underline name rows
-                for ($r = $lastRow - 1; $r <= $lastRow; $r++) {
-                    $sheet->getStyle("G{$r}")->getFont()->setUnderline(true);
-                    $sheet->getStyle("L{$r}")->getFont()->setUnderline(true);
                 }
             },
         ];

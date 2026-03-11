@@ -98,7 +98,7 @@
                         </thead>
                         <tbody>
                             <template x-for="(item, i) in items" :key="i">
-                                <tr class="border-t hover:bg-gray-50 transition">
+                                <tr class="border-t transition-all duration-200">
                                     <td class="p-2"><input type="text" :name="`items[${i}][nama_kegiatan]`" x-model="item.nama_kegiatan" :x-ref="`row_${i}_kegiatan`" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
                                     <td class="p-2"><input type="text" :name="`items[${i}][pekerjaan]`" x-model="item.pekerjaan" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
                                     <td class="p-2"><input type="number" :name="`items[${i}][nilai_kontrak]`" x-model="item.nilai_kontrak" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 text-right py-2"></td>

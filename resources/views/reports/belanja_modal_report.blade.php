@@ -130,15 +130,19 @@
             <i class="fas fa-print"></i>
             Print
         </button>
+
         @if(isset($saved_id))
-        <a href="{{ route('reports.belanja.modal.export_excel', $saved_id) }}"
-            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold"
-            style="background-color: #16a34a; color: white;"
-            onmouseenter="this.style.backgroundColor='#15803d'"
-            onmouseleave="this.style.backgroundColor='#16a34a'">
-            <i class="fas fa-file-excel"></i>
-            Excel
-        </a>
+            {{-- Tombol Excel untuk laporan individual --}}
+            <a href="{{ route('reports.belanja.modal.export_excel', $saved_id) }}"
+                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white hover:bg-emerald-700 mr-2 font-bold">
+                <i class="fas fa-file-excel"></i> Export Excel
+            </a>
+        @else
+            {{-- Tombol Excel untuk preview-all (semua data) --}}
+            <a href="{{ route('reports.belanja.modal.export_excel_all') }}"
+                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white hover:bg-emerald-700 mr-2 font-bold">
+                <i class="fas fa-file-excel"></i> Export Excel
+            </a>
         @endif
     </div>
 

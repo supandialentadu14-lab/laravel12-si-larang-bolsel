@@ -195,7 +195,7 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse($suppliers as $supplier)
-                    <tr class="hover:bg-indigo-50/30 transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $supplier->id }}') }">
+                    <tr class="transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $supplier->id }}') }">
                         <td class="px-5 py-4 text-center">
                             <input type="checkbox" value="{{ $supplier->id }}" x-model="selected" @click="updateSelectAll()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4 transition-all">
                         </td>

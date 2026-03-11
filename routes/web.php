@@ -113,6 +113,7 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::get('reports/belanja-modal/list', [BelanjaModalController::class, 'index'])->name('reports.belanja.modal.list');
     Route::get('reports/belanja-modal/preview-all', [BelanjaModalController::class, 'previewAll'])->name('reports.belanja.modal.preview_all');
+    Route::get('reports/belanja-modal/export-excel-all', [BelanjaModalController::class, 'exportExcelAll'])->name('reports.belanja.modal.export_excel_all');
     Route::get('reports/belanja-modal/{id}/export-excel', [BelanjaModalController::class, 'exportExcel'])->name('reports.belanja.modal.export_excel');
     Route::get('reports/belanja-modal/{id}', [BelanjaModalController::class, 'show'])->name('reports.belanja.modal.show');
     Route::get('reports/belanja-modal/{id}/edit', [BelanjaModalController::class, 'edit'])->name('reports.belanja.modal.edit');

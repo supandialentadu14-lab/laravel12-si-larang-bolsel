@@ -186,7 +186,7 @@
                             </thead>
                             <tbody>
                                 <template x-for="(item, i) in items" :key="item._key">
-                                    <tr class="border-t hover:bg-gray-50 transition">
+                                    <tr class="border-t transition-all duration-200">
                                         <td class="p-2"><input type="text" :name="`items[${i}][nama]`" x-model="item.nama" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
                                         <td class="p-2"><input type="text" :name="`items[${i}][merk]`" x-model="item.merk" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
                                         <td class="p-2"><input type="text" :name="`items[${i}][tipe]`" x-model="item.tipe" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>

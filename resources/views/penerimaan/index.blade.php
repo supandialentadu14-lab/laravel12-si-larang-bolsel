@@ -128,7 +128,7 @@
             <tbody class="divide-y divide-slate-100 bg-white">
                 @forelse($items as $row)
                     @php $raw = $row['raw_data'] ?? []; @endphp
-                    <tr class="hover:bg-slate-50/80 transition-all duration-200 group" :class="{ 'bg-indigo-50/30': selected.includes('{{ $row['id'] }}') }">
+                    <tr class="transition-all duration-200 group" :class="{ 'bg-indigo-50/30': selected.includes('{{ $row['id'] }}') }">
                         <td class="px-6 py-4 text-center">
                             <input type="checkbox" value="{{ $row['id'] }}" x-model="selected" @click="updateSelectAll()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                         </td>

@@ -105,7 +105,7 @@ class BelanjaModalController extends Controller
             ]);
         }
         session(['belanja_modal_current' => $data, 'belanja_modal_current_id' => $id]);
-        return view('reports.belanja_modal_report', compact('data', 'opd', 'master'));
+        return view('reports.belanja_modal_report', compact('data', 'opd', 'master'))->with('saved_id', $id);
     }
 
     public function save(Request $request): RedirectResponse|View
@@ -249,7 +249,7 @@ class BelanjaModalController extends Controller
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $master = $this->loadNotaMaster();
         session(['belanja_modal_current' => $data, 'belanja_modal_current_id' => $id]);
-        return view('reports.belanja_modal_report', compact('data', 'opd', 'master'));
+        return view('reports.belanja_modal_report', compact('data', 'opd', 'master'))->with('saved_id', $id);
     }
 
     public function edit(string $id): View
@@ -402,6 +402,61 @@ class BelanjaModalController extends Controller
         ];
         session(['belanja_modal_current' => $data]);
         return view('reports.belanja_modal_report', compact('data', 'opd', 'master'));
+    }
+
+    /**
+     * Export semua data belanja modal ke Excel (sama persis dgn preview-all)
+     */
+    public function exportExcelAll()
+    {
+        $opd    = OpdSetting::where('user_id', Auth::id())->first();
+        $master = $this->loadNotaMaster();
+        $disk   = Storage::disk('local');
+        $dir    = 'users/' . Auth::id() . '/belanja-modal';
+        $files  = $disk->exists($dir) ? $disk->files($dir) : [];
+        $clean  = [];
+        $years  = [];
+
+        foreach ($files as $file) {
+            if (! str_ends_with($file, '.json')) continue;
+            $json = $disk->get($file);
+            $data = json_decode($json, true) ?: [];
+            if (isset($data['tahun']) && is_numeric($data['tahun'])) {
+                $years[] = (int) $data['tahun'];
+            }
+            foreach (($data['items'] ?? []) as $it) {
+                $nm  = $it['nm']  ?? ($it['nama_kegiatan']  ?? '');
+                $pk  = $it['pk']  ?? ($it['pekerjaan']      ?? '');
+                $nk  = (int) ($it['nk']  ?? ($it['nilai_kontrak']  ?? 0));
+                $tm  = $it['tm']  ?? ($it['tanggal_mulai']  ?? '');
+                $ta  = $it['ta']  ?? ($it['tanggal_akhir']  ?? '');
+                $um  = (int) ($it['um']  ?? ($it['uang_muka']      ?? 0));
+                $t1  = (int) ($it['t1']  ?? ($it['termin1']        ?? 0));
+                $t2  = (int) ($it['t2']  ?? ($it['termin2']        ?? 0));
+                $t3  = (int) ($it['t3']  ?? ($it['termin3']        ?? 0));
+                $t4  = (int) ($it['t4']  ?? ($it['termin4']        ?? 0));
+                $ttl = (int) ($it['ttl'] ?? ($um + $t1 + $t2 + $t3 + $t4));
+                $st  = $it['st'] ?? '';
+                $clean[] = compact('nm', 'pk', 'nk', 'tm', 'ta', 'um', 't1', 't2', 't3', 't4', 'ttl', 'st');
+            }
+        }
+
+        usort($clean, function ($a, $b) {
+            $da = $a['tm'] ? strtotime($a['tm']) : 0;
+            $db = $b['tm'] ? strtotime($b['tm']) : 0;
+            return $da <=> $db;
+        });
+
+        $tahun = null;
+        if (! empty($years)) {
+            sort($years);
+            $tahun = end($years);
+        }
+
+        $data     = ['tahun' => $tahun ?: now()->year, 'items' => $clean];
+        $filename = 'Belanja-Modal-Semua-' . ($tahun ?: now()->year) . '.xlsx';
+
+        return Excel::download(new \App\Exports\BelanjaModalExport($data, $opd, $master), $filename);
     }
 
     protected function loadNotaMaster(): array

@@ -248,10 +248,10 @@
                     <tr>
                         <th rowspan="2">No</th>
                         <th rowspan="2">Tanggal</th>
-                        <th rowspan="2">Nomor Surat Dasar Penerimaan/Pengeluaran</th>
+                        <th rowspan="2">Nomor Surat Dasar<br>Penerimaan/Pengeluaran</th>
                         <th rowspan="2">Uraian</th>
                         <th colspan="3">Barang-Barang</th>
-                        <th rowspan="2">Harga Satuan (Rp)</th>
+                        <th rowspan="2">Harga Satuan<br>(Rp)</th>
                         <th colspan="3">Jumlah Harga (Rp)</th>
                         <th rowspan="2">Keterangan</th>
                     </tr>
@@ -314,23 +314,20 @@
             </div>
 
             @if ($current == $lastIndex)
-                <table class="ttd-table">
-                    <tr>
-                        
-                        <td align="center">
-                            Dibuat Oleh<br>
-                            Pengurus Barang<br><br><br><br><br>
-                            <strong><u>{{ $opd->pengurus_nama ?? '' }}</u></strong><br>
-                            NIP. {{ $opd->pengurus_nip ?? '' }}
-                        </td>
-                        <td align="center">
-                            Mengetahui<br>
-                            Kepala Dinas<br><br><br><br><br>
-                            <strong><u>{{ $opd->kepala_nama ?? '' }}</u></strong><br>
-                            NIP. {{ $opd->kepala_nip ?? '' }}
-                        </td>
-                    </tr>
-                </table>
+                <div style="display: flex; justify-content: space-between; padding: 0 40px; margin-top: 50px; page-break-inside: avoid; font-size: 14px;">
+                    <div style="text-align: center;">
+                        Dibuat Oleh<br>
+                        Pengurus Barang<br><br><br><br><br>
+                        <strong><u>{{ $opd->pengurus_nama ?? '' }}</u></strong><br>
+                        NIP. {{ $opd->pengurus_nip ?? '' }}
+                    </div>
+                    <div style="text-align: center;">
+                        Mengetahui<br>
+                        Kepala Dinas<br><br><br><br><br>
+                        <strong><u>{{ $opd->kepala_nama ?? '' }}</u></strong><br>
+                        NIP. {{ $opd->kepala_nip ?? '' }}
+                    </div>
+                </div>
             @endif
 
             @php $current++; @endphp

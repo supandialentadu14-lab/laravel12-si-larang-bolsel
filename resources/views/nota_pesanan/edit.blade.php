@@ -189,7 +189,7 @@
                             </thead>
                             <tbody>
                                 <template x-for="(row, idx) in rows()" :key="row.it._key">
-                                    <tr class="border-t hover:bg-gray-50 transition">
+                                    <tr class="border-t transition-all duration-200">
                                         <td class="p-2">
                                             <input type="text" :name="`items[${row.i}][name]`" x-model="row.it.name" list="list-products" @change="onProductChange(row.i, $event.target.value)" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ketik nama barang...">
                                             <datalist id="list-products">

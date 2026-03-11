@@ -50,7 +50,7 @@
             <tbody class="divide-y divide-slate-100">
                 @forelse($users as $user)
                 @php $isOnline = $user->isOnline(); $isActive = $user->is_active; @endphp
-                <tr class="hover:bg-slate-50/50 transition-colors group {{ !$isActive ? 'opacity-60' : '' }}">
+                <tr class="transition-all duration-200 group {{ !$isActive ? 'opacity-60' : '' }}">
 
                     {{-- Avatar + Online dot --}}
                     <td class="px-5 py-3.5 text-center">

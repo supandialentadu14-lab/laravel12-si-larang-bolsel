@@ -10,7 +10,7 @@
         
         {{-- ── IDENTITAS OPD ────────────────────────────────────────────────── --}}
         <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden group">
-            <div class="px-8 py-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
+            <div class="px-8 py-5 border-b border-slate-100 bg-white flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-100">
                         <i class="fas fa-university text-white text-xl"></i>
@@ -243,13 +243,12 @@
             </div>
         </div>
 
-        {{-- ── FORM ACTIONS ────────────────────────────────────────────────── --}}
-        <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-10 border-t border-slate-100">
-            <button type="reset" class="w-full sm:w-auto px-8 py-3 rounded-2xl font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-800 transition-all flex items-center justify-center gap-2">
+        <div class="mt-8 flex flex-wrap justify-end gap-3 pt-6">
+            <button type="reset" class="px-6 py-2.5 bg-slate-800 rounded-xl text-sm font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition flex items-center justify-center gap-2 border border-slate-700 whitespace-nowrap">
                 <i class="fas fa-undo"></i> Reset Perubahan
             </button>
-            <button type="submit" class="w-full sm:w-auto px-10 py-3.5 rounded-2xl font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 shadow-2xl shadow-emerald-200 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3">
-                <i class="fas fa-save text-emerald-200"></i> Simpan Semua Pengaturan
+            <button type="submit" class="px-6 py-2.5 bg-emerald-600 rounded-xl text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition flex items-center justify-center gap-2 whitespace-nowrap">
+                <i class="fas fa-save"></i> Simpan Semua Pengaturan
             </button>
         </div>
     </form>

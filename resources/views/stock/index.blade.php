@@ -288,7 +288,7 @@
                         $nilaiSaldo = $saldoAkhir * $transaction->product->price;
                     @endphp
 
-                    <tr class="hover:bg-indigo-50/30 transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $transaction->id }}') }">
+                    <tr class="transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $transaction->id }}') }">
                         <td class="px-5 py-4">
                             <input type="checkbox" value="{{ $transaction->id }}" x-model="selected" @click="updateSelectAll()" class="rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all">
                         </td>

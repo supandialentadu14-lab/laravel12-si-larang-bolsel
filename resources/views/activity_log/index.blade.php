@@ -53,7 +53,7 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($logs as $log)
-                <tr class="hover:bg-gray-50/50 transition-colors">
+                <tr class="transition-all duration-200">
                     <td class="px-6 py-4 whitespace-nowrap text-gray-500">
                         {{ $log->created_at->format('d M Y H:i:s') }}
                     </td>

@@ -245,7 +245,7 @@
             <tbody>
                 @forelse ($items as $i => $row)
                     @php $hl = request('highlight'); @endphp
-                    <tr class="border-t hover:bg-gray-50 transition {{ $hl === ($row['id'] ?? null) ? 'bg-orange-50' : '' }}" :class="{ 'bg-indigo-50': selected.includes('{{ $row['id'] }}') }">
+                    <tr class="border-t transition-all duration-200 {{ $hl === ($row['id'] ?? null) ? 'bg-orange-50' : '' }}" :class="{ 'bg-indigo-50/50': selected.includes('{{ $row['id'] }}') }">
                         <td class="px-6 py-4 text-center">
                             <input type="checkbox" value="{{ $row['id'] }}" x-model="selected" @click="updateSelectAll()" class="rounded-md border-slate-300 text-indigo-600 h-4 w-4 focus:ring-indigo-500 transition-all opacity-70 hover:opacity-100">
                         </td>
@@ -263,6 +263,9 @@
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('reports.belanja.modal.show', $row['id']) }}" class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Lihat">
                                     <i class="fas fa-eye text-xs"></i>
+                                </a>
+                                <a href="{{ route('reports.belanja.modal.export_excel', $row['id']) }}" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors shadow-sm border border-emerald-200" title="Export Excel">
+                                    <i class="fas fa-file-excel text-xs"></i>
                                 </a>
                                 <button type="button" @click='initModal(true, @json($row["id"]), @json($row["tahun"]), @json($row["raw_items"]))' class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Edit">
                                     <i class="far fa-edit text-xs"></i>

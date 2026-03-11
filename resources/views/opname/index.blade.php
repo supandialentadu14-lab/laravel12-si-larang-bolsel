@@ -70,7 +70,7 @@
             </thead>
                 <tbody>
                 @forelse($items as $item)
-                    <tr class="border-t hover:bg-gray-50 transition" :class="{ 'bg-indigo-50': selected.includes('{{ $item['id'] }}') }">
+                    <tr class="border-t transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $item['id'] }}') }">
                         <td class="px-6 py-4 text-center">
                             <input type="checkbox" value="{{ $item['id'] }}" x-model="selected" @click="updateSelectAll()" class="rounded-md border-slate-300 text-indigo-600 h-4 w-4 focus:ring-indigo-500 transition-all">
                         </td>

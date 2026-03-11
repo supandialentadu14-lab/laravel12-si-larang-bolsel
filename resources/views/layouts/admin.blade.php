@@ -191,7 +191,18 @@
         }
 
         .table-clean tbody tr:hover {
-            background: #fff7ed;
+            background: #f3f4f6;
+        }
+
+        /* ── Global: semua baris tabel hover (sama seperti halaman Barang) ── */
+        table tbody tr:hover {
+            background-color: rgba(238, 242, 255, 0.40) !important; /* indigo-50/40, light mode */
+            transition: background-color 0.2s ease;
+        }
+
+        /* Dark mode: warna solid sedikit lebih terang dari background card */
+        body.theme-dark table tbody tr:hover {
+            background-color: #263044 !important; /* slate-700 — jelas terlihat di dark bg */
         }
 
         /* ── Responsive: Table global scroll ── */
