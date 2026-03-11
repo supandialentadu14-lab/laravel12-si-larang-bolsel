@@ -1419,6 +1419,13 @@
                 </div>
             </header>
 
+            <!-- Loading Progress Bar -->
+            <div id="nav-loader" class="fixed top-0 left-0 right-0 h-1 z-[9999] transition-all duration-300 opacity-0 pointer-events-none" style="background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #6366f1 100%); background-size: 200% 100%; animation: navLoading 2s linear infinite;"></div>
+            <style>
+                @keyframes navLoading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+                .nav-loading-active #nav-loader { opacity: 1; }
+            </style>
+
             <!-- Page Content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 transition-colors duration-300"
                 :style="{ backgroundColor: 'var(--body-bg)', color: 'var(--body-text)' }">
@@ -1490,7 +1497,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            initDatepickr(document);
             const main = document.querySelector('main');
             const sidebar = document.querySelector('aside nav');
             const isSameOrigin = (url) => {
@@ -1548,7 +1554,13 @@
                 if (window.Alpine && Alpine.initTree) Alpine.initTree(root);
                 initDatepickr(root);
             };
+
+            // Initialize global pickers on initial run
+            initDatepickr(document);
+
+            const loader = document.getElementById('nav-loader');
             const swapMain = async (href, push = true) => {
+                document.body.classList.add('nav-loading-active');
                 try {
                     const res = await fetch(href, {
                         headers: {
@@ -1569,8 +1581,11 @@
                     initScripts(main);
                     if (push) history.pushState({}, '', href);
                     main.scrollTop = 0;
-                } catch {
+                } catch (e) {
+                    console.error('Nav error:', e);
                     window.location.href = href;
+                } finally {
+                    document.body.classList.remove('nav-loading-active');
                 }
             };
             sidebar.addEventListener('click', (e) => {
@@ -1586,9 +1601,17 @@
             document.addEventListener('click', (e) => {
                 const a = e.target.closest('a[href]');
                 if (!a) return;
-                if (a.closest('aside')) return;
+                
+                // Sidebar already handled by specific listener, but we check here too for safety
                 if (!shouldSoftLink(a)) return;
                 if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                
+                // Avoid redundant click on active link
+                if (a.getAttribute('href') === window.location.href) {
+                    e.preventDefault();
+                    return;
+                }
+
                 e.preventDefault();
                 const href = a.getAttribute('href');
                 swapMain(href, true);
