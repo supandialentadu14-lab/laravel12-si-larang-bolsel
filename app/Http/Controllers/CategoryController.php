@@ -60,17 +60,45 @@ class CategoryController extends Controller
     {
         // Validasi input dari form
         $validated = $request->validate([
-            // name wajib diisi, berupa string, maksimal 255 karakter, harus unik
-            'name' => 'required|string|max:255|unique:categories,name',
+            // name wajib diisi, berupa string, maksimal 255 karakter, harus unik (abaikan yang sudah di-soft-delete)
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('categories')->where(function ($query) {
+                    return $query->where('user_id', auth()->id())->whereNull('deleted_at');
+                })
+            ],
 
             // description boleh kosong (nullable), jika diisi harus string
             'description' => 'nullable|string',
-        ], [
-            'name.unique' => 'Nama jenis belanja ini sudah ada, silakan gunakan nama lain.',
         ]);
 
+        // Cari apakah ada data lama dengan nama ATAU slug yang sama (termasuk di sampah)
+        $newSlug = Str::slug($validated['name']);
+        
+        $existing = Category::withoutGlobalScope('tenant')->withTrashed()
+            ->where(function($q) use ($validated, $newSlug) {
+                $q->where('name', $validated['name'])
+                  ->orWhere('slug', $newSlug);
+            })
+            ->first();
+
+        if ($existing) {
+            if ($existing->trashed()) {
+                // Jika data yang sama ada di sampah, hapus permanen agar tidak bentrok
+                $existing->forceDelete();
+            } else if ($existing->user_id == auth()->id()) {
+                 // Jika data milik kita sendiri tapi aktif (sebenarnya ini tertangkap di validation unique)
+                 return redirect()->route('categories.index')->with('error', 'Jenis belanja ini sudah ada.');
+            } else {
+                // Jika milik user lain (karena DB constraint slug global)
+                return back()->withErrors(['name' => 'Nama/Slug ini sudah digunakan oleh instansi lain (Batas Global).'])->withInput();
+            }
+        }
+
         // Membuat slug dari name (contoh: "Makanan Ringan" → "makanan-ringan")
-        $validated['slug'] = Str::slug($validated['name']);
+        $validated['slug'] = $newSlug;
 
         // Menyimpan data kategori ke database
         Category::create($validated);
@@ -114,7 +142,7 @@ class CategoryController extends Controller
 
         // Cari record lain (termasuk yang di sampah) yang memiliki nama yang sama
         $newSlug = Str::slug($validated['name']);
-        $existing = Category::withTrashed()
+        $existing = Category::withoutGlobalScope('tenant')->withTrashed()
             ->where(function($q) use ($validated, $newSlug) {
                 $q->where('name', $validated['name'])
                   ->orWhere('slug', $newSlug);
