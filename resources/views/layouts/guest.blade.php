@@ -174,6 +174,51 @@
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
         @keyframes shine { 100% { left: 125%; } }
+
+        /* ══ Guest Layout Responsive ══ */
+
+        /* Mobile: 360px - 640px */
+        @media (max-width: 640px) {
+            /* Allow vertical scroll on short mobile devices */
+            body { overflow-y: auto; overflow-x: hidden; align-items: flex-start; }
+
+            /* Right side scrolls on mobile */
+            body > div.w-full.lg\:w-1\/2 {
+                min-height: 100svh;
+                padding: 1rem !important;
+                align-items: flex-start !important;
+                padding-top: 1.5rem !important;
+            }
+
+            /* Form card more compact on mobile */
+            .bg-white\/5.backdrop-blur-xl.rounded-2xl {
+                padding: 1rem !important;
+                border-radius: 1rem !important;
+            }
+
+            /* Social media icons smaller on mobile */
+            .flex.items-center.justify-center.gap-4 a {
+                width: 2.25rem !important;
+                height: 2.25rem !important;
+            }
+
+            /* Text adjustments */
+            h1 { font-size: 1.375rem !important; }
+        }
+
+        /* Tablet: 641px - 1023px */
+        @media (min-width: 641px) and (max-width: 1023px) {
+            body { overflow-y: auto; }
+            body > div.w-full.lg\:w-1\/2 {
+                padding: 2rem;
+                min-height: 100svh;
+            }
+        }
+
+        /* Short viewport fix */
+        @media (max-height: 700px) {
+            body { overflow-y: auto; align-items: flex-start; }
+        }
     </style>
 </body>
 </html>

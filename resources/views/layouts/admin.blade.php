@@ -194,9 +194,113 @@
             background: #fff7ed;
         }
 
+        /* ── Responsive: Table global scroll ── */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 0.75rem;
+        }
+        table {
+            min-width: 600px;
+        }
         /* Prevent text wrapping in tables on small screens to enforce horizontal scroll */
         table th, table td {
             white-space: nowrap;
+        }
+
+        /* ══════════════════════════════════════
+           RESPONSIVE BREAKPOINTS
+           ══════════════════════════════════════ */
+
+        /* ── Auto scroll all tables globally ── */
+        /* Wrap any direct table parent that doesn't have overflow */
+        .rounded-lg.shadow > table,
+        .rounded-xl.shadow > table,
+        .card > table,
+        .p-6 > table,
+        .p-4 > table {
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* MOBILE: 360px - 767px */
+        @media (max-width: 767px) {
+            /* Touch targets minimum 36px */
+            button { min-height: 34px; }
+
+            /* Sidebar fully hidden when closed on mobile */
+            .sidebar-modern { transition: width 0.3s ease, transform 0.3s ease; }
+
+            /* Page header stack on mobile */
+            #page-header { flex-direction: column !important; align-items: flex-start !important; }
+            #page-header h2 { font-size: 1.15rem !important; }
+            #page-header > div:last-child { width: 100%; flex-wrap: wrap; gap: 0.5rem; }
+
+            /* Section card reduced padding on mobile */
+            .bg-white.rounded-lg.shadow.p-6,
+            .bg-white.rounded-xl.p-6 { padding: 0.875rem !important; }
+
+            /* All main card containers: auto-scroll for tables inside */
+            main .bg-white,
+            main [class*="rounded-xl"],
+            main [class*="rounded-lg"] { overflow-x: auto; }
+
+            /* Form grids: single column on mobile */
+            .md\:grid-cols-2,
+            .md\:grid-cols-3,
+            .md\:grid-cols-4 { grid-template-columns: 1fr !important; }
+            .sm\:grid-cols-2 { grid-template-columns: 1fr 1fr !important; }
+            
+            /* Modal sizing on mobile */
+            .fixed.inset-0 .inline-block {
+                max-width: calc(100vw - 1.5rem) !important;
+                width: 100% !important;
+                margin: 0.75rem auto !important;
+            }
+
+            /* Topbar tight on mobile */
+            header { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+
+            /* KPI cards on mobile */
+            .grid.grid-cols-2.lg\:grid-cols-4 > * { padding: 0.875rem !important; }
+            .grid.grid-cols-2.lg\:grid-cols-4 p.text-3xl,
+            .grid.grid-cols-2.lg\:grid-cols-4 p.text-2xl { font-size: 1.375rem !important; }
+
+            /* Footer compact */
+            footer .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+            /* Action buttons top area - wrap nicely */
+            #page-header .flex.items-center { flex-wrap: wrap !important; }
+        }
+
+        /* TABLET: 768px - 1023px */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .sidebar-modern { transition: width 0.3s ease, transform 0.3s ease; }
+            
+            #page-header { flex-direction: row; align-items: center; }
+            main { padding: 1.25rem !important; }
+
+            /* 2-col forms on tablet */
+            .md\:grid-cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        /* DESKTOP: 1024px+ */
+        @media (min-width: 1024px) {
+            .sidebar-modern { position: relative !important; }
+            main { padding: 1.5rem; }
+        }
+
+        /* LARGE DESKTOP: 1440px+ */
+        @media (min-width: 1440px) {
+            .marquee-text { font-size: 20px; }
+        }
+
+        /* Touch device interactions */
+        @media (hover: none) and (pointer: coarse) {
+            .group:hover .group-hover\:opacity-100 { opacity: 1; }
+            /* Larger tap targets for touch */
+            nav a, nav button { padding-top: 0.65rem !important; padding-bottom: 0.65rem !important; }
         }
 
         input[type="text"],
@@ -663,9 +767,13 @@
 </head>
 
 <body class="font-sans antialiased theme-light" 
-    x-data="{ sidebarOpen: window.innerWidth >= 1024, theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }" 
+    x-data="{ 
+        sidebarOpen: window.innerWidth >= 1024, 
+        theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+        isMobile: window.innerWidth < 1024
+    }" 
     x-effect="$el.classList.toggle('theme-dark', theme === 'dark'); $el.classList.toggle('theme-light', theme === 'light'); localStorage.setItem('theme', theme);"
-    @resize.window="sidebarOpen = window.innerWidth >= 1024;">
+    @resize.window="sidebarOpen = window.innerWidth >= 1024; isMobile = window.innerWidth < 1024;">
     <div class="flex h-screen overflow-hidden">
 
         <!-- Mobile Sidebar Backdrop -->
@@ -674,7 +782,10 @@
         <!-- Sidebar -->
         <aside
             class="sidebar-modern flex-shrink-0 flex flex-col transition-all duration-300 shadow-xl z-30 overflow-x-hidden absolute lg:relative inset-y-0 left-0 h-full"
-            :class="[sidebarOpen ? 'w-64 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0', (theme === 'dark' ? 'theme-dark' : 'theme-light')]">
+            :class="[
+                sidebarOpen ? 'w-64 translate-x-0' : (isMobile ? 'w-0 -translate-x-full overflow-hidden' : 'w-20 translate-x-0'),
+                (theme === 'dark' ? 'theme-dark' : 'theme-light')
+            ]">
 
             <div class="h-16 flex items-center justify-center border-b border-white/20 relative">
                 <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 group cursor-pointer"
@@ -1029,7 +1140,7 @@
             <!-- Topbar -->
             <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2 transition-colors duration-300"
                 :style="{ backgroundColor: theme === 'dark' ? '#12171F' : '#ffffff', color: 'var(--body-text)', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f3f4f6' }">
-                <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden focus:outline-none"
+                <button @click="sidebarOpen = !sidebarOpen" class="focus:outline-none p-1 rounded-lg hover:bg-gray-100 transition"
                     :style="{ color: '#374151' }">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
@@ -1238,12 +1349,12 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 transition-colors duration-300"
                 :style="{ backgroundColor: 'var(--body-bg)', color: 'var(--body-text)' }">
                 <!-- Page Header & Actions -->
-                <div id="page-header" class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div id="page-header" class="mb-4 md:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h2 class="text-2xl font-bold" :style="{ color: 'var(--body-text)' }">@yield('header')</h2>
-                        <p class="text-sm mt-1" :style="{ color: theme === 'dark' ? '#94a3b8' : '#6B7280' }">@yield('subheader')</p>
+                        <h2 class="text-xl md:text-2xl font-bold" :style="{ color: 'var(--body-text)' }">@yield('header')</h2>
+                        <p class="text-xs md:text-sm mt-1" :style="{ color: theme === 'dark' ? '#94a3b8' : '#6B7280' }">@yield('subheader')</p>
                     </div>
-                    <div class="flex items-center space-x-3">
+                    <div class="flex items-center flex-wrap gap-2">
                         @yield('actions')
                     </div>
                 </div>
