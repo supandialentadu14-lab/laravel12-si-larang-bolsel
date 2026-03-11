@@ -1643,7 +1643,10 @@
                         options.body = fd;
                     }
 
-                    const res = await fetch(url, options);
+                    const res = await fetch(url, {
+                        ...options,
+                        cache: 'no-cache'
+                    });
                     const html = await res.text();
                     const doc = new DOMParser().parseFromString(html, 'text/html');
                     const newMain = doc.querySelector('main');

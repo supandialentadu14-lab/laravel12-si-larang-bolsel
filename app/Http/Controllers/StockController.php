@@ -127,83 +127,62 @@ class StockController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    $transaction = StockTransaction::findOrFail($id);
+    {
+        $transaction = StockTransaction::findOrFail($id);
 
-    // ===============================
-    // VALIDASI DATA
-    // ===============================
-    $request->validate([
-        'product_id' => 'required|exists:products,id',
-        'date'       => 'required|date',
-        'type'       => 'required|in:in,out',
-        'quantity'   => 'required|integer|min:1',
-        'nosur'      => 'nullable|string|max:255',
-        'notes'      => 'nullable|string'
-    ]);
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'date'       => 'required|date',
+            'type'       => 'required|in:in,out',
+            'quantity'   => 'required|integer|min:1',
+            'nosur'      => 'nullable|string|max:255',
+            'notes'      => 'nullable|string'
+        ]);
 
-    // ===============================
-    // CEK STOK JIKA TRANSAKSI KELUAR
-    // ===============================
+        return DB::transaction(function () use ($request, $transaction) {
+            // Revert old product stock
+            $oldProduct = Product::lockForUpdate()->find($transaction->product_id);
+            if ($oldProduct) {
+                if ($transaction->type === 'in') {
+                    $oldProduct->decrement('stock', $transaction->quantity);
+                } else {
+                    $oldProduct->increment('stock', $transaction->quantity);
+                }
+            }
 
-    if ($request->type === 'out') {
+            // Load target product (could be the same)
+            $newProduct = ($request->product_id == $transaction->product_id) 
+                ? $oldProduct 
+                : Product::lockForUpdate()->findOrFail($request->product_id);
 
-        // Hitung total stok produk saat ini TANPA transaksi lama
-        $totalMasuk = StockTransaction::where('product_id', $request->product_id)
-            ->where('type', 'in')
-            ->where('id', '!=', $transaction->id)
-            ->sum('quantity');
+            // Check if stock enough for "out" transaction
+            if ($request->type === 'out') {
+                if ($newProduct->stock < $request->quantity) {
+                    throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini.');
+                }
+            }
 
-        $totalKeluar = StockTransaction::where('product_id', $request->product_id)
-            ->where('type', 'out')
-            ->where('id', '!=', $transaction->id)
-            ->sum('quantity');
+            // Update transaction
+            $transaction->update([
+                'product_id' => $request->product_id,
+                'date'       => $request->date,
+                'type'       => $request->type,
+                'quantity'   => $request->quantity,
+                'nosur'      => $request->nosur,
+                'notes'      => $request->notes,
+            ]);
 
-        $stokSaatIni = $totalMasuk - $totalKeluar;
+            // Apply new stock
+            if ($request->type === 'in') {
+                $newProduct->increment('stock', $request->quantity);
+            } else {
+                $newProduct->decrement('stock', $request->quantity);
+            }
 
-        if ($request->quantity > $stokSaatIni) {
-            return back()->withErrors([
-                'quantity' => 'Stok tidak mencukupi untuk transaksi keluar ini.'
-            ])->withInput();
-        }
+            return redirect()->route('stock.index')
+                ->with('success', 'Transaksi berhasil diperbarui.');
+        });
     }
-
-    // ===============================
-    // UPDATE DATA TRANSAKSI & PRODUK
-    // ===============================
-    
-    // Kembalikan stok lama sebelum menghitung ulang
-    $product = Product::findOrFail($transaction->product_id);
-    if ($transaction->type === 'in') {
-        $product->decrement('stock', $transaction->quantity);
-    } else {
-        $product->increment('stock', $transaction->quantity);
-    }
-    
-    // Jika produknya diubah ke produk lain (jarang terjadi, tapi jika iya)
-    if ($request->product_id != $transaction->product_id) {
-        $product = Product::findOrFail($request->product_id); // Ganti fokus ke produk baru
-    }
-
-    $transaction->update([
-        'product_id' => $request->product_id,
-        'date'       => $request->date,
-        'type'       => $request->type,
-        'quantity'   => $request->quantity,
-        'nosur'      => $request->nosur,
-        'notes'      => $request->notes,
-    ]);
-    
-    // Terapkan stok baru
-    if ($request->type === 'in') {
-        $product->increment('stock', $request->quantity);
-    } else {
-        $product->decrement('stock', $request->quantity);
-    }
-
-    return redirect()->route('stock.index')
-        ->with('success', 'Transaksi berhasil diperbarui.');
-}
 
     /**
      * Redirect show requests to index

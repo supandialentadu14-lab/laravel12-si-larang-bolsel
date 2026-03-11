@@ -31,15 +31,6 @@ Route::middleware(['auth'])->group(function () {
     // Notifications
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
-    Route::get('/logout', function () {
-        Auth::guard('web')->logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-        return redirect()->route('login');
-    })->name('logout.get');
-    // Delete
-    Route::delete('/stock/{transaction}', [StockController::class, 'destroy'])
-        ->name('stock.destroy');
 
     // Master Data 
     Route::middleware('permission:master_data')->group(function () {
