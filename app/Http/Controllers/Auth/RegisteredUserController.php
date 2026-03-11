@@ -82,10 +82,10 @@ class RegisteredUserController extends Controller
         // Biasanya digunakan untuk mengirim email verifikasi
         event(new Registered($user));
 
-        // Login otomatis setelah registrasi berhasil
-        Auth::login($user);
-
-        // Redirect ke halaman dashboard setelah berhasil daftar & login
-        return redirect(route('dashboard', absolute: false));
+        // Alihkan ke halaman login dengan pesan sukses
+        // Memberikan notifikasi bahwa registrasi berhasil dan user silakan login
+        return redirect(route('login'))
+            ->with('status', 'Registrasi Berhasil!')
+            ->with('success_message', 'Akun Anda telah berhasil dibuat. Silakan login menggunakan email dan password yang telah didaftarkan.');
     }
 }

@@ -117,4 +117,46 @@
             </a>
         </p>
     </div>
+
+    {{-- ================= SOCIAL MEDIA LINKS ================= --}}
+    <div class="mt-8 pt-6 border-t border-white/5">
+        <p class="text-[8px] sm:text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-4 text-center">Hubungi Developer</p>
+        <div class="flex items-center justify-center gap-4">
+            {{-- WhatsApp --}}
+            <a href="https://wa.me/6285824268216" target="_blank"
+                onmouseover="this.style.transform='translateY(-4px)'; this.querySelector('i').style.color='#25D366'; this.querySelector('i').style.filter='drop-shadow(0 0 8px rgba(37,211,102,0.8))'; this.querySelector('i').style.transform='scale(1.2)'"
+                onmouseout="this.style.transform=''; this.querySelector('i').style.color='rgba(255,255,255,0.2)'; this.querySelector('i').style.filter=''; this.querySelector('i').style.transform=''"
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 transition-all duration-300 cursor-pointer"
+                title="WhatsApp">
+                <i class="fab fa-whatsapp text-lg" style="color: rgba(255,255,255,0.2); transition: all 0.3s"></i>
+            </a>
+
+            {{-- Email --}}
+            <a href="mailto:supandialentadu14@gmail.com" target="_blank"
+                onmouseover="this.style.transform='translateY(-4px)'; this.querySelector('i').style.color='#EA4335'; this.querySelector('i').style.filter='drop-shadow(0 0 8px rgba(234,67,53,0.8))'; this.querySelector('i').style.transform='scale(1.2)'"
+                onmouseout="this.style.transform=''; this.querySelector('i').style.color='rgba(255,255,255,0.2)'; this.querySelector('i').style.filter=''; this.querySelector('i').style.transform=''"
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 transition-all duration-300 cursor-pointer"
+                title="Email Developer">
+                <i class="far fa-envelope text-lg" style="color: rgba(255,255,255,0.2); transition: all 0.3s"></i>
+            </a>
+
+            {{-- Instagram --}}
+            <a href="https://www.instagram.com/emonn_65?igsh=MWM4c2JzdjNvZG4xMQ%3D%3D&utm_source=qr" target="_blank"
+                onmouseover="this.style.transform='translateY(-4px)'; this.querySelector('i').style.color='#E1306C'; this.querySelector('i').style.filter='drop-shadow(0 0 8px rgba(225,48,108,0.8))'; this.querySelector('i').style.transform='scale(1.2)'"
+                onmouseout="this.style.transform=''; this.querySelector('i').style.color='rgba(255,255,255,0.2)'; this.querySelector('i').style.filter=''; this.querySelector('i').style.transform=''"
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 transition-all duration-300 cursor-pointer"
+                title="Instagram">
+                <i class="fab fa-instagram text-lg" style="color: rgba(255,255,255,0.2); transition: all 0.3s"></i>
+            </a>
+
+            {{-- Facebook --}}
+            <a href="https://www.facebook.com/share/18J61xd2XQ/?mibextid=wwXIfr" target="_blank"
+                onmouseover="this.style.transform='translateY(-4px)'; this.querySelector('i').style.color='#1877F2'; this.querySelector('i').style.filter='drop-shadow(0 0 8px rgba(24,119,242,0.8))'; this.querySelector('i').style.transform='scale(1.2)'"
+                onmouseout="this.style.transform=''; this.querySelector('i').style.color='rgba(255,255,255,0.2)'; this.querySelector('i').style.filter=''; this.querySelector('i').style.transform=''"
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 transition-all duration-300 cursor-pointer"
+                title="Facebook">
+                <i class="fab fa-facebook-f text-lg" style="color: rgba(255,255,255,0.2); transition: all 0.3s"></i>
+            </a>
+        </div>
+    </div>
 </x-guest-layout>

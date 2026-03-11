@@ -248,8 +248,8 @@
             <button type="reset" class="w-full sm:w-auto px-8 py-3 rounded-2xl font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-800 transition-all flex items-center justify-center gap-2">
                 <i class="fas fa-undo"></i> Reset Perubahan
             </button>
-            <button type="submit" class="w-full sm:w-auto px-10 py-3.5 rounded-2xl font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 shadow-2xl shadow-indigo-200 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3">
-                <i class="fas fa-cloud-upload-alt text-indigo-300"></i> Simpan Semua Pengaturan
+            <button type="submit" class="w-full sm:w-auto px-10 py-3.5 rounded-2xl font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 shadow-2xl shadow-emerald-200 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3">
+                <i class="fas fa-save text-emerald-200"></i> Simpan Semua Pengaturan
             </button>
         </div>
     </form>

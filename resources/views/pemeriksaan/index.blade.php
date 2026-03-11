@@ -8,10 +8,10 @@
     {{-- Modal Create/Edit --}}
     <div x-show="showModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showModal" x-transition.opacity class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" @click="showModal = false"></div>
+            <div x-show="showModal" x-transition.opacity class="fixed inset-0 bg-slate-900/60 transition-opacity" @click="showModal = false"></div>
 
             <div x-show="showModal" x-transition.scale.95 
-                class="relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-200">
+                class="relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-200 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 
                 {{-- Modal Header --}}
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white">
@@ -69,7 +69,7 @@
                         </div>
                         
                         <div class="mt-8 pt-5 border-t border-slate-100 flex justify-end gap-3 px-2">
-                            <button type="submit" class="px-7 py-2.5 bg-indigo-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i>
                                 <span x-text="isEdit ? 'Simpan Perubahan' : 'Simpan Data BAP'"></span>
                             </button>
@@ -88,18 +88,25 @@
         </div>
 
         <div class="w-full lg:max-w-xl">
-            <form action="{{ route('reports.pemeriksaan.list') }}" method="GET" class="relative group">
-                <div x-data="{ query: '{{ request('search') }}' }" class="relative">
-                    <input type="search" name="search" x-model="query" 
-                        onsearch="this.form.requestSubmit()"
-                        placeholder="Cari nomor BAP atau nomor Nota..."
-                        class="w-full pl-11 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all duration-200 text-sm font-medium">
-                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+            <form action="{{ route('reports.pemeriksaan.list') }}" method="GET">
+                <div x-data="{ query: '{{ request('search') }}' }" class="flex items-center rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all overflow-hidden h-11">
+                    <div class="h-full px-4 border-r border-slate-100 flex items-center justify-center text-slate-400 bg-slate-50/50">
                         <i class="fas fa-search text-sm"></i>
-                    </span>
-                    <span x-show="query" @click="location.href='{{ route('reports.pemeriksaan.list') }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-300 cursor-pointer hover:text-rose-500 transition-colors">
+                    </div>
+                    <div class="flex-1 flex items-center h-full">
+                        <input type="text" name="search" x-model="query" 
+                            onsearch="this.form.requestSubmit()"
+                            placeholder="Cari nomor BAP atau nomor Nota..."
+                            class="w-full py-2.5 px-3 text-sm outline-none bg-transparent font-medium placeholder:text-slate-400 text-slate-700">
+                    </div>
+                    <button type="button" x-show="query" x-cloak
+                        @click="query = ''; $nextTick(() => $el.closest('form').requestSubmit())"
+                        class="px-2 text-slate-300 hover:text-rose-500 transition-colors">
                         <i class="fas fa-times-circle"></i>
-                    </span>
+                    </button>
+                    <button type="submit" class="bg-indigo-600 h-full px-6 text-white text-sm font-bold hover:bg-indigo-700 transition-colors flex items-center whitespace-nowrap">
+                        Cari
+                    </button>
                 </div>
             </form>
         </div>

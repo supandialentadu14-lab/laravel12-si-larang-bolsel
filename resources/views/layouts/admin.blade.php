@@ -50,6 +50,18 @@
                                 800: '#3730A3',
                                 900: '#312E81',
                             },
+                            green: {
+                                500: '#22c55e',
+                                600: '#16a34a',
+                            },
+                            blue: {
+                                500: '#3b82f6',
+                                600: '#2563eb',
+                            },
+                            rose: {
+                                500: '#f43f5e',
+                                600: '#e11d48',
+                            },
                         }
                     },
                 },
@@ -76,32 +88,42 @@
         }
 
         .theme-light {
-            --body-bg: #F3F4F6;
-            --body-text: #111827;
-            --sidebar-bg: #F8FAFC;
-            --sidebar-text: #111827;
-            --sidebar-muted: #6B7280;
-            --sidebar-hover: #E5E7EB;
-            --sidebar-active: #D1D5DB;
+            --body-bg: #F8FAFC;
+            --body-text: #1F2937;
+            --sidebar-bg: #F1F5F9;
+            --sidebar-text: #1F2937;
+            --sidebar-muted: #64748B;
+            --sidebar-hover: #E2E8F0;
+            --sidebar-active: #CBD5E1;
             --accent: #4F46E5;
+            --marquee-start: #60A5FA;
+            --marquee-end: #A78BFA;
         }
 
         .theme-dark {
-            --body-bg: #0F131A;
-            --body-text: #E5E7EB;
-            --sidebar-bg: #12171F;
-            --sidebar-text: #E5E7EB;
-            --sidebar-muted: #94A3B8;
-            --sidebar-hover: #1B2230;
-            --sidebar-active: #253047;
-            --accent: #60A5FA;
-            --marquee-start: #93C5FD;
-            --marquee-end: #C4B5FD;
+            --body-bg: #0f172a;
+            --body-text: #f1f5f9;
+            --sidebar-bg: #020617;
+            --sidebar-text: #f1f5f9;
+            --sidebar-muted: #94a3b8;
+            --sidebar-hover: #1e293b;
+            --sidebar-active: #334155;
+            --accent: #60a5fa;
+            --marquee-start: #93c5fd;
+            --marquee-end: #c4b5fd;
+            --card-bg: #1e293b;
+            --card-border: rgba(255, 255, 255, 0.07);
+            --input-bg: #0f172a;
+            --input-border: #334155;
+            --input-text: #f1f5f9;
         }
 
         .theme-light {
-            --marquee-start: #60A5FA;
-            --marquee-end: #A78BFA;
+            --card-bg: #ffffff;
+            --card-border: #f1f5f9;
+            --input-bg: #ffffff;
+            --input-border: #e5e7eb;
+            --input-text: #1f2937;
         }
 
         [x-cloak] {
@@ -109,9 +131,7 @@
         }
 
         .sidebar-modern {
-            background: radial-gradient(1200px 600px at -10% 10%, rgba(167, 139, 250, 0.25) 0%, rgba(14, 20, 40, 0) 50%),
-                radial-gradient(1200px 600px at 120% 40%, rgba(56, 189, 248, 0.25) 0%, rgba(14, 20, 40, 0) 50%),
-                var(--sidebar-bg);
+            background-color: var(--sidebar-bg);
             color: var(--sidebar-text);
             min-height: 100vh;
             will-change: transform, opacity;
@@ -137,15 +157,15 @@
 
         .nav-link.active {
             color: var(--sidebar-text);
-            background: linear-gradient(90deg, rgba(125, 211, 252, .25), rgba(192, 132, 252, .25));
-            box-shadow: 0 0 0 1px rgba(125, 211, 252, .25) inset, 0 6px 18px rgba(125, 211, 252, .22);
+            background-color: var(--sidebar-active);
+            box-shadow: none;
             font-weight: 700;
             border-left: 3px solid var(--accent);
         }
 
         .bg-indigo-800 {
-            background: linear-gradient(90deg, rgba(125, 211, 252, .22), rgba(192, 132, 252, .22));
-            box-shadow: 0 0 0 1px rgba(125, 211, 252, .18) inset, 0 6px 18px rgba(192, 132, 252, .18);
+            background-color: var(--sidebar-active);
+            box-shadow: none;
         }
 
         #page-header h2 {
@@ -180,12 +200,15 @@
         }
 
         input[type="text"],
+        input[type="number"],
         input[type="email"],
         input[type="password"],
         input[type="date"],
         textarea,
         select {
-            border-color: #e5e7eb;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--input-text);
             border-radius: 0.5rem;
             padding: 0.6rem 0.9rem;
             transition: all .2s;
@@ -528,6 +551,55 @@
         .no-anim .overflow-y-auto {
             scroll-behavior: auto;
         }
+        /* ── Global Dark Theme Overrides for Tailwind Classes ── */
+        .theme-dark body {
+            background-color: var(--body-bg);
+            color: var(--body-text);
+        }
+
+        .theme-dark .bg-white,
+        .theme-dark .bg-slate-50,
+        .theme-dark .bg-gray-50 {
+            background-color: var(--card-bg) !important;
+        }
+
+        .theme-dark .text-slate-800,
+        .theme-dark .text-gray-800,
+        .theme-dark .text-slate-700,
+        .theme-dark .text-gray-700 {
+            color: var(--body-text) !important;
+        }
+
+        .theme-dark .text-slate-600,
+        .theme-dark .text-gray-600,
+        .theme-dark .text-slate-500,
+        .theme-dark .text-gray-500 {
+            color: #94a3b8 !important;
+        }
+
+        .theme-dark .border-slate-200,
+        .theme-dark .border-gray-200,
+        .theme-dark .border-slate-100,
+        .theme-dark .border-gray-100,
+        .theme-dark .border-indigo-100 {
+            border-color: var(--card-border) !important;
+        }
+
+        .theme-dark .divide-slate-100 > *,
+        .theme-dark .divide-gray-100 > *,
+        .theme-dark .divide-slate-200 > * {
+            border-color: var(--card-border) !important;
+        }
+
+        .theme-dark footer {
+            border-color: var(--card-border) !important;
+        }
+
+        .theme-dark .bg-indigo-50,
+        .theme-dark .bg-slate-100,
+        .theme-dark .bg-gray-100 {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
     </style>
     <style>
         html {
@@ -590,7 +662,10 @@
     </script>
 </head>
 
-<body class="font-sans antialiased theme-light" x-data="{ sidebarOpen: window.innerWidth >= 1024, theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }" @resize.window="sidebarOpen = window.innerWidth >= 1024;">
+<body class="font-sans antialiased theme-light" 
+    x-data="{ sidebarOpen: window.innerWidth >= 1024, theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }" 
+    x-effect="$el.classList.toggle('theme-dark', theme === 'dark'); $el.classList.toggle('theme-light', theme === 'light'); localStorage.setItem('theme', theme);"
+    @resize.window="sidebarOpen = window.innerWidth >= 1024;">
     <div class="flex h-screen overflow-hidden">
 
         <!-- Mobile Sidebar Backdrop -->
@@ -650,6 +725,12 @@
                             </svg>
                         </button>
                         <div x-show="sidebarOpen && open" x-cloak
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 -translate-y-4"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 -translate-y-4"
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger" :class="open ? 'submenu-open' : ''"
                             style="background: var(--sidebar-hover)">
                             <a href="{{ route('products.index') }}"
@@ -702,6 +783,12 @@
                             </svg>
                         </button>
                         <div x-show="sidebarOpen && open" x-cloak
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 -translate-y-4"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 -translate-y-4"
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger" :class="open ? 'submenu-open' : ''"
                             style="background: var(--sidebar-hover)">
                             <a href="{{ route('stock.index') }}"
@@ -751,6 +838,12 @@
                             </svg>
                         </button>
                         <div x-show="sidebarOpen && open" x-cloak
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 -translate-y-4"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 -translate-y-4"
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
                             <a href="{{ route('reports.index') }}"
@@ -797,6 +890,12 @@
                             </svg>
                         </button>
                         <div x-show="sidebarOpen && open" x-cloak
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 -translate-y-4"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 -translate-y-4"
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
                             <a href="{{ route('reports.nota.list') }}"
@@ -844,6 +943,12 @@
                                 </svg>
                             </button>
                             <div x-show="sidebarOpen && open" x-cloak
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0 -translate-y-4"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-200"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 -translate-y-4"
                                 class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                                 :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
                                 <a href="{{ route('settings.opd.edit') }}"
@@ -866,41 +971,64 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
-
+                                   </div>
             </nav>
 
-            <div class="p-4 text-center" style="background: var(--sidebar-hover)">
-                <button @click="sidebarOpen = !sidebarOpen"
-                    class="w-8 h-8 rounded-full flex items-center justify-center transition focus:outline-none cursor-pointer"
-                    :style="{ backgroundColor: (theme === 'dark' ? '#1F2937' : '#E5E7EB'), color: (theme === 'dark' ?
-                            '#E5E7EB' : '#111827') }">
-                    <i class="fas" :class="sidebarOpen ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
-                </button>
-                <div class="mt-3 flex items-center justify-center gap-2" x-show="sidebarOpen" x-cloak>
-                    <button @click="theme = 'light'; localStorage.setItem('theme','light')"
-                        class="px-3 py-1 rounded-full text-xs font-semibold cursor-pointer"
-                        :style="{ backgroundColor: theme === 'light' ? 'var(--sidebar-active)' : 'transparent',
-                            color: 'var(--sidebar-text)', border: '1px solid ' + (theme === 'light' ?
-                                'transparent' : 'var(--sidebar-muted)') }">
-                        <i class="fas fa-sun"></i> Light
-                    </button>
-                    <button @click="theme = 'dark'; localStorage.setItem('theme','dark')"
-                        class="px-3 py-1 rounded-full text-xs font-semibold cursor-pointer"
-                        :style="{ backgroundColor: theme === 'dark' ? 'var(--sidebar-active)' : 'transparent',
-                            color: 'var(--sidebar-text)', border: '1px solid ' + (theme === 'dark' ?
-                                'transparent' : 'var(--sidebar-muted)') }">
-                        <i class="fas fa-moon"></i> Dark
-                    </button>
+            {{-- Sidebar Footer - Fixed at bottom --}}
+            <div class="mt-auto border-t border-white/10 transition-all duration-300" 
+                :class="sidebarOpen ? 'px-4 py-4' : 'px-0 py-4'"
+                style="background: rgba(0,0,0,0.1)">
+                
+                <div x-show="sidebarOpen" x-cloak x-transition:enter="transition ease-out duration-300 delay-100" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                    <p class="text-[9px] font-bold uppercase tracking-[0.2em] mb-3 opacity-40 text-center" style="color: var(--sidebar-text)">Developer</p>
+                </div>
+
+                <div class="flex items-center justify-center transition-all duration-300" :class="sidebarOpen ? 'gap-3' : 'flex-col gap-4'">
+                    {{-- WhatsApp --}}
+                    <a href="https://wa.me/6285824268216" target="_blank"
+                        x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#25D366'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(37,211,102,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
+                        x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
+                        class="flex items-center justify-center transition-all duration-300"
+                        :class="sidebarOpen ? 'w-9 h-9 rounded-xl bg-white/5 border border-white/10' : 'w-6 h-6'" title="WhatsApp">
+                        <i class="fab fa-whatsapp transition-all duration-300" style="color: rgba(255,255,255,0.2)" :class="sidebarOpen ? 'text-base' : 'text-xs'"></i>
+                    </a>
+
+                    {{-- Email --}}
+                    <a href="mailto:supandialentadu14@gmail.com" target="_blank"
+                        x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#EA4335'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(234,67,53,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
+                        x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
+                        class="flex items-center justify-center transition-all duration-300"
+                        :class="sidebarOpen ? 'w-9 h-9 rounded-xl bg-white/5 border border-white/10' : 'w-6 h-6'" title="Email Developer">
+                        <i class="far fa-envelope transition-all duration-300" style="color: rgba(255,255,255,0.2)" :class="sidebarOpen ? 'text-base' : 'text-xs'"></i>
+                    </a>
+
+                    {{-- Instagram --}}
+                    <a href="https://www.instagram.com/emonn_65?igsh=MWM4c2JzdjNvZG4xMQ%3D%3D&utm_source=qr" target="_blank"
+                        x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#E1306C'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(225,48,108,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
+                        x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
+                        class="flex items-center justify-center transition-all duration-300"
+                        :class="sidebarOpen ? 'w-9 h-9 rounded-xl bg-white/5 border border-white/10' : 'w-6 h-6'" title="Instagram">
+                        <i class="fab fa-instagram transition-all duration-300" style="color: rgba(255,255,255,0.2)" :class="sidebarOpen ? 'text-base' : 'text-xs'"></i>
+                    </a>
+
+                    {{-- Facebook --}}
+                    <a href="https://www.facebook.com/share/18J61xd2XQ/?mibextid=wwXIfr" target="_blank"
+                        x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#1877F2'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(24,119,242,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
+                        x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
+                        class="flex items-center justify-center transition-all duration-300"
+                        :class="sidebarOpen ? 'w-9 h-9 rounded-xl bg-white/5 border border-white/10' : 'w-6 h-6'" title="Facebook">
+                        <i class="fab fa-facebook-f transition-all duration-300" style="color: rgba(255,255,255,0.2)" :class="sidebarOpen ? 'text-base' : 'text-xs'"></i>
+                    </a>
                 </div>
             </div>
+
         </aside>
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden" :style="{ backgroundColor: 'var(--body-bg)' }">
             <!-- Topbar -->
-            <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2"
-                :style="{ backgroundColor: '#ffffff', color: 'var(--body-text)' }">
+            <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2 transition-colors duration-300"
+                :style="{ backgroundColor: theme === 'dark' ? '#12171F' : '#ffffff', color: 'var(--body-text)', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f3f4f6' }">
                 <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden focus:outline-none"
                     :style="{ color: '#374151' }">
                     <i class="fas fa-bars text-xl"></i>
@@ -921,46 +1049,92 @@
 
 
                 <div class="flex items-center space-x-4 flex-shrink-0">
+                    @php
+                        $unreadCount = Auth::user()->unreadNotifications->count();
+                        $lowStockCount = isset($lowStockProducts) ? $lowStockProducts->count() : 0;
+                        $totalAlerts = $unreadCount + $lowStockCount;
+                    @endphp
+
                     <div class="relative" x-data="{ notifyOpen: false }">
                         <button @click="notifyOpen = !notifyOpen"
                             class="text-gray-400 hover:text-blue-600 transition relative focus:outline-none cursor-pointer">
                             <i class="fas fa-bell text-xl"></i>
-                            @if (Auth::user()->unreadNotifications->count() > 0)
+                            @if ($totalAlerts > 0)
                                 <span
                                     class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white bg-red-500 transform translate-x-1/2 -translate-y-1/2 animate-pulse"></span>
                             @endif
                         </button>
 
                         <div x-show="notifyOpen" x-cloak @click.away="notifyOpen = false"
-                            class="absolute right-[-1rem] md:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
-                            x-transition:enter="transition ease-out duration-100"
-                            x-transition:enter-start="transform opacity-0 scale-95"
-                            x-transition:enter-end="transform opacity-100 scale-100">
+                            class="fixed md:absolute left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:right-auto md:inset-x-auto mt-2 top-[4.5rem] md:top-full w-auto md:w-80 sm:max-w-sm rounded-xl shadow-2xl z-[9999] ring-1 overflow-hidden transition-all duration-300 transform md:-translate-x-1/2"
+                            :class="theme === 'dark' ? 'bg-[#1e293b] ring-white/10' : 'bg-white ring-black/5'"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100">
 
-                            <div
-                                class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Notifikasi Sistem</span>
-                                <span
-                                    class="bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold">{{ Auth::user()->unreadNotifications->count() }}</span>
+                            <div class="px-4 py-3 border-b flex justify-between items-center transition-colors"
+                                :class="theme === 'dark' ? 'border-white/10 bg-slate-800/50' : 'border-gray-100 bg-gray-50'">
+                                <span class="text-xs font-bold uppercase tracking-wider" :class="theme === 'dark' ? 'text-slate-400' : 'text-gray-500'">Notifikasi Sistem</span>
+                                @if($totalAlerts > 0)
+                                <span class="bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold">{{ $totalAlerts }}</span>
+                                @endif
                             </div>
 
-                            <div class="max-h-80 overflow-y-auto custom-scrollbar">
+                            <div class="max-h-[70vh] md:max-h-80 overflow-y-auto custom-scrollbar">
+                                {{-- Low Stock Alerts (Real-time) --}}
+                                @if(isset($lowStockProducts) && $lowStockProducts->count() > 0)
+                                    <div class="px-4 py-2 border-b transition-colors"
+                                        :class="theme === 'dark' ? 'bg-rose-500/10 border-rose-500/20' : 'bg-rose-50/50 border-rose-100'">
+                                        <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Peringatan Stok</p>
+                                    </div>
+                                    @foreach($lowStockProducts as $product)
+                                        <div class="block px-4 py-3 transition-colors border-b last:border-0 relative"
+                                            :class="theme === 'dark' ? 'hover:bg-rose-500/5 border-white/5' : 'hover:bg-rose-50/30 border-gray-50'">
+                                            <div class="flex items-center gap-3">
+                                                <div class="flex-shrink-0 bg-rose-100 rounded-full h-8 w-8 flex items-center justify-center">
+                                                    <i class="fas fa-exclamation-circle text-rose-600 text-xs"></i>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="flex justify-between items-baseline mb-0.5">
+                                                        <p class="text-[11px] font-bold truncate" :class="theme === 'dark' ? 'text-slate-200' : 'text-gray-800'">
+                                                            {{ $product->name }}
+                                                        </p>
+                                                        <span class="text-[9px] font-bold text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded flex-shrink-0">STOK RENDAH</span>
+                                                    </div>
+                                                    <p class="text-[10px] leading-tight" :class="theme === 'dark' ? 'text-slate-400' : 'text-gray-500'">
+                                                        Sisa stok: <strong :class="theme === 'dark' ? 'text-rose-400' : 'text-gray-700'">{{ $product->stock }}</strong> {{ $product->unit }}. Segera pengadaan.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                {{-- Database Notifications --}}
+                                @if($unreadCount > 0)
+                                    <div class="px-4 py-2 border-b transition-colors"
+                                        :class="theme === 'dark' ? 'bg-slate-800/50 border-white/5' : 'bg-gray-50 border-gray-100'">
+                                        <p class="text-[10px] font-bold uppercase tracking-widest" :class="theme === 'dark' ? 'text-slate-500' : 'text-gray-400'">Riwayat Notifikasi</p>
+                                    </div>
+                                @endif
+
                                 @forelse (Auth::user()->unreadNotifications as $notification)
-                                    <div class="block px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50 last:border-0 relative group">
+                                    <div class="block px-4 py-3 transition group border-b last:border-0 relative"
+                                        :class="theme === 'dark' ? 'hover:bg-white/5 border-white/5' : 'hover:bg-gray-50 border-gray-50'">
                                         <div class="flex items-center gap-3">
-                                            <div class="flex-shrink-0 bg-orange-100 rounded-full h-8 w-8 flex items-center justify-center">
-                                                <i class="fas fa-exclamation-triangle text-orange-600 text-xs"></i>
+                                            <div class="flex-shrink-0 bg-indigo-100 rounded-full h-8 w-8 flex items-center justify-center">
+                                                <i class="fas fa-bell text-indigo-600 text-xs"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex justify-between items-baseline mb-0.5">
-                                                    <p class="text-[11px] font-bold text-gray-800 truncate">
+                                                    <p class="text-[11px] font-bold truncate" :class="theme === 'dark' ? 'text-slate-200' : 'text-gray-800'">
                                                         {{ $notification->data['product_name'] ?? 'Peringatan' }}
                                                     </p>
-                                                    <p class="text-[9px] text-gray-400 whitespace-nowrap ml-2">
+                                                    <p class="text-[9px] whitespace-nowrap ml-2" :class="theme === 'dark' ? 'text-slate-500' : 'text-gray-400'">
                                                         {{ $notification->created_at->diffForHumans() }}
                                                     </p>
                                                 </div>
-                                                <p class="text-[10px] text-gray-500 line-clamp-2 leading-tight">
+                                                <p class="text-[10px] line-clamp-2 leading-tight" :class="theme === 'dark' ? 'text-slate-400' : 'text-gray-500'">
                                                     {{ $notification->data['message'] }}
                                                 </p>
                                             </div>
@@ -973,10 +1147,12 @@
                                         </form>
                                     </div>
                                 @empty
-                                    <div class="py-12 text-center text-gray-400">
-                                        <i class="fas fa-bell-slash text-3xl mb-3 block opacity-20"></i>
-                                        <p class="text-xs font-medium">Tidak ada notifikasi baru</p>
-                                    </div>
+                                    @if(!isset($lowStockProducts) || $lowStockProducts->count() == 0)
+                                        <div class="py-12 text-center text-gray-400">
+                                            <i class="fas fa-bell-slash text-3xl mb-3 block opacity-20"></i>
+                                            <p class="text-xs font-medium">Tidak ada notifikasi baru</p>
+                                        </div>
+                                    @endif
                                 @endforelse
                             </div>
                             
@@ -993,7 +1169,15 @@
                         </div>
                     </div>
 
-                    <div class="h-6 w-px bg-gray-300 mx-2"></div>
+                    <!-- Theme Toggle Button -->
+                    <button @click="theme = (theme === 'dark' ? 'light' : 'dark')"
+                        class="relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 focus:outline-none"
+                        :class="theme === 'dark' ? 'bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                        :title="theme === 'dark' ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'">
+                        <i class="fas text-lg transition-all duration-300" :class="theme === 'dark' ? 'fa-sun' : 'fa-moon'"></i>
+                    </button>
+
+                    <div class="h-6 w-px mx-2" :style="{ backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.15)' : '#d1d5db' }"></div>
 
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open"
@@ -1002,15 +1186,16 @@
                                 src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}"
                                 alt="User">
                             <div class="hidden md:block text-left">
-                                <p class="text-sm font-bold leading-tight" style="color:#111827">
+                                <p class="text-sm font-bold leading-tight" :style="{ color: theme === 'dark' ? '#f1f5f9' : '#111827' }">
                                     {{ Auth::user()->name }}</p>
-                                <p class="text-xs" style="color:#6B7280">{{ Auth::user()->email }}</p>
+                                <p class="text-xs" :style="{ color: theme === 'dark' ? '#94a3b8' : '#6B7280' }">{{ Auth::user()->email }}</p>
                             </div>
-                            <i class="fas fa-chevron-down hidden md:block" style="color:#9CA3AF"></i>
+                            <i class="fas fa-chevron-down hidden md:block" :style="{ color: theme === 'dark' ? '#64748b' : '#9CA3AF' }"></i>
                         </button>
 
                         <div x-show="open" x-cloak @click.away="open = false"
-                            class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
+                            class="absolute right-0 mt-2 w-64 rounded-xl shadow-xl z-50 ring-1 ring-black ring-opacity-5 overflow-hidden transition-all duration-300"
+                            :class="theme === 'dark' ? 'bg-[#1e293b] ring-white/10' : 'bg-white'"
                             x-transition:enter="transition ease-out duration-150"
                             x-transition:enter-start="transform opacity-0 scale-95"
                             x-transition:enter-end="transform opacity-100 scale-100">
@@ -1027,17 +1212,19 @@
                             </div>
                             <div class="py-2">
                                 <a href="{{ route('profile.edit') }}"
-                                    class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
-                                    style="color:#374151">
-                                    <i class="fas fa-user-edit text-indigo-600"></i>
+                                    class="flex items-center gap-2 px-4 py-2 text-sm transition-colors"
+                                    :class="theme === 'dark' ? 'hover:bg-slate-700/50 text-slate-200' : 'hover:bg-gray-50 text-gray-700'"
+                                    :style="{ color: theme === 'dark' ? '#e2e8f0' : '#374151' }">
+                                    <i class="fas fa-user-edit text-indigo-500"></i>
                                     Edit Profil
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}" class="no-soft">
                                     @csrf
                                     <button type="submit"
-                                        class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
-                                        style="color:#374151">
-                                        <i class="fas fa-sign-out-alt text-red-600"></i>
+                                        class="w-full flex items-center gap-2 px-4 py-2 text-sm transition-colors"
+                                        :class="theme === 'dark' ? 'hover:bg-slate-700/50 text-slate-200' : 'hover:bg-gray-50 text-gray-700'"
+                                        :style="{ color: theme === 'dark' ? '#e2e8f0' : '#374151' }">
+                                        <i class="fas fa-sign-out-alt text-rose-500"></i>
                                         Keluar
                                     </button>
                                 </form>
@@ -1048,12 +1235,13 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6" style="color:#111827">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 transition-colors duration-300"
+                :style="{ backgroundColor: 'var(--body-bg)', color: 'var(--body-text)' }">
                 <!-- Page Header & Actions -->
                 <div id="page-header" class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold" style="color:#111827">@yield('header')</h2>
-                        <p class="text-sm mt-1" style="color:#6B7280">@yield('subheader')</p>
+                        <h2 class="text-2xl font-bold" :style="{ color: 'var(--body-text)' }">@yield('header')</h2>
+                        <p class="text-sm mt-1" :style="{ color: theme === 'dark' ? '#94a3b8' : '#6B7280' }">@yield('subheader')</p>
                     </div>
                     <div class="flex items-center space-x-3">
                         @yield('actions')
@@ -1093,12 +1281,13 @@
 
                 @yield('content')
             </main>
-            <footer class="no-print bg-white text-gray-600 border-t ring-1 ring-gray-100">
+            <footer class="no-print border-t transition-colors duration-300"
+                :style="{ backgroundColor: theme === 'dark' ? '#12171F' : '#ffffff', color: theme === 'dark' ? '#94a3b8' : '#6B7280', borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : '#f3f4f6' }">
                 <div class="px-6 py-4 flex items-center justify-between">
                     <p class="text-xs md:text-sm font-medium">
                         Copyright © 2026 Emon Alentadu. Seluruh Hak Cipta Dilindungi.
                     </p>
-                    <div class="hidden md:flex items-center gap-3 text-xs text-gray-400">
+                    <div class="hidden md:flex items-center gap-3 text-xs">
                         <span class="inline-flex items-center gap-1">
                             <i class="fas fa-shield-alt text-indigo-500"></i>
                             Keamanan Data Terjaga

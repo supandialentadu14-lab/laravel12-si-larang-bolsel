@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -150,11 +152,12 @@
                 
                 <div class="relative z-10">
                     {{ $slot }}
+
                 </div>
             </div>
 
             <!-- Footer -->
-            <div class="mt-4 sm:mt-8 text-center animate__animated animate__fadeIn animate__delay-1s">
+            <div class="mt-4 sm:mt-6 text-center animate__animated animate__fadeIn animate__delay-1s">
                 <p class="text-[8px] text-white/30 font-medium tracking-widest uppercase">Copyright © 2026 Emon Alentadu</p>
             </div>
         </div>

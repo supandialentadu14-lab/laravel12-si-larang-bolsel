@@ -151,7 +151,7 @@
             {{-- ── Form Actions ────────────────────────────────────────────────── --}}
             <div class="mt-8 pt-6 border-t border-slate-200 flex justify-end gap-3">
                 <a href="{{ route('settings.nota.master.list') }}" class="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Batal</a>
-                <button type="submit" class="px-6 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-100 transition-colors flex items-center gap-2">
+                <button type="submit" class="px-6 py-2.5 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-100 transition-colors flex items-center gap-2">
                     <i class="fas fa-save"></i> Simpan Data
                 </button>
             </div>

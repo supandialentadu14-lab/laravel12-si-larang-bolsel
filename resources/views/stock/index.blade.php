@@ -49,19 +49,25 @@
         </div>
 
         <div class="w-full md:max-w-md">
-            <form action="{{ route('stock.index') }}" method="GET" class="relative group" x-data="{ search: '{{ request('search') }}' }" x-ref="searchForm">
-                <div class="relative">
-                    <input type="text" name="search" x-model="search" 
-                        @input.debounce.750ms="$refs.searchForm.requestSubmit()"
-                        x-init="$el.focus(); $el.setSelectionRange($el.value.length, $el.value.length)"
-                        placeholder="Cari nama barang atau no. surat..."
-                        class="w-full pl-11 pr-11 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all duration-200 text-sm font-medium">
-                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+            <form action="{{ route('stock.index') }}" method="GET" x-ref="searchForm">
+                <div x-data="{ search: '{{ request('search') }}' }" class="flex items-center rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all overflow-hidden h-11">
+                    <div class="h-full px-4 border-r border-slate-100 flex items-center justify-center text-slate-400 bg-slate-50/50">
                         <i class="fas fa-search text-sm"></i>
-                    </span>
-                    <span x-show="search" @click="location.href='{{ route('stock.index') }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-300 cursor-pointer hover:text-rose-500 transition-colors">
+                    </div>
+                    <div class="flex-1 flex items-center h-full text-slate-700">
+                        <input type="text" name="search" x-model="search" 
+                            @input.debounce.750ms="$refs.searchForm.requestSubmit()"
+                            placeholder="Cari nama barang atau no. surat..."
+                            class="w-full py-2.5 px-3 text-sm outline-none bg-transparent font-medium placeholder:text-slate-400">
+                    </div>
+                    <button type="button" x-show="search" x-cloak
+                        @click="search = ''; $nextTick(() => $refs.searchForm.requestSubmit())"
+                        class="px-2 text-slate-300 hover:text-rose-500 transition-colors">
                         <i class="fas fa-times-circle"></i>
-                    </span>
+                    </button>
+                    <button type="submit" class="bg-indigo-600 h-full px-6 text-white text-sm font-bold hover:bg-indigo-700 transition-colors flex items-center whitespace-nowrap">
+                        Cari
+                    </button>
                 </div>
             </form>
         </div>
@@ -70,9 +76,9 @@
     {{-- Modal Tambah --}}
     <div x-show="showCreateModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showCreateModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);" @click="showCreateModal = false"></div>
+            <div x-show="showCreateModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showCreateModal = false"></div>
             
-            <div x-show="showCreateModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all w-full max-w-2xl sm:my-8">
+            <div x-show="showCreateModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all w-full max-w-2xl sm:my-8 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 {{-- Modal Header --}}
                 <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
                     <h3 class="text-base font-bold flex items-center gap-2">
@@ -149,7 +155,7 @@
                         </div>
                         
                         <div class="mt-8 flex justify-end gap-3 px-2">
-                            <button type="submit" class="px-7 py-2.5 bg-indigo-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Simpan Transaksi
                             </button>
                         </div>
@@ -162,9 +168,9 @@
     {{-- Modal Edit --}}
     <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);" @click="showEditModal = false"></div>
+            <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showEditModal = false"></div>
             
-            <div x-show="showEditModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all w-full max-w-2xl sm:my-8">
+            <div x-show="showEditModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all w-full max-w-2xl sm:my-8 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 {{-- Modal Header --}}
                 <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
                     <h3 class="text-base font-bold flex items-center gap-2">
@@ -241,7 +247,7 @@
                         </div>
                         
                         <div class="mt-8 flex justify-end gap-3 px-2">
-                            <button type="submit" class="px-7 py-2.5 bg-amber-500 rounded-lg text-sm font-bold text-white shadow-lg shadow-amber-100 hover:bg-amber-600 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Perbarui Transaksi
                             </button>
                         </div>

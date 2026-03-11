@@ -35,13 +35,25 @@
         </div>
 
         <div class="w-full md:max-w-md">
-            <form action="{{ route('suppliers.index') }}" method="GET" class="relative group">
-                <div x-data="{ query: '{{ request('search') }}' }" class="relative">
-                    <input type="text" name="search" x-model="query" 
-                        @input.debounce.750ms="$el.closest('form').requestSubmit()"
-                        x-init="$el.focus(); $el.setSelectionRange($el.value.length, $el.value.length)"
-                        placeholder="Cari nama penyedia atau NPWP..."
-                        class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all duration-200 text-sm font-medium">
+            <form action="{{ route('suppliers.index') }}" method="GET">
+                <div x-data="{ query: '{{ request('search') }}' }" class="flex items-center rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all overflow-hidden h-11">
+                    <div class="h-full px-4 border-r border-slate-100 flex items-center justify-center text-slate-400 bg-slate-50/50">
+                        <i class="fas fa-search text-sm"></i>
+                    </div>
+                    <div class="flex-1 flex items-center h-full">
+                        <input type="text" name="search" x-model="query" 
+                            @input.debounce.750ms="$el.closest('form').requestSubmit()"
+                            placeholder="Cari nama penyedia atau NPWP..."
+                            class="w-full py-2.5 px-3 text-sm outline-none bg-transparent font-medium placeholder:text-slate-400 text-slate-700">
+                    </div>
+                    <button type="button" x-show="query" x-cloak
+                        @click="query = ''; $nextTick(() => $el.closest('form').requestSubmit())"
+                        class="px-2 text-slate-300 hover:text-rose-500 transition-colors">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                    <button type="submit" class="bg-indigo-600 h-full px-6 text-white text-sm font-bold hover:bg-indigo-700 transition-colors flex items-center whitespace-nowrap">
+                        Cari
+                    </button>
                 </div>
             </form>
         </div>
@@ -50,9 +62,9 @@
     {{-- Modal Tambah --}}
     <div x-show="showCreateModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showCreateModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);" @click="showCreateModal = false"></div>
+            <div x-show="showCreateModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showCreateModal = false"></div>
             
-            <div x-show="showCreateModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all sm:max-w-2xl sm:w-full">
+            <div x-show="showCreateModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all sm:max-w-2xl sm:w-full antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 {{-- Modal Header --}}
                 <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
                     <h3 class="text-base font-bold flex items-center gap-2">
@@ -95,7 +107,7 @@
                         </div>
                         
                         <div class="mt-8 flex justify-end gap-3 px-2">
-                            <button type="submit" class="px-7 py-2.5 bg-indigo-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Simpan Data Penyedia
                             </button>
                         </div>
@@ -108,9 +120,9 @@
     {{-- Modal Edit --}}
     <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);" @click="showEditModal = false"></div>
+            <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showEditModal = false"></div>
             
-            <div x-show="showEditModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all sm:max-w-2xl sm:w-full">
+            <div x-show="showEditModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all sm:max-w-2xl sm:w-full antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 {{-- Modal Header --}}
                 <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
                     <h3 class="text-base font-bold flex items-center gap-2">
@@ -157,7 +169,7 @@
                             <button type="button" @click="showEditModal = false" class="px-5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition">
                                 Batal
                             </button>
-                            <button type="submit" class="px-7 py-2.5 bg-amber-500 rounded-lg text-sm font-bold text-white shadow-lg shadow-amber-100 hover:bg-amber-600 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Perbarui Data
                             </button>
                         </div>
@@ -167,35 +179,43 @@
         </div>
     </div>
 
-    <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
-        <table class="w-full text-sm text-left text-slate-700 table-fixed">
-            <thead class="bg-indigo-50/50 text-[9px] uppercase font-extrabold text-indigo-600 tracking-tighter border-b border-indigo-100">
+    <div class="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
+        <table class="w-full text-sm text-left text-slate-700">
+            <thead class="bg-indigo-50/50 text-[10px] uppercase font-bold text-indigo-600 tracking-widest border-b border-indigo-100">
                 <tr>
-                    <th class="px-3 py-4 w-[5%] text-center">
-                        <input type="checkbox" @click="toggleAll()" x-model="allSelected" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-3 w-3 transition-all">
+                    <th class="px-5 py-4 w-10 text-center">
+                        <input type="checkbox" @click="toggleAll()" x-model="allSelected" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4 transition-all">
                     </th>
-                    <th class="px-3 py-4 w-[20%]">Informasi Penyedia</th>
-                    <th class="px-3 py-4 w-[15%] uppercase tracking-tighter">Pimpinan / Pemilik</th>
-                    <th class="px-3 py-4 w-[35%]">Alamat Kantor / Usaha</th>
-                    <th class="px-3 py-4 w-[15%] uppercase tracking-tighter">NPWP</th>
-                    <th class="px-3 py-4 w-[10%] text-right">Aksi</th>
+                    <th class="px-5 py-4 whitespace-nowrap">Informasi Penyedia</th>
+                    <th class="px-5 py-4 whitespace-nowrap">Pimpinan</th>
+                    <th class="px-5 py-4 min-w-[200px]">Alamat Kantor</th>
+                    <th class="px-5 py-4 whitespace-nowrap">NPWP</th>
+                    <th class="px-5 py-4 text-right">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse($suppliers as $supplier)
                     <tr class="hover:bg-indigo-50/30 transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $supplier->id }}') }">
-                        <td class="px-3 py-4 text-center">
-                            <input type="checkbox" value="{{ $supplier->id }}" x-model="selected" @click="updateSelectAll()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-3 w-3 transition-all">
+                        <td class="px-5 py-4 text-center">
+                            <input type="checkbox" value="{{ $supplier->id }}" x-model="selected" @click="updateSelectAll()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4 transition-all">
                         </td>
-                        <td class="px-3 py-4 font-extrabold text-slate-800 whitespace-normal leading-tight break-all text-[10px] uppercase tracking-tighter">{{ $supplier->name }}</td>
-                        <td class="px-3 py-4 text-slate-600 italic font-bold text-[9px] uppercase tracking-tighter break-words leading-tight">{{ $supplier->dir ?: '-' }}</td>
-                        <td class="px-3 py-4 text-slate-500 text-[10px] whitespace-normal leading-relaxed break-all">{{ $supplier->address ?: '-' }}</td>
-                        <td class="px-3 py-4">
-                            <span class="font-mono text-[9px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 tracking-tighter font-bold border border-slate-200 block w-fit">
+                        <td class="px-5 py-4">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-800 leading-tight">{{ $supplier->name }}</span>
+                            </div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="text-slate-600 font-medium text-xs">{{ $supplier->dir ?: '-' }}</span>
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="text-slate-500 text-xs leading-relaxed break-words">{{ $supplier->address ?: '-' }}</span>
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="font-mono text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-600 font-bold border border-slate-200 inline-block whitespace-nowrap">
                                 {{ $supplier->npwp ?: '-' }}
                             </span>
                         </td>
-                        <td class="px-3 py-4 text-right">
+                        <td class="px-5 py-4 text-right">
                             <div class="flex justify-end items-center gap-2">
                                 <button @click="
                                     showEditModal = true;

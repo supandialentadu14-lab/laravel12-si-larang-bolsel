@@ -31,9 +31,9 @@
     {{-- Modal Tambah --}}
     <div x-show="showCreateModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showCreateModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);" @click="showCreateModal = false"></div>
+            <div x-show="showCreateModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showCreateModal = false"></div>
             
-            <div x-show="showCreateModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all sm:max-w-2xl sm:w-full my-8">
+            <div x-show="showCreateModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all sm:max-w-2xl sm:w-full my-8 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 {{-- Modal Header --}}
                 <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
                     <h3 class="text-base font-bold flex items-center gap-2">
@@ -93,7 +93,7 @@
                         </div>
                         
                         <div class="mt-8 flex justify-end gap-3 px-2">
-                            <button type="submit" class="px- py-2.5 bg-indigo-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Simpan Data Barang
                             </button>
                         </div>
@@ -106,9 +106,9 @@
     {{-- Modal Edit --}}
     <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);" @click="showEditModal = false"></div>
+            <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showEditModal = false"></div>
             
-            <div x-show="showEditModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all sm:max-w-2xl sm:w-full">
+            <div x-show="showEditModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all sm:max-w-2xl sm:w-full antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 {{-- Modal Header --}}
                 <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
                     <h3 class="text-base font-bold flex items-center gap-2">
@@ -175,7 +175,7 @@
                             <button type="button" @click="showEditModal = false" class="px-5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition">
                                 Batal
                             </button>
-                            <button type="submit" class="px-7 py-2.5 bg-amber-500 rounded-lg text-sm font-bold text-white shadow-lg shadow-amber-100 hover:bg-amber-600 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Perbarui Data
                             </button>
                         </div>
@@ -188,9 +188,9 @@
     {{-- Modal Import --}}
     <div x-show="showImportModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center sm:px-0 sm:pb-0">
-            <div x-show="showImportModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);" @click="showImportModal = false"></div>
+            <div x-show="showImportModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showImportModal = false"></div>
             
-            <div x-show="showImportModal" x-transition.scale.95 class="relative inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-4xl sm:w-full sm:my-8 border border-gray-200">
+            <div x-show="showImportModal" x-transition.scale.95 class="relative inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-4xl sm:w-full sm:my-8 border border-gray-200 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 
                 {{-- Modal Header --}}
                 <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
@@ -274,68 +274,79 @@
         </div>
     </div>
 
-    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 mb-8">
-        {{-- Tombol Aksi Kiri --}}
-        <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-            <button @click="showCreateModal = true" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all duration-200 flex-1 sm:flex-none">
-                <i class="fas fa-plus"></i> <span class="whitespace-nowrap">Tambah Barang</span>
-            </button>
-            <button @click="showImportModal = true" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-green-200 transition-all duration-200 flex-1 sm:flex-none border-none">
-                <i class="fas fa-file-import"></i> Impor
-            </button>
-            <a href="{{ route('products.export') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 shadow-lg shadow-amber-200 transition-all duration-200 flex-1 sm:flex-none border-none">
-                <i class="fas fa-file-excel"></i> Ekspor
+    {{-- ══ TOOLBAR: Semua dalam 1 baris ══ --}}
+    <form action="{{ route('products.index') }}" method="GET"
+        class="flex items-center gap-2 mb-6 flex-wrap">
+
+        {{-- Tombol Aksi --}}
+        <button type="button" @click="showCreateModal = true"
+            class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all">
+            <i class="fas fa-plus text-xs"></i> Tambah Barang
+        </button>
+        <button type="button" @click="showImportModal = true"
+            class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 shadow-md shadow-emerald-200 transition-all">
+            <i class="fas fa-file-import text-xs"></i> Impor
+        </button>
+        <a href="{{ route('products.export') }}"
+            class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 shadow-md shadow-amber-200 transition-all">
+            <i class="fas fa-file-excel text-xs"></i> Ekspor
+        </a>
+
+        {{-- Garis pemisah --}}
+        <div class="shrink-0 w-px h-8 bg-slate-200 mx-1"></div>
+
+        {{-- Filter Kategori --}}
+        <select name="category_id" onchange="this.form.requestSubmit()"
+            class="shrink-0 bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2.5 outline-none appearance-none font-semibold focus:ring-2 focus:ring-indigo-400/30 focus:border-indigo-400 transition w-44">
+            <option value="">Semua Kategori</option>    
+            @foreach($categories as $cat)
+                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                    {{ $cat->name }}
+                </option>
+            @endforeach
+        </select>
+
+        {{-- Search Input + Cari (mengisi sisa ruang) --}}
+        <div class="flex-1 min-w-[300px]" x-data="{ query: '{{ request('search') }}' }">
+            <div class="flex items-center rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-400 transition-all overflow-hidden h-11">
+                {{-- Icon Area --}}
+                <div class="h-full px-4 border-r border-slate-100 flex items-center justify-center text-slate-400 bg-slate-50/50">
+                    <i class="fas fa-search text-sm"></i>
+                </div>
+                
+                {{-- Input Area --}}
+                <div class="flex-1 flex items-center h-full">
+                    <input type="text" name="search" x-model="query"
+                        @input.debounce.750ms="$el.closest('form').requestSubmit()"
+                        x-init="if(query) { $el.focus(); $el.setSelectionRange($el.value.length, $el.value.length) }"
+                        @keydown.enter.prevent="$el.closest('form').requestSubmit()"
+                        placeholder="Cari nama barang atau SKU..."
+                        class="w-full py-2.5 px-3 text-sm outline-none bg-transparent font-medium placeholder:text-slate-400 text-slate-700">
+                </div>
+
+                {{-- Clear Button --}}
+                <button type="button" x-show="query" x-cloak
+                    @click="query = ''; $nextTick(() => $el.closest('form').requestSubmit())"
+                    class="px-2 text-slate-300 hover:text-rose-500 transition-colors">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+                    
+                {{-- Action Button --}}
+                <button type="submit" class="bg-indigo-600 h-full px-6 text-white text-sm font-bold hover:bg-indigo-700 transition-colors flex items-center whitespace-nowrap">
+                    Cari
+                </button>
+            </div>
+        </div>
+
+        {{-- Reset Filter --}}
+        @if(request('category_id') || request('search') || request('low_stock'))
+            <a href="{{ route('products.index') }}"
+                class="shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100 border border-rose-100 transition text-xs font-bold whitespace-nowrap">
+                <i class="fas fa-undo-alt"></i> Reset
             </a>
-        </div>
+        @endif
 
-        {{-- Filter & Search Kanan --}}
-        <div class="w-full xl:max-w-4xl">
-            <form action="{{ route('products.index') }}" method="GET" class="flex flex-col sm:flex-row items-end gap-4 w-full">
-
-                {{-- Filter Kategori --}}
-                <div class="w-full sm:w-64 group">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 px-1 group-focus-within:text-indigo-600 transition-colors">Filter Kategori</label>
-                    <div class="relative">
-                        <select name="category_id" onchange="this.form.requestSubmit()" 
-                            class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 block p-2.5 outline-none transition-all duration-200 font-bold appearance-none pr-12">
-                            <option value="">Semua Kategori</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                                    {{ $cat->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                {{-- Input Pencarian --}}
-                <div class="flex-1 group w-full">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 px-1 group-focus-within:text-indigo-600 transition-colors">Pencarian Barang</label>
-                    <div x-data="{ query: '{{ request('search') }}' }" class="relative">
-                        <input type="search" name="search" x-model="query" @keydown.enter.prevent="$el.form.requestSubmit()" placeholder="Cari nama barang atau SKU..."
-                            class="w-full pl-4 pr-28 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all duration-200 text-sm font-medium">
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-2">
-                             <span x-show="query" @click="query = ''; $el.closest('form').requestSubmit()" class="p-2 text-slate-300 cursor-pointer hover:text-rose-500 transition-colors">
-                                <i class="fas fa-times-circle"></i>
-                            </span>
-                            <button type="submit" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100 transition ml-1 hidden sm:block">
-                                CARI
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Reset Filter Button --}}
-                @if(request('category_id') || request('search') || request('low_stock'))
-                    <div class="flex items-end flex-none pb-0.5">
-                        <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-all shadow-sm border border-rose-100" title="Reset Filter">
-                            <i class="fas fa-undo-alt text-sm"></i>
-                        </a>
-                    </div>
-                @endif
-            </form>
-        </div>
-    </div>
+    </form>
 
     <div class="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
         <table class="w-full text-sm text-left text-slate-700">

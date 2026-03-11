@@ -1,513 +1,628 @@
 @extends('layouts.admin')
 
-@section('header', 'Dashboard Overview')
+@section('header', 'Dashboard')
 
 @section('actions')
-    <form action="{{ route('dashboard') }}" method="GET" class="flex items-center gap-3 bg-white p-1.5 rounded-lg shadow-sm border border-gray-200">
-        <div class="flex items-center px-2 gap-2">
-            <i class="fas fa-calendar-alt text-gray-400"></i>
-            <input type="date" id="date" name="date" value="{{ request('date') }}" 
-                class="text-sm font-medium text-gray-700 border-none focus:ring-0 p-0 bg-transparent"
-                onchange="this.form.submit()">
-        </div>
+    <form action="{{ route('dashboard') }}" method="GET" id="dateFilterForm"
+        class="dash-filter-form flex items-center gap-2 px-3 py-1.5 rounded-xl border shadow-sm backdrop-blur-sm">
+        <i class="fas fa-calendar-alt text-indigo-400 text-sm"></i>
+        <input type="date" id="dateInput" name="date" value="{{ request('date') }}"
+            class="dash-filter-input text-sm font-medium border-none focus:ring-0 p-0 bg-transparent w-32"
+            onchange="this.form.submit()">
         @if(request('date'))
-            <a href="{{ route('dashboard') }}" class="flex items-center justify-center w-8 h-8 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-md transition" title="Reset Filter">
-                <i class="fas fa-times"></i>
+            <a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-red-500 transition ml-1" title="Reset">
+                <i class="fas fa-times text-xs"></i>
             </a>
         @endif
     </form>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const input = document.getElementById('date');
-            const params = new URLSearchParams(window.location.search);
-            const qdate = params.get('date');
-            if (!qdate) {
-                const now = new Date();
-                const yyyy = now.getFullYear();
-                const mm = String(now.getMonth() + 1).padStart(2, '0');
-                const dd = String(now.getDate()).padStart(2, '0');
-                const today = `${yyyy}-${mm}-${dd}`;
-                if (!input.value) {
-                    input.value = today;
-                }
-            }
-        });
-    </script>
 @endsection
 
 @section('content')
+<div class="space-y-6">
 
-    <!-- Welcome Banner -->
-
-    <!-- Main Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Card 1 -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300 group">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Barang</p>
-                    <h3 class="text-2xl font-extrabold text-gray-800 mt-1">{{ $totalProducts }}</h3>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                    <i class="fas fa-box"></i>
-                </div>
+    {{-- ══════════════════════════════════════════ --}}
+    {{-- WELCOME BANNER                            --}}
+    {{-- ══════════════════════════════════════════ --}}
+    <div class="relative overflow-hidden rounded-2xl p-6 md:p-8"
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #f64f59 100%);">
+        {{-- Decorative circles --}}
+        <div class="absolute -top-16 -right-16 w-64 h-64 bg-white/10 rounded-full blur-xl"></div>
+        <div class="absolute -bottom-12 -left-8 w-48 h-48 bg-white/10 rounded-full blur-lg"></div>
+        <div class="absolute top-4 right-40 w-20 h-20 bg-yellow-300/20 rounded-full blur-md"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <p class="text-white/70 text-sm font-medium mb-1">
+                    {{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}
+                </p>
+                <h1 class="text-white text-2xl md:text-3xl font-extrabold leading-tight">
+                    Halo, {{ Auth::user()->name ?? 'Admin' }}! 👋
+                </h1>
+                <p class="text-white/60 text-sm mt-1">
+                    Selamat datang di SI-LARANG — Sistem Informasi Pengelolaan Persediaan Barang
+                </p>
             </div>
-            <div class="flex items-center text-xs text-gray-500">
-                <span class="text-blue-600 font-semibold mr-1">{{ $totalCategories }}</span> Kategori
+            <div class="flex gap-3 flex-wrap">
+                <a href="{{ route('stock.create') }}"
+                    class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-xl text-sm font-semibold transition-all border border-white/20 hover:scale-105">
+                    <i class="fas fa-plus-circle"></i> Tambah Transaksi
+                </a>
+                <a href="{{ route('stock.index') }}"
+                    class="flex items-center gap-2 px-4 py-2 bg-white text-purple-700 hover:bg-yellow-50 rounded-xl text-sm font-semibold transition-all shadow-lg hover:scale-105">
+                    <i class="fas fa-list"></i> Lihat Stok
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{-- ══════════════════════════════════════════ --}}
+    {{-- TOP KPI CARDS (4 cards)                   --}}
+    {{-- ══════════════════════════════════════════ --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {{-- Card 1: Total Produk --}}
+        <div class="relative overflow-hidden rounded-2xl p-5 group hover:-translate-y-1 transition-all duration-300 cursor-default"
+            style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); box-shadow: 0 10px 30px rgba(79, 172, 254, 0.35);">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
+            <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                    <i class="fas fa-box text-white text-lg"></i>
+                </div>
+                <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Total Produk</p>
+                <p class="text-white text-3xl font-black mt-1">{{ $totalProducts }}</p>
+                <p class="text-white/60 text-xs mt-2 font-medium">{{ $totalCategories }} Kategori</p>
             </div>
         </div>
 
-        <!-- Card 2 -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300 group">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Stok</p>
-                    <h3 class="text-2xl font-extrabold text-gray-800 mt-1">{{ $totalStock }}</h3>
+        {{-- Card 2: Total Stok --}}
+        <div class="relative overflow-hidden rounded-2xl p-5 group hover:-translate-y-1 transition-all duration-300 cursor-default"
+            style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); box-shadow: 0 10px 30px rgba(67, 233, 123, 0.35);">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
+            <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                    <i class="fas fa-cubes text-white text-lg"></i>
                 </div>
-                <div class="w-10 h-10 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-colors">
-                    <i class="fas fa-cubes"></i>
-                </div>
-            </div>
-            <div class="flex items-center text-xs text-gray-500">
-                <span class="text-violet-600 font-semibold mr-1">Unit</span> Tersedia
+                <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Total Stok</p>
+                <p class="text-white text-3xl font-black mt-1">{{ number_format($totalStock) }}</p>
+                <p class="text-white/60 text-xs mt-2 font-medium">Unit tersedia</p>
             </div>
         </div>
 
-        <!-- Card 3 -->
-        <a href="{{ route('products.index', ['low_stock' => 1]) }}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300 group">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Stok Menipis</p>
-                    <h3 class="text-2xl font-extrabold text-gray-800 mt-1">{{ $lowStockCount }}</h3>
+        {{-- Card 3: Stok Menipis --}}
+        <a href="{{ route('products.index', ['low_stock' => 1]) }}"
+            class="relative overflow-hidden rounded-2xl p-5 group hover:-translate-y-1 transition-all duration-300"
+            style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); box-shadow: 0 10px 30px rgba(250, 112, 154, 0.35);">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
+            <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                    <i class="fas fa-exclamation-triangle text-white text-lg"></i>
                 </div>
-                <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-            </div>
-            <div class="flex items-center text-xs text-gray-500">
-                Perlu <span class="text-orange-600 font-semibold mx-1">Restock</span> segera
+                <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Stok Menipis</p>
+                <p class="text-white text-3xl font-black mt-1">{{ $lowStockCount }}</p>
+                <p class="text-white/60 text-xs mt-2 font-medium">Perlu restock segera →</p>
             </div>
         </a>
 
-        <!-- Card 4 -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300 group">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Penyedia</p>
-                    <h3 class="text-2xl font-extrabold text-gray-800 mt-1">{{ $supplierCount }}</h3>
+        {{-- Card 4: Supplier --}}
+        <div class="relative overflow-hidden rounded-2xl p-5 group hover:-translate-y-1 transition-all duration-300 cursor-default"
+            style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); box-shadow: 0 10px 30px rgba(161, 140, 209, 0.35);">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
+            <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                    <i class="fas fa-handshake text-white text-lg"></i>
                 </div>
-                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                    <i class="fas fa-store"></i>
-                </div>
-            </div>
-            <div class="flex items-center text-xs text-gray-500">
-                Partner aktif
-            </div>
-        </div>
-    </div>
-
-    <!-- Today's Activity Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Masuk -->
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">
-            <div class="absolute right-0 top-0 h-full w-1 bg-green-500"></div>
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase">Barang Masuk</p>
-                    <div class="flex items-baseline gap-2 mt-1">
-                        <h3 class="text-2xl font-bold text-gray-800">{{ $inToday }}</h3>
-                        <span class="text-xs text-gray-500">Item</span>
-                    </div>
-                    <p class="text-xs text-green-600 font-semibold mt-2">
-                        + Rp {{ number_format($valueInToday, 0, ',', '.') }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-green-600">
-                    <i class="fas fa-arrow-down text-lg"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Keluar -->
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">
-            <div class="absolute right-0 top-0 h-full w-1 bg-red-500"></div>
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase">Barang Keluar</p>
-                    <div class="flex items-baseline gap-2 mt-1">
-                        <h3 class="text-2xl font-bold text-gray-800">{{ $outToday }}</h3>
-                        <span class="text-xs text-gray-500">Item</span>
-                    </div>
-                    <p class="text-xs text-red-600 font-semibold mt-2">
-                        - Rp {{ number_format($valueOutToday, 0, ',', '.') }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-600">
-                    <i class="fas fa-arrow-up text-lg"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Transaksi -->
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">
-            <div class="absolute right-0 top-0 h-full w-1 bg-indigo-500"></div>
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase">Total Transaksi</p>
-                    <div class="flex items-baseline gap-2 mt-1">
-                        <h3 class="text-2xl font-bold text-gray-800">{{ $transactionsToday }}</h3>
-                        <span class="text-xs text-gray-500">Aktivitas</span>
-                    </div>
-                    <p class="text-xs text-indigo-600 font-semibold mt-2">
-                        {{ $pinjamCount }} Dokumen Pinjam Pakai
-                    </p>
-                </div>
-                <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600">
-                    <i class="fas fa-exchange-alt text-lg"></i>
-                </div>
+                <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Penyedia</p>
+                <p class="text-white text-3xl font-black mt-1">{{ $supplierCount }}</p>
+                <p class="text-white/60 text-xs mt-2 font-medium">Partner aktif</p>
             </div>
         </div>
     </div>
 
-    <!-- Content Grid: Charts & Tables -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        
-        <!-- Left Column: Chart -->
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                <h6 class="font-bold text-gray-800 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-indigo-500 rounded-full"></span>
-                    Pergerakan Stok Hari Ini
-                </h6>
-                <span class="text-xs px-2 py-1 bg-gray-100 rounded text-gray-500">Per Jam</span>
+    {{-- ══════════════════════════════════════════ --}}
+    {{-- ACTIVITY CARDS (Today)                    --}}
+    {{-- ══════════════════════════════════════════ --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {{-- Barang Masuk --}}
+        <div class="dash-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style="background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);">
+                <i class="fas fa-arrow-circle-down text-2xl text-green-700"></i>
             </div>
-            <div class="p-6 flex-1">
-                <div class="relative h-80 w-full">
+            <div>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Masuk Hari Ini</p>
+                <p class="text-2xl font-extrabold text-gray-800">{{ $inToday }} <span class="text-sm font-normal text-gray-400">item</span></p>
+                <p class="text-xs text-green-600 font-semibold">+ Rp {{ number_format($valueInToday, 0, ',', '.') }}</p>
+            </div>
+        </div>
+
+        {{-- Barang Keluar --}}
+        <div class="dash-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                <i class="fas fa-arrow-circle-up text-2xl text-red-500"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Keluar Hari Ini</p>
+                <p class="text-2xl font-extrabold text-gray-800">{{ $outToday }} <span class="text-sm font-normal text-gray-400">item</span></p>
+                <p class="text-xs text-red-500 font-semibold">− Rp {{ number_format($valueOutToday, 0, ',', '.') }}</p>
+            </div>
+        </div>
+
+        {{-- Total Transaksi --}}
+        <div class="dash-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
+                <i class="fas fa-exchange-alt text-2xl text-blue-600"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Transaksi</p>
+                <p class="text-2xl font-extrabold text-gray-800">{{ $transactionsToday }} <span class="text-sm font-normal text-gray-400">aktivitas</span></p>
+                <p class="text-xs text-blue-500 font-semibold">{{ $pinjamCount }} Dokumen Pinjam Pakai</p>
+            </div>
+        </div>
+    </div>
+
+    {{-- ══════════════════════════════════════════ --}}
+    {{-- MAIN CHARTS ROW                           --}}
+    {{-- ══════════════════════════════════════════ --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        {{-- Stock Movement Chart (2/3) --}}
+        <div class="dash-card lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-50">
+                <div>
+                    <h2 class="text-base font-extrabold text-gray-800">Pergerakan Stok Hari Ini</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Berdasarkan jam transaksi</p>
+                </div>
+                <div class="flex gap-3 text-xs">
+                    <span class="flex items-center gap-1.5 font-semibold text-emerald-600">
+                        <span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span> Masuk
+                    </span>
+                    <span class="flex items-center gap-1.5 font-semibold text-rose-500">
+                        <span class="w-3 h-3 rounded-full bg-rose-400 inline-block"></span> Keluar
+                    </span>
+                </div>
+            </div>
+            <div class="p-5">
+                <div class="h-72">
                     <canvas id="stockChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Right Column: Recent Activity & Critical Stock -->
-        <div class="space-y-8 lg:mt-0 mt-8">
-            
-            <!-- Recent Activity -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                    <h6 class="font-bold text-gray-800 text-sm">Aktivitas Terbaru</h6>
-                    <a href="{{ route('stock.index') }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">Lihat Semua</a>
-                </div>
-                <div class="divide-y divide-gray-50 max-h-[300px] overflow-y-auto custom-scrollbar">
-                    @forelse($recentTransactions as $transaction)
-                        <div class="px-5 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center {{ $transaction->type == 'in' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
-                                <i class="fas {{ $transaction->type == 'in' ? 'fa-arrow-down' : 'fa-arrow-up' }} text-xs"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $transaction->product->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $transaction->date->format('H:i') }} • {{ $transaction->type == 'in' ? 'Masuk' : 'Keluar' }}</p>
-                            </div>
-                            <div class="text-right whitespace-nowrap">
-                                <span class="text-sm font-bold {{ $transaction->type == 'in' ? 'text-green-600' : 'text-red-600' }}">
-                                    {{ $transaction->type == 'in' ? '+' : '-' }}{{ $transaction->quantity }}
-                                </span>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="p-6 text-center text-gray-400 text-xs">Belum ada aktivitas hari ini.</div>
-                    @endforelse
-                </div>
+        {{-- Category Donut Chart (1/3) --}}
+        <div class="dash-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 pt-5 pb-4 border-b border-gray-50">
+                <h2 class="text-base font-extrabold text-gray-800">Distribusi Kategori</h2>
+                <p class="text-xs text-gray-400 mt-0.5">Stok per kategori barang</p>
             </div>
-
-            <!-- Critical Stock -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-red-50/30">
-                    <h6 class="font-bold text-red-700 text-sm flex items-center gap-2">
-                        <i class="fas fa-exclamation-circle"></i> Stok Menipis
-                    </h6>
-                </div>
-                <div class="divide-y divide-gray-50 max-h-[250px] overflow-y-auto custom-scrollbar">
-                    @forelse($criticalProducts as $p)
-                        <div class="px-5 py-3 hover:bg-gray-50 transition-colors flex justify-between items-center">
-                            <div class="min-w-0 flex-1 pr-4">
-                                <p class="text-sm font-medium text-gray-800 truncate">{{ $p->name }}</p>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                                    @php $percent = $p->min_stock > 0 ? min(100, ($p->stock_on_date / $p->min_stock) * 100) : 0; @endphp
-                                    <div class="bg-red-500 h-1.5 rounded-full" style="width: {{ $percent }}%"></div>
-                                </div>
-                            </div>
-                            <div class="text-right whitespace-nowrap">
-                                <span class="block text-sm font-bold text-red-600">{{ $p->stock_on_date }}</span>
-                                <span class="text-xs text-gray-400">Min: {{ $p->min_stock }}</span>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="p-6 text-center text-gray-400 text-xs">
-                            <i class="fas fa-check-circle text-green-400 text-2xl mb-2 block"></i>
-                            Stok aman terkendali
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    {{-- Analitik Lanjutan --}}
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
-        <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                <h6 class="font-bold text-gray-800 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-violet-500 rounded-full"></span>
-                    Tren Pengadaan 6 Bulan Terakhir
-                </h6>
-                <span class="text-xs px-2 py-1 bg-gray-100 rounded text-gray-500">Per Bulan</span>
-            </div>
-            <div class="p-6 flex-1">
-                <div class="relative h-64 w-full">
-                    <canvas id="monthlyChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h6 class="font-bold text-gray-800 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-amber-500 rounded-full"></span>
-                    Distribusi Stok per Kategori
-                </h6>
-            </div>
-            <div class="p-6 flex-1 flex items-center justify-center">
+            <div class="p-5">
                 @if($categoryValues->sum() > 0)
-                <div class="relative w-full max-w-[220px] mx-auto aspect-square">
-                    <canvas id="categoryChart"></canvas>
-                </div>
+                    <div class="relative mx-auto" style="width:180px; height:180px;">
+                        <canvas id="categoryChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span class="text-2xl font-black text-gray-800">{{ $categoryValues->sum() }}</span>
+                            <span class="text-xs text-gray-400">Total</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 space-y-2" id="categoryLegend"></div>
                 @else
-                <div class="text-center text-gray-400 py-10">
-                    <i class="fas fa-chart-pie text-4xl mb-3 block opacity-20"></i>
-                    <p class="text-sm">Belum ada data</p>
-                </div>
+                    <div class="flex flex-col items-center justify-center h-48 text-gray-300">
+                        <i class="fas fa-chart-pie text-5xl mb-3"></i>
+                        <p class="text-sm">Belum ada data</p>
+                    </div>
                 @endif
             </div>
         </div>
     </div>
 
-    <!-- Chart Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const canvas = document.getElementById('stockChart');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            const labels = {!! json_encode($labels) !!};
-            const dataIn = {!! json_encode($dataIn) !!};
-            const dataOut = {!! json_encode($dataOut) !!};
-            const netData = dataIn.map((v, i) => v - (dataOut[i] || 0));
-            
-            // Gradients
-            const gradIn = ctx.createLinearGradient(0, 0, 0, 300);
-            gradIn.addColorStop(0, 'rgba(34, 197, 94, 0.7)'); // Green
-            gradIn.addColorStop(1, 'rgba(34, 197, 94, 0.1)');
+    {{-- ══════════════════════════════════════════ --}}
+    {{-- MONTHLY TREND + ACTIVITY + CRITICAL STOCK  --}}
+    {{-- ══════════════════════════════════════════ --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-            const gradOut = ctx.createLinearGradient(0, 0, 0, 300);
-            gradOut.addColorStop(0, 'rgba(239, 68, 68, 0.7)'); // Red
-            gradOut.addColorStop(1, 'rgba(239, 68, 68, 0.1)');
+        {{-- Monthly Trend Bar Chart --}}
+        <div class="dash-card lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-50">
+                <div>
+                    <h2 class="text-base font-extrabold text-gray-800">Tren Pengadaan</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">6 Bulan terakhir</p>
+                </div>
+                <div class="flex gap-3 text-xs">
+                    <span class="flex items-center gap-1.5 font-semibold text-violet-600">
+                        <span class="w-3 h-3 rounded-sm bg-violet-500 inline-block"></span> Masuk
+                    </span>
+                    <span class="flex items-center gap-1.5 font-semibold text-pink-500">
+                        <span class="w-3 h-3 rounded-sm bg-pink-400 inline-block"></span> Keluar
+                    </span>
+                </div>
+            </div>
+            <div class="p-5">
+                <div class="h-60">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
 
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [
-                        {
-                            label: 'Masuk',
-                            data: dataIn,
-                            backgroundColor: gradIn,
-                            borderColor: '#22c55e',
-                            borderWidth: 2,
-                            pointBackgroundColor: '#ffffff',
-                            pointBorderColor: '#22c55e',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'Keluar',
-                            data: dataOut,
-                            backgroundColor: gradOut,
-                            borderColor: '#ef4444',
-                            borderWidth: 2,
-                            pointBackgroundColor: '#ffffff',
-                            pointBorderColor: '#ef4444',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            tension: 0.4
-                        }
-                    ]
+        {{-- Recent Activity Feed --}}
+        <div class="dash-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-50">
+                <h2 class="text-base font-extrabold text-gray-800">Aktivitas Terbaru</h2>
+                <a href="{{ route('stock.index') }}"
+                    class="text-xs font-bold text-indigo-500 hover:text-indigo-700 transition">Lihat Semua →</a>
+            </div>
+            <div class="flex-1 overflow-y-auto divide-y divide-gray-50 max-h-[280px] dash-scroll">
+                @forelse($recentTransactions as $tx)
+                <div class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold
+                        {{ $tx->type == 'in' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
+                        <i class="fas {{ $tx->type == 'in' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-800 truncate">{{ $tx->product->name }}</p>
+                        <p class="text-xs text-gray-400">{{ $tx->date->format('H:i') }}</p>
+                    </div>
+                    <span class="text-sm font-bold {{ $tx->type == 'in' ? 'text-green-600' : 'text-red-500' }} whitespace-nowrap">
+                        {{ $tx->type == 'in' ? '+' : '−' }}{{ $tx->quantity }}
+                    </span>
+                </div>
+                @empty
+                <div class="flex flex-col items-center justify-center p-8 text-gray-300">
+                    <i class="fas fa-inbox text-4xl mb-2"></i>
+                    <p class="text-xs">Belum ada transaksi</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+    {{-- ══════════════════════════════════════════ --}}
+    {{-- CRITICAL STOCK TABLE                      --}}
+    {{-- ══════════════════════════════════════════ --}}
+    @if($criticalProducts->count() > 0)
+    <div class="dash-card bg-white rounded-2xl shadow-sm border border-red-100 overflow-hidden">
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-red-50">
+            <div class="w-8 h-8 bg-red-100 text-red-500 rounded-xl flex items-center justify-center">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div>
+                <h2 class="text-sm font-extrabold text-red-700">Peringatan Stok Menipis</h2>
+                <p class="text-xs text-red-400">{{ $criticalProducts->count() }} barang memerlukan restock segera</p>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-xs text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100">
+                        <th class="text-left px-6 py-3">Nama Barang</th>
+                        <th class="text-center px-4 py-3">Stok Saat Ini</th>
+                        <th class="text-center px-4 py-3">Stok Minimum</th>
+                        <th class="text-left px-6 py-3">Level</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @foreach($criticalProducts->take(8) as $p)
+                    @php
+                        $percent = $p->min_stock > 0 ? min(100, ($p->stock_on_date / $p->min_stock) * 100) : 0;
+                        $barColor = $percent <= 25 ? 'from-red-500 to-red-400' : ($percent <= 60 ? 'from-orange-400 to-yellow-400' : 'from-yellow-400 to-green-400');
+                    @endphp
+                    <tr class="hover:bg-red-50/30 transition">
+                        <td class="px-6 py-3.5 font-semibold text-gray-800">{{ $p->name }}</td>
+                        <td class="px-4 py-3.5 text-center">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-red-100 text-red-600">
+                                {{ $p->stock_on_date }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-center text-gray-500 font-medium">{{ $p->min_stock }}</td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                                    <div class="h-2 rounded-full bg-gradient-to-r {{ $barColor }} transition-all"
+                                        style="width: {{ $percent }}%"></div>
+                                </div>
+                                <span class="text-xs text-gray-400 w-8 text-right">{{ round($percent) }}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
+</div>
+
+{{-- ══════════════════════════════════════════════ --}}
+{{-- SCRIPTS                                       --}}
+{{-- ══════════════════════════════════════════════ --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* ── Colour Palette ─────────────────────────── */
+    const PALETTE = ['#6366f1','#f59e0b','#10b981','#ef4444','#3b82f6','#a855f7','#ec4899','#14b8a6','#f97316','#84cc16'];
+
+    /* ── Theme detection ─────────────────────────── */
+    const isDark    = document.body.classList.contains('theme-dark');
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#f3f4f6';
+    const tickColor = isDark ? '#64748b' : '#9ca3af';
+
+    /* ── Helper: gradient ───────────────────────── */
+    function makeLinearGradient(ctx, top, bottom) {
+        const g = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+        g.addColorStop(0, top);
+        g.addColorStop(1, bottom);
+        return g;
+    }
+
+    /* ════════════════════════════════════════════ */
+    /*  1. STOCK MOVEMENT CHART (per-hour area)    */
+    /* ════════════════════════════════════════════ */
+    const sc = document.getElementById('stockChart');
+    if (sc) {
+        const ctx = sc.getContext('2d');
+        const gradIn  = makeLinearGradient(ctx, 'rgba(52,211,153,0.55)', 'rgba(52,211,153,0.04)');
+        const gradOut = makeLinearGradient(ctx, 'rgba(251,113,133,0.55)', 'rgba(251,113,133,0.04)');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($labels) !!},
+                datasets: [
+                    {
+                        label: 'Masuk',
+                        data: {!! json_encode($dataIn) !!},
+                        borderColor: '#10b981',
+                        borderWidth: 2.5,
+                        backgroundColor: gradIn,
+                        fill: true, tension: 0.45,
+                        pointRadius: 3, pointHoverRadius: 6,
+                        pointBackgroundColor: '#fff', pointBorderColor: '#10b981', pointBorderWidth: 2,
+                    },
+                    {
+                        label: 'Keluar',
+                        data: {!! json_encode($dataOut) !!},
+                        borderColor: '#f43f5e',
+                        borderWidth: 2.5,
+                        backgroundColor: gradOut,
+                        fill: true, tension: 0.45,
+                        pointRadius: 3, pointHoverRadius: 6,
+                        pointBackgroundColor: '#fff', pointBorderColor: '#f43f5e', pointBorderWidth: 2,
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index', intersect: false,
+                        backgroundColor: '#1e293b', titleColor: '#f8fafc',
+                        bodyColor: '#94a3b8', padding: 12, cornerRadius: 10,
+                        callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y} Unit` }
+                    }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { 
-                            position: 'top',
-                            align: 'end',
-                            labels: { 
-                                usePointStyle: true, 
-                                boxWidth: 8,
-                                font: { family: "'Inter', sans-serif", size: 12 }
-                            }
-                        },
-                        tooltip: { 
-                            mode: 'index', 
-                            intersect: false,
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                            titleColor: '#111827',
-                            bodyColor: '#4b5563',
-                            borderColor: '#e5e7eb',
-                            borderWidth: 1,
-                            padding: 12,
-                            boxPadding: 4,
-                            usePointStyle: true,
-                            titleFont: { size: 13, weight: 'bold' },
-                            bodyFont: { size: 12 },
-                            displayColors: true,
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y + ' Unit';
-                                    }
-                                    return label;
-                                }
-                            }
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: tickColor, font: { size: 10 },
+                            callback: (val, idx) => idx % 3 === 0 ? this.getLabelForValue(val) : '',
+                            maxRotation: 0
                         }
                     },
-                    scales: {
-                        x: { 
-                            grid: { display: false },
-                            ticks: { 
-                                font: { size: 11, family: "'Inter', sans-serif" },
-                                color: '#9ca3af'
-                            }
-                        },
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { 
-                                color: '#f3f4f6', 
-                                borderDash: [4, 4],
-                                drawBorder: false
-                            },
-                            ticks: { 
-                                precision: 0,
-                                font: { size: 11, family: "'Inter', sans-serif" },
-                                color: '#9ca3af',
-                                padding: 10
-                            }
-                        }
-                    },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
-                    },
-                    elements: {
-                        line: {
-                            tension: 0.4 // Smooth curve
-                        }
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor, drawBorder: false },
+                        ticks: { color: tickColor, font: { size: 10 }, precision: 0 }
                     }
-                }
+                },
+                interaction: { mode: 'nearest', axis: 'x', intersect: false }
+            }
+        });
+    }
+
+    /* ════════════════════════════════════════════ */
+    /*  2. CATEGORY DOUGHNUT CHART                 */
+    /* ════════════════════════════════════════════ */
+    const cc = document.getElementById('categoryChart');
+    if (cc) {
+        const catLabels = {!! json_encode($categoryLabels) !!};
+        const catValues = {!! json_encode($categoryValues) !!};
+        new Chart(cc.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    data: catValues,
+                    backgroundColor: PALETTE,
+                    borderWidth: 3, borderColor: '#fff',
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: true,
+                cutout: '72%',
+                plugins: { legend: { display: false }, tooltip: {
+                    backgroundColor: '#1e293b', titleColor: '#f8fafc', bodyColor: '#94a3b8',
+                    padding: 10, cornerRadius: 8,
+                }}
+            }
+        });
+        /* Custom Legend */
+        const legend = document.getElementById('categoryLegend');
+        if (legend) {
+            catLabels.forEach((label, i) => {
+                legend.innerHTML += `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${PALETTE[i % PALETTE.length]}"></span>
+                            <span class="text-xs text-gray-600 font-medium">${label}</span>
+                        </div>
+                        <span class="text-xs font-bold text-gray-800">${catValues[i]}</span>
+                    </div>`;
             });
-        });
-    </script>
+        }
+    }
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ---- Monthly Trend Chart ----
-            const mCanvas = document.getElementById('monthlyChart');
-            if (mCanvas) {
-                new Chart(mCanvas.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: {!! json_encode($monthlyLabels) !!},
-                        datasets: [
-                            {
-                                label: 'Masuk',
-                                data: {!! json_encode($monthlyIn) !!},
-                                backgroundColor: 'rgba(99, 102, 241, 0.8)',
-                                borderRadius: 6,
-                                borderSkipped: false,
-                            },
-                            {
-                                label: 'Keluar',
-                                data: {!! json_encode($monthlyOut) !!},
-                                backgroundColor: 'rgba(251, 113, 133, 0.8)',
-                                borderRadius: 6,
-                                borderSkipped: false,
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } }
-                        },
-                        scales: {
-                            x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9ca3af' } },
-                            y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { precision: 0, font: { size: 10 }, color: '#9ca3af' } }
-                        }
-                    }
-                });
-            }
+    /* ════════════════════════════════════════════ */
+    /*  3. MONTHLY TREND BAR CHART                 */
+    /* ════════════════════════════════════════════ */
+    const mc = document.getElementById('monthlyChart');
+    if (mc) {
+        const mctx = mc.getContext('2d');
+        const gradMIn  = mctx.createLinearGradient(0,0,0,240);
+        gradMIn.addColorStop(0, '#818cf8'); gradMIn.addColorStop(1, '#6366f1');
+        const gradMOut = mctx.createLinearGradient(0,0,0,240);
+        gradMOut.addColorStop(0, '#fb7185'); gradMOut.addColorStop(1, '#ec4899');
 
-            // ---- Category Distribution Pie Chart ----
-            const cCanvas = document.getElementById('categoryChart');
-            if (cCanvas) {
-                const palette = ['#6366f1','#f59e0b','#10b981','#f43f5e','#3b82f6','#a855f7','#ec4899','#14b8a6'];
-                new Chart(cCanvas.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: {!! json_encode($categoryLabels) !!},
-                        datasets: [{
-                            data: {!! json_encode($categoryValues) !!},
-                            backgroundColor: palette,
-                            borderWidth: 2,
-                            borderColor: '#fff',
-                            hoverOffset: 8
-                        }]
+        new Chart(mctx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($monthlyLabels) !!},
+                datasets: [
+                    {
+                        label: 'Masuk',
+                        data: {!! json_encode($monthlyIn) !!},
+                        backgroundColor: gradMIn, borderRadius: 8,
+                        borderSkipped: false, barPercentage: 0.55, categoryPercentage: 0.65,
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        cutout: '65%',
-                        plugins: {
-                            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, padding: 8 } }
-                        }
+                    {
+                        label: 'Keluar',
+                        data: {!! json_encode($monthlyOut) !!},
+                        backgroundColor: gradMOut, borderRadius: 8,
+                        borderSkipped: false, barPercentage: 0.55, categoryPercentage: 0.65,
                     }
-                });
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b', titleColor: '#f8fafc',
+                        bodyColor: '#94a3b8', padding: 12, cornerRadius: 10,
+                        callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y} Unit` }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: tickColor, font: { size: 11 } } },
+                    y: { beginAtZero: true, grid: { color: gridColor, drawBorder: false },
+                         ticks: { color: tickColor, font: { size: 11 }, precision: 0 } }
+                }
             }
         });
-    </script>
+    }
+});
+</script>
 
-    <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
-        }
-    </style>
+<style>
+    /* ───── Dash Filter Form ───── */
+    .dash-filter-form {
+        background: rgba(255,255,255,0.85);
+        border-color: #e5e7eb;
+    }
+    .dash-filter-input { color: #374151; }
+
+    /* ───── Smooth scrollbar ───── */
+    .dash-scroll::-webkit-scrollbar { width: 4px; }
+    .dash-scroll::-webkit-scrollbar-track { background: transparent; }
+    .dash-scroll::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+    .dash-scroll::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+    /* ══════════════════════════════════════════════════
+       DARK MODE — triggered by .theme-dark on <body>
+    ════════════════════════════════════════════════════ */
+
+    /* Filter form */
+    .theme-dark .dash-filter-form {
+        background: rgba(26,31,46,0.9);
+        border-color: rgba(255,255,255,0.1);
+    }
+    .theme-dark .dash-filter-input { color: #e2e8f0; }
+    .theme-dark .dash-filter-input::-webkit-calendar-picker-indicator { filter: invert(1); }
+
+    /* White cards → dark cards */
+    .theme-dark .dash-card {
+        background: #1a1f2e;
+        border-color: rgba(255,255,255,0.07);
+        color: #e2e8f0;
+    }
+
+    /* Headings & text inside cards */
+    .theme-dark .dash-card h2,
+    .theme-dark .dash-card h6,
+    .theme-dark .dash-card p,
+    .theme-dark .dash-card span:not([class*="text-"]) {
+        color: inherit;
+    }
+    .theme-dark .dash-card .text-gray-800 { color: #e2e8f0 !important; }
+    .theme-dark .dash-card .text-gray-700 { color: #cbd5e1 !important; }
+    .theme-dark .dash-card .text-gray-600 { color: #94a3b8 !important; }
+    .theme-dark .dash-card .text-gray-500 { color: #64748b !important; }
+    .theme-dark .dash-card .text-gray-400 { color: #475569 !important; }
+
+    /* Dividers inside cards */
+    .theme-dark .dash-card .border-gray-100,
+    .theme-dark .dash-card .divide-gray-50 > * + * {
+        border-color: rgba(255,255,255,0.07) !important;
+    }
+
+    /* Card section headers (bg-gray-50) */
+    .theme-dark .dash-card .bg-gray-50\/50,
+    .theme-dark .dash-card .bg-gray-50 {
+        background-color: rgba(255,255,255,0.04) !important;
+    }
+
+    /* Hover row inside feeds */
+    .theme-dark .dash-card .hover\:bg-gray-50:hover {
+        background-color: rgba(255,255,255,0.05) !important;
+    }
+
+    /* Table row hover */
+    .theme-dark .dash-card tr:hover td {
+        background-color: rgba(255,255,255,0.03) !important;
+    }
+
+    /* Table header text */
+    .theme-dark .dash-card thead th {
+        color: #475569 !important;
+        border-color: rgba(255,255,255,0.07) !important;
+    }
+
+    /* Progress bar track */
+    .theme-dark .dash-card .bg-gray-100 {
+        background-color: rgba(255,255,255,0.1) !important;
+    }
+    .theme-dark .dash-card .bg-gray-200 {
+        background-color: rgba(255,255,255,0.1) !important;
+    }
+
+    /* Chart grid lines in dark */
+    .theme-dark .dash-card .bg-gray-100\/\[0\.5\] {
+        background-color: rgba(255,255,255,0.05) !important;
+    }
+
+    /* Activity badge backgrounds */
+    .theme-dark .dash-card .bg-green-100 { background-color: rgba(34,197,94,0.15) !important; }
+    .theme-dark .dash-card .bg-red-100   { background-color: rgba(239,68,68,0.15) !important; }
+    .theme-dark .dash-card .bg-red-50\/30 { background-color: rgba(239,68,68,0.08) !important; }
+
+    /* Red alert card border */
+    .theme-dark .dash-card.border-red-100 { border-color: rgba(239,68,68,0.2) !important; }
+
+    /* Icon circle backgrounds */
+    .theme-dark .dash-card .bg-green-50  { background-color: rgba(34,197,94,0.12) !important; }
+    .theme-dark .dash-card .bg-red-50    { background-color: rgba(239,68,68,0.12) !important; }
+    .theme-dark .dash-card .bg-blue-50   { background-color: rgba(99,102,241,0.12) !important; }
+    .theme-dark .dash-card .bg-indigo-50 { background-color: rgba(99,102,241,0.12) !important; }
+
+    /* Scrollbar dark */
+    .theme-dark .dash-scroll::-webkit-scrollbar-thumb { background: #2d3748; }
+    .theme-dark .dash-scroll::-webkit-scrollbar-thumb:hover { background: #4a5568; }
+
+    /* Chart scale lines in dark mode */
+    .theme-dark .chart-grid-color { color: rgba(255,255,255,0.05); }
+</style>
 @endsection
