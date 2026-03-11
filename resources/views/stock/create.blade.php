@@ -16,8 +16,10 @@
         <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
 
             {{-- Header card --}}
-            <div class="px-6 py-4 border-b border-gray-100 bg-slate-800">
-                <h6 class="font-bold text-white">Uraian Transaksi</h6>
+            <div class="px-6 py-4 border-b border-slate-200 bg-[#1e293b]">
+                <h6 class="font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-exchange-alt"></i> Form Transaksi Stok Barang
+                </h6>
             </div>
 
             {{-- Form untuk menyimpan transaksi stok --}}
@@ -25,118 +27,81 @@
 
                 @csrf {{-- Token keamanan untuk mencegah CSRF --}}
 
-                {{-- PILIH BARANG --}}
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Barang <span class="text-red-500">*</span>
-                    </label>
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-6 transition-all duration-300">
+                    <h4 class="text-slate-800 font-bold mb-5 flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-box-open text-indigo-500"></i> Detail Barang & Jenis Transaksi
+                    </h4>
+                    
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                            <i class="fas fa-cube"></i> Pilih Produk / Barang <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="product_id" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-sm font-bold bg-white shadow-sm" required>
+                            <option value="">-- Pilih Barang di Gudang --</option>
+                            @foreach ($products as $product)
+                                @php $currentStock = $product->calculated_stock ?? 0; @endphp
+                                <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
+                                    {{ $product->name }} ( Stok Saat Ini: {{ $currentStock }} )
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                    {{-- Dropdown daftar barang --}}
-                    <select name="product_id"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-white"
-                        required>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis Transaksi <span class="text-rose-500">*</span></label>
+                            <div class="flex gap-4">
+                                <label class="flex-1 cursor-pointer group">
+                                    <input type="radio" name="type" value="in" class="peer hidden" {{ old('type') == 'in' ? 'checked' : '' }} required>
+                                    <div class="text-center py-3 rounded-xl border-2 border-slate-200 bg-white peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:border-emerald-600 transition-all duration-300 font-bold text-sm shadow-sm group-hover:border-emerald-200">
+                                        <i class="fas fa-arrow-down mr-1"></i> Stok Masuk
+                                    </div>
+                                </label>
+                                <label class="flex-1 cursor-pointer group">
+                                    <input type="radio" name="type" value="out" class="peer hidden" {{ old('type') == 'out' ? 'checked' : '' }}>
+                                    <div class="text-center py-3 rounded-xl border-2 border-slate-200 bg-white peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-600 transition-all duration-300 font-bold text-sm shadow-sm group-hover:border-rose-200">
+                                        <i class="fas fa-arrow-up mr-1"></i> Stok Keluar
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
 
-                        {{-- Placeholder option --}}
-                        <option value="">-- Pilih Barang --</option>
-
-                        {{-- Loop semua produk --}}
-                        @foreach ($products as $product)
-                            {{-- Ambil stok saat ini dari accessor --}}
-                            @php
-                                $currentStock = $product->calculated_stock ?? 0;
-                            @endphp
-
-                            {{-- Option produk --}}
-                            <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
-                                {{ $product->name }} (Current: {{ $currentStock }})
-                            </option>
-                        @endforeach
-
-                    </select>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jumlah Barang <span class="text-rose-500">*</span></label>
+                            <div class="relative">
+                                <input type="number" name="quantity" min="1" value="{{ old('quantity') }}" class="w-full pl-4 pr-12 py-3 rounded-xl border border-slate-300 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-lg font-black shadow-sm" placeholder="0" required>
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs uppercase">Unit</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- GRID 2 KOLOM: JENIS TRANSAKSI & JUMLAH --}}
-                <div class="grid grid-cols-2 gap-4">
-
-                    {{-- JENIS TRANSAKSI --}}
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">
-                            Jenis Transaksi <span class="text-red-500">*</span>
-                        </label>
-
-                        {{-- Radio button custom dengan peer --}}
-                        <div class="flex space-x-2">
-
-                            {{-- Transaksi Masuk --}}
-                            <label class="flex-1 cursor-pointer">
-                                <input type="radio" name="type" value="in" class="peer hidden"
-                                    {{ old('type') == 'in' ? 'checked' : '' }} required>
-
-                                {{-- Tampilan visual radio --}}
-                                <div
-                                    class="text-center py-2 rounded-lg border border-gray-200 bg-gray-50 
-                                           peer-checked:bg-green-500 peer-checked:text-white 
-                                           peer-checked:border-green-600 transition font-bold text-sm">
-                                    <i class="fas fa-arrow-down mr-1"></i> Masuk
-                                </div>
+                <div class="bg-indigo-50/50 p-6 rounded-xl border border-indigo-100 mb-6 group">
+                    <h4 class="text-indigo-900 font-bold mb-5 flex items-center gap-2 border-b border-indigo-100 pb-2">
+                        <i class="fas fa-file-alt text-indigo-500"></i> Referensi & Keterangan
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <i class="fas fa-calendar-day"></i> Tanggal Transaksi <span class="text-rose-500">*</span>
                             </label>
-
-                            {{-- Transaksi Keluar --}}
-                            <label class="flex-1 cursor-pointer">
-                                <input type="radio" name="type" value="out" class="peer hidden"
-                                    {{ old('type') == 'out' ? 'checked' : '' }}>
-
-                                {{-- Tampilan visual radio --}}
-                                <div
-                                    class="text-center py-2 rounded-lg border border-gray-200 bg-gray-50 
-                                           peer-checked:bg-red-500 peer-checked:text-white 
-                                           peer-checked:border-red-600 transition font-bold text-sm">
-                                    <i class="fas fa-arrow-up mr-1"></i> Keluar
-                                </div>
+                            <input type="date" name="date" value="{{ old('date', date('Y-m-d')) }}" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-sm font-bold shadow-sm" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <i class="fas fa-hashtag"></i> Nomor Surat Terkait
                             </label>
-
+                            <input type="text" name="nosur" value="{{ old('nosur') }}" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-sm shadow-sm" placeholder="Contoh: 001/SPM/XII/2024">
                         </div>
                     </div>
 
-                    {{-- JUMLAH BARANG --}}
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">
-                            Jumlah <span class="text-red-500">*</span>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                            <i class="fas fa-comment-dots"></i> Catatan Transaksi / Keperluan
                         </label>
-
-                        {{-- Input jumlah minimal 1 --}}
-                        <input type="number" name="quantity" min="1" value="{{ old('quantity') }}" placeholder="10"
-                            class="w-full px-4 py-2 rounded-lg border border-gray-300 
-                                   focus:border-orange-500 focus:ring-2 focus:ring-orange-200 
-                                   outline-none transition"
-                            required>
+                        <textarea name="notes" rows="2" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-sm leading-relaxed" placeholder="Contoh: Pembelian rutin ATK bulan Desember...">{{ old('notes') }}</textarea>
                     </div>
-
-                </div>
-
-                {{-- TANGGAL TRANSAKSI --}}
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Tanggal
-                    </label>
-
-                    {{-- Default tanggal hari ini --}}
-                    <input type="date" name="date" value="{{ old('date', date('Y-m-d')) }}"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 
-                               focus:border-orange-500 focus:ring-2 focus:ring-orange-200 
-                               outline-none transition"
-                        required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Nomor Surat Penerimaan/Pengeluaran
-                    </label>
-
-                    {{-- Default tanggal hari ini --}}
-                    <textarea name="nosur" rows="1" placeholder="Masukkan Nomor Surat Penerimaan/Penegeluaran"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 
-                               focus:border-orange-500 focus:ring-2 focus:ring-orange-200 
-                               outline-none transition">{{ old('nosur') }}</textarea>
                 </div>
                 {{-- KETERANGAN --}}
                 <div>

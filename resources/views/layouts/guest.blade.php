@@ -117,7 +117,7 @@
     </div>
 
     <!-- Right Side - Login Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 relative bg-gray-900 overflow-y-auto">
+    <div class="w-full lg:w-1/2 flex items-start sm:items-center justify-center p-4 sm:p-6 relative bg-gray-900 overflow-y-auto">
         <!-- Background Image for Mobile Only -->
         <div class="absolute inset-0 lg:hidden block z-0">
             <img src="{{ asset('images/login-bg-new.jpg') }}" class="w-full h-full object-cover">
@@ -131,16 +131,20 @@
         
         <div class="w-full max-w-md relative z-10 animate__animated animate__fadeInRight">
             
-            <!-- Logo Mobile -->
-            <div class="text-center lg:hidden mb-8">
-                <div class="inline-flex items-center justify-center mb-4 p-3 bg-white/5 backdrop-blur-md rounded-2xl shadow-xl border border-white/10">
-                    <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo SI-LARANG" class="h-14 w-14 object-contain" onerror="this.style.display='none'">
+            <!-- Logo Mobile Header -->
+            <div class="text-center lg:hidden mb-2 flex flex-col items-center pt-2">
+                <div class="inline-flex items-center justify-center mb-1 p-1 bg-white/5 backdrop-blur-md rounded-lg border border-white/10">
+                    <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo" class="h-6 w-6 object-contain">
                 </div>
-                <h2 class="text-2xl font-bold text-white">SI-LARANG</h2>
+                <div class="flex flex-col items-center">
+                    <h2 class="text-xs font-black text-white tracking-[0.3em] uppercase leading-none">SI-LARANG</h2>
+                    <div class="h-[1px] w-6 bg-brand-500 my-1"></div>
+                    <p class="text-[7px] text-white font-bold leading-tight uppercase tracking-tight">Sistem Informasi Pengelolaan Persediaan barang</p>
+                </div>
             </div>
 
             <!-- Glass Card Form -->
-            <div class="bg-white/5 backdrop-blur-xl rounded-[2rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 p-8 sm:p-10 relative overflow-hidden group">
+            <div class="bg-white/5 backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 p-4 sm:p-10 relative overflow-hidden group">
                 <!-- Shine Effect -->
                 <div class="absolute inset-0 -translate-x-full group-hover:animate-[shine_1.5s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent z-0 pointer-events-none"></div>
                 
@@ -150,8 +154,8 @@
             </div>
 
             <!-- Footer -->
-            <div class="mt-8 text-center animate__animated animate__fadeIn animate__delay-1s">
-                <p class="text-[10px] text-white/40 font-medium tracking-widest uppercase">Copyright © 2026 Emon Alentadu</p>
+            <div class="mt-4 sm:mt-8 text-center animate__animated animate__fadeIn animate__delay-1s">
+                <p class="text-[8px] text-white/30 font-medium tracking-widest uppercase">Copyright © 2026 Emon Alentadu</p>
             </div>
         </div>
     </div>

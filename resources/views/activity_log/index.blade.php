@@ -5,34 +5,43 @@
 
 @section('content')
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-        <h3 class="font-bold text-gray-700">Audit Trail</h3>
-        <div class="relative w-72" x-data="{ search: '{{ request('search') }}' }">
-            <form method="GET" action="{{ route('activity_log.index') }}" x-ref="searchForm">
-                <input 
-                    type="text" 
-                    name="search" 
-                    x-model="search"
-                    x-init="$el.focus(); $el.setSelectionRange($el.value.length, $el.value.length)"
-                    @input.debounce.750ms="$refs.searchForm.requestSubmit()"
-                    placeholder="Cari log aktivitas..." 
-                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all text-sm bg-white"
-                >
-                <div class="absolute left-3 top-2.5 text-gray-400" x-show="!search">
-                    <i class="fas fa-search"></i>
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 p-6">
+        <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+                <i class="fas fa-history text-lg"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-800">Log Aktivitas Sistem</h3>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Audit Trail & Riwayat Perubahan</p>
+            </div>
+        </div>
+
+        <div class="w-full lg:max-w-md">
+            <form action="{{ route('activity_log.index') }}" method="GET" class="relative group">
+                <div x-data="{ query: '{{ request('search') }}' }" class="relative">
+                    <input type="text" name="search" x-model="query" 
+                        onsearch="this.form.requestSubmit()"
+                        placeholder="Cari logs..."
+                        class="w-full pl-11 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all duration-200 text-sm font-medium">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                        <i class="fas fa-search text-sm"></i>
+                    </span>
+                    <span x-show="query" @click="location.href='{{ route('activity_log.index') }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-300 cursor-pointer hover:text-rose-500 transition-colors">
+                        <i class="fas fa-times-circle"></i>
+                    </span>
                 </div>
             </form>
         </div>
     </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-700">
-            <thead class="bg-gray-50 text-xs uppercase font-bold text-gray-500">
+    <div class="overflow-x-auto border-t border-slate-100">
+        <table class="w-full text-sm text-left text-slate-700">
+            <thead class="bg-indigo-50/50 text-[10px] uppercase font-bold text-indigo-600 tracking-widest border-b border-indigo-100 transition-all">
                 <tr>
-                    <th class="px-6 py-4">Waktu</th>
-                    <th class="px-6 py-4">User</th>
-                    <th class="px-6 py-4">Aksi</th>
-                    <th class="px-6 py-4">Deskripsi</th>
-                    <th class="px-6 py-4">IP Address</th>
+                    <th class="px-6 py-4">Waktu Kejadian</th>
+                    <th class="px-6 py-4">Nama Pengguna</th>
+                    <th class="px-6 py-4">Tipe Aksi</th>
+                    <th class="px-6 py-4 w-1/2">Detail Perubahan / Audit Trail</th>
+                    <th class="px-6 py-4">Alamat IP</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -52,16 +61,16 @@
                             {{ $log->action }}
                         </span>
                     </td>
-                    <td class="px-6 py-4">
-                        <div class="text-gray-800 font-medium mb-1">{{ $log->description }}</div>
+                    <td class="px-6 py-4 whitespace-normal">
+                        <div class="text-slate-800 font-bold text-xs mb-2 leading-tight uppercase tracking-tight">{{ $log->description }}</div>
                         @if($log->formatted_properties)
-                            <div class="space-y-1">
+                            <div class="space-y-1.5 bg-slate-50/50 p-2 rounded-lg border border-slate-100">
                                 @foreach($log->formatted_properties as $change)
-                                    <div class="flex items-center gap-2 text-xs">
-                                        <span class="text-gray-400 font-semibold w-24">{{ $change['label'] }}:</span>
-                                        <span class="text-red-400 line-through">{{ $change['old'] }}</span>
-                                        <i class="fas fa-arrow-right text-[10px] text-gray-300"></i>
-                                        <span class="text-green-600 font-bold bg-green-50 px-1 rounded">{{ $change['new'] }}</span>
+                                    <div class="flex flex-wrap items-center gap-x-2 text-[10px]">
+                                        <span class="text-slate-400 font-bold uppercase tracking-tighter w-20">{{ $change['label'] }}:</span>
+                                        <span class="text-rose-400 line-through">{{ $change['old'] }}</span>
+                                        <i class="fas fa-arrow-right text-[8px] text-slate-300"></i>
+                                        <span class="text-emerald-600 font-bold bg-emerald-50 px-1 rounded">{{ $change['new'] }}</span>
                                     </div>
                                 @endforeach
                             </div>

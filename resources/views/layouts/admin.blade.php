@@ -828,7 +828,7 @@
                             x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                                 open = s[key] ?? ({{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') ? 'true' : 'false' }}); })()">
                             <button
-                                @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('settings.opd.index') }}')"
+                                @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('settings.opd.edit') }}')"
                                 class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                                 style="color: var(--sidebar-text)"
                                 :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -846,15 +846,10 @@
                             <div x-show="sidebarOpen && open" x-cloak
                                 class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                                 :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-                                <a href="{{ route('settings.opd.index') }}"
-                                    class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.opd.*') ? 'bg-indigo-500 text-white' : '' }}"
+                                <a href="{{ route('settings.opd.edit') }}"
+                                    class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') ? 'bg-indigo-500 text-white' : '' }}"
                                     style="color: var(--sidebar-text)">
-                                    OPD
-                                </a>
-                                <a href="{{ route('settings.nota.master.list') }}"
-                                    class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.nota.master.*') ? 'bg-indigo-500 text-white' : '' }}"
-                                    style="color: var(--sidebar-text)">
-                                    Penandatangan
+                                    Profil & Penandatangan
                                 </a>
 
                                 @if (Auth::check() && Auth::user()->isAdmin())
@@ -970,7 +965,7 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        <form action="{{ route('notifications.mark-as-read', $notification->id) }}" method="POST" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition">
+                                        <form action="{{ route('notifications.mark-as-read', $notification->id) }}" method="POST" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition no-soft">
                                             @csrf
                                             <button type="submit" class="text-gray-300 hover:text-indigo-500 p-1" title="Tandai sudah dibaca">
                                                 <i class="fas fa-check-circle text-[10px]"></i>
@@ -987,7 +982,7 @@
                             
                             @if(Auth::user()->unreadNotifications->count() > 0)
                             <div class="p-2 bg-gray-50 border-t border-gray-100 text-center">
-                                <form action="{{ route('notifications.mark-all-read') }}" method="POST">
+                                <form action="{{ route('notifications.mark-all-read') }}" method="POST" class="no-soft">
                                     @csrf
                                     <button type="submit" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-tighter">
                                         Tandai Semua Sudah Dibaca

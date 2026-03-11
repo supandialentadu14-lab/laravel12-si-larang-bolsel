@@ -18,11 +18,11 @@ class ProductController extends Controller
         $categories = Category::all();
         $suppliers = Supplier::all();
 
-        // Ambil barang terakhir berdasarkan id
-        $lastProduct = Product::latest()->first();
+        // Ambil barang terakhir berdasarkan id, termasuk yang dihapus soft-delete
+        $lastProduct = Product::withTrashed()->orderBy('id', 'desc')->first();
 
-        if ($lastProduct) {
-            $lastNumber = (int) substr($lastProduct->sku, 4);
+        if ($lastProduct instanceof Product && preg_match('/BRG-(\d+)/', (string) $lastProduct->sku, $matches)) {
+            $lastNumber = (int) $matches[1];
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
@@ -49,6 +49,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $categories = Category::all();
+        $suppliers = Supplier::all();
         $products = Product::with(['category', 'transactions'])
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function($q) use ($request) {
@@ -67,7 +68,7 @@ class ProductController extends Controller
             })
             ->paginate(10);
 
-        return view('products.index', compact('products', 'categories'));
+        return view('products.index', compact('products', 'categories', 'suppliers'));
     }
     /**
      * SIMPAN PRODUK
@@ -81,10 +82,10 @@ class ProductController extends Controller
         'category_id' => 'required',
     ]);
 
-    $lastProduct = Product::latest()->first();
+    $lastProduct = Product::withTrashed()->orderBy('id', 'desc')->first();
 
-    if ($lastProduct) {
-        $lastNumber = (int) substr($lastProduct->sku, 4);
+    if ($lastProduct instanceof Product && preg_match('/BRG-(\d+)/', (string) $lastProduct->sku, $matches)) {
+        $lastNumber = (int) $matches[1];
         $newNumber = $lastNumber + 1;
     } else {
         $newNumber = 1;

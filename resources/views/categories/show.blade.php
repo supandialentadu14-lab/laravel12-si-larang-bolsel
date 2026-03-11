@@ -10,15 +10,15 @@
             <div class="mt-6 text-gray-500">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <x-label for="name" value="{{ __('Nama Jenis Belanja') }}" />
-                        <div class="mt-1 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm p-2 bg-gray-50">
+                        <label class="block font-bold text-sm text-gray-700">Nama Jenis Belanja</label>
+                        <div class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 bg-gray-50 text-slate-800 font-medium">
                             {{ $category->name }}
                         </div>
                     </div>
 
                     <div class="md:col-span-2">
-                        <x-label for="description" value="{{ __('Keterangan') }}" />
-                        <div class="mt-1 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm p-2 bg-gray-50">
+                        <label class="block font-bold text-sm text-gray-700">Keterangan</label>
+                        <div class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 bg-gray-50 text-slate-600 italic">
                             {{ $category->description ?? '-' }}
                         </div>
                     </div>

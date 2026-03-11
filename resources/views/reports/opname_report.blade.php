@@ -39,12 +39,13 @@
             };
         }
     </script>
-    <div id="print-area" class="preview-paper bg-white  text-black">
-        @if (isset($status))
-            <div class="no-print mb-4 px-4 py-3 bg-green-50 text-green-700 border border-green-200 rounded">
-                {{ $status }}
-            </div>
-        @endif
+    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
+        <div id="print-area" class="preview-paper text-black">
+            @if (isset($status))
+                <div class="no-print mb-4 px-4 py-3 bg-green-50 text-green-700 border border-green-200 rounded">
+                    {{ $status }}
+                </div>
+            @endif
         @if (isset($error))
             <div class="no-print mb-4 px-4 py-3 bg-red-50 text-red-700 border border-red-200 rounded">
                 {{ $error }}
@@ -83,14 +84,38 @@
                 .preview-paper {
                     width: 210mm;
                     min-height: 330mm;
-                    margin: 0 auto;
+                    margin: 16px auto;
                     background: #fff;
-                    padding: 5mm 15mm;
+                    padding: 10mm 15mm;
                     line-height: 1.4;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+                    border-radius: 8px;
                 }
                 .preview-paper p { margin: 5px 0; }
                 .preview-paper h2 { margin: 5px 0; }
                 .preview-paper table { margin-top: 6px; }
+                
+                .report-table {
+                    table-layout: fixed;
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .report-table th, .report-table td {
+                    word-wrap: break-word;
+                    word-break: break-word;
+                    overflow-wrap: break-word;
+                    white-space: normal !important;
+                    overflow: hidden;
+                }
+                .line-clamp-2 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: normal;
+                    max-height: 2.8em; /* 2 Baris */
+                }
             </style>
             @include('partials.kop', ['opd' => $opd])
         </div>
@@ -137,8 +162,19 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto mb-6">
-                <table class="w-full text-xs border border-black print:text-[10px]">
+            <div class="mb-6">
+                <table class="report-table w-full text-xs border border-black print:text-[10px]">
+                    <colgroup>
+                        <col style="width: 5%">   <!-- No -->
+                        <col style="width: 26%">  <!-- Nama Barang -->
+                        <col style="width: 11%">  <!-- Kwantitas -->
+                        <col style="width: 9%">   <!-- Satuan -->
+                        <col style="width: 14%">  <!-- Harga Satuan -->
+                        <col style="width: 17%">  <!-- Jumlah Harga -->
+                        <col style="width: 6%">   <!-- B -->
+                        <col style="width: 6%">   <!-- RR -->
+                        <col style="width: 6%">   <!-- RB -->
+                    </colgroup>
                     <thead>
                         <tr class="text-center font-bold">
                             <th class="border border-black px-2 py-1" rowspan="2">No</th>
@@ -161,7 +197,7 @@
                             @php $total += (int)($item['jumlah'] ?? 0); @endphp
                             <tr>
                                 <td class="border border-black px-2 py-1 text-center">{{ $i + 1 }}</td>
-                                <td class="border border-black px-2 py-1">{{ $item['nama'] }}</td>
+                                <td class="border border-black px-2 py-1"><div class="line-clamp-2">{{ $item['nama'] }}</div></td>
                                 <td class="border border-black px-2 py-1 text-center">{{ $item['kuantitas'] }}</td>
                                 <td class="border border-black px-2 py-1 text-center">{{ $item['satuan'] ?? '-' }}</td>
                                 <td class="border border-black px-2 py-1 text-right">
@@ -205,7 +241,7 @@
                     <div class="h-24"></div>
                     <p class="font-bold underline">{{ $opd->kepala_nama ?? ($data['pihak_pertama']['nama'] ?? '') }}</p>
                     <p class="text-sm">NIP. {{ $opd->kepala_nip ?? ($data['pihak_pertama']['nip'] ?? '-') }}</p>
-                </div>
             </div>
-        
+        </div>
+    </div>
     @endsection

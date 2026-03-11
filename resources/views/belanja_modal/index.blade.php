@@ -3,85 +3,270 @@
 @section('header', 'Daftar Kontrak Belanja Modal')
 @section('content')
 
-<div x-data="{
-    selected: [],
-    allSelected: false,
-    toggleAll() {
-        this.allSelected = !this.allSelected;
-        if (this.allSelected) {
-            this.selected = [
-                @foreach ($items as $row)
-                    '{{ $row['id'] }}',
-                @endforeach
-            ];
-        } else {
-            this.selected = [];
-        }
-    },
-    updateSelectAll() {
-        this.allSelected = this.selected.length === {{ count($items) }};
-    }
-}" class="bg-white rounded-lg shadow p-6 mb-6">
+<script>
+    function belanjaModalIndex() {
+        return {
+            selected: [],
+            allSelected: false,
+            
+            // Modal state
+            showModal: false,
+            isEdit: false,
+            
+            // Form state
+            editId: '',
+            tahun: '{{ now()->year }}',
+            opd: '{{ addslashes($master["opd"]["nama"] ?? ($opd->nama_opd ?? "")) }}',
+            items: [],
 
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-            <a href="{{ route('reports.belanja.modal.form') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow">
-                <i class="fas fa-plus"></i> <span class="whitespace-nowrap">Tambah Kontrak</span>
-            </a>
-            <a href="{{ route('reports.belanja.modal.preview_all') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
-                <i class="fas fa-print"></i> Print
+            toggleAll() {
+                this.allSelected = !this.allSelected;
+                if (this.allSelected) {
+                    this.selected = [
+                        @foreach ($items as $row)
+                            '{{ $row['id'] }}',
+                        @endforeach
+                    ];
+                } else {
+                    this.selected = [];
+                }
+            },
+            updateSelectAll() {
+                this.allSelected = this.selected.length === {{ count($items) }};
+            },
+
+            initModal(editMode, id = '', tahun = '', rawItems = null) {
+                this.isEdit = editMode;
+                this.editId = id;
+                this.tahun = tahun || '{{ now()->year }}';
+                
+                if (rawItems && rawItems.length > 0) {
+                    this.items = JSON.parse(JSON.stringify(rawItems)).map(it => ({
+                        nama_kegiatan: it.nm || it.nama_kegiatan || '',
+                        pekerjaan: it.pk || it.pekerjaan || '',
+                        nilai_kontrak: it.nk || it.nilai_kontrak || 0,
+                        tanggal_mulai: it.tm || it.tanggal_mulai || '',
+                        tanggal_akhir: it.ta || it.tanggal_akhir || '',
+                        uang_muka: it.um || it.uang_muka || 0,
+                        termin1: it.t1 || it.termin1 || 0,
+                        termin2: it.t2 || it.termin2 || 0,
+                        termin3: it.t3 || it.termin3 || 0,
+                        termin4: it.t4 || it.termin4 || 0,
+                        total: it.ttl || it.total || 0,
+                        status: it.st || it.status || ''
+                    }));
+                } else {
+                    this.items = [];
+                    this.addItem();
+                }
+                
+                this.showModal = true;
+                if (!this.isEdit) {
+                    this.focusRow(0);
+                }
+            },
+            addItem() {
+                this.items.push({
+                    nama_kegiatan: '',
+                    pekerjaan: '',
+                    nilai_kontrak: 0,
+                    tanggal_mulai: '',
+                    tanggal_akhir: '',
+                    uang_muka: 0,
+                    termin1: 0,
+                    termin2: 0,
+                    termin3: 0,
+                    termin4: 0,
+                    total: 0,
+                    status: ''
+                });
+            },
+            removeItem(i) { this.items.splice(i, 1); },
+            focusRow(i) {
+                this.$nextTick(() => {
+                    const el = this.$refs[`row_${i}_kegiatan`];
+                    if (el) el.focus();
+                });
+            },
+            recalc(i) {
+                const it = this.items[i] || {};
+                const toInt = v => parseInt(v || 0, 10);
+                it.total = toInt(it.uang_muka) + toInt(it.termin1) + toInt(it.termin2) + toInt(it.termin3) + toInt(it.termin4);
+                this.items[i] = it;
+            }
+        }
+    }
+</script>
+
+<div x-data="belanjaModalIndex()" class="bg-white rounded-lg shadow p-6 mb-6">
+
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 sm:gap-6 mb-8">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+            <button @click="initModal(false)" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-100 transition-all duration-200">
+                <i class="fas fa-plus"></i> <span class="whitespace-nowrap">Tambah Kontrak Modal</span>
+            </button>
+            <a href="{{ route('reports.belanja.modal.preview_all') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-slate-100 transition-all duration-200">
+                <i class="fas fa-print"></i> <span class="whitespace-nowrap">Cetak Laporan</span>
             </a>
         </div>
 
-        <div class="flex flex-col items-end gap-1 w-full sm:max-w-sm">
-            <form action="{{ route('reports.belanja.modal.list') }}" method="GET" class="relative w-full">
+        <div class="w-full lg:max-w-xl">
+            <form action="{{ route('reports.belanja.modal.list') }}" method="GET" class="relative group">
                 <div x-data="{ query: '{{ request('search') }}' }" class="relative">
                     <input type="text" name="search" x-model="query" 
                         @input.debounce.750ms="$el.closest('form').requestSubmit()"
-                        x-init="$el.focus(); $el.setSelectionRange($el.value.length, $el.value.length)"
-                        placeholder="Cari belanja modal..."
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition text-sm">
-                    <span x-show="!query" class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 pointer-events-none">
+                        placeholder="Cari data belanja modal..."
+                        class="w-full pl-11 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all duration-200 text-sm font-medium">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                         <i class="fas fa-search"></i>
+                    </div>
+                    <span x-show="query" @click="location.href='{{ route('reports.belanja.modal.list') }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-300 cursor-pointer hover:text-rose-500 transition-colors">
+                        <i class="fas fa-times-circle"></i>
                     </span>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="overflow-x-auto border rounded-lg">
-        <table class="w-full text-sm text-left text-gray-700">
-            <thead class="bg-gray-100 text-xs uppercase font-bold">
+    {{-- Modal Form Spreadsheet --}}
+    <div x-show="showModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-start justify-center min-h-screen pt-10 px-4 pb-10 text-center">
+            <div x-show="showModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);" @click="showModal = false"></div>
+            
+            <div x-show="showModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all w-full max-w-6xl sm:my-8">
+                {{-- Modal Header --}}
+                <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
+                    <h3 class="text-base font-bold flex items-center gap-2">
+                        <i class="fas" :class="isEdit ? 'fa-edit' : 'fa-plus'"></i> 
+                        <span x-text="isEdit ? 'Edit Kontrak Belanja Modal' : 'Tambah Kontrak Belanja Modal'"></span>
+                    </h3>
+                    <button type="button" @click="showModal = false" class="text-white hover:text-gray-300 font-bold focus:outline-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form method="POST" action="{{ route('reports.belanja.modal.save') }}" class="p-6 pt-5 min-h-[500px]">
+                    @csrf
+                    <input type="hidden" name="id" x-model="editId">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end mb-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Tahun <span class="text-red-500">*</span></label>
+                            <input type="number" min="2000" max="2100" name="tahun" x-model="tahun" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-gray-700 mb-1">OPD</label>
+                            <input type="text" name="opd" x-model="opd" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" disabled>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" @click="addItem()" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-bold shadow hover:bg-indigo-700 transition w-full sm:w-auto">
+                                <i class="fas fa-plus mr-1"></i> Tambah Baris
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto border rounded-lg bg-white mb-6">
+                        <table class="w-full text-sm text-left text-gray-700 whitespace-nowrap">
+                            <thead class="bg-gray-100 text-xs uppercase font-bold text-gray-600">
+                                <tr>
+                                    <th class="px-3 py-2 min-w-[200px]">Nama Kegiatan</th>
+                                    <th class="px-3 py-2 min-w-[200px]">Pekerjaan</th>
+                                    <th class="px-3 py-2 w-32">Nilai Kontrak</th>
+                                    <th class="px-3 py-2 w-36">Mulai</th>
+                                    <th class="px-3 py-2 w-36">Akhir</th>
+                                    <th class="px-3 py-2 w-32">Uang Muka</th>
+                                    <th class="px-3 py-2 w-32">Termin 1</th>
+                                    <th class="px-3 py-2 w-32">Termin 2</th>
+                                    <th class="px-3 py-2 w-32">Termin 3</th>
+                                    <th class="px-3 py-2 w-32">Termin 4</th>
+                                    <th class="px-3 py-2 w-32">Total</th>
+                                    <th class="px-3 py-2 min-w-[150px]">Status</th>
+                                    <th class="px-3 py-2 w-12 text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="(item, i) in items" :key="i">
+                                    <tr class="border-t hover:bg-indigo-50 transition group focus-within:bg-indigo-50">
+                                        <td class="p-1"><input type="text" :name="`items[${i}][nama_kegiatan]`" x-model="item.nama_kegiatan" :x-ref="`row_${i}_kegiatan`" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
+                                        <td class="p-1"><input type="text" :name="`items[${i}][pekerjaan]`" x-model="item.pekerjaan" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
+                                        <td class="p-1"><input type="number" :name="`items[${i}][nilai_kontrak]`" x-model="item.nilai_kontrak" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
+                                        <td class="p-1"><input type="date" :name="`items[${i}][tanggal_mulai]`" x-model="item.tanggal_mulai" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
+                                        <td class="p-1"><input type="date" :name="`items[${i}][tanggal_akhir]`" x-model="item.tanggal_akhir" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
+                                        <td class="p-1"><input type="number" :name="`items[${i}][uang_muka]`" x-model="item.uang_muka" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
+                                        <td class="p-1"><input type="number" :name="`items[${i}][termin1]`" x-model="item.termin1" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
+                                        <td class="p-1"><input type="number" :name="`items[${i}][termin2]`" x-model="item.termin2" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
+                                        <td class="p-1"><input type="number" :name="`items[${i}][termin3]`" x-model="item.termin3" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
+                                        <td class="p-1"><input type="number" :name="`items[${i}][termin4]`" x-model="item.termin4" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
+                                        <td class="p-1 text-right font-mono text-xs font-bold text-gray-800 bg-gray-50/50" x-text="item.total"></td>
+                                        <td class="p-1"><input type="text" :name="`items[${i}][status]`" x-model="item.status" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
+                                        <td class="p-1 text-center">
+                                            <button type="button" @click="removeItem(i)" class="text-red-400 hover:text-red-600 focus:outline-none transition w-8 h-8 rounded-full hover:bg-red-50" title="Hapus Baris">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-8 flex justify-end border-t pt-4">
+                        <button type="submit" class="px-5 py-2 bg-indigo-600 rounded-lg text-sm font-bold text-white shadow-md hover:bg-indigo-700 transition flex items-center gap-2">
+                            <i class="fas fa-save"></i> <span x-text="isEdit ? 'Perbarui Kontrak' : 'Simpan Kontrak'"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-x-auto">
+        <table class="w-full min-w-[800px] text-sm text-left text-slate-700">
+            <thead class="bg-indigo-50/50 text-[10px] uppercase font-bold text-indigo-600 tracking-widest border-b border-indigo-100 transition-all">
                 <tr>
-                    <th class="px-3 py-2 w-10">
-                        <input type="checkbox" @click="toggleAll()" x-model="allSelected" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <th class="px-6 py-4 w-12 text-center text-slate-500">
+                        <input type="checkbox" @click="toggleAll()" x-model="allSelected" class="rounded-md border-slate-300 text-indigo-600 h-4 w-4 transition-all">
                     </th>
-                    <th class="px-3 py-2">No.</th>
-                    <th class="px-3 py-2">Tahun</th>
-                    <th class="px-3 py-2 text-center">Jumlah Kontrak</th>
-                    <th class="px-3 py-2 text-right">Total Nilai Kontrak (Rp)</th>
-                    <th class="px-3 py-2">Terakhir Diperbarui</th>
-                    <th class="px-3 py-2 text-right">Aksi</th>
+                    <th class="px-6 py-4">No.</th>
+                    <th class="px-6 py-4">Tahun Anggaran</th>
+                    <th class="px-6 py-4 text-center">Jumlah Item</th>
+                    <th class="px-6 py-4 text-right">Total Anggaran (Rp)</th>
+                    <th class="px-6 py-4">Update Terakhir</th>
+                    <th class="px-6 py-4 text-right">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($items as $i => $row)
                     @php $hl = request('highlight'); @endphp
                     <tr class="border-t hover:bg-gray-50 transition {{ $hl === ($row['id'] ?? null) ? 'bg-orange-50' : '' }}" :class="{ 'bg-indigo-50': selected.includes('{{ $row['id'] }}') }">
-                        <td class="px-3 py-2">
-                            <input type="checkbox" value="{{ $row['id'] }}" x-model="selected" @click="updateSelectAll()" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <td class="px-6 py-4 text-center">
+                            <input type="checkbox" value="{{ $row['id'] }}" x-model="selected" @click="updateSelectAll()" class="rounded-md border-slate-300 text-indigo-600 h-4 w-4 focus:ring-indigo-500 transition-all opacity-70 hover:opacity-100">
                         </td>
-                        <td class="px-3 py-2">{{ $i + 1 }}</td>
-                        <td class="px-3 py-2">{{ $row['tahun'] ?: '-' }}</td>
-                        <td class="px-3 py-2 text-center">{{ $row['kontrak_count'] }}</td>
-                        <td class="px-3 py-2 text-right font-medium">{{ number_format($row['nilai_total'], 0, ',', '.') }}</td>
-                        <td class="px-3 py-2 text-gray-500 text-xs">{{ \Carbon\Carbon::createFromTimestamp($row['updated'])->translatedFormat('d F Y H:i') }}</td>
-                        <td class="px-3 py-2 text-right">
-                            @include('partials.action_buttons', [
-                                'show' => route('reports.belanja.modal.show', $row['id']),
-                                'edit' => route('reports.belanja.modal.edit', $row['id']),
-                                'delete' => route('reports.belanja.modal.delete', $row['id']),
-                            ])
+                        <td class="px-6 py-4">{{ $i + 1 }}</td>
+                        <td class="px-6 py-4">{{ $row['tahun'] ?: '-' }}</td>
+                        <td class="px-6 py-4 text-center">{{ $row['kontrak_count'] }}</td>
+                        <td class="px-6 py-4 text-right font-medium text-slate-900">{{ number_format($row['nilai_total'], 0, ',', '.') }}</td>
+                        <td class="px-6 py-4 text-slate-500 text-[11px] font-medium tracking-tight">
+                            <div class="flex flex-col">
+                                <span>{{ \Carbon\Carbon::createFromTimestamp($row['updated'])->translatedFormat('d F Y') }}</span>
+                                <span class="text-[10px] opacity-60 uppercase">{{ \Carbon\Carbon::createFromTimestamp($row['updated'])->format('H:i') }} WIB</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{{ route('reports.belanja.modal.show', $row['id']) }}" class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Lihat">
+                                    <i class="fas fa-eye text-xs"></i>
+                                </a>
+                                <button type="button" @click='initModal(true, @json($row["id"]), @json($row["tahun"]), @json($row["raw_items"]))' class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Edit">
+                                    <i class="far fa-edit text-xs"></i>
+                                </button>
+                                <form action="{{ route('reports.belanja.modal.delete', $row['id']) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="button" @click="if(confirm('Hapus transaksi ini?')) $el.form.submit()" class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Hapus">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
@@ -99,8 +284,10 @@
             <template x-for="id in selected" :key="id">
                 <input type="hidden" name="ids[]" :value="id">
             </template>
-            <button type="button" @click="if(confirm('Hapus ' + selected.length + ' item terpilih?')) $el.closest('form').submit()" class="text-red-600 italic hover:underline text-xs">
-                Hapus data yang terpilih (<span x-text="selected.length"></span>)
+            <button type="button" @click="if(confirm('Hapus ' + selected.length + ' item terpilih?')) $el.closest('form').submit()" 
+                class="inline-flex items-center gap-2 px-3 py-2 bg-white border border-slate-800 rounded-lg text-slate-800 font-bold text-[10px] hover:bg-slate-50 transition-all shadow-sm group">
+                <i class="fas fa-trash text-slate-800 group-hover:text-rose-600 transition-colors"></i>
+                <span>HAPUS <span x-text="selected.length"></span> ITEM TERPILIH</span>
             </button>
         </form>
         <div class="flex-1">

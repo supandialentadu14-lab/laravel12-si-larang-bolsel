@@ -20,7 +20,8 @@
 @endsection
 
 @section('content')
-    <div id="print-area" class="preview-paper bg-white text-black">
+    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
+        <div id="print-area" class="preview-paper text-black">
         @if(isset($status))
             <div class="no-print mb-4 px-4 py-3 bg-green-50 text-green-700 border border-green-200 rounded">
                 {{ $status }}
@@ -79,14 +80,38 @@
                 .preview-paper {
                     width: 210mm;
                     min-height: 330mm;
-                    margin: 0 auto;
+                    margin: 16px auto;
                     background: #fff;
-                    padding: 5mm 15mm;
+                    padding: 10mm 15mm;
                     line-height: 1.4;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+                    border-radius: 8px;
                 }
                 .preview-paper p { margin: 5px 0; }
                 .preview-paper h2 { margin: 5px 0; }
                 .preview-paper table { margin-top: 6px; }
+
+                .report-table {
+                    table-layout: fixed;
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .report-table th, .report-table td {
+                    word-wrap: break-word;
+                    word-break: break-word;
+                    overflow-wrap: break-word;
+                    white-space: normal !important;
+                    overflow: hidden;
+                }
+                .line-clamp-2 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: normal;
+                    max-height: 2.8em;
+                }
             </style>
             @include('partials.kop', ['opd' => $opd])
         </div>
@@ -146,18 +171,28 @@
             Bahwa kedua belah pihak sepakat mengadakan perjanjian serah terima barang inventaris kantor/kendaraan milik Pemerintah Kabupaten Bolaang Mongondow Selatan : 
         </p>
 
-        <div class="overflow-x-auto mb-2">
-            <table class="w-full text-xs border border-black print:text-[10px]">
+        <div class="mb-2">
+            <table class="report-table w-full text-xs border border-black print:text-[10px]">
+                <colgroup>
+                    <col style="width: 4%">    <!-- No -->
+                    <col style="width: 17%">   <!-- Nama Barang -->
+                    <col style="width: 11%">   <!-- Merk -->
+                    <col style="width: 11%">   <!-- Type -->
+                    <col style="width: 21%">   <!-- Plat Nomor -->
+                    <col style="width: 12%">   <!-- Tahun -->
+                    <col style="width: 12%">   <!-- Kondisi -->
+                    <col style="width: 12%">   <!-- Jumlah -->
+                </colgroup>
                 <thead>
                     <tr class="text-center font-bold">
-                        <th class="border border-black px-2 py-1">No</th>
-                        <th class="border border-black px-2 py-1">Nama Barang</th>
-                        <th class="border border-black px-2 py-1">Merk</th>
-                        <th class="border border-black px-2 py-1">Type</th>
-                        <th class="border border-black px-2 py-1">Nomor Polisi (Khusus Kendaraan)</th>
-                        <th class="border border-black px-2 py-1">Tahun Pembelian</th>
-                        <th class="border border-black px-2 py-1">Kondisi Barang</th>
-                        <th class="border border-black px-2 py-1">Jumlah Barang</th>
+                        <th rowspan="2" class="border border-black px-1 py-1">No</th>
+                        <th rowspan="2" class="border border-black px-1 py-1">Nama<br>Barang</th>
+                        <th rowspan="2" class="border border-black px-1 py-1">Merk</th>
+                        <th rowspan="2" class="border border-black px-1 py-1">Type</th>
+                        <th rowspan="2" class="border border-black px-1 py-1">Nomor Polisi<br>(Khusus Kendaraan)</th>
+                        <th rowspan="2" class="border border-black px-1 py-1">Tahun<br>Pembelian</th>
+                        <th rowspan="2" class="border border-black px-1 py-1">Kondisi<br>Barang</th>
+                        <th rowspan="2" class="border border-black px-1 py-1">Jumlah<br>Barang</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -192,8 +227,10 @@
             $list = count($rulesLines) ? $rulesLines : $defaultRules;
         @endphp
         <style>
-            .rules-table td:first-child { width: 18px; vertical-align: top; }
-            .rules-table td:last-child { padding-left: 6px; }
+            .rules-table { width: 100%; table-layout: fixed; }
+            .rules-table td { word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
+            .rules-table td:first-child { width: 22px; vertical-align: top; }
+            .rules-table td:last-child { padding-left: 6px; text-align: justify; }
         </style>
         <table class="rules-table text-sm mb-3">
             @foreach ($list as $i => $line)
@@ -209,8 +246,8 @@
                     }
                 @endphp
                 <tr>
-                    <td class=" text-black">{{ $letter }}.</td>
-                    <td class="text-justify">{!! $content !!}</td>
+                    <td class="text-black">{{ $letter }}.</td>
+                    <td>{!! $content !!}</td>
                 </tr>
             @endforeach
         </table>
@@ -233,4 +270,5 @@
             </div>
         </div>
     </div>
+</div>
 @endsection

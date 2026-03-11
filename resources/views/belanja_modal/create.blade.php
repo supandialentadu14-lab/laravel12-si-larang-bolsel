@@ -66,70 +66,82 @@
 
     <div class="max-w-full mx-auto">
         <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 bg-slate-800">
-                <h6 class="font-bold text-white">Form Belanja Modal</h6>
+            <div class="px-6 py-4 border-b border-slate-200 bg-[#1e293b]">
+                <h6 class="font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-file-invoice-dollar"></i> Form Kontrak Belanja Modal
+                </h6>
             </div>
 
             <form method="POST" action="{{ route('reports.belanja.modal.save') }}" x-data="belanjaModalForm()" x-init="init()" class="p-6 space-y-6">
                 @csrf
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tahun</label>
-                        <input type="number" min="2000" max="2100" name="tahun" x-model="tahun" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-700 mb-1">OPD</label>
-                        <input type="text" name="opd" value="{{ $master['opd']['nama'] ?? ($opd->nama_opd ?? '') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                    </div>
-                    <div class="flex justify-end">
-                        <button type="button" @click="addItem()" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-bold shadow hover:bg-indigo-700 transition">
-                            <i class="fas fa-plus mr-1"></i> Tambah Baris
-                        </button>
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-6 transition-all duration-300">
+                    <h4 class="text-slate-800 font-bold mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-info-circle text-indigo-500"></i> Informasi Umum & Header
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tahun Anggaran <span class="text-rose-500">*</span></label>
+                            <input type="number" min="2000" max="2100" name="tahun" x-model="tahun" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold shadow-sm" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nama OPD Pelaksana</label>
+                            <input type="text" name="opd" value="{{ $master['opd']['nama'] ?? ($opd->nama_opd ?? '') }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm bg-white" placeholder="Nama Dinas/Badan...">
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" @click="addItem()" class="w-full md:w-auto px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-md shadow-indigo-100 hover:bg-indigo-700 transition flex items-center justify-center gap-2">
+                                <i class="fas fa-plus"></i> Tambah Baris Kontrak
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto border rounded-lg">
-                    <table class="w-full text-sm text-left text-gray-700">
-                        <thead class="bg-gray-100 text-xs uppercase font-bold">
-                            <tr>
-                                <th class="px-3 py-2">Nama Kegiatan</th>
-                                <th class="px-3 py-2">Pekerjaan</th>
-                                <th class="px-3 py-2 w-32">Nilai Kontrak</th>
-                                <th class="px-3 py-2 w-32">Mulai</th>
-                                <th class="px-3 py-2 w-32">Akhir</th>
-                                <th class="px-3 py-2 w-24">Uang Muka</th>
-                                <th class="px-3 py-2 w-24">Termin 1</th>
-                                <th class="px-3 py-2 w-24">Termin 2</th>
-                                <th class="px-3 py-2 w-24">Termin 3</th>
-                                <th class="px-3 py-2 w-24">Termin 4</th>
-                                <th class="px-3 py-2 w-24">Total</th>
-                                <th class="px-3 py-2 w-24">Status</th>
-                                <th class="px-3 py-2 w-10"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="(item, i) in items" :key="i">
-                                <tr class="border-t hover:bg-gray-50 transition">
-                                    <td class="p-2"><input type="text" :name="`items[${i}][nama_kegiatan]`" x-model="item.nama_kegiatan" :x-ref="`row_${i}_kegiatan`" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                    <td class="p-2"><input type="text" :name="`items[${i}][pekerjaan]`" x-model="item.pekerjaan" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                    <td class="p-2"><input type="number" :name="`items[${i}][nilai_kontrak]`" x-model="item.nilai_kontrak" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 text-right py-2"></td>
-                                    <td class="p-2"><input type="date" :name="`items[${i}][tanggal_mulai]`" x-model="item.tanggal_mulai" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                    <td class="p-2"><input type="date" :name="`items[${i}][tanggal_akhir]`" x-model="item.tanggal_akhir" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                    <td class="p-2"><input type="number" :name="`items[${i}][uang_muka]`" x-model="item.uang_muka" @input="recalc(i)" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 text-right py-2"></td>
-                                    <td class="p-2"><input type="number" :name="`items[${i}][termin1]`" x-model="item.termin1" @input="recalc(i)" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 text-right py-2"></td>
-                                    <td class="p-2"><input type="number" :name="`items[${i}][termin2]`" x-model="item.termin2" @input="recalc(i)" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 text-right py-2"></td>
-                                    <td class="p-2"><input type="number" :name="`items[${i}][termin3]`" x-model="item.termin3" @input="recalc(i)" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 text-right py-2"></td>
-                                    <td class="p-2"><input type="number" :name="`items[${i}][termin4]`" x-model="item.termin4" @input="recalc(i)" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 text-right py-2"></td>
-                                    <td class="p-2 text-right font-mono text-xs" x-text="item.total"></td>
-                                    <td class="p-2"><input type="text" :name="`items[${i}][status]`" x-model="item.status" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                    <td class="p-2 text-center">
-                                        <button type="button" @click="removeItem(i)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
-                                    </td>
+                <div class="bg-indigo-50/30 p-4 rounded-xl border border-indigo-100">
+                    <h4 class="text-indigo-900 font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-list text-indigo-500"></i> Daftar Rincian Belanja Modal
+                    </h4>
+                    <div class="overflow-x-auto border border-indigo-100 rounded-xl bg-white">
+                        <table class="w-full text-left text-slate-700">
+                            <thead class="bg-indigo-50 text-[10px] uppercase font-bold text-indigo-600 tracking-wider">
+                                <tr>
+                                    <th class="px-3 py-3 border-b border-indigo-100">Kegiatan</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100">Pekerjaan</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-28">Nilai Kontrak</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-24">Mulai</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-24">Akhir</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-20">UM (Rp)</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-20">T1 (Rp)</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-20">T2 (Rp)</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-20">T3 (Rp)</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-20">T4 (Rp)</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-24 text-right">Total Realisasi</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-24">Status</th>
+                                    <th class="px-3 py-3 border-b border-indigo-100 w-10"></th>
                                 </tr>
-                            </template>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y divide-indigo-50">
+                                <template x-for="(item, i) in items" :key="i">
+                                    <tr class="hover:bg-indigo-50/50 transition">
+                                        <td class="p-2 min-w-[150px]"><input type="text" :name="`items[${i}][nama_kegiatan]`" x-model="item.nama_kegiatan" :x-ref="`row_${i}_kegiatan`" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition"></td>
+                                        <td class="p-2 min-w-[150px]"><input type="text" :name="`items[${i}][pekerjaan]`" x-model="item.pekerjaan" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition"></td>
+                                        <td class="p-2"><input type="number" :name="`items[${i}][nilai_kontrak]`" x-model="item.nilai_kontrak" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition font-mono border-indigo-200"></td>
+                                        <td class="p-2"><input type="date" :name="`items[${i}][tanggal_mulai]`" x-model="item.tanggal_mulai" class="w-full rounded-md border border-slate-300 bg-white text-[10px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition"></td>
+                                        <td class="p-2"><input type="date" :name="`items[${i}][tanggal_akhir]`" x-model="item.tanggal_akhir" class="w-full rounded-md border border-slate-300 bg-white text-[10px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition"></td>
+                                        <td class="p-2"><input type="number" :name="`items[${i}][uang_muka]`" x-model="item.uang_muka" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
+                                        <td class="p-2"><input type="number" :name="`items[${i}][termin1]`" x-model="item.termin1" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
+                                        <td class="p-2"><input type="number" :name="`items[${i}][termin2]`" x-model="item.termin2" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
+                                        <td class="p-2"><input type="number" :name="`items[${i}][termin3]`" x-model="item.termin3" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
+                                        <td class="p-2"><input type="number" :name="`items[${i}][termin4]`" x-model="item.termin4" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
+                                        <td class="p-2 text-right font-mono text-[11px] font-bold text-indigo-700" x-text="new Intl.NumberFormat('id-ID').format(item.total)"></td>
+                                        <td class="p-2 min-w-[100px]"><input type="text" :name="`items[${i}][status]`" x-model="item.status" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Status..."></td>
+                                        <td class="p-2 text-center">
+                                            <button type="button" @click="removeItem(i)" class="text-rose-400 hover:text-rose-600 transition p-1"><i class="fas fa-trash-alt"></i></button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 @include('partials.form-actions', [

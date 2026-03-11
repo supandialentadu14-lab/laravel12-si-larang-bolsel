@@ -192,23 +192,29 @@ class PenerimaanController extends Controller
             $nomorFormatted = $inputNomor;
         }
 
+        $master = $this->loadNotaMaster();
+        $opd = OpdSetting::where('user_id', Auth::id())->first();
+
+        $totalSum = 0;
+        foreach ($cleanItems as $row) { $totalSum += (int)($row['jumlah'] ?? 0); }
+        
         $data = [
             'nomor' => $nomorFormatted,
             'tanggal' => $payload['tanggal'] ?? now()->toDateString(),
             'tempat' => $payload['tempat'] ?? ($opd->nama_opd ?? ''),
-            'pemeriksaan_nomor' => $realBapNomor, // Use corrected BAP Number
+            'pemeriksaan_nomor' => $realBapNomor,
             'nota' => $selected['nota'] ?? [],
             'items' => $cleanItems,
             'terbilang' => ucwords($this->toWordsId((int) $totalSum)),
             'total' => $totalSum,
             'ppk' => [
-                'nama' => ($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''),
-                'nip' => ($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''),
+                'nama' => (trim($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? '')),
+                'nip' => (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? '')),
             ],
             'pengguna' => [
-                'nama' => $master['pengurus_pengguna']['nama'] ?? '',
-                'nip' => $master['pengurus_pengguna']['nip'] ?? '',
-                'jabatan' => 'Pengurus Barang Pengguna',
+                'nama' => (trim($master['pengurus_barang']['nama'] ?? '') ?: ($opd->pengurus_nama ?? '')),
+                'nip' => (trim($master['pengurus_barang']['nip'] ?? '') ?: ($opd->pengurus_nip ?? '')),
+                'jabatan' => (trim($opd->pengurus_jabatan ?? '') ?: 'Pengurus Barang Pengguna'),
             ],
             'tanggal_kata' => "Pada hari ini {$hari} Tanggal {$tanggalKata} Bulan {$bulan} Tahun {$tahunKata}, kami yang bertanda tangan di bawah ini:",
         ];
@@ -295,9 +301,9 @@ class PenerimaanController extends Controller
                     'nip' => ($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''),
                 ],
                 'pengguna' => [
-                    'nama' => $master['pengurus_pengguna']['nama'] ?? '',
-                    'nip' => $master['pengurus_pengguna']['nip'] ?? '',
-                    'jabatan' => 'Pengurus Barang Pengguna',
+                    'nama' => ($master['pengurus_barang']['nama'] ?? '') ?: ($opd->pengurus_nama ?? ''),
+                    'nip' => ($master['pengurus_barang']['nip'] ?? '') ?: ($opd->pengurus_nip ?? ''),
+                    'jabatan' => ($opd->pengurus_jabatan ?? 'Pengurus Barang Pengguna'),
                 ],
                 'tanggal_kata' => "Pada hari ini {$hari} Tanggal {$tanggalKata} Bulan {$bulan} Tahun {$tahunKata}, kami yang bertanda tangan di bawah ini:",
             ];
@@ -318,7 +324,7 @@ class PenerimaanController extends Controller
     public function list(Request $request): View
     {
         $disk = Storage::disk('local');
-        $bapMap = $this->getBapNomorMap(); // Use helper
+        $bapMap = $this->getBapNomorMap();
 
         $dir = 'users/'.Auth::id().'/bap-penerimaan';
         $files = $disk->exists($dir) ? $disk->files($dir) : [];
@@ -329,7 +335,6 @@ class PenerimaanController extends Controller
             $data = json_decode($disk->get($file), true) ?: [];
             
             $storedRef = $data['pemeriksaan_nomor'] ?? '';
-            // Try to find the correct BAP Number from the map
             $realBapNomor = $bapMap[$storedRef] ?? $storedRef;
 
             if ($search) {
@@ -348,6 +353,7 @@ class PenerimaanController extends Controller
                 'tanggal' => $data['tanggal'] ?? '',
                 'total' => $data['total'] ?? 0,
                 'pemeriksaan_nomor' => $realBapNomor,
+                'raw_data' => $data,
             ];
         }
         usort($items, fn($a, $b) => $b['updated'] <=> $a['updated']);
@@ -364,7 +370,10 @@ class PenerimaanController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('penerimaan.index', compact('items'));
+        $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $docs = $this->listPemeriksaanDocs();
+
+        return view('penerimaan.index', compact('items', 'opd', 'docs'));
     }
 
     public function edit(string $id): View
@@ -381,11 +390,26 @@ class PenerimaanController extends Controller
         $storedRef = $data['pemeriksaan_nomor'] ?? '';
         $data['pemeriksaan_nomor'] = $bapMap[$storedRef] ?? $storedRef;
         
-        session([
-            'penerimaan_current' => $data,
-            'penerimaan_current_id' => $id,
-        ]);
         $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $master = $this->loadNotaMaster();
+
+        // Apply fallbacks for editing if fields are blank
+        if (empty($data['pengguna']['nama'])) {
+            $data['pengguna']['nama'] = (trim($master['pengurus_barang']['nama'] ?? '') ?: ($opd->pengurus_nama ?? ''));
+        }
+        if (empty($data['pengguna']['nip'])) {
+            $data['pengguna']['nip'] = (trim($master['pengurus_barang']['nip'] ?? '') ?: ($opd->pengurus_nip ?? ''));
+        }
+        if (empty($data['pengguna']['jabatan']) || $data['pengguna']['jabatan'] === 'Pengurus Barang Pengguna') {
+            $data['pengguna']['jabatan'] = (trim($opd->pengurus_jabatan ?? '') ?: 'Pengurus Barang Pengguna');
+        }
+        if (empty($data['ppk']['nama'])) {
+            $data['ppk']['nama'] = (trim($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''));
+        }
+        if (empty($data['ppk']['nip'])) {
+            $data['ppk']['nip'] = (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''));
+        }
+
         $docs = $this->listPemeriksaanDocs();
         return view('penerimaan.edit', compact('data', 'opd', 'docs', 'id'));
     }
@@ -399,12 +423,26 @@ class PenerimaanController extends Controller
         $json = Storage::disk('local')->get($path);
         $data = json_decode($json, true) ?: [];
         
-        // Fix BAP Nomor in loaded data for viewing
-        $bapMap = $this->getBapNomorMap();
-        $storedRef = $data['pemeriksaan_nomor'] ?? '';
-        $data['pemeriksaan_nomor'] = $bapMap[$storedRef] ?? $storedRef;
-        
         $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $master = $this->loadNotaMaster();
+
+        // Apply fallbacks for viewing if fields are blank
+        if (empty($data['pengguna']['nama'])) {
+            $data['pengguna']['nama'] = (trim($master['pengurus_barang']['nama'] ?? '') ?: ($opd->pengurus_nama ?? ''));
+        }
+        if (empty($data['pengguna']['nip'])) {
+            $data['pengguna']['nip'] = (trim($master['pengurus_barang']['nip'] ?? '') ?: ($opd->pengurus_nip ?? ''));
+        }
+        if (empty($data['pengguna']['jabatan']) || $data['pengguna']['jabatan'] === 'Pengurus Barang Pengguna') {
+            $data['pengguna']['jabatan'] = (trim($opd->pengurus_jabatan ?? '') ?: 'Pengurus Barang Pengguna');
+        }
+        if (empty($data['ppk']['nama'])) {
+            $data['ppk']['nama'] = (trim($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''));
+        }
+        if (empty($data['ppk']['nip'])) {
+            $data['ppk']['nip'] = (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''));
+        }
+
         session(['penerimaan_current' => $data, 'penerimaan_current_id' => $id]);
         return view('reports.penerimaan_report', compact('data', 'opd'));
     }

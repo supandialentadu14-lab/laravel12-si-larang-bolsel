@@ -206,6 +206,32 @@ class UserController extends Controller
     }
 
     /**
+     * Toggle aktif/nonaktif user (admin only, tidak bisa untuk sesama admin atau diri sendiri)
+     */
+    public function toggleActive(User $user): RedirectResponse
+    {
+        // Hanya admin yang bisa
+        if (!Auth::user()->isAdmin()) {
+            return back()->with('error', 'Hanya admin yang dapat mengubah status pengguna.');
+        }
+
+        // Tidak bisa menonaktifkan diri sendiri
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Anda tidak dapat menonaktifkan akun sendiri.');
+        }
+
+        // Tidak bisa menonaktifkan admin lain
+        if ($user->isAdmin()) {
+            return back()->with('error', 'Tidak dapat menonaktifkan akun admin.');
+        }
+
+        $user->update(['is_active' => !$user->is_active]);
+
+        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return back()->with('success', "Akun {$user->name} berhasil {$status}.");
+    }
+
+    /**
      * Menghapus user
      */
     public function destroy(User $user): RedirectResponse

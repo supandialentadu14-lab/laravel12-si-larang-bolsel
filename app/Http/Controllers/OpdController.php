@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OpdSetting;
+use App\Models\NotaMaster;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -22,40 +23,80 @@ class OpdController extends Controller
         if (! $setting) {
             $setting = OpdSetting::create(['user_id' => Auth::id()]);
         }
-        return view('settings.opd', compact('setting'));
+        
+        $notaMaster = NotaMaster::where('user_id', Auth::id())->first();
+        if (!$notaMaster) {
+            $notaMaster = NotaMaster::create(['user_id' => Auth::id()]);
+        }
+        
+        return view('settings.combined', compact('setting', 'notaMaster'));
     }
 
     public function update(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $request->validate([
+            // OPD Settings
             'nama_opd' => 'nullable|string|max:255',
             'singkatan_opd' => 'nullable|string|max:50',
             'alamat_opd' => 'nullable|string|max:500',
             'kepala_nama' => 'nullable|string|max:255',
+            'kepala_nip' => 'nullable|string|max:50',
             'kepala_pangkat' => 'nullable|string|max:255',
             'kepala_jabatan' => 'nullable|string|max:255',
-            'kepala_nip' => 'nullable|string|max:50',
             'pengurus_nama' => 'nullable|string|max:255',
-            'pengurus_pangkat' => 'nullable|string|max:255',
-            'pengurus_jabatan' => 'nullable|string|max:255',
             'pengurus_nip' => 'nullable|string|max:50',
             'pengguna_nama' => 'nullable|string|max:255',
-            'pengguna_pangkat' => 'nullable|string|max:255',
-            'pengguna_jabatan' => 'nullable|string|max:255',
             'pengguna_nip' => 'nullable|string|max:50',
             'tutup_buku_date' => 'nullable|date',
+            
+            // Nota Master (Penandatangan)
+            'ppk_nama' => 'nullable|string|max:255',
+            'ppk_nip' => 'nullable|string|max:50',
+            'ppk_alamat' => 'nullable|string|max:500',
+            'pejabat_nama' => 'nullable|string|max:255',
+            'pejabat_nip' => 'nullable|string|max:50',
+            'pptk_nama' => 'nullable|string|max:255',
+            'pptk_nip' => 'nullable|string|max:50',
+            'bendahara_nama' => 'nullable|string|max:255',
+            'bendahara_nip' => 'nullable|string|max:50',
         ]);
+
         $setting = OpdSetting::where('user_id', Auth::id())->first();
         $oldSingkatan = $setting->singkatan_opd ?? 'DISKOMINFO';
         
-        if (! $setting) {
-            $setting = OpdSetting::create(array_merge($validated, ['user_id' => Auth::id()]));
-        } else {
-            $setting->update($validated);
+        // Update OpdSetting
+        $setting->update($request->only([
+            'nama_opd', 'singkatan_opd', 'alamat_opd', 
+            'kepala_nama', 'kepala_nip', 'kepala_pangkat', 'kepala_jabatan',
+            'pengurus_nama', 'pengurus_nip', 'pengurus_pangkat', 'pengurus_jabatan',
+            'pengguna_nama', 'pengguna_nip', 'pengguna_pangkat', 'pengguna_jabatan',
+            'tutup_buku_date'
+        ]));
+
+        // Update NotaMaster
+        $notaMaster = NotaMaster::where('user_id', Auth::id())->first();
+        if (!$notaMaster) {
+            $notaMaster = NotaMaster::create(['user_id' => Auth::id()]);
         }
-        
+        $notaMaster->update([
+            'opd_nama' => $request->nama_opd,
+            'opd_alamat' => $request->alamat_opd,
+            'ppk_nama' => $request->ppk_nama,
+            'ppk_nip' => $request->ppk_nip,
+            'ppk_alamat' => $request->ppk_alamat,
+            'pejabat_nama' => $request->pejabat_nama,
+            'pejabat_nip' => $request->pejabat_nip,
+            'pptk_nama' => $request->pptk_nama,
+            'pptk_nip' => $request->pptk_nip,
+            'bendahara_nama' => $request->bendahara_nama,
+            'bendahara_nip' => $request->bendahara_nip,
+            'pengurus_barang_nama' => $request->pengurus_nama,
+            'pengurus_barang_nip' => $request->pengurus_nip,
+            'pengurus_pengguna_nama' => $request->pengguna_nama,
+            'pengurus_pengguna_nip' => $request->pengguna_nip,
+        ]);
+
         $newSingkatan = $setting->singkatan_opd ?? 'DISKOMINFO';
-        
         $olds = array_unique(['KOMINFO', $oldSingkatan]);
         if (($key = array_search($newSingkatan, $olds)) !== false) {
             unset($olds[$key]);
@@ -64,7 +105,7 @@ class OpdController extends Controller
             $this->syncNomorSurat(Auth::id(), $olds, $newSingkatan);
         }
         
-        return redirect()->route('settings.opd.index')->with('success', 'Data OPD tersimpan.');
+        return redirect()->back()->with('success', 'Pengaturan berhasil disimpan.');
     }
 
     private function syncNomorSurat($userId, $olds, $newSingkatan)

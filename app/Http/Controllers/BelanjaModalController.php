@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BelanjaModalController extends Controller
 {
@@ -177,6 +178,9 @@ class BelanjaModalController extends Controller
 
     public function index(Request $request): View
     {
+        $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $master = $this->loadNotaMaster();
+        
         $disk = Storage::disk('local');
         $dir = 'users/'.Auth::id().'/belanja-modal';
         $files = $disk->exists($dir) ? $disk->files($dir) : [];
@@ -214,6 +218,7 @@ class BelanjaModalController extends Controller
                 'tahun' => $data['tahun'] ?? '',
                 'kontrak_count' => count($data['items'] ?? []),
                 'nilai_total' => $total,
+                'raw_items' => $data['items'] ?? [],
             ];
         }
         usort($items, fn($a, $b) => $b['updated'] <=> $a['updated']);
@@ -230,7 +235,7 @@ class BelanjaModalController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('belanja_modal.index', compact('items'));
+        return view('belanja_modal.index', compact('items', 'opd', 'master'));
     }
 
     public function show(string $id): View
@@ -290,6 +295,23 @@ class BelanjaModalController extends Controller
         $master = $this->loadNotaMaster();
         $data = $prefill;
         return view('belanja_modal.edit', compact('data', 'opd', 'master'));
+    }
+
+    public function exportExcel(string $id)
+    {
+        $path = "users/".Auth::id()."/belanja-modal/{$id}.json";
+        if (! Storage::disk('local')->exists($path)) {
+            abort(404);
+        }
+        $json = Storage::disk('local')->get($path);
+        $data = json_decode($json, true) ?: [];
+        $opd    = OpdSetting::where('user_id', Auth::id())->first();
+        $master = $this->loadNotaMaster();
+
+        $tahun   = $data['tahun'] ?? date('Y');
+        $filename = "Belanja-Modal-{$tahun}.xlsx";
+
+        return Excel::download(new \App\Exports\BelanjaModalExport($data, $opd, $master), $filename);
     }
 
     public function delete(string $id): RedirectResponse

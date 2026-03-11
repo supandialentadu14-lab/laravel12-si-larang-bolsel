@@ -6,6 +6,7 @@ use App\Models\BapItem;
 use App\Models\BapPemeriksaan;
 use App\Models\NotaMaster;
 use App\Models\OpdSetting;
+use App\Models\Supplier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -200,16 +201,30 @@ class PemeriksaanController extends Controller
                 'nomor' => $nota['nomor'] ?? '',
                 'tanggal' => $nota['tanggal'] ?? '',
                 'belanja' => $nota['belanja'] ?? '',
-                'penyedia' => $nota['penyedia'] ?? [],
+                'penyedia' => [
+                    'toko' => $nota['penyedia']['toko'] ?? '',
+                    'pemilik' => $nota['penyedia']['pemilik'] ?? '',
+                    'alamat' => (function() use ($nota) {
+                        $addr = trim($nota['penyedia']['alamat'] ?? '');
+                        if ($addr !== '') return $addr;
+                        
+                        $sid = $nota['supplier_id'] ?? null;
+                        if ($sid) {
+                            return Supplier::find($sid)->address ?? '';
+                        }
+                        
+                        return Supplier::where('name', $nota['penyedia']['toko'] ?? '')->first()->address ?? '';
+                    })(),
+                ],
             ],
             'items' => $cleanItems,
             'terbilang' => ucwords($this->toWordsId((int) $totalSum)),
             'total' => $totalSum,
             'ppk' => [
-                'nama' => ($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''),
-                'nip' => ($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''),
+                'nama' => (trim($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? '')),
+                'nip' => (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? '')),
                 'jabatan' => 'Pejabat Pembuat Komitmen',
-                'alamat' => ($master['ppk']['alamat'] ?? '') ?: (($master['opd']['alamat'] ?? '') ?: ($opd->alamat_opd ?? '')),
+                'alamat' => (trim($master['ppk']['alamat'] ?? '') ?: ''), 
             ],
             'tanggal_kata' => "Pada hari {$hari} Tanggal {$tanggalKata} Bulan {$bulan} Tahun {$tahunKata}",
         ];
@@ -375,6 +390,7 @@ class PemeriksaanController extends Controller
                 'tanggal' => $data['tanggal'] ?? '',
                 'nota_nomor' => $data['nota']['nomor'] ?? '',
                 'total' => $total,
+                'raw_data' => $data,
             ];
         }
         usort($items, fn($a, $b) => $b['updated'] <=> $a['updated']);
@@ -391,7 +407,10 @@ class PemeriksaanController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('pemeriksaan.index', compact('items'));
+        $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $notaDocs = $this->listNotaDocs();
+
+        return view('pemeriksaan.index', compact('items', 'opd', 'notaDocs'));
     }
 
     public function show(string $id): View
@@ -405,9 +424,17 @@ class PemeriksaanController extends Controller
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $master = $this->loadNotaMaster();
         $data['ppk'] = $data['ppk'] ?? [];
-        $data['ppk']['nama'] = $data['ppk']['nama'] ?? (($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''));
-        $data['ppk']['nip'] = $data['ppk']['nip'] ?? (($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''));
-        $data['ppk']['alamat'] = $data['ppk']['alamat'] ?? (($master['ppk']['alamat'] ?? '') ?: ($opd->alamat_opd ?? ''));
+        
+        // Apply fallbacks for viewing 
+        $data['ppk']['nama'] = (trim($data['ppk']['nama'] ?? '') ?: (trim($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? '')));
+        $data['ppk']['nip'] = (trim($data['ppk']['nip'] ?? '') ?: (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? '')));
+        $data['ppk']['alamat'] = (trim($data['ppk']['alamat'] ?? '') ?: trim($master['ppk']['alamat'] ?? ''));
+        
+        // Supplier Address Fallback
+        if (empty($data['nota']['penyedia']['alamat']) && !empty($data['nota']['penyedia']['toko'])) {
+            $data['nota']['penyedia']['alamat'] = (Supplier::where('name', $data['nota']['penyedia']['toko'])->first()->address ?? '');
+        }
+
         session(['bap_current' => $data, 'bap_current_id' => $id]);
         $saved_id = $id;
         return view('reports.pemeriksaan_report', compact('data', 'opd', 'saved_id'));
@@ -421,11 +448,34 @@ class PemeriksaanController extends Controller
         }
         $json = Storage::disk('local')->get($path);
         $data = json_decode($json, true) ?: [];
+        $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $master = $this->loadNotaMaster();
+
+        // Apply fallbacks for editing if fields are blank
+        if (empty($data['ppk']['alamat'])) {
+            $data['ppk']['alamat'] = trim($master['ppk']['alamat'] ?? '');
+        }
+        if (empty($data['ppk']['nama'])) {
+            $data['ppk']['nama'] = (trim($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''));
+        }
+        if (empty($data['ppk']['nip'])) {
+            $data['ppk']['nip'] = (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''));
+        }
+        
+        // Supplier Address Fallback
+        if (empty($data['nota']['penyedia']['alamat']) && !empty($data['nota']['penyedia']['toko'])) {
+            $sid = $data['nota']['supplier_id'] ?? null;
+            if ($sid) {
+                $data['nota']['penyedia']['alamat'] = (Supplier::find($sid)->address ?? '');
+            } else {
+                $data['nota']['penyedia']['alamat'] = (Supplier::where('name', $data['nota']['penyedia']['toko'])->first()->address ?? '');
+            }
+        }
+
         session([
             'bap_current' => $data,
             'bap_current_id' => $id,
         ]);
-        $opd = OpdSetting::where('user_id', Auth::id())->first();
         $notaDocs = $this->listNotaDocs();
         return view('pemeriksaan.edit', compact('data', 'opd', 'notaDocs', 'id'));
     }

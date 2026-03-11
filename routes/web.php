@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Stock
     Route::resource('stock', StockController::class);
+    Route::post('stock/bulk-delete', [StockController::class, 'bulkDestroy'])->name('stock.bulk_delete');
 
     // Suppliers
     Route::resource('suppliers', SupplierController::class);
@@ -67,6 +68,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Report biasa (yang lama)
     Route::get('reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.export_excel');
+    Route::get('reports/export-persediaan', [ReportController::class, 'exportPersediaan'])->name('reports.export_persediaan');
+    Route::get('reports/export-kartu-tahunan', [ReportController::class, 'exportKartuTahunan'])->name('reports.export_kartu_tahunan');
     Route::get('reports',
         [ReportController::class, 'index']
     )->name('reports.index');
@@ -110,6 +113,7 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::get('reports/belanja-modal/list', [BelanjaModalController::class, 'index'])->name('reports.belanja.modal.list');
     Route::get('reports/belanja-modal/preview-all', [BelanjaModalController::class, 'previewAll'])->name('reports.belanja.modal.preview_all');
+    Route::get('reports/belanja-modal/{id}/export-excel', [BelanjaModalController::class, 'exportExcel'])->name('reports.belanja.modal.export_excel');
     Route::get('reports/belanja-modal/{id}', [BelanjaModalController::class, 'show'])->name('reports.belanja.modal.show');
     Route::get('reports/belanja-modal/{id}/edit', [BelanjaModalController::class, 'edit'])->name('reports.belanja.modal.edit');
     Route::delete('reports/belanja-modal/{id}/delete', [BelanjaModalController::class, 'delete'])->name('reports.belanja.modal.delete');
@@ -156,14 +160,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('reports/kwitansi/{id}/update', [KwitansiController::class, 'update'])->name('reports.kwitansi.update');
     Route::delete('reports/kwitansi/{id}/delete', [KwitansiController::class, 'delete'])->name('reports.kwitansi.delete');
     Route::post('reports/kwitansi/bulk-delete', [KwitansiController::class, 'bulkDelete'])->name('reports.kwitansi.bulk_delete');
+    // Unified Settings: OPD Profil & Penandatangan
     Route::get('settings/opd', [OpdController::class, 'edit'])->name('settings.opd.edit');
     Route::post('settings/opd', [OpdController::class, 'update'])->name('settings.opd.update');
-    Route::get('settings/opd/list', [OpdController::class, 'index'])->name('settings.opd.index');
-    
-    // Settings: Master data pihak-pihak pengadaan untuk Nota Pesanan
-    Route::get('settings/nota-master', [ReportController::class, 'notaMasterForm'])->name('settings.nota.master.edit');
-    Route::post('settings/nota-master', [ReportController::class, 'notaMasterSave'])->name('settings.nota.master.update');
-    Route::get('settings/nota-master/list', [ReportController::class, 'notaMasterList'])->name('settings.nota.master.list');
+
+    // Legacy Aliases for Consolidated Settings
+    Route::get('settings/opd/list', [OpdController::class, 'edit'])->name('settings.opd.index');
+    Route::get('settings/nota-master', [OpdController::class, 'edit'])->name('settings.nota.master.edit');
+    Route::post('settings/nota-master', [OpdController::class, 'update'])->name('settings.nota.master.update');
+    Route::get('settings/nota-master/list', [OpdController::class, 'edit'])->name('settings.nota.master.list');
 
     Route::get('profile', [UserController::class, 'editSelf'])->name('profile.edit');
     Route::put('profile', [UserController::class, 'updateProfile'])->name('profile.update');
@@ -171,6 +176,9 @@ Route::middleware(['auth'])->group(function () {
     // User Management (Admin only)
     Route::middleware('can:admin-access')->group(function () {
         Route::resource('users', UserController::class);
+        // GET fallback: redirect ke index jika akses langsung via URL
+        Route::get('users/{user}/toggle-active', fn() => redirect()->route('users.index'));
+        Route::post('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity_log.index');
     });
 });

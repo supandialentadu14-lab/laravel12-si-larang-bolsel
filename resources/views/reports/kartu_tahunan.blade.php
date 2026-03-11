@@ -117,34 +117,60 @@
     </style>
 
 
-    <div class="print:hidden rounded-xl shadow-md border bg-white p-4 mb-6">
-        <form method="GET" action="{{ route('reports.kartu.tahunan') }}" class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div class="flex flex-col sm:flex-row gap-4 flex-1">
-                <div class="w-full sm:w-1/4">
-                    <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1">From Date</label>
-                    <input type="date" name="start_date" value="{{ $startDate }}" class="w-full rounded-lg border-indigo-200 text-sm bg-white shadow-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-500">
+    <div class="print:hidden bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 p-5 mb-8 sticky top-0 z-10 transition-all duration-300">
+        <form method="GET" action="{{ route('reports.kartu.tahunan') }}" class="flex flex-col lg:flex-row lg:items-end gap-6">
+            <div class="flex flex-col sm:flex-row gap-5 flex-1">
+                <div class="w-full sm:w-1/2 group">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 group-focus-within:text-indigo-600 transition-colors">
+                        <i class="fas fa-calendar-alt mr-1"></i> Dari Tanggal
+                    </label>
+                    <div class="relative">
+                        <input type="date" name="start_date" value="{{ $startDate }}"
+                            class="w-full rounded-xl border-slate-200 text-sm bg-white shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 h-11 px-4">
+                    </div>
                 </div>
-                <div class="w-full sm:w-1/4">
-                    <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1">To Date</label>
-                    <input type="date" name="end_date" value="{{ $endDate }}" class="w-full rounded-lg border-indigo-200 text-sm bg-white shadow-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-500">
+                <div class="w-full sm:w-1/2 group">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 group-focus-within:text-indigo-600 transition-colors">
+                        <i class="fas fa-calendar-check mr-1"></i> Sampai Tanggal
+                    </label>
+                    <div class="relative">
+                        <input type="date" name="end_date" value="{{ $endDate }}"
+                            class="w-full rounded-xl border-slate-200 text-sm bg-white shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 h-11 px-4">
+                    </div>
                 </div>
             </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('dashboard') }}" class="no-print inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 shadow-sm transition flex-1 sm:flex-none">
-                    <i class="fas fa-arrow-left"></i>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit"
+                    class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 shadow-md shadow-indigo-100 hover:shadow-indigo-200 transition-all duration-200 flex-1 sm:flex-none">
+                    <i class="fas fa-filter text-indigo-200"></i>
+                    Terapkan Filter
+                </button>
+
+                <div class="flex gap-2 flex-1 sm:flex-none">
+                    <button type="button" onclick="window.print()"
+                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 text-white font-bold text-sm hover:bg-slate-900 shadow-lg shadow-slate-100 transition-all flex-1 sm:flex-none">
+                        <i class="far fa-print text-slate-400"></i>
+                        Cetak
+                    </button>
+                    <a href="{{ route('reports.export_kartu_tahunan', ['start_date' => $startDate, 'end_date' => $endDate]) }}"
+                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:scale-95 flex-1 sm:flex-none"
+                        style="background-color: #16a34a; color: white; box-shadow: 0 4px 14px rgba(22,163,74,0.3);"
+                        onmouseenter="this.style.backgroundColor='#15803d'"
+                        onmouseleave="this.style.backgroundColor='#16a34a'">
+                        <i class="fas fa-file-excel" style="color: #bbf7d0;"></i>
+                        Excel
+                    </a>
+                </div>
+
+                <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-all flex-1 sm:flex-none">
+                    <i class="fas fa-arrow-left text-slate-400"></i>
                     Kembali
                 </a>
-                <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-white font-bold hover:bg-orange-600 shadow-sm flex-1 sm:flex-none">
-                    <i class="fas fa-filter"></i>
-                    Filter
-                </button>
-                <button type="button" onclick="window.print()" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-black text-white font-bold hover:bg-gray-800 shadow-sm flex-1 sm:flex-none">
-                    <i class="fas fa-print"></i>
-                    Print
-                </button>
             </div>
         </form>
     </div>
+
 
     <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
         <div id="print-area" class="print-area bg-white shadow-lg border p-4 sm:p-8 rounded-lg mx-auto" style="min-width: 330mm;">

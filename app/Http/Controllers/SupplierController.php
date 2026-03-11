@@ -73,6 +73,7 @@ class SupplierController extends Controller
 
             // Alamat boleh kosong
             'address' => 'nullable|string',
+            'npwp' => 'nullable|string|max:100',
         ]);
 
         // Simpan data supplier ke database
@@ -113,6 +114,7 @@ class SupplierController extends Controller
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
+            'npwp' => 'nullable|string|max:100',
         ]);
 
         // Update data supplier berdasarkan input yang sudah divalidasi

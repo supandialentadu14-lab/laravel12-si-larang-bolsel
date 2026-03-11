@@ -32,6 +32,7 @@ class Supplier extends Model
         'email',
         'phone',
         'address',
+        'npwp',
         'user_id',
     ];
 

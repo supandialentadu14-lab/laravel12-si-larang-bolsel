@@ -26,7 +26,22 @@
         .report-table td {
             border: 1px solid black;
             padding: 6px;
-            font-size: 12px;
+            font-size: 11px; /* Sedikit lebih kecil agar lebih muat */
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal !important;
+            overflow: hidden;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            max-height: 2.8em; /* Sekitar 2 baris */
         }
 
         .report-table th {
@@ -111,10 +126,20 @@
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
         <button type="button" onclick="window.print()"
-            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-black text-white hover:bg-black">
+            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-black text-white hover:bg-gray-800 mr-2">
             <i class="fas fa-print"></i>
             Print
         </button>
+        @if(isset($saved_id))
+        <a href="{{ route('reports.belanja.modal.export_excel', $saved_id) }}"
+            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold"
+            style="background-color: #16a34a; color: white;"
+            onmouseenter="this.style.backgroundColor='#15803d'"
+            onmouseleave="this.style.backgroundColor='#16a34a'">
+            <i class="fas fa-file-excel"></i>
+            Excel
+        </a>
+        @endif
     </div>
 
     <div id="print-area" class="print-area bg-white shadow-lg border p-8 rounded-lg">
@@ -126,38 +151,39 @@
 
         <table class="report-table">
             <colgroup>
-                <col style="width:3%">
-                <col style="width:14%">
-                <col style="width:16%">
-                <col style="width:10%">
-                <col style="width:8%">
-                <col style="width:10%">
-                <col style="width:8%">
-                <col style="width:8%">
-                <col style="width:8%">
-                <col style="width:8%">
-                <col style="width:8%">
-                <col style="width:10%">
-                <col style="width:8%">
+                <col style="width:3%">  {{-- No --}}
+                <col style="width:14%"> {{-- Nama Kegiatan --}}
+                <col style="width:14%"> {{-- Pekerjaan --}}
+                <col style="width:9%">  {{-- Nilai Kontrak --}}
+                <col style="width:7%">  {{-- Mulai --}}
+                <col style="width:8%">  {{-- Akhir --}}
+                
+                <col style="width:7%">  {{-- UM --}}
+                <col style="width:6%">  {{-- T1 --}}
+                <col style="width:6%">  {{-- T2 --}}
+                <col style="width:6%">  {{-- T3 --}}
+                <col style="width:6%">  {{-- T4 --}}
+                <col style="width:8%">  {{-- Total --}}
+                <col style="width:6%">  {{-- Status --}}
             </colgroup>
             <thead>
                 <tr>
                     <th rowspan="2">No</th>
                     <th rowspan="2">Nama Kegiatan</th>
                     <th rowspan="2">Pekerjaan</th>
-                    <th rowspan="2">Nilai Kontrak (Rp)</th>
-                    <th rowspan="2">Tanggal Mulai</th>
-                    <th rowspan="2">Tanggal Akhir Pekerjaan</th>
+                    <th rowspan="2">Nilai Kontrak<br>(Rp)</th>
+                    <th rowspan="2">Tanggal<br>Mulai</th>
+                    <th rowspan="2">Tanggal Akhir<br>Pekerjaan</th>
                     <th colspan="5">SP2D Pembayaran</th>
-                    <th rowspan="2">Total Pembayaran (Rp)</th>
-                    <th rowspan="2">Status Pekerjaan</th>
+                    <th rowspan="2">Total Pembayaran<br>(Rp)</th>
+                    <th rowspan="2">Status<br>Pekerjaan</th>
                 </tr>
                 <tr>
-                    <th>Uang Muka (Rp)</th>
-                    <th>Termin I (Rp)</th>
-                    <th>Termin II (Rp)</th>
-                    <th>Termin III (Rp)</th>
-                    <th>Termin IV (Rp)</th>
+                    <th>Uang Muka<br>(Rp)</th>
+                    <th>Termin I<br>(Rp)</th>
+                    <th>Termin II<br>(Rp)</th>
+                    <th>Termin III<br>(Rp)</th>
+                    <th>Termin IV<br>(Rp)</th>
                 </tr>
             </thead>
             <tbody>
@@ -165,8 +191,8 @@
                 @foreach ($data['items'] as $row)
                     <tr>
                         <td align="center">{{ $no++ }}</td>
-                        <td>{{ $row['nm'] }}</td>
-                        <td>{{ $row['pk'] }}</td>
+                        <td><div class="line-clamp-2">{{ $row['nm'] }}</div></td>
+                        <td><div class="line-clamp-2">{{ $row['pk'] }}</div></td>
                         <td align="right">{{ number_format($row['nk'], 0, ',', '.') }}</td>
                         <td align="center">
                             {{ $row['tm'] ? \Carbon\Carbon::parse($row['tm'])->translatedFormat('d F Y') : '-' }}</td>

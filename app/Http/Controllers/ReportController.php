@@ -360,10 +360,61 @@ class ReportController extends Controller
     public function exportExcel(Request $request)
     {
         $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
-        $endDate = $request->input('end_date') ?: now()->toDateString();
+        $endDate   = $request->input('end_date') ?: now()->toDateString();
 
-        return Excel::download(new StockTransactionsExport($startDate, $endDate), 'laporan-mutasi-stok-' . $startDate . '-to-' . $endDate . '.xlsx');
+        $filename = 'Laporan-Persediaan-Barang-' . $startDate . '-sd-' . $endDate . '.xlsx';
+
+        return Excel::download(new StockTransactionsExport($startDate, $endDate), $filename);
     }
+
+    public function exportPersediaan(Request $request)
+    {
+        $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
+        $endDate   = $request->input('end_date') ?: now()->toDateString();
+        $filename  = 'Laporan-Persediaan-' . $startDate . '-sd-' . $endDate . '.xlsx';
+
+        return Excel::download(new \App\Exports\LaporanPersediaanExport($startDate, $endDate), $filename);
+    }
+
+    public function exportKartuTahunan(Request $request)
+    {
+        $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
+        $endDate   = $request->input('end_date') ?: now()->toDateString();
+        $opd    = OpdSetting::where('user_id', Auth::id())->first();
+        $master = $this->loadNotaMaster();
+
+        $transactions = StockTransaction::with('product')
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('product_id', 'asc')
+            ->orderBy('date', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $grouped = [];
+        foreach ($transactions as $trx) {
+            if (!$trx->product) continue;
+            $pid = (int) $trx->product_id;
+            if (!isset($grouped[$pid])) {
+                $grouped[$pid] = ['product' => $trx->product, 'rows' => [], 'saldo' => 0];
+            }
+            $masuk  = 0; $keluar = 0;
+            if ($trx->type === 'in')  { $masuk  = $trx->quantity; $grouped[$pid]['saldo'] += $trx->quantity; }
+            if ($trx->type === 'out') { $keluar = $trx->quantity; $grouped[$pid]['saldo'] -= $trx->quantity; }
+            $grouped[$pid]['rows'][] = [
+                'date'       => $trx->date,
+                'nosur'      => $trx->nosur ?? '-',
+                'masuk'      => $masuk,
+                'keluar'     => $keluar,
+                'harga'      => $trx->product->price ?? 0,
+                'sisa'       => $grouped[$pid]['saldo'],
+                'keterangan' => $trx->notes ?? '-',
+            ];
+        }
+
+        $filename = 'Kartu-Persediaan-' . $startDate . '-sd-' . $endDate . '.xlsx';
+        return Excel::download(new \App\Exports\KartuTahunanExport($grouped, $startDate, $endDate, $opd, $master), $filename);
+    }
+
 
     protected function prefillOpnameItems(): array
     {
@@ -918,61 +969,6 @@ class ReportController extends Controller
     
 
     
-    public function notaMasterForm(): View
-    {
-        $opd = OpdSetting::where('user_id', Auth::id())->first();
-        $data = $this->loadNotaMaster();
-        return view('settings.nota_master', compact('data', 'opd'));
-    }
-    
-    public function notaMasterSave(Request $request): RedirectResponse
-    {
-        $payload = $request->validate([
-            'opd.nama' => 'nullable|string|max:255',
-            'opd.alamat' => 'nullable|string|max:255',
-            'ppk.nama' => 'nullable|string|max:255',
-            'ppk.nip' => 'nullable|string|max:50',
-            'ppk.alamat' => 'nullable|string|max:255',
-            'pejabat.nama' => 'nullable|string|max:255',
-            'pejabat.nip' => 'nullable|string|max:50',
-            'pptk.nama' => 'nullable|string|max:255',
-            'pptk.nip' => 'nullable|string|max:50',
-            'pengurus_barang.nama' => 'nullable|string|max:255',
-            'pengurus_barang.nip' => 'nullable|string|max:50',
-            'pengurus_pengguna.nama' => 'nullable|string|max:255',
-            'pengurus_pengguna.nip' => 'nullable|string|max:50',
-            'bendahara.nama' => 'nullable|string|max:255',
-            'bendahara.nip' => 'nullable|string|max:50',
-        ]);
-        NotaMaster::updateOrCreate(
-            ['user_id' => Auth::id()],
-            [
-                'opd_nama' => $payload['opd']['nama'] ?? '',
-                'opd_alamat' => $payload['opd']['alamat'] ?? '',
-                'ppk_nama' => $payload['ppk']['nama'] ?? '',
-                'ppk_nip' => $payload['ppk']['nip'] ?? '',
-                'ppk_alamat' => $payload['ppk']['alamat'] ?? '',
-                'pejabat_nama' => $payload['pejabat']['nama'] ?? '',
-                'pejabat_nip' => $payload['pejabat']['nip'] ?? '',
-                'pptk_nama' => $payload['pptk']['nama'] ?? '',
-                'pptk_nip' => $payload['pptk']['nip'] ?? '',
-                'pengurus_barang_nama' => $payload['pengurus_barang']['nama'] ?? '',
-                'pengurus_barang_nip' => $payload['pengurus_barang']['nip'] ?? '',
-                'pengurus_pengguna_nama' => $payload['pengurus_pengguna']['nama'] ?? '',
-                'pengurus_pengguna_nip' => $payload['pengurus_pengguna']['nip'] ?? '',
-                'bendahara_nama' => $payload['bendahara']['nama'] ?? '',
-                'bendahara_nip' => $payload['bendahara']['nip'] ?? '',
-            ]
-        );
-        return redirect()->route('settings.nota.master.list')->with('status', 'Data master pengadaan disimpan');
-    }
-    
-    public function notaMasterList(): View
-    {
-        $opd = OpdSetting::where('user_id', Auth::id())->first();
-        $data = $this->loadNotaMaster();
-        return view('settings.nota_master_list', compact('data', 'opd'));
-    }
     
     public function notaPesananReport(Request $request): View
     {

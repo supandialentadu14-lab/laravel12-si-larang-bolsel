@@ -127,11 +127,17 @@ class NotaPesananController extends Controller
         $master = $this->loadNotaMaster();
         if (is_array($master)) {
             $master['pejabat']['nama'] = $payload['pejabat_nama'] ?? ($master['pejabat']['nama'] ?? '');
+            $master['pejabat']['nip'] = $payload['pejabat_nip'] ?? ($master['pejabat']['nip'] ?? '');
             $master['pptk']['nama'] = $payload['pptk_nama'] ?? ($master['pptk']['nama'] ?? '');
-            $master['pengurus_barang']['nama'] = $payload['pb_nama'] ?? ($master['pengurus_barang']['nama'] ?? '');
-            $master['pengurus_pengguna']['nama'] = $payload['pbp_nama'] ?? ($master['pengurus_pengguna']['nama'] ?? '');
-            $master['ppk']['nama'] = $payload['ppk_nama'] ?? ($master['ppk']['nama'] ?? '');
+            $master['pptk']['nip'] = $payload['pptk_nip'] ?? ($master['pptk']['nip'] ?? '');
+            $master['pengurus_barang']['nama'] = $payload['pb_nama'] ?? (($master['pengurus_barang']['nama'] ?? '') ?: ($opd->pengurus_nama ?? ''));
+            $master['pengurus_barang']['nip'] = $payload['pb_nip'] ?? (($master['pengurus_barang']['nip'] ?? '') ?: ($opd->pengurus_nip ?? ''));
+            $master['pengurus_pengguna']['nama'] = $payload['pbp_nama'] ?? (($master['pengurus_pengguna']['nama'] ?? '') ?: ($opd->pengguna_nama ?? ''));
+            $master['pengurus_pengguna']['nip'] = $payload['pbp_nip'] ?? (($master['pengurus_pengguna']['nip'] ?? '') ?: ($opd->pengguna_nip ?? ''));
+            $master['ppk']['nama'] = $payload['ppk_nama'] ?? (($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''));
+            $master['ppk']['nip'] = $payload['ppk_nip'] ?? (($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''));
             $master['bendahara']['nama'] = $payload['bendahara_nama'] ?? ($master['bendahara']['nama'] ?? '');
+            $master['bendahara']['nip'] = $payload['bendahara_nip'] ?? ($master['bendahara']['nip'] ?? '');
         }
         $penyedia = ['toko' => '', 'pemilik' => '', 'alamat' => ''];
         if ($sid = $request->input('supplier_id')) {
@@ -159,11 +165,14 @@ class NotaPesananController extends Controller
             'pengurus_barang' => $master['pengurus_barang'],
             'pengurus_pengguna' => $master['pengurus_pengguna'],
             'ppk' => $master['ppk'],
+            'supplier_id' => $request->input('supplier_id'),
             'penyedia' => $penyedia,
             'bendahara' => $master['bendahara'],
             'nomor' => $payload['nomor'] ?? '',
             'tanggal' => $payload['tanggal'] ?? now()->toDateString(),
             'belanja' => $payload['belanja'] ?? '',
+            'kategori_belanja' => $payload['kategori_belanja'] ?? '',
+            'pekerjaan' => $payload['pekerjaan'] ?? '',
             'items' => $cleanItems,
         ];
         session(['nota_current' => $data]);
@@ -269,11 +278,14 @@ class NotaPesananController extends Controller
             'pengurus_barang' => $master['pengurus_barang'],
             'pengurus_pengguna' => $master['pengurus_pengguna'],
             'ppk' => $master['ppk'],
+            'supplier_id' => $payload['supplier_id'] ?? null,
             'penyedia' => $penyedia,
             'bendahara' => $master['bendahara'],
             'nomor' => $nomorFormatted,
             'tanggal' => $payload['tanggal'] ?? now()->toDateString(),
             'belanja' => $payload['belanja'] ?? '',
+            'kategori_belanja' => $payload['kategori_belanja'] ?? '',
+            'pekerjaan' => $payload['pekerjaan'] ?? '',
             'items' => $cleanItems,
         ];
         
@@ -364,7 +376,7 @@ class NotaPesananController extends Controller
         // Jika input hanya angka, format ulang
         if (preg_match('/^\d+$/', $inputNomor)) {
             $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-            $opd = OpdSetting::where('user_id', Auth::id())->first();
+            $opd = OpdSetting::where('user_id', '=', Auth::id())->first();
             $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
             $nomorFormatted = "{$inputNomor}/NPB/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
         } else {
@@ -387,6 +399,8 @@ class NotaPesananController extends Controller
             'nomor' => $nomorFormatted,
             'tanggal' => $payload['tanggal'] ?? now()->toDateString(),
             'belanja' => $payload['belanja'] ?? '',
+            'kategori_belanja' => $payload['kategori_belanja'] ?? '',
+            'pekerjaan' => $payload['pekerjaan'] ?? '',
             'items' => $cleanItems,
         ];
         
@@ -480,6 +494,7 @@ class NotaPesananController extends Controller
                 'tanggal' => $data['tanggal'] ?? '',
                 'belanja' => $data['belanja'] ?? '',
                 'total' => $total,
+                'raw_data' => $data,
             ];
         }
         usort($items, fn($a, $b) => $b['updated'] <=> $a['updated']);
@@ -496,7 +511,14 @@ class NotaPesananController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('nota_pesanan.index', compact('items'));
+        $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $options = $this->collectNotaOptions();
+        $products = Product::with('category')->orderBy('name', 'asc')->get();
+        $categories = \App\Models\Category::orderBy('name', 'asc')->get();
+        $master = $this->loadNotaMaster();
+        $suppliers = Supplier::orderBy('name', 'asc')->get();
+
+        return view('nota_pesanan.index', compact('items', 'opd', 'options', 'products', 'categories', 'master', 'suppliers'));
     }
 
     public function show(string $id): View

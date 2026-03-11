@@ -5,13 +5,25 @@
     .kop td { vertical-align: middle; }
     .kop-logo { width: 80px; text-align: center; }
     .kop-logo img { width: 70px; height: 70px; object-fit: contain; }
-    .kop-text { text-align: center; }
+    .kop-text { text-align: center; padding-right: 80px; }
     .kop-text .line1 { font-weight: 800; font-size: 16px; letter-spacing: .4px; text-transform: uppercase; line-height: 1.1; margin: 0; }
     .kop-text .line2 { font-weight: 800; font-size: 22px; text-transform: uppercase; line-height: 1.1; margin: 0; }
-    .kop-text .line3, .kop-text .line4 { font-style: italic; font-size: 13px; line-height: 1.1; margin: 0; }
+    .kop-text .line3, .kop-text .line4 { 
+        font-style: italic; 
+        font-size: 13px; 
+        line-height: 1.2; 
+        margin: 0; 
+        white-space: normal;
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
     @media print {
-        .kop-logo { width: 100px; }
+        .kop-logo { width: 80px; }
         .kop-logo img { width: 70px; height: 70px; }
+        .kop-text { padding-right: 80px; }
         .kop-text .line2 { font-size: 22px; }
     }
 </style>

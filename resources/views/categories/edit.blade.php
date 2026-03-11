@@ -22,7 +22,7 @@
 
             {{-- Form untuk update data kategori --}}
             {{-- Mengarah ke route categories.update dengan parameter $category --}}
-            <form action="{{ route('categories.update', $category) }}" method="POST" class="p-6 space-y-6">
+            <form action="{{ route('categories.update', $category) }}" method="POST" class="p-6 space-y-6 no-soft">
 
                 {{-- Token keamanan CSRF --}}
                 @csrf

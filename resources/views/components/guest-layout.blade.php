@@ -106,13 +106,13 @@
         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-10 mix-blend-overlay"></div>
         
         <!-- Main Image Container -->
-        <div class="relative z-20 w-full h-full p-8 flex items-start justify-center animate__animated animate-slow {{ $isRegister ? 'lg:animate__fadeInRight animate__fadeIn' : 'lg:animate__fadeInLeft animate__fadeIn' }} lg:pt-44">
+        <div class="relative z-20 w-full h-full p-4 flex items-start justify-center animate__animated animate-slow {{ $isRegister ? 'lg:animate__fadeInRight animate__fadeIn' : 'lg:animate__fadeInLeft animate__fadeIn' }} lg:pt-44">
             <div class="relative w-full max-w-2xl aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 group">
                 <img src="{{ asset('images/login-bg-new.png') }}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-1000 ease-in-out">
                 <div class="absolute inset-0 bg-brand-900/20 group-hover:bg-transparent transition duration-500"></div>
                 
                 <!-- Floating Badge -->
-                <div class="absolute bottom-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl shadow-xl animate-float z-20">
+                <div class="absolute bottom-2 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl shadow-xl animate-float z-20">
                     <div class="flex items-center gap-3">
                         <div class="p-1.5 bg-green-500/20 rounded-lg">
                             <i class="fas fa-shield-alt text-green-400 text-lg"></i>
@@ -136,7 +136,7 @@
 
         <!-- Footer (Desktop - Left Side) -->
         <div class="absolute bottom-24 left-0 right-0 text-center z-30 animate__animated animate__fadeIn animate__delay-1s px-8">
-            <p class="text-[10px] text-white/40 font-bold tracking-[0.2em] uppercase mb-1 drop-shadow-lg">SI-LARANG v2.0</p>
+            <!-- <p class="text-[10px] text-white/40 font-bold tracking-[0.2em] uppercase mb-1 drop-shadow-lg">SI-LARANG v2.0</p> -->
             <p class="text-[9px] text-white/30 font-medium drop-shadow-lg">Copyright © 2026 Emon Alentadu. Seluruh Hak Cipta Dilindungi.</p>
         </div>
     </div>
@@ -156,12 +156,12 @@
         
         <div class="w-full max-w-xl relative z-10 animate__animated {{ $isRegister ? 'lg:animate__fadeInLeft animate__fadeIn' : 'lg:animate__fadeInRight animate__fadeIn' }}">
             <!-- Logo Mobile -->
-            <div class="text-center lg:hidden mb-10">
-                <div class="inline-flex items-center justify-center mb-4 p-4 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 ring-1 ring-white/30">
-                    <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo" class="h-16 w-16 object-contain" onerror="this.style.display='none'">
+            <div class="text-center lg:hidden mb-4">
+                <div class="inline-flex items-center justify-center mb-1 p-2 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 ring-1 ring-white/30">
+                    <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo" class="h-12 w-12 object-contain" onerror="this.style.display='none'">
                 </div>
-                <h2 class="text-3xl font-black text-white tracking-tight">SI-LARANG</h2>
-                <div class="h-1 w-12 bg-brand-500 mx-auto mt-2 rounded-full"></div>
+                <h2 class="text-2xl font-black text-white tracking-tight">SI-LARANG</h2>
+                <div class="h-1 w-12 bg-brand-500 mx-auto mt-1 rounded-full"></div>
             </div>
 
             <!-- Glass Card Form -->
@@ -172,8 +172,8 @@
             </div>
 
             <!-- Footer (Mobile Only) -->
-            <div class="mt-12 text-center lg:hidden animate__animated animate__fadeIn animate__delay-1s">
-                <p class="text-[10px] text-white/30 font-bold tracking-[0.2em] uppercase mb-1">SI-LARANG v2.0</p>
+            <div class="mt-4 text-center lg:hidden animate__animated animate__fadeIn animate__delay-1s">
+                <!-- <p class="text-[10px] text-white/30 font-bold tracking-[0.2em] uppercase mb-1">SI-LARANG v2.0</p> -->
                 <p class="text-[9px] text-white/20 font-medium">Copyright © 2026 Emon Alentadu. Seluruh Hak Cipta Dilindungi.</p>
             </div>
         </div>

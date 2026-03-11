@@ -116,24 +116,14 @@
                 @csrf
                 <input type="hidden" name="id" value="{{ session('nota_current_id') }}">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Kegiatan</label>
-                        <input type="text" name="kegiatan" list="opt-kegiatan" value="{{ old('kegiatan', $data['kegiatan'] ?? '') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                        <datalist id="opt-kegiatan">
-                            @foreach(($options['kegiatan'] ?? []) as $v)
-                                <option value="{{ $v }}"></option>
-                            @endforeach
-                        </datalist>
+                        <textarea name="kegiatan" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition text-sm font-bold shadow-sm" rows="2">{{ old('kegiatan', $data['kegiatan'] ?? '') }}</textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Sub. Kegiatan</label>
-                        <input type="text" name="sub_kegiatan" list="opt-subkegiatan" value="{{ old('sub_kegiatan', $data['sub_kegiatan'] ?? '') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                        <datalist id="opt-subkegiatan">
-                            @foreach(($options['sub_kegiatan'] ?? []) as $v)
-                                <option value="{{ $v }}"></option>
-                            @endforeach
-                        </datalist>
+                        <textarea name="sub_kegiatan" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition text-sm font-bold shadow-sm" rows="2">{{ old('sub_kegiatan', $data['sub_kegiatan'] ?? '') }}</textarea>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -184,15 +184,15 @@ class KwitansiController extends Controller
             'pembayaran_uraian' => 'Belanja ' . (($selected['belanja'] ?? '') ?: ''),
             'lokasi_tanggal' => ($opd->nama_opd ?? 'Bolaang Uki') . ', ' . $bulanNama,
             'pejabat' => [
-                'pptk' => $master['pptk']['nama'] ?? '',
-                'bendahara' => $master['bendahara']['nama'] ?? '',
+                'pptk' => ($master['pptk']['nama'] ?? ''),
+                'bendahara' => ($master['bendahara']['nama'] ?? ''),
                 'pihak_ketiga' => ($selected['nota']['penyedia']['pemilik'] ?? ($selected['nota']['penyedia']['toko'] ?? '')),
-                'pengguna' => $master['ppk']['nama'] ?? '',
+                'pengguna' => ($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''),
             ],
             'opd_nama' => $opd->nama_opd ?? '',
-            'bendahara_nip' => $master['bendahara']['nip'] ?? '',
-            'pptk_nip' => $master['pptk']['nip'] ?? '',
-            'ppk_nip' => $master['ppk']['nip'] ?? '',
+            'bendahara_nip' => ($master['bendahara']['nip'] ?? ''),
+            'pptk_nip' => ($master['pptk']['nip'] ?? ''),
+            'ppk_nip' => ($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''),
         ];
         session(['kwitansi_current' => $data]);
         return view('reports.kwitansi_report', compact('data', 'opd'));
@@ -304,15 +304,15 @@ class KwitansiController extends Controller
                 'pembayaran_uraian' => $uraianFull,
                 'lokasi_tanggal' => 'Bolaang Uki, ' . $tanggalStr,
                 'pejabat' => [
-                    'pptk' => $master['pptk']['nama'] ?? '',
-                    'bendahara' => $master['bendahara']['nama'] ?? '',
+                    'pptk' => ($master['pptk']['nama'] ?? ''),
+                    'bendahara' => ($master['bendahara']['nama'] ?? ''),
                     'pihak_ketiga' => $payload['pihak_ketiga_nama'] ?? ($selected['nota']['penyedia']['pemilik'] ?? ($selected['nota']['penyedia']['toko'] ?? '')),
-                    'pengguna' => $master['ppk']['nama'] ?? '',
+                    'pengguna' => ($master['ppk']['nama'] ?? '') ?: ($opd->kepala_nama ?? ''),
                 ],
                 'opd_nama' => $opd->nama_opd ?? '',
-                'bendahara_nip' => $master['bendahara']['nip'] ?? '',
-                'pptk_nip' => $master['pptk']['nip'] ?? '',
-                'ppk_nip' => $master['ppk']['nip'] ?? '',
+                'bendahara_nip' => ($master['bendahara']['nip'] ?? ''),
+                'pptk_nip' => ($master['pptk']['nip'] ?? ''),
+                'ppk_nip' => ($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''),
             ];
 
             // Sanitasi nomor untuk nama file
@@ -389,14 +389,16 @@ class KwitansiController extends Controller
 
             $items[] = [
                 'id' => basename($file, '.json'),
+                'updated' => $disk->lastModified($file),
                 'nomor_kwt' => $data['nomor_kwt'] ?? '',
                 'tanggal' => $data['tanggal'] ?? '',
                 'penerimaan_nomor' => $data['penerimaan_nomor'] ?? '',
                 'jumlah' => $data['jumlah'] ?? 0,
                 'uraian' => $data['pembayaran_uraian'] ?? '',
+                'raw_data' => $data,
             ];
         }
-        usort($items, fn($a, $b) => ($b['tanggal'] ?? '') <=> ($a['tanggal'] ?? ''));
+        usort($items, fn($a, $b) => $b['updated'] <=> $a['updated']);
 
         $page = $request->input('page', 1);
         $perPage = 10;
@@ -410,7 +412,10 @@ class KwitansiController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('kwitansi.index', compact('items'));
+        $opd = OpdSetting::where('user_id', Auth::id())->first();
+        $docs = $this->listPenerimaanDocs();
+
+        return view('kwitansi.index', compact('items', 'opd', 'docs'));
     }
 
     public function show($id)

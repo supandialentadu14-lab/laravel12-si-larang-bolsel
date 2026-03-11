@@ -60,11 +60,13 @@ class CategoryController extends Controller
     {
         // Validasi input dari form
         $validated = $request->validate([
-            // name wajib diisi, berupa string, maksimal 255 karakter
-            'name' => 'required|string|max:255',
+            // name wajib diisi, berupa string, maksimal 255 karakter, harus unik
+            'name' => 'required|string|max:255|unique:categories,name',
 
             // description boleh kosong (nullable), jika diisi harus string
             'description' => 'nullable|string',
+        ], [
+            'name.unique' => 'Nama jenis belanja ini sudah ada, silakan gunakan nama lain.',
         ]);
 
         // Membuat slug dari name (contoh: "Makanan Ringan" → "makanan-ringan")
@@ -101,25 +103,46 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): RedirectResponse
     {
-        // Validasi input
+        // Validasi input - abaikan data yang sedang diupdate
+        // dan abaikan data yang sudah dihapus (soft deleted) agar nama bisa dipakai kembali
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->id . ',id,deleted_at,NULL',
             'description' => 'nullable|string',
+        ], [
+            'name.unique' => 'Nama jenis belanja ini sudah digunakan oleh data aktif lain.',
         ]);
 
-        // Jika nama kategori berubah
-        if ($category->name !== $validated['name']) {
+        // Cari record lain (termasuk yang di sampah) yang memiliki nama yang sama
+        $newSlug = Str::slug($validated['name']);
+        $existing = Category::withTrashed()
+            ->where(function($q) use ($validated, $newSlug) {
+                $q->where('name', $validated['name'])
+                  ->orWhere('slug', $newSlug);
+            })
+            ->where('id', '!=', $category->id)
+            ->first();
 
-            // Maka slug dibuat ulang berdasarkan nama baru
-            $validated['slug'] = Str::slug($validated['name']);
+        if ($existing) {
+            if ($existing->trashed()) {
+                // Jika data yang sama ada di sampah, hapus permanen agar tidak bentrok
+                $existing->forceDelete();
+            } else {
+                // Jika data yang sama masih aktif, kembalikan error
+                return back()->withErrors(['name' => 'Nama atau slug jenis belanja ini sudah digunakan.'])->withInput();
+            }
         }
 
-        // Update data kategori dengan data yang sudah divalidasi
+        // Jika nama kategori berubah, slug juga diupdate
+        if ($category->name !== $validated['name']) {
+            $validated['slug'] = $newSlug;
+        }
+
+        // Update data kategori
         $category->update($validated);
 
-        // Redirect kembali ke halaman index dengan pesan sukses
+        // Redirect kembali ke halaman index (daftar belanja)
         return redirect()->route('categories.index')
-                         ->with('success', 'Category updated successfully.');
+                         ->with('success', 'Data jenis belanja berhasil diperbarui.');
     }
 
     /**

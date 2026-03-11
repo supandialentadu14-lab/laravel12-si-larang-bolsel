@@ -6,16 +6,6 @@
 @section('actions')
     <a href="{{ route('reports.penerimaan.list') }}" class="no-print btn btn-outline"><i class="fas fa-arrow-left"></i> Kembali</a>
     <button onclick="window.print()" class="no-print btn btn-neutral ml-2"><i class="fas fa-print"></i> Cetak</button>
-    <form method="POST" action="{{ route('reports.penerimaan.save') }}" class="no-print inline-block ml-2">
-        @csrf
-        <input type="hidden" name="id" value="{{ session('penerimaan_current_id') }}">
-        <!-- <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button> -->
-    </form>
-    <!-- @if (session('penerimaan_current_id'))
-        <a href="{{ route('reports.penerimaan.edit', session('penerimaan_current_id')) }}" class="no-print btn btn-outline ml-2">Edit</a>
-    @else
-        <a href="{{ route('reports.penerimaan.form') }}" class="no-print btn btn-outline ml-2">Edit</a>
-    @endif -->
 @endsection
 
 @section('content')
@@ -23,10 +13,12 @@
         .preview-paper { 
             width: 210mm; 
             min-height: 330mm; 
-            margin: 0 auto; 
+            margin: 16px auto; 
             background: #fff; 
-            padding: 5mm 15mm;
+            padding: 10mm 15mm;
             line-height: 1.4;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 8px;
         }
         .preview-paper p { margin: 5px 0; }
         .preview-paper h2 { margin: 5px 0; }
@@ -54,16 +46,28 @@
         @media screen {
             html, body { background: #f3f4f6; }
             #print-area { width: 210mm; margin: 0 auto; }
-            .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; }
+            .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; border-radius: 8px; }
         }
-        .report-table { border-collapse: collapse; width: 100%; }
-        .report-table th, .report-table td { border: 1px solid #000; padding: 6px; font-size: 12px; }
+        .report-table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            table-layout: fixed;
+        }
+        .report-table th, .report-table td { 
+            border: 1px solid #000; 
+            padding: 4px; 
+            font-size: 12px; 
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal !important;
+        }
         .kop { margin-bottom: 10px; }
         .kop h1 { text-align: center; font-weight: 800; text-transform: uppercase; font-size: 16px; margin: 6px 0; }
     </style>
 
-    <div id="print-area" class="preview-paper">
-        @include('partials.kop', ['opd' => $opd])
+    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
+        <div id="print-area" class="preview-paper text-black">
+            @include('partials.kop', ['opd' => $opd])
 
         <div class="text-center mb-2">
             <h2 class="font-extrabold text-lg">BERITA ACARA PENERIMAAN BARANG/PEKERJAAN</h2>
@@ -74,35 +78,48 @@
             {{ $data['tanggal_kata'] ?? '' }}
         </p>
 
-        <table class="w-full text-sm mb-3">
+        <table class="w-full text-sm mb-3" style="table-layout: fixed;">
+            <colgroup>
+                <col style="width: 20%">
+                <col style="width: 2%">
+                <col style="width: 78%">
+            </colgroup>
             <tr>
-                <td class="w-28 align-top pl-6">Nama</td>
-                <td class="w-4 align-top pl-6">:</td>
-                <td class="align-top pl-6"><span class="font-bold">{{ $data['pengguna']['nama'] ?? '' }}</span></td>
+                <td class="align-top pl-6">Nama</td>
+                <td class="align-top">:</td>
+                <td class="align-top"><span class="font-bold">{{ $data['pengguna']['nama'] ?? '' }}</span></td>
             </tr>
             <tr>
                 <td class="align-top pl-6">NIP</td>
-                <td class="align-top pl-6">:</td>
-                <td class="align-top pl-6">{{ $data['pengguna']['nip'] ?? '' }}</td>
+                <td class="align-top">:</td>
+                <td class="align-top">{{ $data['pengguna']['nip'] ?? '' }}</td>
             </tr>
             <tr>
                 <td class="align-top pl-6">Jabatan</td>
-                <td class="align-top pl-6">:</td>
-                <td class="align-top pl-6">{{ $data['pengguna']['jabatan'] ?? 'Pengurus Barang Pengguna' }}</td>
+                <td class="align-top">:</td>
+                <td class="align-top pr-2">{{ $data['pengguna']['jabatan'] ?? 'Pengurus Barang' }}</td>
             </tr>
         </table>
 
         <p class="mb-1 text-sm">Berdasarkan Berita Acara Pemeriksaan Barang Nomor: {{ $data['pemeriksaan_nomor'] ?? '-' }}. Telah menerima barang yang diserahkan oleh Pihak Ketiga sebagai berikut :</p>
 
         <table class="report-table items text-sm mb-3">
+            <colgroup>
+                <col style="width: 5%">
+                <col style="width: 40%">
+                <col style="width: 10%">
+                <col style="width: 10%">
+                <col style="width: 17%">
+                <col style="width: 18%">
+            </colgroup>
             <thead>
                 <tr>
-                    <th style="width:30px">No</th>
+                    <th>No</th>
                     <th>Jenis Bahan/Alat (Barang)</th>
-                    <th style="width:80px">Kuantitas</th>
-                    <th style="width:80px">Satuan</th>
-                    <th style="width:120px">Harga Satuan</th>
-                    <th style="width:120px">Total</th>
+                    <th>Kuantitas</th>
+                    <th>Satuan</th>
+                    <th>Harga<br>Satuan</th>
+                    <th>Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -134,7 +151,7 @@
         <div class="grid grid-cols-2 gap-6 text-sm mt-8 mb-4">
             <div class="text-center">
                 <div class="font-bold">Yang Menerima,</div>
-                <div class="font-bold mb-12">Pengurus Barang Pengguna</div>
+                <div class="font-bold mb-12 uppercase">{{ $data['pengguna']['jabatan'] ?? 'Pengurus Barang' }}</div>
                 <br>
                 <div class="font-bold underline uppercase">{{ $data['pengguna']['nama'] ?? '' }}</div>
                 <div>NIP: {{ $data['pengguna']['nip'] ?? '' }}</div>
@@ -154,6 +171,7 @@
             <br>
             <div class="font-bold underline uppercase">{{ $data['ppk']['nama'] ?? '' }}</div>
             <div>NIP: {{ $data['ppk']['nip'] ?? '' }}</div>
+        </div>
         </div>
     </div>
 @endsection

@@ -41,22 +41,37 @@ class StockController extends Controller
             ->paginate(20)   // Tampilkan 20 data per halaman
             ->withQueryString(); 
 
-        // Ambil semua produk (hanya kolom stock dan price)
-        $products = Product::select('stock', 'price')->get();
+        // Ambil semua produk beserta total stok masuk dan keluar untuk form modal
+        $products = Product::withSum(['transactions as stock_in' => function ($q) {
+                $q->where('type', 'in');
+            }], 'quantity')
+            ->withSum(['transactions as stock_out' => function ($q) {
+                $q->where('type', 'out');
+            }], 'quantity')
+            ->get();
+
+        foreach ($products as $product) {
+            $product->calculated_stock = ($product->stock_in ?? 0) - ($product->stock_out ?? 0);
+        }
 
         // Menghitung total saldo akhir (total stok semua produk)
-        $totalSaldoAkhir = $products->sum('stock');
+        $totalSaldoAkhir = $products->sum('calculated_stock');
 
         // Menghitung total nilai persediaan (stok × harga)
         $grandTotal = $products->sum(function ($product) {
-            return ($product->stock ?? 0) * ($product->price ?? 0);
+            return ($product->calculated_stock ?? 0) * ($product->price ?? 0);
         });
+
+        $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
+        $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
 
         // Kirim data ke view
         return view('stock.index', compact(
             'transactions',
             'totalSaldoAkhir',
-            'grandTotal'
+            'grandTotal',
+            'products',
+            'singkatanOpd'
         ));
     }
 
@@ -225,6 +240,33 @@ class StockController extends Controller
         return redirect()->route('stock.edit', $id);
     }
 
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        foreach ($ids as $id) {
+            $transaction = StockTransaction::find($id);
+            if ($transaction) {
+                // Update stock before deleting
+                $product = Product::find($transaction->product_id);
+                if ($product) {
+                    if ($transaction->type === 'in') {
+                        $product->decrement('stock', $transaction->quantity);
+                    } else {
+                        $product->increment('stock', $transaction->quantity);
+                    }
+                }
+                $transaction->delete();
+            }
+        }
+
+        return redirect()->route('stock.index')
+            ->with('success', count($ids) . ' transaksi berhasil dihapus dan stok telah disesuaikan.');
+    }
 
     /**
      * Menghapus transaksi stok
