@@ -90,40 +90,46 @@ class StockController extends Controller
     {
         // Validasi input
         $request->validate([
-            'product_id' => 'required|exists:products,id', // Produk harus ada
-            'type' => 'required|in:in,out', // Hanya boleh "in" atau "out"
-            'quantity' => 'required|integer|min:1', // Jumlah minimal 1
-            'date' => 'required|date', // Tanggal wajib valid
+            'product_id' => 'required|exists:products,id',
+            'type' => 'required|in:in,out',
+            'quantity' => 'required|integer|min:1',
+            'date' => 'required|date',
         ]);
 
-        // Ambil produk berdasarkan ID
-        $product = Product::findOrFail($request->product_id);
+        try {
+            return DB::transaction(function () use ($request) {
+                // Lock product for update to ensure stock consistency
+                $product = Product::lockForUpdate()->findOrFail($request->product_id);
 
-        // Jika tipe transaksi adalah stok keluar, cek apakah stok mencukupi
-        if ($request->type === 'out' && $product->stock < $request->quantity) {
-            return back()->with('error', 'Stok tidak mencukupi.');
+                // Jika tipe transaksi adalah stok keluar, cek apakah stok mencukupi
+                if ($request->type === 'out' && $product->stock < $request->quantity) {
+                    throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini.');
+                }
+
+                // Simpan transaksi stok ke database
+                StockTransaction::create([
+                    'product_id' => $product->id,
+                    'type' => $request->type,
+                    'quantity' => $request->quantity,
+                    'date' => $request->date,
+                    'nosur' => $request->nosur,
+                    'notes' => $request->notes,
+                    'user_id' => auth()->id(),
+                ]);
+
+                // Update physical stock in product table
+                if ($request->type === 'in') {
+                    $product->increment('stock', $request->quantity);
+                } else {
+                    $product->decrement('stock', $request->quantity);
+                }
+
+                return redirect()->route('stock.index')
+                    ->with('success', 'Transaksi berhasil disimpan.');
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage())->withInput();
         }
-
-        // Simpan transaksi stok ke database
-        StockTransaction::create([
-            'product_id' => $product->id,
-            'type' => $request->type,
-            'quantity' => $request->quantity,
-            'date' => $request->date,
-            'nosur' => $request->nosur,
-            'notes' => $request->notes,
-            'user_id' => auth()->id(), // Simpan ID user yang login
-        ]);
-        
-        if ($request->type === 'in') {
-            $product->increment('stock', $request->quantity);
-        } else {
-            $product->decrement('stock', $request->quantity);
-        }
-
-        // Redirect dengan pesan sukses
-        return redirect()->route('stock.index')
-            ->with('success', 'Transaksi berhasil disimpan.');
     }
 
     public function update(Request $request, $id)
@@ -139,49 +145,53 @@ class StockController extends Controller
             'notes'      => 'nullable|string'
         ]);
 
-        return DB::transaction(function () use ($request, $transaction) {
-            // Revert old product stock
-            $oldProduct = Product::lockForUpdate()->find($transaction->product_id);
-            if ($oldProduct) {
-                if ($transaction->type === 'in') {
-                    $oldProduct->decrement('stock', $transaction->quantity);
+        try {
+            return DB::transaction(function () use ($request, $transaction) {
+                // Revert old product stock
+                $oldProduct = Product::lockForUpdate()->find($transaction->product_id);
+                if ($oldProduct) {
+                    if ($transaction->type === 'in') {
+                        $oldProduct->decrement('stock', $transaction->quantity);
+                    } else {
+                        $oldProduct->increment('stock', $transaction->quantity);
+                    }
+                }
+
+                // Load target product (could be the same)
+                $newProduct = ($request->product_id == $transaction->product_id) 
+                    ? $oldProduct 
+                    : Product::lockForUpdate()->findOrFail($request->product_id);
+
+                // Check if stock enough for "out" transaction
+                if ($request->type === 'out') {
+                    if ($newProduct->stock < $request->quantity) {
+                        throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini.');
+                    }
+                }
+
+                // Update transaction
+                $transaction->update([
+                    'product_id' => $request->product_id,
+                    'date'       => $request->date,
+                    'type'       => $request->type,
+                    'quantity'   => $request->quantity,
+                    'nosur'      => $request->nosur,
+                    'notes'      => $request->notes,
+                ]);
+
+                // Apply new stock
+                if ($request->type === 'in') {
+                    $newProduct->increment('stock', $request->quantity);
                 } else {
-                    $oldProduct->increment('stock', $transaction->quantity);
+                    $newProduct->decrement('stock', $request->quantity);
                 }
-            }
 
-            // Load target product (could be the same)
-            $newProduct = ($request->product_id == $transaction->product_id) 
-                ? $oldProduct 
-                : Product::lockForUpdate()->findOrFail($request->product_id);
-
-            // Check if stock enough for "out" transaction
-            if ($request->type === 'out') {
-                if ($newProduct->stock < $request->quantity) {
-                    throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini.');
-                }
-            }
-
-            // Update transaction
-            $transaction->update([
-                'product_id' => $request->product_id,
-                'date'       => $request->date,
-                'type'       => $request->type,
-                'quantity'   => $request->quantity,
-                'nosur'      => $request->nosur,
-                'notes'      => $request->notes,
-            ]);
-
-            // Apply new stock
-            if ($request->type === 'in') {
-                $newProduct->increment('stock', $request->quantity);
-            } else {
-                $newProduct->decrement('stock', $request->quantity);
-            }
-
-            return redirect()->route('stock.index')
-                ->with('success', 'Transaksi berhasil diperbarui.');
-        });
+                return redirect()->route('stock.index')
+                    ->with('success', 'Transaksi berhasil diperbarui.');
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage())->withInput();
+        }
     }
 
     /**
