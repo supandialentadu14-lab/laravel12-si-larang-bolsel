@@ -62,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Stock Management 
     Route::middleware('permission:transaksi')->group(function () {
-        Route::resource('stock', StockController::class);
+        Route::resource('stock', StockController::class)->except(['edit', 'show']);
         Route::post('stock/bulk-delete', [StockController::class, 'bulkDestroy'])->name('stock.bulk_delete');
     });
 

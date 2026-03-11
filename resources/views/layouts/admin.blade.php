@@ -1577,9 +1577,9 @@
                     }
                     document.title = doc.title || document.title;
                     main.innerHTML = newMain.innerHTML;
-                    setActive(href);
+                    setActive(res.url);
                     initScripts(main);
-                    if (push) history.pushState({}, '', href);
+                    if (push) history.pushState({}, '', res.url);
                     main.scrollTop = 0;
                 } catch (e) {
                     console.error('Nav error:', e);
@@ -1653,8 +1653,9 @@
                     }
                     document.title = doc.title || document.title;
                     main.innerHTML = newMain.innerHTML;
+                    setActive(res.url);
                     initScripts(main);
-                    history.pushState({}, '', url);
+                    history.pushState({}, '', res.url);
                     main.scrollTop = 0;
                 } catch {
                     window.location.href = action;

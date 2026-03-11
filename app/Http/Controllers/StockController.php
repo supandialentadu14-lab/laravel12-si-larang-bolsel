@@ -76,30 +76,11 @@ class StockController extends Controller
     }
 
     /**
-     * Menampilkan form tambah transaksi stok
+     * Redirect to index and open modal via query param
      */
     public function create()
     {
-        // Mengambil semua produk beserta total stok masuk
-        $products = Product::withSum(['transactions as stock_in' => function ($q) {
-                $q->where('type', 'in'); // Filter transaksi masuk
-            }], 'quantity')
-
-            // Mengambil total stok keluar
-            ->withSum(['transactions as stock_out' => function ($q) {
-                $q->where('type', 'out'); // Filter transaksi keluar
-            }], 'quantity')
-
-            ->get();
-
-        // Menghitung stok aktual berdasarkan transaksi (masuk - keluar)
-        foreach ($products as $product) {
-            $product->calculated_stock =
-                ($product->stock_in ?? 0) - ($product->stock_out ?? 0);
-        }
-
-        // Kirim data ke view
-        return view('stock.create', compact('products'));
+        return redirect()->route('stock.index', ['add' => 1]);
     }
 
     /**
@@ -224,20 +205,12 @@ class StockController extends Controller
         ->with('success', 'Transaksi berhasil diperbarui.');
 }
 
-    public function edit($id)
-    {
-        $transaction = StockTransaction::findOrFail($id);
-        $products = Product::all();
-
-        return view('stock.edit', compact('transaction', 'products'));
-    }
-
     /**
-     * Redirect show requests to edit
+     * Redirect show requests to index
      */
     public function show($id)
     {
-        return redirect()->route('stock.edit', $id);
+        return redirect()->route('stock.index');
     }
 
 

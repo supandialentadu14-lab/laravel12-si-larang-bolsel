@@ -6,7 +6,7 @@
 <div x-data="{
     selected: [],
     allSelected: false,
-    showCreateModal: false,
+    showCreateModal: {{ request('add') ? 'true' : 'false' }},
     showEditModal: false,
     editData: {},
     editUrl: '',
