@@ -93,7 +93,7 @@
                         </div>
                         
                         <div class="mt-8 flex justify-end gap-3 px-2">
-                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Simpan Data Barang
                             </button>
                         </div>
@@ -175,7 +175,7 @@
                             <button type="button" @click="showEditModal = false" class="px-5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition">
                                 Batal
                             </button>
-                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Perbarui Data
                             </button>
                         </div>
@@ -288,7 +288,7 @@
             <i class="fas fa-file-import text-xs"></i> Impor
         </button>
         <a href="{{ route('products.export') }}"
-            class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 shadow-md shadow-amber-200 transition-all">
+            class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-orange-500 text-white font-bold text-sm hover:bg-orange-600 shadow-md shadow-orange-200 transition-all">
             <i class="fas fa-file-excel text-xs"></i> Ekspor
         </a>
 

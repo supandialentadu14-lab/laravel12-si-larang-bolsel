@@ -147,6 +147,29 @@
             --hover-bg: rgba(255, 255, 255, 0.02);
         }
 
+        /* ───── Mobile View Stability & Safe Area ───── */
+        :root {
+            --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+        }
+
+        @supports (height: 100svh) or (height: 100dvh) {
+            .h-screen-dynamic {
+                height: 100svh;
+                height: 100dvh;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .pb-safe {
+                padding-bottom: var(--safe-area-bottom) !important;
+            }
+            main {
+                padding-bottom: 80px !important;
+                padding-bottom: calc(60px + var(--safe-area-bottom)) !important;
+            }
+            .sidebar-footer-safe {
+                padding-bottom: calc(1rem + var(--safe-area-bottom)) !important;
+            }
         }
 
         /* ───── Mobile View Stability ───── */
@@ -295,8 +318,8 @@
 
             /* All main card containers: auto-scroll for tables inside */
             main .bg-white,
-            main [class*="rounded-xl"],
-            main [class*="rounded-lg"] { 
+            main [class~="rounded-xl"],
+            main [class~="rounded-lg"] { 
                 overflow-x: auto;
                 background-color: var(--card-bg) !important;
                 color: var(--body-text) !important;
@@ -944,7 +967,7 @@
     }" 
     x-effect="$el.classList.toggle('theme-dark', theme === 'dark'); $el.classList.toggle('theme-light', theme === 'light'); localStorage.setItem('theme', theme);"
     @resize.window="sidebarOpen = window.innerWidth >= 1024; isMobile = window.innerWidth < 1024;">
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen h-screen-dynamic overflow-hidden">
 
         <!-- Mobile Sidebar Backdrop -->
         <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false" x-cloak></div>
@@ -973,6 +996,7 @@
 
                 <a href="{{ route('dashboard') }}"
                     @click="(() => {
+                        if (isMobile) setTimeout(() => { sidebarOpen = false }, 150);
                         const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                         for (let k in s) s[k] = false;
                         localStorage.setItem('sidebarOpenGroups', JSON.stringify(s));
@@ -1029,12 +1053,12 @@
                         <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-                            <a href="{{ route('categories.index') }}"
+                            <a href="{{ route('categories.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('categories.*') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Kategori
                             </a>
-                            <a href="{{ route('products.index') }}"
+                            <a href="{{ route('products.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="flex items-center justify-between pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('products.*') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 <span>Barang</span>
@@ -1042,7 +1066,7 @@
                                     <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $lowStockCount }}</span>
                                 @endif
                             </a>
-                            <a href="{{ route('suppliers.index') }}"
+                            <a href="{{ route('suppliers.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('suppliers.*') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Penyedia
@@ -1089,7 +1113,7 @@
                             style="background: var(--sidebar-hover)">
                             
                             @if(auth()->user()->hasPermission('transaksi'))
-                            <a href="{{ route('stock.index') }}"
+                            <a href="{{ route('stock.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('stock.index') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Mutasi Masuk/Keluar
@@ -1097,7 +1121,7 @@
                             @endif
                             
                             @if(auth()->user()->hasPermission('laporan_belanja'))
-                            <a href="{{ route('reports.belanja.modal.list') }}"
+                            <a href="{{ route('reports.belanja.modal.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.belanja.modal.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Belanja Modal
@@ -1149,12 +1173,12 @@
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
                             
                             @if(auth()->user()->hasPermission('laporan_persediaan'))
-                            <a href="{{ route('reports.index') }}"
+                            <a href="{{ route('reports.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.index') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Laporan Persediaan
                             </a>
-                            <a href="{{ route('reports.kartu.tahunan') }}"
+                            <a href="{{ route('reports.kartu.tahunan') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kartu.tahunan') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Kartu Persediaan Tahunan
@@ -1162,7 +1186,7 @@
                             @endif
                             
                             @if(auth()->user()->hasPermission('stock_opname'))
-                            <a href="{{ route('reports.opname.list') }}"
+                            <a href="{{ route('reports.opname.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.opname.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Stock Opname
@@ -1170,7 +1194,7 @@
                             @endif
                             
                             @if(auth()->user()->hasPermission('pinjam_pakai'))
-                            <a href="{{ route('reports.pinjam.list') }}"
+                            <a href="{{ route('reports.pinjam.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pinjam.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Pinjam Pakai
@@ -1206,7 +1230,7 @@
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
                             
                             @if(auth()->user()->hasPermission('surat_pesanan'))
-                            <a href="{{ route('reports.nota.list') }}"
+                            <a href="{{ route('reports.nota.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.nota.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Surat Pesanan
@@ -1214,7 +1238,7 @@
                             @endif
                             
                             @if(auth()->user()->hasPermission('pemeriksaan'))
-                            <a href="{{ route('reports.pemeriksaan.list') }}"
+                            <a href="{{ route('reports.pemeriksaan.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pemeriksaan.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Pemeriksaan
@@ -1222,7 +1246,7 @@
                             @endif
                             
                             @if(auth()->user()->hasPermission('penerimaan'))
-                            <a href="{{ route('reports.penerimaan.list') }}"
+                            <a href="{{ route('reports.penerimaan.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.penerimaan.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Penerimaan
@@ -1230,7 +1254,7 @@
                             @endif
                             
                             @if(auth()->user()->hasPermission('berkas_lainnya'))
-                            <a href="{{ route('reports.kwitansi.list') }}"
+                            <a href="{{ route('reports.kwitansi.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kwitansi.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Kwitansi
@@ -1273,7 +1297,7 @@
                                 :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
                                 
                                 @if(auth()->user()->hasPermission('pengaturan_opd'))
-                                <a href="{{ route('settings.opd.edit') }}"
+                                <a href="{{ route('settings.opd.edit') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                     class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') ? 'bg-indigo-500 text-white' : '' }}"
                                     style="color: var(--sidebar-text)">
                                     Profil & Penandatangan
@@ -1282,12 +1306,12 @@
 
                                 @if (Auth::check() && Auth::user()->isAdmin())
 
-                                    <a href="{{ route('users.index') }}"
+                                    <a href="{{ route('users.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                         class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('users.*') ? 'bg-indigo-500 text-white' : '' }}"
                                         style="color: var(--sidebar-text)">
                                         Pengguna
                                     </a>
-                                    <a href="{{ route('activity_log.index') }}"
+                                    <a href="{{ route('activity_log.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
                                         class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('activity_log.index') ? 'bg-indigo-500 text-white' : '' }}"
                                         style="color: var(--sidebar-text)">
                                         Activity Log
@@ -1300,7 +1324,7 @@
             </nav>
 
             {{-- Sidebar Footer - Fixed at bottom --}}
-            <div class="mt-auto border-t transition-all duration-300" 
+            <div class="mt-auto border-t transition-all duration-300 sidebar-footer-safe" 
                 :class="[
                     sidebarOpen ? 'px-4 py-4' : 'px-0 py-4',
                     theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-slate-200 bg-slate-100/50'
@@ -1500,7 +1524,7 @@
                             <div class="p-2 bg-gray-50 border-t border-gray-100 text-center">
                                 <form action="{{ route('notifications.mark-all-read') }}" method="POST" class="no-soft">
                                     @csrf
-                                    <button type="submit" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-tighter">
+                                    <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
                                         Tandai Semua Sudah Dibaca
                                     </button>
                                 </form>
@@ -1628,7 +1652,7 @@
 
                 @yield('content')
             </main>
-            <footer class="no-print border-t transition-colors duration-300"
+            <footer class="no-print border-t transition-colors duration-300 pb-safe lg:pb-0"
                 :style="{ backgroundColor: theme === 'dark' ? '#12171F' : '#ffffff', color: theme === 'dark' ? '#94a3b8' : '#6B7280', borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : '#f3f4f6' }">
                 <div class="px-6 py-4 flex items-center justify-between">
                     <p class="text-xs md:text-sm font-medium">

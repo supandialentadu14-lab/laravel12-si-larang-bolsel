@@ -43,11 +43,11 @@
             </div>
             <div class="flex gap-3 flex-wrap">
                 <a href="{{ route('stock.create') }}"
-                    class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-xl text-sm font-semibold transition-all border border-white/20 hover:scale-105">
+                    class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-2xl text-sm font-semibold transition-all border border-white/20 hover:scale-105">
                     <i class="fas fa-plus-circle"></i> Tambah Transaksi
                 </a>
                 <a href="{{ route('stock.index') }}"
-                    class="flex items-center gap-2 px-4 py-2 bg-white text-purple-700 hover:bg-yellow-50 rounded-xl text-sm font-semibold transition-all shadow-lg hover:scale-105">
+                    class="flex items-center gap-2 px-4 py-2 bg-white text-purple-700 hover:bg-yellow-50 rounded-2xl text-sm font-semibold transition-all shadow-lg hover:scale-105">
                     <i class="fas fa-list"></i> Lihat Stok
                 </a>
             </div>
@@ -64,7 +64,7 @@
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
             <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                <div class="w-10 h-10 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center mb-3">
                     <i class="fas fa-box text-white text-lg"></i>
                 </div>
                 <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Total Produk</p>
@@ -79,7 +79,7 @@
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
             <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                <div class="w-10 h-10 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center mb-3">
                     <i class="fas fa-cubes text-white text-lg"></i>
                 </div>
                 <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Total Stok</p>
@@ -94,7 +94,7 @@
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
             <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                <div class="w-10 h-10 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center mb-3">
                     <i class="fas fa-coins text-white text-lg"></i>
                 </div>
                 <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Nilai Persediaan</p>
@@ -109,7 +109,7 @@
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
             <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white/25 rounded-xl flex items-center justify-center mb-3">
+                <div class="w-10 h-10 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center mb-3">
                     <i class="fas fa-handshake text-white text-lg"></i>
                 </div>
                 <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Penyedia</p>

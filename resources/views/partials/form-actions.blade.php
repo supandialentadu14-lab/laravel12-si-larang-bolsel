@@ -6,14 +6,14 @@
     @endif
 
     @if(isset($previewRoute))
-        <button type="submit" formaction="{{ $previewRoute }}" class="px-4 py-2 rounded-lg bg-orange-500 text-white font-bold shadow hover:bg-orange-600 transition flex items-center gap-2">
+        <button type="submit" formaction="{{ $previewRoute }}" class="px-5 py-2.5 bg-orange-500 rounded-lg text-sm font-bold text-white shadow-lg shadow-orange-200 hover:bg-orange-600 transition flex items-center gap-2">
             <i class="fas fa-file-alt"></i> {{ $previewText ?? 'Preview Laporan' }}
         </button>
     @endif
 
     <button type="submit" 
         @if(isset($saveRoute)) formaction="{{ $saveRoute }}" @endif
-        class="px-4 py-2 rounded-lg bg-green-600 text-white font-bold shadow hover:bg-green-700 transition flex items-center gap-2">
+        class="px-5 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
         <i class="fas fa-save"></i> {{ $saveText ?? 'Simpan' }}
     </button>
 </div>

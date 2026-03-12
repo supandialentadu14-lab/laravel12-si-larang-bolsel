@@ -30,7 +30,7 @@
 
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
         <div class="flex items-center gap-3 w-full md:w-auto">
-            <button type="button" @click="showCreateModal = true" class="inline-flex justify-center w-full md:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-100 transition-all duration-200">
+            <button type="button" @click="showCreateModal = true" class="inline-flex justify-center w-full md:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all duration-200">
                 <i class="fas fa-plus"></i> <span class="whitespace-nowrap">Tambah Jenis Belanja</span>
             </button>
         </div>
@@ -101,7 +101,7 @@
                         </div>
                         
                         <div class="mt-8 flex justify-end gap-3 px-2">
-                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Simpan Data
                             </button>
                         </div>
@@ -153,7 +153,7 @@
                             <button type="button" @click="showEditModal = false" class="px-5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition">
                                 Batal
                             </button>
-                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center gap-2">
+                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
                                 <i class="fas fa-save"></i> Simpan Perubahan
                             </button>
                         </div>
