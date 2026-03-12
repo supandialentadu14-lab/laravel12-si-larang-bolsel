@@ -5,9 +5,9 @@
 @section('actions')
     <form action="{{ route('dashboard') }}" method="GET" id="dateFilterForm"
         class="dash-filter-form flex items-center gap-2 px-3 py-1.5 rounded-xl border shadow-sm backdrop-blur-sm">
-        <i class="fas fa-calendar-alt text-indigo-400 text-sm"></i>
-        <input type="date" id="dateInput" name="date" value="{{ request('date') }}"
-            class="dash-filter-input text-sm font-medium border-none focus:ring-0 p-0 bg-transparent w-32"
+        <i class="fas fa-calendar-alt text-indigo-500 text-sm"></i>
+        <input type="date" id="dateInput" name="date" value="{{ request('date') ?? date('Y-m-d') }}"
+            class="dash-filter-input"
             onchange="this.form.submit()">
         @if(request('date'))
             <a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-red-500 transition ml-1" title="Reset">
@@ -18,7 +18,7 @@
 @endsection
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-8 pb-10">
 
     {{-- ══════════════════════════════════════════ --}}
     {{-- WELCOME BANNER                            --}}
@@ -166,7 +166,7 @@
     {{-- ══════════════════════════════════════════ --}}
     {{-- MAIN CHARTS ROW                           --}}
     {{-- ══════════════════════════════════════════ --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Stock Movement Chart (2/3) --}}
         <div class="dash-card lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -220,12 +220,12 @@
     {{-- ══════════════════════════════════════════ --}}
     {{-- MONTHLY TREND + ACTIVITY + CRITICAL STOCK  --}}
     {{-- ══════════════════════════════════════════ --}}
-    </div>
+    {{-- Remove misplaced closing div --}}
 
     {{-- ══════════════════════════════════════════ --}}
     {{-- TOP PRODUCTS + VALUE TREND                --}}
     {{-- ══════════════════════════════════════════ --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Top Products List --}}
         <div class="dash-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-50 bg-slate-50/50">
@@ -274,6 +274,8 @@
             </div>
         </div>
     </div>
+ 
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Monthly Trend Bar Chart --}}
         <div class="dash-card lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -578,10 +580,41 @@ document.addEventListener('DOMContentLoaded', function () {
 <style>
     /* ───── Dash Filter Form ───── */
     .dash-filter-form {
-        background: rgba(255,255,255,0.85);
-        border-color: #e5e7eb;
+        background: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
+        display: inline-flex !important;
+        align-items: center;
+        padding: 0.5rem 1rem !important;
+        border-radius: 1rem !important;
+        transition: all 0.3s ease;
+        box-shadow: var(--card-shadow) !important;
     }
-    .dash-filter-input { color: #374151; }
+    
+    .dash-filter-form .dash-filter-input, 
+    .dash-filter-form .flatpickr-input { 
+        color: var(--body-text) !important; 
+        background: transparent !important;
+        border: none !important;
+        font-weight: 800 !important;
+        font-size: 1rem !important;
+        width: 160px !important;
+        cursor: pointer !important;
+        margin: 0 !important;
+        padding: 0 0 0 8px !important;
+        outline: none !important;
+        box-shadow: none !important;
+        display: inline-block !important;
+        visibility: visible !important;
+    }
+
+    .theme-dark .dash-filter-form i {
+        color: var(--accent) !important;
+    }
+
+    .theme-dark .dash-filter-input::-webkit-calendar-picker-indicator,
+    .theme-dark .flatpickr-input::-webkit-calendar-picker-indicator { 
+        filter: invert(1); 
+    }
 
     /* ───── Smooth scrollbar ───── */
     .dash-scroll::-webkit-scrollbar { width: 4px; }
@@ -594,93 +627,5 @@ document.addEventListener('DOMContentLoaded', function () {
     ════════════════════════════════════════════════════ */
 
     /* Filter form */
-    .theme-dark .dash-filter-form {
-        background: rgba(26,31,46,0.9);
-        border-color: rgba(255,255,255,0.1);
-    }
-    .theme-dark .dash-filter-input { color: #e2e8f0; }
-    .theme-dark .dash-filter-input::-webkit-calendar-picker-indicator { filter: invert(1); }
-
-    /* White cards → dark cards */
-    .theme-dark .dash-card {
-        background: #1a1f2e;
-        border-color: rgba(255,255,255,0.07);
-        color: #e2e8f0;
-    }
-
-    /* Headings & text inside cards */
-    .theme-dark .dash-card h2,
-    .theme-dark .dash-card h6,
-    .theme-dark .dash-card p,
-    .theme-dark .dash-card span:not([class*="text-"]) {
-        color: inherit;
-    }
-    .theme-dark .dash-card .text-gray-800 { color: #e2e8f0 !important; }
-    .theme-dark .dash-card .text-gray-700 { color: #cbd5e1 !important; }
-    .theme-dark .dash-card .text-gray-600 { color: #94a3b8 !important; }
-    .theme-dark .dash-card .text-gray-500 { color: #64748b !important; }
-    .theme-dark .dash-card .text-gray-400 { color: #475569 !important; }
-
-    /* Dividers inside cards */
-    .theme-dark .dash-card .border-gray-100,
-    .theme-dark .dash-card .divide-gray-50 > * + * {
-        border-color: rgba(255,255,255,0.07) !important;
-    }
-
-    /* Card section headers (bg-gray-50) */
-    .theme-dark .dash-card .bg-gray-50\/50,
-    .theme-dark .dash-card .bg-gray-50 {
-        background-color: rgba(255,255,255,0.04) !important;
-    }
-
-    /* Hover row inside feeds */
-    .theme-dark .dash-card .hover\:bg-gray-50:hover {
-        background-color: rgba(255,255,255,0.05) !important;
-    }
-
-    /* Table row hover */
-    .theme-dark .dash-card tr:hover td {
-        background-color: rgba(255,255,255,0.03) !important;
-    }
-
-    /* Table header text */
-    .theme-dark .dash-card thead th {
-        color: #475569 !important;
-        border-color: rgba(255,255,255,0.07) !important;
-    }
-
-    /* Progress bar track */
-    .theme-dark .dash-card .bg-gray-100 {
-        background-color: rgba(255,255,255,0.1) !important;
-    }
-    .theme-dark .dash-card .bg-gray-200 {
-        background-color: rgba(255,255,255,0.1) !important;
-    }
-
-    /* Chart grid lines in dark */
-    .theme-dark .dash-card .bg-gray-100\/\[0\.5\] {
-        background-color: rgba(255,255,255,0.05) !important;
-    }
-
-    /* Activity badge backgrounds */
-    .theme-dark .dash-card .bg-green-100 { background-color: rgba(34,197,94,0.15) !important; }
-    .theme-dark .dash-card .bg-red-100   { background-color: rgba(239,68,68,0.15) !important; }
-    .theme-dark .dash-card .bg-red-50\/30 { background-color: rgba(239,68,68,0.08) !important; }
-
-    /* Red alert card border */
-    .theme-dark .dash-card.border-red-100 { border-color: rgba(239,68,68,0.2) !important; }
-
-    /* Icon circle backgrounds */
-    .theme-dark .dash-card .bg-green-50  { background-color: rgba(34,197,94,0.12) !important; }
-    .theme-dark .dash-card .bg-red-50    { background-color: rgba(239,68,68,0.12) !important; }
-    .theme-dark .dash-card .bg-blue-50   { background-color: rgba(99,102,241,0.12) !important; }
-    .theme-dark .dash-card .bg-indigo-50 { background-color: rgba(99,102,241,0.12) !important; }
-
-    /* Scrollbar dark */
-    .theme-dark .dash-scroll::-webkit-scrollbar-thumb { background: #2d3748; }
-    .theme-dark .dash-scroll::-webkit-scrollbar-thumb:hover { background: #4a5568; }
-
-    /* Chart scale lines in dark mode */
-    .theme-dark .chart-grid-color { color: rgba(255,255,255,0.05); }
 </style>
 @endsection

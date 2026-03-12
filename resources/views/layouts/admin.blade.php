@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- PWA Setup -->
@@ -110,32 +110,55 @@
             --accent: #4F46E5;
             --marquee-start: #60A5FA;
             --marquee-end: #A78BFA;
+            --card-bg: #ffffff;
+            --card-border: #f1f5f9;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            --input-bg: #ffffff;
+            --input-border: #e2e8f0;
+            --input-text: #1f2937;
+            --topbar-bg: #ffffff;
+            --muted-text: #64748B;
+            --subtle-text: #94A3B8;
+            --border-color: #f1f5f9;
+            --hover-bg: #f8fafc;
         }
 
         .theme-dark {
-            --body-bg: #0f172a;
-            --body-text: #f1f5f9;
+            --body-bg: #030712;
+            --body-text: #f8fafc;
             --sidebar-bg: #020617;
             --sidebar-text: #f1f5f9;
             --sidebar-muted: #94a3b8;
             --sidebar-hover: #1e293b;
             --sidebar-active: #334155;
-            --accent: #60a5fa;
-            --marquee-start: #93c5fd;
-            --marquee-end: #c4b5fd;
-            --card-bg: #1e293b;
-            --card-border: rgba(255, 255, 255, 0.07);
-            --input-bg: #0f172a;
-            --input-border: #334155;
-            --input-text: #f1f5f9;
+            --accent: #6366f1;
+            --marquee-start: #818cf8;
+            --marquee-end: #c084fc;
+            --card-bg: #0f172a;
+            --card-border: rgba(255, 255, 255, 0.05);
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            --input-bg: #030712;
+            --input-border: #1e293b;
+            --input-text: #f8fafc;
+            --topbar-bg: #030712;
+            --muted-text: #94a3b8;
+            --subtle-text: #64748b;
+            --border-color: rgba(255, 255, 255, 0.03);
+            --hover-bg: rgba(255, 255, 255, 0.02);
         }
 
-        .theme-light {
-            --card-bg: #ffffff;
-            --card-border: #f1f5f9;
-            --input-bg: #ffffff;
-            --input-border: #e5e7eb;
-            --input-text: #1f2937;
+        }
+
+        /* ───── Mobile View Stability ───── */
+        * {
+            touch-action: manipulation; /* Prevents double-tap zoom behavior */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Prevent iOS Zoom on Focus & General Input Stability */
+        input, select, textarea {
+            font-size: 16px !important; 
+            max-width: 100% !important;
         }
 
         [x-cloak] {
@@ -183,38 +206,44 @@
         #page-header h2 {
             font-size: 1.75rem;
             font-weight: 800;
-            color: #111827;
+            color: var(--body-text);
             letter-spacing: .2px;
         }
 
         #page-header p {
-            color: #6b7280;
+            color: var(--muted-text);
         }
 
         .card {
-            border: 1px solid #f3f4f6;
+            border: 1px solid var(--card-border);
             border-radius: .75rem;
-            background: #ffffff;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .05), 0 4px 6px -4px rgba(0, 0, 0, .05);
+            background: var(--card-bg);
+            box-shadow: var(--card-shadow);
+            color: var(--body-text);
         }
 
         .table-clean thead {
-            background: #f3f4f6;
+            background: var(--hover-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-clean tbody tr {
+            border-bottom: 1px solid var(--border-color);
         }
 
         .table-clean tbody tr:hover {
-            background: #f3f4f6;
+            background: var(--hover-bg);
         }
 
-        /* ── Global: semua baris tabel hover (sama seperti halaman Barang) ── */
+        /* ── Global: semua baris tabel hover ── */
         table tbody tr:hover {
-            background-color: rgba(238, 242, 255, 0.40) !important; /* indigo-50/40, light mode */
+            background-color: var(--hover-bg) !important;
             transition: background-color 0.2s ease;
         }
 
-        /* Dark mode: warna solid sedikit lebih terang dari background card */
+        /* Dark mode adjustment for table hover (solid if needed) */
         body.theme-dark table tbody tr:hover {
-            background-color: #263044 !important; /* slate-700 — jelas terlihat di dark bg */
+            background-color: rgba(255, 255, 255, 0.05) !important;
         }
 
         /* ── Responsive: Table global scroll ── */
@@ -267,7 +296,11 @@
             /* All main card containers: auto-scroll for tables inside */
             main .bg-white,
             main [class*="rounded-xl"],
-            main [class*="rounded-lg"] { overflow-x: auto; }
+            main [class*="rounded-lg"] { 
+                overflow-x: auto;
+                background-color: var(--card-bg) !important;
+                color: var(--body-text) !important;
+            }
 
             /* Form grids: single column on mobile */
             .md\:grid-cols-2,
@@ -399,7 +432,95 @@
             cursor: pointer !important;
         }
 
+        /* ══════════════════════════════════════════════════
+           GENERALIZED THEME OVERRIDES (Global)
+        ════════════════════════════════════════════════════ */
+        
+        /* Smooth transitions for theme switch */
+        body, aside, header, main, footer, .card, table, tr, td, th, input, select, textarea, button {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Text color overrides for both themes */
+        .text-gray-400, .text-slate-400 { color: var(--subtle-text) !important; }
+        .text-gray-500, .text-slate-500 { color: var(--muted-text) !important; }
+        .text-gray-600, .text-slate-600 { color: var(--muted-text) !important; }
+        .text-gray-700, .text-slate-700 { color: var(--body-text) !important; }
+        .text-gray-800, .text-slate-800, .text-gray-900, .text-slate-900 { color: var(--body-text) !important; }
+
+        /* Target all white backgrounds in dark mode */
+        .theme-dark main .bg-white,
+        .theme-dark .bg-white,
+        .theme-dark .dash-card {
+            background-color: var(--card-bg) !important;
+            border-color: var(--card-border) !important;
+            color: var(--body-text) !important;
+        }
+
+        /* Specific text color adjustments for dark mode if defaults aren't enough */
+        .theme-dark .text-gray-500, .theme-dark .text-gray-400 { 
+            color: var(--muted-text) !important; 
+        }
+
+        /* Border overrides */
+        .theme-dark .border-gray-50, .theme-dark .border-gray-100, .theme-dark .border-gray-200, .theme-dark .border-gray-300,
+        .theme-dark .border-slate-50, .theme-dark .border-slate-100, .theme-dark .border-slate-200 {
+            border-color: var(--border-color) !important;
+        }
+
+        /* Form elements specificity for dark mode */
+        .theme-dark input, .theme-dark select, .theme-dark textarea {
+            background-color: var(--input-bg) !important;
+            border-color: var(--input-border) !important;
+            color: var(--input-text) !important;
+        }
+        .theme-dark input::placeholder, .theme-dark textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Subtle backgrounds used for headers or alternates */
+        .theme-dark .bg-gray-50, .theme-dark .bg-gray-100, .theme-dark .bg-gray-200,
+        .theme-dark .bg-slate-50, .theme-dark .bg-slate-100, .theme-dark .bg-slate-200, .theme-dark .bg-slate-50\/50 {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+        }
+
+        /* Special backgrounds (Green/Red success/danger) in dark mode */
+        .theme-dark .bg-green-50  { background-color: rgba(34, 197, 94, 0.1) !important; color: #4ade80 !important; }
+        .theme-dark .bg-red-50    { background-color: rgba(239, 68, 68, 0.1) !important; color: #f87171 !important; }
+        .theme-dark .bg-blue-50   { background-color: rgba(59, 130, 246, 0.1) !important; color: #60a5fa !important; }
+        .theme-dark .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.1) !important; color: #818cf8 !important; }
+        .theme-dark .text-green-600, .theme-dark .text-green-700 { color: #4ade80 !important; }
+        .theme-dark .text-red-500, .theme-dark .text-red-600, .theme-dark .text-red-700 { color: #f87171 !important; }
+        .theme-dark .text-indigo-600, .theme-dark .text-indigo-700 { color: #818cf8 !important; }
+
+        /* Badge and Icon styles */
+        .theme-dark .bg-indigo-100 { background-color: rgba(99, 102, 241, 0.2) !important; color: #818cf8 !important; }
+        .theme-dark .bg-red-100    { background-color: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; }
+        .theme-dark .bg-green-100  { background-color: rgba(34, 197, 94, 0.2) !important; color: #4ade80 !important; }
+
+        /* Flatpickr dark mode support */
+        .theme-dark .flatpickr-calendar {
+            background: #1e293b !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            color: #f8fafc !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+        }
+        .theme-dark .flatpickr-day { color: #94a3b8 !important; }
+        .theme-dark .flatpickr-day:hover { background: #334155 !important; }
+        .theme-dark .flatpickr-day.selected { background: var(--accent) !important; color: #fff !important; }
+        .theme-dark .flatpickr-month, .theme-dark .flatpickr-weekday { color: #f8fafc !important; fill: #f8fafc !important; }
+        .theme-dark .flatpickr-current-month .flatpickr-monthDropdown-months { background: #1e293b !important; }
+
+        /* Smooth scrollbar global */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .theme-dark ::-webkit-scrollbar-thumb { background: #1e293b; }
+        ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+        .theme-dark ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
         .submenu-stagger a {
+...
             opacity: 0;
             transform: translateY(4px);
             transition: opacity .18s ease, transform .18s ease;
@@ -841,7 +962,10 @@
                     style="color: var(--sidebar-text)">
                     <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo SI-LARANG"
                         class="h-8 w-8 rounded-md ring-2 ring-white/40" onerror="this.style.display='none'">
-                    <span class="text-xl font-bold tracking-wider" x-show="sidebarOpen" x-cloak>SI-LARANG</span>
+                    <span class="text-xl font-bold tracking-wider" x-show="sidebarOpen" x-cloak
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 -translate-x-4"
+                        x-transition:enter-end="opacity-100 translate-x-0">SI-LARANG</span>
                 </a>
             </div>
 
@@ -859,7 +983,10 @@
 
                     <span class="flex items-center gap-2">
                         <i class="fas fa-tachometer-alt"></i>
-                        <span x-show="sidebarOpen" x-cloak>Dashboard</span>
+                        <span x-show="sidebarOpen" x-cloak
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 -translate-x-4"
+                            x-transition:enter-end="opacity-100 translate-x-0">Dashboard</span>
                     </span>
                 </a>
 
@@ -870,13 +997,16 @@
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                             open = s[key] ?? ({{ request()->routeIs('categories.*') || request()->routeIs('products.*') || request()->routeIs('suppliers.*') || request()->routeIs('import.index') ? 'true' : 'false' }}); })()">
                         <button
-                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (popover = !popover)"
+                            @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
                             class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white group relative"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
                             <span class="flex items-center gap-2 relative">
                                 <i class="fas fa-boxes"></i>
-                                <span x-show="sidebarOpen" x-cloak>Master Data</span>
+                                <span x-show="sidebarOpen" x-cloak
+                                    x-transition:enter="transition ease-out duration-300"
+                                    x-transition:enter-start="opacity-0 -translate-x-4"
+                                    x-transition:enter-end="opacity-100 translate-x-0">Master Data</span>
                                 
                                 @if (isset($lowStockCount) && $lowStockCount > 0)
                                     <span x-show="!sidebarOpen" x-cloak class="absolute -top-1 -right-1 flex h-3 w-3">
@@ -887,6 +1017,9 @@
                                 
                             </span>
                             <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0 scale-50"
+                                x-transition:enter-end="opacity-100 scale-100"
                                 class="w-4 h-4 transform transition-transform duration-300" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
@@ -933,7 +1066,7 @@
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                             open = s[key] ?? ({{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.list') || request()->routeIs('reports.nota.list') || request()->routeIs('reports.belanja.modal.preview_all') ? 'true' : 'false' }}); })()">
                         <button
-                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (popover = !popover)"
+                            @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
                             class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -942,6 +1075,9 @@
                                 <span x-show="sidebarOpen" x-cloak>Transaksi</span>
                             </span>
                             <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0 scale-50"
+                                x-transition:enter-end="opacity-100 scale-100"
                                 class="w-4 h-4 transform transition-transform duration-300" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
@@ -993,7 +1129,7 @@
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                             open = s[key] ?? ({{ request()->routeIs('reports.index') || request()->routeIs('reports.kartu.tahunan') ? 'true' : 'false' }}); })()">
                         <button
-                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.index') }}')"
+                            @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
                             class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -1050,7 +1186,7 @@
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                             open = s[key] ?? ({{ request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.nota.list') || request()->routeIs('reports.pemeriksaan.list') || request()->routeIs('reports.penerimaan.list') ? 'true' : 'false' }}); })()">
                         <button
-                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.kwitansi.list') }}')"
+                            @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
                             class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -1111,7 +1247,7 @@
                             x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                                 open = s[key] ?? ({{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') || request()->routeIs('settings.backup.*') ? 'true' : 'false' }}); })()">
                             <button
-                                @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('settings.opd.edit') }}')"
+                                @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
                                 class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                                 style="color: var(--sidebar-text)"
                                 :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -1182,7 +1318,7 @@
                         class="flex items-center justify-center transition-all duration-300 group"
                         :class="[
                             sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
-                            theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50'
+                            sidebarOpen ? (theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50') : 'bg-transparent border-transparent'
                         ]" title="WhatsApp">
                         <i class="fab fa-whatsapp transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
                     </a>
@@ -1194,7 +1330,7 @@
                         class="flex items-center justify-center transition-all duration-300 group"
                         :class="[
                             sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
-                            theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50'
+                            sidebarOpen ? (theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50') : 'bg-transparent border-transparent'
                         ]" title="Email Developer">
                         <i class="far fa-envelope transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
                     </a>
@@ -1206,7 +1342,7 @@
                         class="flex items-center justify-center transition-all duration-300 group"
                         :class="[
                             sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
-                            theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50'
+                            sidebarOpen ? (theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50') : 'bg-transparent border-transparent'
                         ]" title="Instagram">
                         <i class="fab fa-instagram transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
                     </a>
@@ -1218,7 +1354,7 @@
                         class="flex items-center justify-center transition-all duration-300 group"
                         :class="[
                             sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
-                            theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50'
+                            sidebarOpen ? (theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50') : 'bg-transparent border-transparent'
                         ]" title="Facebook">
                         <i class="fab fa-facebook-f transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
                     </a>
@@ -1231,9 +1367,9 @@
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden" :style="{ backgroundColor: 'var(--body-bg)' }">
             <!-- Topbar -->
             <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2 transition-colors duration-300"
-                :style="{ backgroundColor: theme === 'dark' ? '#12171F' : '#ffffff', color: 'var(--body-text)', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f3f4f6' }">
-                <button @click="sidebarOpen = !sidebarOpen" class="focus:outline-none p-1 rounded-lg hover:bg-gray-100 transition"
-                    :style="{ color: '#374151' }">
+                :style="{ backgroundColor: 'var(--topbar-bg)', color: 'var(--body-text)', borderBottom: '1px solid var(--border-color)' }">
+                <button @click="sidebarOpen = !sidebarOpen" class="focus:outline-none p-2 rounded-xl transition hover:bg-opacity-80"
+                    :class="theme === 'dark' ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-500 hover:bg-gray-100'">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
 
@@ -1269,15 +1405,16 @@
                         </button>
 
                         <div x-show="notifyOpen" x-cloak @click.away="notifyOpen = false"
-                            class="fixed md:absolute left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:right-auto md:inset-x-auto mt-2 top-[4.5rem] md:top-full w-auto md:w-80 sm:max-w-sm rounded-xl shadow-2xl z-[9999] ring-1 overflow-hidden transition-all duration-300 transform md:-translate-x-1/2"
-                            :class="theme === 'dark' ? 'bg-[#1e293b] ring-white/10' : 'bg-white ring-black/5'"
+                            class="fixed md:absolute left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:right-auto md:inset-x-auto mt-2 top-[4.5rem] md:top-full w-auto md:w-80 sm:max-w-sm rounded-xl shadow-2xl z-[9999] ring-2 overflow-hidden transition-all duration-300 transform md:-translate-x-1/2"
+                            :class="theme === 'dark' ? 'ring-white/10' : 'ring-black/5'"
+                            :style="{ backgroundColor: 'var(--card-bg)' }"
                             x-transition:enter="transition ease-out duration-200"
                             x-transition:enter-start="opacity-0 scale-95"
                             x-transition:enter-end="opacity-100 scale-100">
 
                             <div class="px-4 py-3 border-b flex justify-between items-center transition-colors"
-                                :class="theme === 'dark' ? 'border-white/10 bg-slate-800/50' : 'border-gray-100 bg-gray-50'">
-                                <span class="text-xs font-bold uppercase tracking-wider" :class="theme === 'dark' ? 'text-slate-400' : 'text-gray-500'">Notifikasi Sistem</span>
+                                :style="{ borderColor: 'var(--border-color)', backgroundColor: 'var(--hover-bg)' }">
+                                <span class="text-xs font-bold uppercase tracking-wider" :style="{ color: 'var(--muted-text)' }">Notifikasi Sistem</span>
                                 @if($totalAlerts > 0)
                                 <span class="bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold">{{ $totalAlerts }}</span>
                                 @endif
