@@ -12,6 +12,7 @@
     <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
 
     <title>{{ config('app.name', 'Inventory') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/silarang-logo.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -351,6 +352,105 @@
 
             /* Action buttons top area - wrap nicely */
             #page-header .flex.items-center { flex-wrap: wrap !important; }
+
+            /* ── Mobile Button Layout & Touch Optimization (Exclude Sidebar & Topbar Utility) ── */
+            main button, main .btn, main [type="submit"], main [type="button"],
+            #page-header button, #page-header .btn,
+            a[class*="bg-indigo-"]:not(.sidebar-modern *), a[class*="bg-emerald-"]:not(.sidebar-modern *), 
+            a[class*="bg-orange-"]:not(.sidebar-modern *), a[class*="bg-rose-"]:not(.sidebar-modern *), 
+            a[class*="bg-blue-"]:not(.sidebar-modern *) {
+                padding-top: 0.75rem !important;
+                padding-bottom: 0.75rem !important;
+                border-radius: 0.875rem !important;
+            }
+
+            /* Table action buttons (icons only): make them easier to tap */
+            td button.w-8.h-8, td a.w-8.h-8 {
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+                padding: 0 !important;
+            }
+
+            /* Remove backgrounds from topbar utility buttons on mobile */
+            header button, header .btn-utility {
+                background-color: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
+
+        /* ── Universal Premium Button Aesthetics (Excluded from Sidebar & Topbar Utility) ── */
+        main button, main .btn, main [type="submit"], main [type="button"],
+        #page-header button:not(header *), #page-header .btn:not(header *) {
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff !important;
+        }
+        
+        /* Links that look like buttons with backgrounds */
+        a[class*="bg-indigo-"]:not(.sidebar-modern *):not(header *), 
+        a[class*="bg-emerald-"]:not(.sidebar-modern *):not(header *), 
+        a[class*="bg-orange-"]:not(.sidebar-modern *):not(header *), 
+        a[class*="bg-rose-"]:not(.sidebar-modern *):not(header *), 
+        a[class*="bg-blue-"]:not(.sidebar-modern *):not(header *) {
+            color: #ffffff !important;
+            font-weight: 800;
+        }
+
+        /* Ensure icons and spans inside stay white */
+        main button i, main .btn i, #page-header button i, a[class*="bg-"]:not(.sidebar-modern *) i,
+        main button span, main .btn span, #page-header button span, a[class*="bg-"]:not(.sidebar-modern *) span {
+            color: #ffffff !important;
+        }
+
+        /* Hover & Active States (Tactile Feedback) - Exclude Header & Sidebar */
+        button:hover:not(.sidebar-modern *):not(header *), 
+        .btn:hover:not(.sidebar-modern *):not(header *), 
+        a[class*="bg-"]:not(.sidebar-modern *):not(header *):hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            filter: brightness(1.05);
+            color: #ffffff !important;
+        }
+
+        button:active:not(.sidebar-modern *):not(header *), 
+        .btn:active:not(.sidebar-modern *):not(header *), 
+        a:active:not(.sidebar-modern *):not(header *) {
+            transform: scale(0.96);
+            filter: brightness(0.95);
+        }
+
+        /* Premium Gradients (Applied to Action Buttons Only) */
+        .bg-indigo-600, .bg-indigo-500:not(.sidebar-modern *), .btn-primary { 
+            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%) !important; 
+        }
+        .bg-emerald-600, .bg-green-600, .btn-success { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
+        }
+        .bg-blue-600, .bg-blue-500:not(.sidebar-modern *), .btn-primary-blue { 
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important; 
+        }
+        .bg-orange-500, .bg-orange-600, .btn-warning { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; 
+        }
+        .bg-rose-500, .bg-rose-600, .bg-red-500, .bg-red-600 { 
+            background: linear-gradient(135deg, #f43f5e 0%, #b91c1c 100%) !important; 
+        }
+        .bg-slate-800, .bg-gray-800, .btn-neutral:not(.sidebar-modern *) {
+            background: linear-gradient(135deg, #475569 0%, #1e293b 100%) !important;
+            color: white !important;
+        }
+        
+        .bg-white:not([class*="text-white"]):not(.sidebar-modern *), .btn-outline:not(.sidebar-modern *) {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--body-text) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
         }
 
         /* TABLET: 768px - 1023px */
@@ -1393,7 +1493,7 @@
             <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2 transition-colors duration-300"
                 :style="{ backgroundColor: 'var(--topbar-bg)', color: 'var(--body-text)', borderBottom: '1px solid var(--border-color)' }">
                 <button @click="sidebarOpen = !sidebarOpen" class="focus:outline-none p-2 rounded-xl transition hover:bg-opacity-80"
-                    :class="theme === 'dark' ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-500 hover:bg-gray-100'">
+                    :class="theme === 'dark' ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-500 md:bg-gray-100 bg-transparent hover:bg-gray-200'">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
 
@@ -1536,7 +1636,7 @@
                     <!-- Theme Toggle Button -->
                     <button @click="theme = (theme === 'dark' ? 'light' : 'dark')"
                         class="relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 focus:outline-none"
-                        :class="theme === 'dark' ? 'bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                        :class="theme === 'dark' ? 'bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20' : 'bg-transparent md:bg-gray-100 text-gray-500 hover:bg-gray-200'"
                         :title="theme === 'dark' ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'">
                         <i class="fas text-lg transition-all duration-300" :class="theme === 'dark' ? 'fa-sun' : 'fa-moon'"></i>
                     </button>

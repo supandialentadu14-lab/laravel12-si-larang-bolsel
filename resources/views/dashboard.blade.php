@@ -64,7 +64,8 @@
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
             <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 backdrop-blur-sm"
+                    style="background-color: rgba(0, 0, 0, 0.4) !important;">
                     <i class="fas fa-box text-white text-lg"></i>
                 </div>
                 <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Total Produk</p>
@@ -79,7 +80,8 @@
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
             <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 backdrop-blur-sm"
+                    style="background-color: rgba(0, 0, 0, 0.4) !important;">
                     <i class="fas fa-cubes text-white text-lg"></i>
                 </div>
                 <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Total Stok</p>
@@ -94,7 +96,8 @@
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
             <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 backdrop-blur-sm"
+                    style="background-color: rgba(0, 0, 0, 0.4) !important;">
                     <i class="fas fa-coins text-white text-lg"></i>
                 </div>
                 <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Nilai Persediaan</p>
@@ -109,7 +112,8 @@
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
             <div class="absolute -right-2 bottom-0 w-16 h-16 bg-white/10 rounded-full"></div>
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 backdrop-blur-sm"
+                    style="background-color: rgba(0, 0, 0, 0.4) !important;">
                     <i class="fas fa-handshake text-white text-lg"></i>
                 </div>
                 <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Penyedia</p>
