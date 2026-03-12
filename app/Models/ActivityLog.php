@@ -42,6 +42,7 @@ class ActivityLog extends Model
             'category_id' => 'Kategori',
             'supplier_id' => 'Penyedia',
             'description' => 'Keterangan',
+            'min_stock' => 'Stok Minimum',
             'user_id' => 'Pengguna',
             'product_id' => 'Produk',
             'type' => 'Jenis',

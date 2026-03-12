@@ -125,6 +125,14 @@
 
                         </div>
 
+                        {{-- Input Stok Minimum --}}
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">
+                                Stok Minimum <span class="text-red-500">*</span>
+                            </label>
+
+                            <input type="number" name="min_stock" value="{{ old('min_stock', $product->min_stock) }}"
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
                         </div>
 
                     </div>

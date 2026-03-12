@@ -236,7 +236,60 @@
     {{-- ══════════════════════════════════════════ --}}
     {{-- MONTHLY TREND + ACTIVITY + CRITICAL STOCK  --}}
     {{-- ══════════════════════════════════════════ --}}
+    </div>
+
+    {{-- ══════════════════════════════════════════ --}}
+    {{-- TOP PRODUCTS + VALUE TREND                --}}
+    {{-- ══════════════════════════════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {{-- Top Products List --}}
+        <div class="dash-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-50 bg-slate-50/50">
+                <h2 class="text-base font-extrabold text-gray-800">5 Barang Terpopuler</h2>
+                <p class="text-[10px] text-gray-400 uppercase tracking-tighter">Berdasarkan frekuensi transaksi</p>
+            </div>
+            <div class="p-4 space-y-3">
+                @foreach($topProducts as $idx => $p)
+                <div class="flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-indigo-100 hover:bg-indigo-50/30 transition group">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm shrink-0">
+                        {{ $idx + 1 }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-gray-800 truncate group-hover:text-indigo-700 transition">{{ $p->name }}</p>
+                        <p class="text-[10px] text-gray-400 font-medium uppercase tracking-widest">{{ $p->category->name ?? 'Tanpa Kategori' }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-black text-indigo-600">{{ $p->transactions_count }}</p>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase">Aksi</p>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Value Trend Bar Chart (Monthly Valuation) --}}
+        <div class="dash-card lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-50">
+                <div>
+                    <h2 class="text-base font-extrabold text-gray-800">Tren Valuasi Pengadaan</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Nilai Rupiah 6 Bulan terakhir</p>
+                </div>
+                <div class="flex gap-3 text-xs">
+                    <span class="flex items-center gap-1.5 font-semibold text-emerald-600">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Masuk
+                    </span>
+                    <span class="flex items-center gap-1.5 font-semibold text-rose-500">
+                        <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Keluar
+                    </span>
+                </div>
+            </div>
+            <div class="p-5">
+                <div class="h-64">
+                    <canvas id="valueTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
         {{-- Monthly Trend Bar Chart --}}
         <div class="dash-card lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -525,6 +578,62 @@ document.addEventListener('DOMContentLoaded', function () {
                     x: { grid: { display: false }, ticks: { color: tickColor, font: { size: 11 } } },
                     y: { beginAtZero: true, grid: { color: gridColor, drawBorder: false },
                          ticks: { color: tickColor, font: { size: 11 }, precision: 0 } }
+                }
+            }
+        });
+    }
+    /* ════════════════════════════════════════════ */
+    /*  4. VALUE TREND CHART (Monthly Rupiah)      */
+    /* ════════════════════════════════════════════ */
+    const vtc = document.getElementById('valueTrendChart');
+    if (vtc) {
+        const vtctx = vtc.getContext('2d');
+        new Chart(vtctx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($monthlyLabels) !!},
+                datasets: [
+                    {
+                        label: 'Nilai Masuk',
+                        data: {!! json_encode($monthlyValueIn) !!},
+                        backgroundColor: '#10b981', borderRadius: 5,
+                    },
+                    {
+                        label: 'Nilai Keluar',
+                        data: {!! json_encode($monthlyValueOut) !!},
+                        backgroundColor: '#f43f5e', borderRadius: 5,
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { 
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000000) return 'Rp ' + (value/1000000).toFixed(1) + ' jt';
+                                if (value >= 1000) return 'Rp ' + (value/1000).toFixed(0) + ' rb';
+                                return 'Rp ' + value;
+                            }
+                        }
+                    }
                 }
             }
         });

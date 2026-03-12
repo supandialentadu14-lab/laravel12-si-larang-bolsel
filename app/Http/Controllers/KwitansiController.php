@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\ActivityLog;
 
 class KwitansiController extends Controller
 {
@@ -387,6 +388,17 @@ class KwitansiController extends Controller
             }
 
             session()->forget('kwitansi_current');
+            
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => $oldId ? 'UPDATED' : 'CREATED',
+                'model_type' => 'App\Models\Kwitansi',
+                'model_id' => 0,
+                'description' => ($oldId ? "Memperbarui" : "Menambahkan") . " Kwitansi: " . $data['nomor_kwt'],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
             $msg = $oldId ? 'Kwitansi berhasil diperbarui' : 'Kwitansi berhasil disimpan';
             return redirect()->route('reports.kwitansi.list')->with('success', $msg);
 
@@ -485,6 +497,16 @@ class KwitansiController extends Controller
         $path = "users/".Auth::id()."/kwitansi/{$id}.json";
         if ($disk->exists($path)) {
             $disk->delete($path);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'DELETED',
+                'model_type' => 'App\Models\Kwitansi',
+                'model_id' => 0,
+                'description' => "Menghapus Kwitansi ID: " . $id,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
         }
         return redirect()->route('reports.kwitansi.list')->with('status', 'Kwitansi dihapus');
     }

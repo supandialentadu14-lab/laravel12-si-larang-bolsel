@@ -1164,12 +1164,14 @@
             </nav>
 
             {{-- Sidebar Footer - Fixed at bottom --}}
-            <div class="mt-auto border-t border-white/10 transition-all duration-300" 
-                :class="sidebarOpen ? 'px-4 py-4' : 'px-0 py-4'"
-                style="background: rgba(0,0,0,0.1)">
+            <div class="mt-auto border-t transition-all duration-300" 
+                :class="[
+                    sidebarOpen ? 'px-4 py-4' : 'px-0 py-4',
+                    theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-slate-200 bg-slate-100/50'
+                ]">
                 
                 <div x-show="sidebarOpen" x-cloak x-transition:enter="transition ease-out duration-300 delay-100" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                    <p class="text-[9px] font-bold uppercase tracking-[0.2em] mb-3 opacity-40 text-center" style="color: var(--sidebar-text)">Developer</p>
+                    <p class="text-[9px] font-black uppercase tracking-[0.2em] mb-3 opacity-50 text-center" :style="{ color: 'var(--sidebar-text)' }">Developer</p>
                 </div>
 
                 <div class="flex items-center justify-center transition-all duration-300" :class="sidebarOpen ? 'gap-3' : 'flex-col gap-4'">
@@ -1177,36 +1179,48 @@
                     <a href="https://wa.me/6285824268216" target="_blank"
                         x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#25D366'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(37,211,102,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
                         x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
-                        class="flex items-center justify-center transition-all duration-300"
-                        :class="sidebarOpen ? 'w-9 h-9 rounded-xl bg-white/5 border border-white/10' : 'w-6 h-6'" title="WhatsApp">
-                        <i class="fab fa-whatsapp transition-all duration-300" style="color: rgba(255,255,255,0.2)" :class="sidebarOpen ? 'text-base' : 'text-xs'"></i>
+                        class="flex items-center justify-center transition-all duration-300 group"
+                        :class="[
+                            sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
+                            theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50'
+                        ]" title="WhatsApp">
+                        <i class="fab fa-whatsapp transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
                     </a>
 
                     {{-- Email --}}
                     <a href="mailto:supandialentadu14@gmail.com" target="_blank"
                         x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#EA4335'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(234,67,53,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
                         x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
-                        class="flex items-center justify-center transition-all duration-300"
-                        :class="sidebarOpen ? 'w-9 h-9 rounded-xl bg-white/5 border border-white/10' : 'w-6 h-6'" title="Email Developer">
-                        <i class="far fa-envelope transition-all duration-300" style="color: rgba(255,255,255,0.2)" :class="sidebarOpen ? 'text-base' : 'text-xs'"></i>
+                        class="flex items-center justify-center transition-all duration-300 group"
+                        :class="[
+                            sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
+                            theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50'
+                        ]" title="Email Developer">
+                        <i class="far fa-envelope transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
                     </a>
 
                     {{-- Instagram --}}
                     <a href="https://www.instagram.com/emonn_65?igsh=MWM4c2JzdjNvZG4xMQ%3D%3D&utm_source=qr" target="_blank"
                         x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#E1306C'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(225,48,108,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
                         x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
-                        class="flex items-center justify-center transition-all duration-300"
-                        :class="sidebarOpen ? 'w-9 h-9 rounded-xl bg-white/5 border border-white/10' : 'w-6 h-6'" title="Instagram">
-                        <i class="fab fa-instagram transition-all duration-300" style="color: rgba(255,255,255,0.2)" :class="sidebarOpen ? 'text-base' : 'text-xs'"></i>
+                        class="flex items-center justify-center transition-all duration-300 group"
+                        :class="[
+                            sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
+                            theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50'
+                        ]" title="Instagram">
+                        <i class="fab fa-instagram transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
                     </a>
 
                     {{-- Facebook --}}
                     <a href="https://www.facebook.com/share/18J61xd2XQ/?mibextid=wwXIfr" target="_blank"
                         x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#1877F2'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(24,119,242,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
                         x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
-                        class="flex items-center justify-center transition-all duration-300"
-                        :class="sidebarOpen ? 'w-9 h-9 rounded-xl bg-white/5 border border-white/10' : 'w-6 h-6'" title="Facebook">
-                        <i class="fab fa-facebook-f transition-all duration-300" style="color: rgba(255,255,255,0.2)" :class="sidebarOpen ? 'text-base' : 'text-xs'"></i>
+                        class="flex items-center justify-center transition-all duration-300 group"
+                        :class="[
+                            sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
+                            theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50'
+                        ]" title="Facebook">
+                        <i class="fab fa-facebook-f transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
                     </a>
                 </div>
             </div>

@@ -80,6 +80,7 @@ class ProductController extends Controller
         'price' => 'required',
         'unit' => 'required',
         'category_id' => 'required',
+        'min_stock' => 'nullable|integer|min:0',
     ]);
 
     $lastProduct = Product::withTrashed()->orderBy('id', 'desc')->first();
@@ -103,6 +104,7 @@ $slug = Str::slug($request->name);
     'category_id' => $request->category_id,
     'supplier_id' => $request->supplier_id,
     'description' => $request->description,
+    'min_stock' => $request->min_stock ?? 10,
 ]);
 
 
@@ -120,6 +122,7 @@ $slug = Str::slug($request->name);
             'price' => 'required|numeric',
             'unit' => 'required',
             'category_id' => 'required',
+            'min_stock' => 'nullable|integer|min:0',
         ]);
 
         $product->update([
@@ -129,6 +132,7 @@ $slug = Str::slug($request->name);
             'category_id' => $request->category_id,
             'supplier_id' => $request->supplier_id,
             'description' => $request->description,
+            'min_stock' => $request->min_stock ?? 10,
         ]);
 
         return redirect()->route('products.index')

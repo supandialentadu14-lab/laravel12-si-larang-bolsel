@@ -140,6 +140,42 @@ class DashboardController extends Controller
         }
 
         // ============================
+        // TREN NILAI BULANAN (6 BULAN TERAKHIR)
+        // ============================
+        $monthlyValueIn = collect();
+        $monthlyValueOut = collect();
+
+        for ($i = 5; $i >= 0; $i--) {
+            $month = Carbon::today()->subMonths($i);
+            $monthlyValueIn->push(
+                StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
+                    ->where('stock_transactions.type', 'in')
+                    ->where('stock_transactions.user_id', Auth::id())
+                    ->whereYear('stock_transactions.date', $month->year)
+                    ->whereMonth('stock_transactions.date', $month->month)
+                    ->sum(DB::raw('stock_transactions.quantity * products.price'))
+            );
+            $monthlyValueOut->push(
+                StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
+                    ->where('stock_transactions.type', 'out')
+                    ->where('stock_transactions.user_id', Auth::id())
+                    ->whereYear('stock_transactions.date', $month->year)
+                    ->whereMonth('stock_transactions.date', $month->month)
+                    ->sum(DB::raw('stock_transactions.quantity * products.price'))
+            );
+        }
+
+        // ============================
+        // TOP 5 PRODUK PALING AKTIF
+        // ============================
+        $topProducts = Product::withCount(['transactions' => function($q) {
+                $q->where('user_id', Auth::id());
+            }])
+            ->orderBy('transactions_count', 'desc')
+            ->take(5)
+            ->get();
+
+        // ============================
         // DISTRIBUSI STOK PER KATEGORI
         // ============================
         $categoryDistribution = Category::withCount(['products as total_stock' => function ($query) {
@@ -173,7 +209,10 @@ class DashboardController extends Controller
             'monthlyIn',
             'monthlyOut',
             'categoryLabels',
-            'categoryValues'
+            'categoryValues',
+            'topProducts',
+            'monthlyValueIn',
+            'monthlyValueOut'
         ));
 }
 }

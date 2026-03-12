@@ -30,6 +30,7 @@ class Product extends Model
         'category_id',
         'supplier_id',
         'description',
+        'min_stock',
         'user_id',
     ];
 

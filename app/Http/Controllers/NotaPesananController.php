@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\ActivityLog;
 use Illuminate\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -331,6 +332,17 @@ class NotaPesananController extends Controller
         }
         
         session()->forget('nota_current_id');
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'CREATED',
+            'model_type' => 'App\Models\NotaPesanan',
+            'model_id' => $nota->id,
+            'description' => "Menambahkan Nota Pesanan baru: " . $data['nomor'],
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+
         return redirect()->route('reports.nota.list')->with('status', 'Nota pesanan disimpan');
     }
 
@@ -456,6 +468,21 @@ class NotaPesananController extends Controller
             ]);
         }
         session()->forget('nota_current_id');
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'UPDATED',
+            'model_type' => 'App\Models\NotaPesanan',
+            'model_id' => $nota->id,
+            'description' => "Memperbarui Nota Pesanan: " . $data['nomor'],
+            'properties' => [
+                'old' => $prev,
+                'new' => $data
+            ],
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+
         return redirect()->route('reports.nota.list')->with('status', 'Nota pesanan diperbarui');
     }
 
@@ -617,8 +644,19 @@ class NotaPesananController extends Controller
                 if ($notaNomor) {
                     $dbNota = NotaPesanan::where('user_id', $userId)->where('nomor', $notaNomor)->first();
                     if ($dbNota) {
+                        $dbId = $dbNota->id;
                         $dbNota->items()->delete();
                         $dbNota->delete();
+
+                        ActivityLog::create([
+                            'user_id' => $userId,
+                            'action' => 'DELETED',
+                            'model_type' => 'App\Models\NotaPesanan',
+                            'model_id' => $dbId,
+                            'description' => "Menghapus Nota Pesanan: " . ($notaNomor ?? $id),
+                            'ip_address' => request()->ip(),
+                            'user_agent' => request()->userAgent(),
+                        ]);
                     }
                 }
             }
