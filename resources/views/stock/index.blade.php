@@ -6,7 +6,7 @@
 <div x-data="{
     selected: [],
     allSelected: false,
-    showCreateModal: {{ request('add') ? 'true' : 'false' }},
+    showCreateModal: false,
     showEditModal: false,
     editData: {},
     editUrl: '',
@@ -116,14 +116,14 @@
                                         <div class="flex space-x-2">
                                             <label class="flex-1 cursor-pointer">
                                                 <input type="radio" name="type" value="in" class="peer hidden" required>
-                                                <div class="text-center py-2 rounded-lg border border-slate-200 bg-white peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:border-emerald-600 transition font-bold text-xs uppercase tracking-tight">
-                                                    <i class="fas fa-arrow-down mr-1"></i> Masuk
+                                                <div class="text-center py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-200/20 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 peer-checked:!bg-emerald-500 peer-checked:!text-white peer-checked:border-emerald-600 peer-checked:shadow-[0_0_20px_rgba(16,185,129,0.5)] peer-checked:scale-[1.02] transition-all duration-300 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                                                    <i class="fas fa-arrow-down text-[10px]"></i> Masuk
                                                 </div>
                                             </label>
                                             <label class="flex-1 cursor-pointer">
                                                 <input type="radio" name="type" value="out" class="peer hidden" required>
-                                                <div class="text-center py-2 rounded-lg border border-slate-200 bg-white peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-600 transition font-bold text-xs uppercase tracking-tight">
-                                                    <i class="fas fa-arrow-up mr-1"></i> Keluar
+                                                <div class="text-center py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-200/20 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 peer-checked:!bg-rose-500 peer-checked:!text-white peer-checked:border-rose-600 peer-checked:shadow-[0_0_20px_rgba(244,63,94,0.5)] peer-checked:scale-[1.02] transition-all duration-300 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                                                    <i class="fas fa-arrow-up text-[10px]"></i> Keluar
                                                 </div>
                                             </label>
                                         </div>
@@ -208,14 +208,14 @@
                                         <div class="flex space-x-2">
                                             <label class="flex-1 cursor-pointer">
                                                 <input type="radio" name="type" value="in" x-model="editData.type" class="peer hidden" required>
-                                                <div class="text-center py-2 rounded-lg border border-slate-200 bg-white peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:border-emerald-600 transition font-bold text-xs uppercase tracking-tight">
-                                                    <i class="fas fa-arrow-down mr-1"></i> Masuk
+                                                <div class="text-center py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-200/20 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 peer-checked:!bg-emerald-500 peer-checked:!text-white peer-checked:border-emerald-600 peer-checked:shadow-[0_0_20px_rgba(16,185,129,0.5)] peer-checked:scale-[1.02] transition-all duration-300 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                                                    <i class="fas fa-arrow-down text-[10px]"></i> Masuk
                                                 </div>
                                             </label>
                                             <label class="flex-1 cursor-pointer">
                                                 <input type="radio" name="type" value="out" x-model="editData.type" class="peer hidden" required>
-                                                <div class="text-center py-2 rounded-lg border border-slate-200 bg-white peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-600 transition font-bold text-xs uppercase tracking-tight">
-                                                    <i class="fas fa-arrow-up mr-1"></i> Keluar
+                                                <div class="text-center py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-200/20 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 peer-checked:!bg-rose-500 peer-checked:!text-white peer-checked:border-rose-600 peer-checked:shadow-[0_0_20px_rgba(244,63,94,0.5)] peer-checked:scale-[1.02] transition-all duration-300 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                                                    <i class="fas fa-arrow-up text-[10px]"></i> Keluar
                                                 </div>
                                             </label>
                                         </div>
