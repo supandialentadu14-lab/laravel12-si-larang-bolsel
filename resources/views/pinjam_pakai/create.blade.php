@@ -59,7 +59,7 @@
 
     <div class="max-w-4xl mx-auto">
         <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 bg-[#1e293b]">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-[#1e293b]">
                 <h6 class="font-bold text-white flex items-center gap-2">
                     <i class="fas fa-hand-holding"></i> Form Berita Acara Pinjam Pakai
                 </h6>
@@ -67,21 +67,21 @@
 
             <form method="POST" action="{{ route('reports.pinjam.save') }}" x-data="formData()" x-init="init()" class="p-6 space-y-6">
                 @csrf
-                @if(session('pinjam_current_id'))
-                    <input type="hidden" name="id" value="{{ session('pinjam_current_id') }}">
+                @if(session('pinjam_pakai_current_id'))
+                    <input type="hidden" name="id" value="{{ session('pinjam_pakai_current_id') }}">
                 @endif
                 @if(isset($data['id']))
                     <input type="hidden" name="id" value="{{ $data['id'] }}">
                 @endif
 
-                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-6 transition-all duration-300">
-                    <h4 class="text-slate-800 font-bold mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700 mb-6 transition-all duration-300">
+                    <h4 class="text-slate-800 dark:text-slate-200 font-bold mb-4 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                         <i class="fas fa-info-circle text-indigo-500"></i> Informasi Umum
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nomor Surat <span class="text-rose-500">*</span></label>
-                            <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono" placeholder="Contoh: 001" required>
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Nomor Surat <span class="text-rose-500">*</span></label>
+                            <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono" placeholder="Contoh: 001" required>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tanggal Berita Acara <span class="text-rose-500">*</span></label>
@@ -94,14 +94,14 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Narasi Pembuka</label>
-                        <textarea x-ref="pembuka" name="pembuka" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm leading-relaxed" placeholder="Narasi ini akan terisi otomatis berdasarkan tanggal..."></textarea>
-                        <p class="text-[10px] text-slate-400 mt-1 italic text-right leading-tight">Narasi pembuka diperbarui otomatis berdasarkan input Tanggal.</p>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Narasi Pembuka</label>
+                        <textarea x-ref="pembuka" name="pembuka" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm leading-relaxed" placeholder="Narasi ini akan terisi otomatis berdasarkan tanggal..."></textarea>
+                        <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1 italic text-right leading-tight">Narasi pembuka diperbarui otomatis berdasarkan input Tanggal.</p>
                     </div>
                 </div>
 
-                <div class="bg-indigo-50/50 p-6 rounded-xl border border-indigo-100 mb-6">
-                    <h4 class="text-indigo-900 font-bold mb-5 flex items-center gap-2 border-b border-indigo-100 pb-2">
+                <div class="bg-indigo-50/50 dark:bg-indigo-900/10 p-6 rounded-xl border border-indigo-100 dark:border-indigo-900/30 mb-6 font-medium">
+                    <h4 class="text-indigo-900 dark:text-indigo-300 font-bold mb-5 flex items-center gap-2 border-b border-indigo-100 dark:border-indigo-900/30 pb-2">
                         <i class="fas fa-users text-indigo-500"></i> Pihak Yang Bersepakat
                     </h4>
                     
@@ -120,21 +120,21 @@
                             </div>
                             
                             <div class="grid grid-cols-12 gap-3 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-indigo-500 uppercase tracking-tighter text-right hidden sm:block">Nama</label>
+                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-tighter text-left sm:text-right">Nama</label>
                                 <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold" required>
+                                    <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold" required>
                                 </div>
                             </div>
                             <div class="grid grid-cols-12 gap-3 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-indigo-500 uppercase tracking-tighter text-right hidden sm:block">NIP</label>
+                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-tighter text-left sm:text-right">NIP</label>
                                 <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono" required>
+                                    <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono" required>
                                 </div>
                             </div>
                             <div class="grid grid-cols-12 gap-3 items-start">
-                                <label class="col-span-12 sm:col-span-3 mt-2 text-[11px] font-bold text-indigo-500 uppercase tracking-tighter text-right hidden sm:block">Jabatan</label>
+                                <label class="col-span-12 sm:col-span-3 mt-2 text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-tighter text-left sm:text-right">Jabatan</label>
                                 <div class="col-span-12 sm:col-span-9">
-                                    <textarea x-ref="pp_jabatan" name="pihak_pertama[jabatan]" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm leading-snug" required>{{ $data['pihak_pertama']['jabatan'] ?? '' }}</textarea>
+                                    <textarea x-ref="pp_jabatan" name="pihak_pertama[jabatan]" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm leading-snug" required>{{ $data['pihak_pertama']['jabatan'] ?? '' }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -145,30 +145,30 @@
                                 <h3 class="font-bold text-rose-800 text-xs uppercase tracking-wider">PIHAK KEDUA (Peminjam)</h3>
                             </div>
                             <div class="grid grid-cols-12 gap-3 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-rose-500 uppercase tracking-tighter text-right hidden sm:block">Nama</label>
+                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-rose-500 dark:text-rose-400 uppercase tracking-tighter text-left sm:text-right">Nama</label>
                                 <div class="col-span-12 sm:col-span-9">
-                                    <input type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm font-bold" required>
+                                    <input type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm font-bold" required>
                                 </div>
                             </div>
                             <div class="grid grid-cols-12 gap-3 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-rose-500 uppercase tracking-tighter text-right hidden sm:block">NIP</label>
+                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-rose-500 dark:text-rose-400 uppercase tracking-tighter text-left sm:text-right">NIP</label>
                                 <div class="col-span-12 sm:col-span-9">
-                                    <input type="text" name="pihak_kedua[nip]" value="{{ $data['pihak_kedua']['nip'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm font-mono" required>
+                                    <input type="text" name="pihak_kedua[nip]" value="{{ $data['pihak_kedua']['nip'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm font-mono" required>
                                 </div>
                             </div>
                             <div class="grid grid-cols-12 gap-3 items-start">
-                                <label class="col-span-12 sm:col-span-3 mt-2 text-[11px] font-bold text-rose-500 uppercase tracking-tighter text-right hidden sm:block">Jabatan</label>
+                                <label class="col-span-12 sm:col-span-3 mt-2 text-[11px] font-bold text-rose-500 dark:text-rose-400 uppercase tracking-tighter text-left sm:text-right">Jabatan</label>
                                 <div class="col-span-12 sm:col-span-9">
-                                    <textarea name="pihak_kedua[jabatan]" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm leading-snug" required>{{ $data['pihak_kedua']['jabatan'] ?? '' }}</textarea>
+                                    <textarea name="pihak_kedua[jabatan]" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm leading-snug" required>{{ $data['pihak_kedua']['jabatan'] ?? '' }}</textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 border-b border-slate-200 pb-3">
-                        <h4 class="text-slate-800 font-bold flex items-center gap-2">
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <h4 class="text-slate-800 dark:text-slate-200 font-bold flex items-center gap-2">
                              <i class="fas fa-boxes text-indigo-500"></i> Daftar Barang Pinjam Pakai
                         </h4>
                         <div class="flex gap-2 w-full sm:w-auto">
@@ -181,11 +181,11 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white">
-                        <table class="w-full text-[11px] text-left text-slate-700">
-                            <thead class="bg-slate-100 text-[10px] uppercase font-bold text-slate-600 tracking-wider">
+                    <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900">
+                        <table class="w-full text-[11px] text-left text-slate-700 dark:text-slate-300">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-[10px] uppercase font-bold text-slate-600 dark:text-slate-400 tracking-wider">
                                 <tr>
-                                    <th class="px-3 py-3 border-b border-slate-200">Nama / Jenis Barang</th>
+                                    <th class="px-3 py-3 border-b border-slate-200 dark:border-slate-700">Nama / Jenis Barang</th>
                                     <th class="px-3 py-3 border-b border-slate-200">Merk</th>
                                     <th class="px-3 py-3 border-b border-slate-200">Tipe</th>
                                     <th class="px-3 py-3 border-b border-slate-200">No. Pabrik / Identitas</th>
@@ -197,14 +197,14 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <template x-for="(item, i) in items" :key="item._key">
-                                    <tr class="hover:bg-indigo-50/30 transition">
-                                        <td class="p-2"><input type="text" :name="`items[${i}][nama]`" x-model="item.nama" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Nama Barang"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][merk]`" x-model="item.merk" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Merk"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][tipe]`" x-model="item.tipe" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Tipe"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][identitas]`" x-model="item.identitas" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="No. Seri"></td>
-                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][tahun]`" x-model="item.tahun" class="w-full text-center rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="2024"></td>
-                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][kondisi]`" x-model="item.kondisi" class="w-full text-center rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Baik"></td>
-                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][jumlah]`" x-model="item.jumlah" class="w-full text-center rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition font-bold" placeholder="1"></td>
+                                    <tr class="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/20 transition border-t dark:border-slate-800">
+                                        <td class="p-2"><input type="text" :name="`items[${i}][nama]`" x-model="item.nama" class="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Nama Barang"></td>
+                                        <td class="p-2"><input type="text" :name="`items[${i}][merk]`" x-model="item.merk" class="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Merk"></td>
+                                        <td class="p-2"><input type="text" :name="`items[${i}][tipe]`" x-model="item.tipe" class="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Tipe"></td>
+                                        <td class="p-2"><input type="text" :name="`items[${i}][identitas]`" x-model="item.identitas" class="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="No. Seri"></td>
+                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][tahun]`" x-model="item.tahun" class="w-full text-center rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="2024"></td>
+                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][kondisi]`" x-model="item.kondisi" class="w-full text-center rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Baik"></td>
+                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][jumlah]`" x-model="item.jumlah" class="w-full text-center rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition font-bold" placeholder="1"></td>
                                         <td class="p-2 text-center">
                                             <button type="button" @click="removeItem(i)" class="text-rose-400 hover:text-rose-600 transition p-1"><i class="fas fa-trash-alt"></i></button>
                                         </td>

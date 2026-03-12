@@ -74,7 +74,7 @@
 
     <div class="max-w-4xl mx-auto">
         <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 bg-slate-800">
+            <div class="px-6 py-4 border-b border-gray-100 dark:border-slate-700 bg-slate-800">
                 <h6 class="font-bold text-white">Form Berita Acara Pinjam Pakai</h6>
             </div>
 
@@ -84,28 +84,28 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Nomor</label>
-                        <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                        <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-1">Nomor</label>
+                        <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tanggal</label>
-                        <input x-ref="tanggal" @change="updatePembuka()" type="date" name="tanggal" value="{{ $data['tanggal'] ?? now()->toDateString() }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                        <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-1">Tanggal</label>
+                        <input x-ref="tanggal" @change="updatePembuka()" type="date" name="tanggal" value="{{ $data['tanggal'] ?? now()->toDateString() }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tempat</label>
-                        <input x-ref="tempat" @input="updatePembuka()" type="text" name="tempat" value="{{ $data['tempat'] ?? ($opd->nama_opd ?? '') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                        <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-1">Tempat</label>
+                        <input x-ref="tempat" @input="updatePembuka()" type="text" name="tempat" value="{{ $data['tempat'] ?? ($opd->nama_opd ?? '') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Narasi Pembuka</label>
-                    <textarea x-ref="pembuka" name="pembuka" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">{{ $data['pembuka'] ?? '' }}</textarea>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-1">Narasi Pembuka</label>
+                    <textarea x-ref="pembuka" name="pembuka" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">{{ $data['pembuka'] ?? '' }}</textarea>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t pt-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t dark:border-slate-700 pt-6">
                     <div class="space-y-4">
                         <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-2 mb-4 h-auto md:h-[64px] lg:h-[72px] xl:h-[40px]">
-                            <h3 class="font-bold text-gray-800 text-base">PIHAK PERTAMA (Kepala Daerah)</h3>
+                            <h3 class="font-bold text-gray-800 dark:text-slate-200 text-base">PIHAK PERTAMA (Pemberi)</h3>
                             @if(isset($opd) && $opd->kepala_nama)
                                 <button type="button" class="px-3 py-1.5 rounded bg-indigo-100 text-indigo-700 text-xs font-bold hover:bg-indigo-200 transition xl:whitespace-nowrap" @click="
                                     $refs.pp_nama.value='{{ $opd->kepala_nama }}';
@@ -115,44 +115,44 @@
                             @endif
                         </div>
                         <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
-                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">Nama</label>
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-indigo-500 dark:text-indigo-400 text-left sm:text-right">Nama</label>
                             <div class="col-span-12 sm:col-span-9">
-                                <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                                <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
                             </div>
                         </div>
                         <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
-                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">NIP</label>
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-indigo-500 dark:text-indigo-400 text-left sm:text-right">NIP</label>
                             <div class="col-span-12 sm:col-span-9">
-                                <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                                <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
                             </div>
                         </div>
                         <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
-                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">Jabatan</label>
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-indigo-500 dark:text-indigo-400 text-left sm:text-right">Jabatan</label>
                             <div class="col-span-12 sm:col-span-9">
-                                <input x-ref="pp_jabatan" type="text" name="pihak_pertama[jabatan]" value="{{ $data['pihak_pertama']['jabatan'] ?? 'Kepala Dinas' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                                <input x-ref="pp_jabatan" type="text" name="pihak_pertama[jabatan]" value="{{ $data['pihak_pertama']['jabatan'] ?? 'Kepala Dinas' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
                             </div>
                         </div>
                     </div>
                     <div class="space-y-4">
                         <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-2 mb-4 h-auto md:h-[64px] lg:h-[72px] xl:h-[40px]">
-                            <h3 class="font-bold text-gray-800 text-base">PIHAK KEDUA (Peminjam)</h3>
+                            <h3 class="font-bold text-gray-800 dark:text-slate-200 text-base">PIHAK KEDUA (Peminjam)</h3>
                         </div>
                         <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
-                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">Nama</label>
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-rose-500 dark:text-rose-400 text-left sm:text-right">Nama</label>
                             <div class="col-span-12 sm:col-span-9">
-                                <input type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                                <input type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition" required>
                             </div>
                         </div>
                         <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
-                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">NIP</label>
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-rose-500 dark:text-rose-400 text-left sm:text-right">NIP</label>
                             <div class="col-span-12 sm:col-span-9">
-                                <input type="text" name="pihak_kedua[nip]" value="{{ $data['pihak_kedua']['nip'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                                <input type="text" name="pihak_kedua[nip]" value="{{ $data['pihak_kedua']['nip'] ?? '' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition" required>
                             </div>
                         </div>
                         <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center">
-                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-gray-700">Jabatan</label>
+                            <label class="col-span-12 sm:col-span-3 text-sm font-bold text-rose-500 dark:text-rose-400 text-left sm:text-right">Jabatan</label>
                             <div class="col-span-12 sm:col-span-9">
-                                <input type="text" name="pihak_kedua[jabatan]" value="{{ $data['pihak_kedua']['jabatan'] ?? 'Peminjam' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+                                <input type="text" name="pihak_kedua[jabatan]" value="{{ $data['pihak_kedua']['jabatan'] ?? 'Peminjam' }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition" required>
                             </div>
                         </div>
                     </div>
@@ -160,9 +160,9 @@
 
                 <div>
                     <div class="flex justify-between items-center mb-2">
-                        <label class="block text-sm font-bold text-gray-700">Daftar Barang</label>
+                        <label class="block text-sm font-bold text-gray-700 dark:text-slate-300">Daftar Barang</label>
                         <div class="flex gap-2">
-                            <button type="button" @click="prefill()" class="px-3 py-1 rounded bg-green-100 text-green-700 text-xs font-bold hover:bg-green-200 transition">
+                            <button type="button" @click="prefill()" class="px-3 py-1 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold hover:bg-green-200 transition">
                                 <i class="fas fa-sync mr-1"></i> Isi Ulang
                             </button>
                             <button type="button" @click="addItem()" class="px-3 py-1 rounded bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition">
@@ -170,9 +170,9 @@
                             </button>
                         </div>
                     </div>
-                    <div class="overflow-x-auto border rounded-lg">
-                        <table class="w-full text-sm text-left text-gray-700">
-                            <thead class="bg-gray-100 text-xs uppercase font-bold">
+                    <div class="overflow-x-auto border dark:border-slate-700 rounded-lg">
+                        <table class="w-full text-sm text-left text-gray-700 dark:text-slate-300">
+                            <thead class="bg-gray-100 dark:bg-slate-800 text-xs uppercase font-bold dark:text-slate-400">
                                 <tr>
                                     <th class="px-3 py-2">Nama / Jenis Barang</th>
                                     <th class="px-3 py-2">Merk</th>
@@ -186,14 +186,14 @@
                             </thead>
                             <tbody>
                                 <template x-for="(item, i) in items" :key="item._key">
-                                    <tr class="border-t transition-all duration-200">
-                                        <td class="p-2"><input type="text" :name="`items[${i}][nama]`" x-model="item.nama" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][merk]`" x-model="item.merk" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][tipe]`" x-model="item.tipe" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][identitas]`" x-model="item.identitas" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][tahun]`" x-model="item.tahun" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][kondisi]`" x-model="item.kondisi" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][jumlah]`" x-model="item.jumlah" class="w-full rounded border border-gray-400 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
+                                    <tr class="border-t dark:border-slate-700 transition-all duration-200">
+                                        <td class="p-2"><input type="text" :name="`items[${i}][nama]`" x-model="item.nama" class="w-full rounded border border-gray-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
+                                        <td class="p-2"><input type="text" :name="`items[${i}][merk]`" x-model="item.merk" class="w-full rounded border border-gray-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
+                                        <td class="p-2"><input type="text" :name="`items[${i}][tipe]`" x-model="item.tipe" class="w-full rounded border border-gray-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
+                                        <td class="p-2"><input type="text" :name="`items[${i}][identitas]`" x-model="item.identitas" class="w-full rounded border border-gray-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
+                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][tahun]`" x-model="item.tahun" class="w-full rounded border border-gray-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
+                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][kondisi]`" x-model="item.kondisi" class="w-full rounded border border-gray-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
+                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][jumlah]`" x-model="item.jumlah" class="w-full rounded border border-gray-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-xs focus:ring-indigo-500 focus:border-indigo-500 py-2"></td>
                                         <td class="p-2 text-center">
                                             <button type="button" @click="removeItem(i)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                                         </td>

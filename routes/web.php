@@ -70,15 +70,16 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('permission:pinjam_pakai')->group(function () {
         Route::get('reports/berita-pinjam-pakai', [PinjamPakaiController::class, 'form'])->name('reports.pinjam.form');
         Route::post('reports/berita-pinjam-pakai', [PinjamPakaiController::class, 'report'])->name('reports.pinjam.report');
+        Route::get('reports/berita-pinjam-pakai/save', function () { return redirect()->route('reports.pinjam.form'); });
         Route::post('reports/berita-pinjam-pakai/save', [PinjamPakaiController::class, 'save'])->name('reports.pinjam.save');
-        Route::get('reports/berita-pinjam-pakai/{id}/edit', [PinjamPakaiController::class, 'edit'])->name('reports.pinjam.edit');
         Route::get('reports/berita-pinjam-pakai/list', [PinjamPakaiController::class, 'list'])->name('reports.pinjam.list');
+        Route::post('reports/berita-pinjam-pakai/bulk-delete', [PinjamPakaiController::class, 'bulkDelete'])->name('reports.pinjam.bulk_delete');
+        Route::get('reports/berita-pinjam-pakai/{id}/edit', [PinjamPakaiController::class, 'edit'])->name('reports.pinjam.edit');
         Route::get('reports/berita-pinjam-pakai/{id}', [PinjamPakaiController::class, 'show'])->name('reports.pinjam.show');
         Route::delete('reports/berita-pinjam-pakai/{id}/delete', [PinjamPakaiController::class, 'delete'])->name('reports.pinjam.delete');
         Route::get('reports/berita-pinjam-pakai/{id}/delete', function () {
             return redirect()->route('reports.pinjam.list');
         });
-        Route::post('reports/berita-pinjam-pakai/bulk-delete', [PinjamPakaiController::class, 'bulkDelete'])->name('reports.pinjam.bulk_delete');
     });
 
     // Berita Acara Stock Opname Persediaan

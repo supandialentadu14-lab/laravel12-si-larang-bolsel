@@ -24,14 +24,19 @@
 
         .report-table th,
         .report-table td {
-            border: 1px solid black;
+            border: 1px solid #1e293b !important;
             padding: 6px;
-            font-size: 11px; /* Sedikit lebih kecil agar lebih muat */
+            font-size: 11px;
             word-wrap: break-word;
             word-break: break-word;
             overflow-wrap: break-word;
             white-space: normal !important;
             overflow: hidden;
+        }
+
+        .theme-dark .report-table th,
+        .theme-dark .report-table td {
+            border-color: #475569 !important;
         }
 
         .line-clamp-2 {
@@ -41,7 +46,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: normal;
-            max-height: 2.8em; /* Sekitar 2 baris */
+            max-height: 2.8em;
         }
 
         .report-table th {
@@ -81,7 +86,19 @@
                 min-height: 210mm;
                 margin: 16px auto;
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-                background: #ffffff;
+                background-color: #ffffff !important;
+                color: #1e293b !important;
+                transition: all 0.3s ease;
+            }
+
+            .theme-dark #print-area {
+                background-color: #1e293b !important;
+                color: #f1f5f9 !important;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            }
+
+            .theme-dark html, .theme-dark body {
+                background-color: #020617 !important;
             }
 
             .report-table {
@@ -104,6 +121,14 @@
                 width: auto !important;
                 overflow: visible !important;
                 border: none !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+
+            .print-area thead, .print-area tbody, .print-area th, .print-area td {
+                border-color: #000000 !important;
+                color: #000000 !important;
+                background-color: #ffffff !important;
             }
 
             .print\:hidden {
@@ -117,11 +142,12 @@
 
             body {
                 margin: 0;
+                background-color: #ffffff !important;
             }
         }
     </style>
 
-    <div class="bg-white rounded-lg shadow p-6 mb-6 print:hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow border border-transparent dark:border-slate-700 p-6 mb-6 print:hidden">
         <a href="{{ route('reports.belanja.modal.list') }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-gray-500 text-white hover:bg-gray-600 mr-2">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
@@ -146,7 +172,7 @@
         @endif
     </div>
 
-    <div id="print-area" class="print-area bg-white shadow-lg border p-8 rounded-lg">
+    <div id="print-area" class="print-area p-8 rounded-lg">
         <div class="kop">
             <h1>DAFTAR KONTRAK BELANJA MODAL</h1>
             <h2>{{ $master['opd']['nama'] ?? null ?: $opd->nama_opd ?? '' }} KABUPATEN BOLAANG MONGONDOW SELATAN</h2>

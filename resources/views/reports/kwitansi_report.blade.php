@@ -19,34 +19,59 @@
             width: 210mm; 
             min-height: 330mm; 
             margin: 16px auto; 
-            background: #fff; 
+            background-color: #ffffff !important; 
+            color: #1e293b !important;
             padding: 10mm 15mm;
             line-height: 1.4;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             border-radius: 8px;
+            transition: all 0.3s ease;
         }
+
+        /* Dark mode overrides */
+        .theme-dark .preview-paper {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .theme-dark .preview-paper .border-black {
+            border-color: #475569 !important;
+        }
+
+        .theme-dark .preview-paper .border-t, 
+        .theme-dark .preview-paper .border-b,
+        .theme-dark .preview-paper .border-l,
+        .theme-dark .preview-paper .border-r {
+            border-color: #475569 !important;
+        }
+
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { position: static !important; width: auto !important; overflow: visible !important; }
             @page { size: 210mm 330mm; margin: 5mm 15mm; }
-            body { margin: 0; }
+            body { margin: 0; background-color: #ffffff !important; }
             .preview-paper { 
                 width: 100% !important; 
                 min-height: auto !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
                 box-sizing: border-box; 
-                background: #ffffff !important; 
+                background-color: #ffffff !important; 
+                color: #000000 !important;
                 box-shadow: none !important; 
                 line-height: 1.4;
             }
+            .border-black, .border-t, .border-b, .border-l, .border-r { border-color: #000000 !important; }
         }
+
         @media screen {
-            html, body { background: #f3f4f6; }
+            html, body { transition: background 0.3s ease; }
+            .theme-dark html, .theme-dark body { background-color: #020617 !important; }
             #print-area { width: 210mm; margin: 0 auto; }
-            .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; border-radius: 8px; }
         }
+
         .kwitansi-table {
             width: 100%;
             table-layout: fixed;
@@ -60,7 +85,7 @@
         }
     </style>
     <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper text-black">
+        <div id="print-area" class="preview-paper">
             <div class="text-center font-bold text-xl mb-4 uppercase italic">KWITANSI</div>
         <div class="border border-black">
             <table class="kwitansi-table text-sm">

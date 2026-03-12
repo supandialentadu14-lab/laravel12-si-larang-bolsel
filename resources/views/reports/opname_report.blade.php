@@ -40,7 +40,7 @@
         }
     </script>
     <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper text-black">
+        <div id="print-area" class="preview-paper">
             @if (isset($status))
                 <div class="no-print mb-4 px-4 py-3 bg-green-50 text-green-700 border border-green-200 rounded">
                     {{ $status }}
@@ -52,71 +52,96 @@
             </div>
         @endif
         <div class="mb-4">
-            <style>
-                .kop { width: 100%; table-layout: fixed; }
-                .kop td { vertical-align: middle; }
-                .kop-logo { width: 75px; }
-                .kop-logo img { width: 75px; height: auto; }
-                .kop-text { text-align: center; }
-                .kop-text .line1 { font-weight: 800; font-size: 16px; letter-spacing: .4px; }
-                .kop-text .line2 { font-weight: 800; font-size: 22px; }
-                .kop-text .line3, .kop-text .line4 { font-style: italic; font-size: 13px; line-height: 1.25; }
-                @media print { 
-                    @page { size: 210mm 330mm; margin: 5mm 15mm; } 
-                    body { margin: 0; }
-                    .kop { margin-top: 0 !important; }
-                    .preview-paper { 
-                        width: 100% !important; 
-                        min-height: auto !important; 
-                        padding: 0 !important; 
-                        margin: 0 !important; 
-                        box-sizing: border-box; 
-                        background: #ffffff !important; 
-                        box-shadow: none !important; 
-                        line-height: 1.4;
-                    }
-                    .preview-paper p { margin: 5px 0; }
-                    .preview-paper h2 { margin: 5px 0; }
-                    .preview-paper table { margin-top: 6px; }
-                    .kop-logo { width: 100px; }
-                    .kop-text .line2 { font-size: 22px; }
-                }
-                .preview-paper {
-                    width: 210mm;
-                    min-height: 330mm;
-                    margin: 16px auto;
-                    background: #fff;
-                    padding: 10mm 15mm;
-                    line-height: 1.4;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-                    border-radius: 8px;
-                }
-                .preview-paper p { margin: 5px 0; }
-                .preview-paper h2 { margin: 5px 0; }
-                .preview-paper table { margin-top: 6px; }
-                
-                .report-table {
-                    table-layout: fixed;
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                .report-table th, .report-table td {
-                    word-wrap: break-word;
-                    word-break: break-word;
-                    overflow-wrap: break-word;
-                    white-space: normal !important;
-                    overflow: hidden;
-                }
-                .line-clamp-2 {
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: normal;
-                    max-height: 2.8em; /* 2 Baris */
-                }
-            </style>
+    <style>
+        .preview-paper { 
+            width: 210mm; 
+            min-height: 330mm; 
+            margin: 16px auto; 
+            background-color: #ffffff !important; 
+            color: #1e293b !important;
+            padding: 10mm 15mm;
+            line-height: 1.4;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Dark mode overrides */
+        .theme-dark .preview-paper {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .theme-dark .preview-paper .border-b-4 {
+            border-color: #475569 !important;
+        }
+
+        .preview-paper p { margin: 5px 0; }
+        .preview-paper h2 { margin: 5px 0; }
+        .preview-paper table { margin-top: 6px; }
+
+        @media print { 
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: static !important; width: auto !important; overflow: visible !important; }
+            @page { size: 210mm 330mm; margin: 5mm 15mm; } 
+            body { margin: 0; background-color: #ffffff !important; }
+            .kop { margin-top: 0 !important; }
+            .preview-paper { 
+                width: 100% !important; 
+                min-height: auto !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                box-sizing: border-box; 
+                background-color: #ffffff !important; 
+                color: #000000 !important;
+                box-shadow: none !important; 
+                line-height: 1.4;
+            }
+            .preview-paper p { margin: 5px 0; }
+            .preview-paper h2 { margin: 5px 0; }
+            .preview-paper table { margin-top: 6px; }
+            thead, tbody, tfoot, tr, th, td { background-color: #ffffff !important; border-color: #000000 !important; color: #000000 !important; }
+            .border-b-4 { border-color: #000000 !important; }
+            .kop-logo { width: 100px; }
+            .kop-text .line2 { font-size: 22px; }
+        }
+
+        @media screen {
+            html, body { transition: background 0.3s ease; }
+            .theme-dark html, .theme-dark body { background-color: #020617 !important; }
+            #print-area { width: 210mm; margin: 0 auto; }
+        }
+
+        .report-table {
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .report-table th, .report-table td {
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal !important;
+            border: 1px solid #1e293b !important;
+            padding: 4px;
+        }
+
+        .theme-dark .report-table th, .theme-dark .report-table td {
+            border-color: #475569 !important;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            max-height: 2.8em; /* 2 Baris */
+        }
+    </style>
             @include('partials.kop', ['opd' => $opd])
         </div>
         
@@ -232,15 +257,16 @@
                     <p class="mb-1">&nbsp;</p>
                     <p class="mb-1">Pengurus Barang Pengguna</p>
                     <div class="h-24"></div>
-                    <p class="font-bold underline">{{ $opd->pengurus_nama ?? ($data['pihak_kedua']['nama'] ?? '') }}</p>
-                    <p class="text-sm">NIP. {{ $opd->pengurus_nip ?? ($data['pihak_kedua']['nip'] ?? '-') }}</p>
+                    <p class="font-bold underline">{{ $data['pihak_kedua']['nama'] ?? '' }}</p>
+                    <p class="text-sm">NIP. {{ $data['pihak_kedua']['nip'] ?? '-' }}</p>
                 </div>
                 <div class="text-center">
                     <p class="mb-1">Mengetahui</p>
-                    <p class="mb-1">Kepala Dinas Komunikasi dan Informatika</p>
+                    <p class="mb-1">Kepala Dinas</p>
                     <div class="h-24"></div>
-                    <p class="font-bold underline">{{ $opd->kepala_nama ?? ($data['pihak_pertama']['nama'] ?? '') }}</p>
-                    <p class="text-sm">NIP. {{ $opd->kepala_nip ?? ($data['pihak_pertama']['nip'] ?? '-') }}</p>
+                    <p class="font-bold underline">{{ $data['pihak_pertama']['nama'] ?? '' }}</p>
+                    <p class="text-sm">NIP. {{ $data['pihak_pertama']['nip'] ?? '-' }}</p>
+                </div>
             </div>
         </div>
     </div>

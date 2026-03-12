@@ -148,6 +148,38 @@ class KwitansiController extends Controller
         return [];
     }
 
+    private function generateUraian($pekerjaan, $subKegiatan, $kegiatan, $tahun)
+    {
+        $pekerjaan = trim($pekerjaan);
+        
+        // 1. Handle "Belanja" prefix
+        $res = $pekerjaan;
+        if (!empty($res) && !str_starts_with(strtolower($res), 'belanja')) {
+            $res = 'Belanja ' . $res;
+        }
+
+        // 2. Handle "Pada Keg." connector
+        $hasKeg = str_contains(strtolower($res), 'pada keg') || str_contains(strtolower($res), 'pada kegiatan');
+        if (!$hasKeg && !empty($subKegiatan)) {
+            $res .= ' Pada Keg. ' . $subKegiatan;
+        }
+
+        // 3. Handle Kegiatan
+        if (!$hasKeg && !empty($kegiatan)) {
+            // Cek jika kegiatan sudah ada di dalam string (misal sub_kegiatan sudah mencakupnya)
+            if (!str_contains(strtolower($res), strtolower($kegiatan))) {
+                $res .= ' ' . $kegiatan;
+            }
+        }
+
+        // 4. Handle Tahun
+        if (!str_contains(strtolower($res), 'tahun') && !empty($tahun)) {
+            $res .= ' Tahun ' . $tahun;
+        }
+
+        return trim($res);
+    }
+
     public function form(Request $request)
     {
         $opd = OpdSetting::where('user_id', Auth::id())->first();
@@ -181,7 +213,12 @@ class KwitansiController extends Controller
             'penerimaan_nomor' => $payload['penerimaan_nomor'] ?? '',
             'jumlah' => $total,
             'terbilang' => ucwords($this->toWordsId((int)$total)),
-            'pembayaran_uraian' => 'Belanja ' . (($selected['belanja'] ?? '') ?: ''),
+            'pembayaran_uraian' => $this->generateUraian(
+                $selected['nota']['pekerjaan'] ?? ($selected['belanja'] ?? ''),
+                $selected['nota']['sub_kegiatan'] ?? '',
+                $selected['nota']['kegiatan'] ?? '',
+                $payload['tahun'] ?? now()->year
+            ),
             'lokasi_tanggal' => ($opd->nama_opd ?? 'Bolaang Uki') . ', ' . $bulanNama,
             'pejabat' => [
                 'pptk' => ($master['pptk']['nama'] ?? ''),
@@ -270,16 +307,12 @@ class KwitansiController extends Controller
                 }
             }
             
-            $kegiatan = $notaData['kegiatan'] ?? '...';
-            $subKegiatan = $notaData['sub_kegiatan'] ?? '...';
+            $kegiatan = $notaData['kegiatan'] ?? '';
+            $subKegiatan = $notaData['sub_kegiatan'] ?? '';
             $namaPekerjaan = $notaData['pekerjaan'] ?? $uraianBelanja;
             $tahunAnggaran = $payload['tahun'] ?? now()->year;
             
-            // Format yang diminta user:
-            // "[Nama Pekerjaan] Pada Keg. [Sub Kegiatan] [Kegiatan] Tahun [Tahun Anggaran]"
-            // Pastikan jika pekerjaan/belanja sudah mengandung kata "Belanja", tidak perlu ditambah prefix.
-            
-            $uraianFull = "Belanja {$namaPekerjaan} Pada Keg. {$subKegiatan} {$kegiatan} Tahun {$tahunAnggaran}";
+            $uraianFull = $this->generateUraian($namaPekerjaan, $subKegiatan, $kegiatan, $tahunAnggaran);
             
             // Format Nomor KWT Otomatis: [Input]/KW/KOMINFO/[BulanRomawi]/[Tahun]
             $inputNomor = trim((string)($payload['nomor_kwt'] ?? ''));

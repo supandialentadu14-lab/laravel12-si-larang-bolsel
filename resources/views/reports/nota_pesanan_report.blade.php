@@ -7,12 +7,26 @@
             width: 210mm; 
             min-height: 330mm; 
             margin: 16px auto; 
-            background: #ffffff; 
+            background-color: #ffffff !important; 
+            color: #1e293b !important;
             padding: 10mm 15mm;
             line-height: 1.4;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             border-radius: 8px;
+            transition: all 0.3s ease;
         }
+
+        /* Dark mode overrides */
+        .theme-dark .preview-paper {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .theme-dark .preview-paper .border-b-4 {
+            border-color: #475569 !important;
+        }
+
         @media print {
             body * {
                 visibility: hidden;
@@ -27,70 +41,32 @@
                 position: static !important;
                 width: auto !important;
                 overflow: visible !important;
+                color: #000000 !important;
+                background-color: #ffffff !important;
             }
 
             @page {
                 size: 210mm 330mm;
                 margin: 5mm 15mm;
             }
-            body { margin: 0; }
+            body { margin: 0; background-color: white !important; }
             .preview-paper { 
                 width: 100% !important; 
                 min-height: auto !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
                 box-sizing: border-box; 
-                background: #ffffff !important; 
+                background-color: #ffffff !important; 
                 box-shadow: none !important; 
-                line-height: 1.4;
+                color: #000000 !important;
             }
+            .border-b-4 { border-color: #000000 !important; }
         }
 
         @media screen {
-            html, body { background: #f3f4f6; }
+            html, body { transition: background 0.3s ease; }
+            .theme-dark html, .theme-dark body { background-color: #0f172a; }
             #print-area { width: 210mm; margin: 0 auto; }
-            .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; border-radius: 8px; }
-        }
-
-        .kop {
-            width: 100%;
-        }
-
-        .kop-logo {
-            width: 80px;
-            text-align: center;
-            vertical-align: top;
-        }
-
-        .kop-logo img {
-            width: 70px;
-            height: 70px;
-            object-fit: contain;
-        }
-
-        .kop-text {
-            text-align: center;
-        }
-
-        .kop-text .line1 {
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.3px;
-        }
-
-        .kop-text .line2 {
-            font-size: 15px;
-            font-weight: 700;
-            margin-top: 0.1px;
-        }
-
-        .kop-text .line3 {
-            font-size: 12px;
-            margin-top: 0.1px;
-        }
-
-        .kop-text .line4 {
-            font-size: 12px;
         }
 
         .report-table {
@@ -101,7 +77,7 @@
 
         .report-table th,
         .report-table td {
-            border: 1px solid black;
+            border: 1px solid #1e293b;
             padding: 6px;
             font-size: 12px;
             word-wrap: break-word;
@@ -109,13 +85,20 @@
             white-space: normal !important;
         }
 
+        /* Dark mode table borders */
+        .theme-dark .report-table th,
+        .theme-dark .report-table td {
+            border-color: #475569;
+        }
+
         .report-table th {
             text-align: center;
             font-weight: bold;
+            background: rgba(0,0,0,0.02);
         }
 
-        .kop {
-            margin-bottom: 10px;
+        .theme-dark .report-table th {
+            background: rgba(255,255,255,0.05);
         }
 
         .kop h1 {
@@ -124,24 +107,6 @@
             text-transform: uppercase;
             font-size: 16px;
             margin: 6px 0;
-        }
-
-        .bold {
-            font-weight: 700;
-        }
-
-        .rules {
-            padding-left: 20px;
-            margin-left: 6px;
-        }
-
-        .rules li {
-            margin: 2px 0;
-            line-height: 1.4;
-        }
-
-        .italic {
-            font-style: italic;
         }
 
         .header-table {
@@ -159,44 +124,18 @@
             overflow-wrap: break-word;
             white-space: normal !important;
         }
-
-        .header-table .label {
-            width: 15%;
-            font-weight: 700;
-        }
-
-        .header-table .colon {
-            width: 2%;
-        }
-
-        .header-table .spacer {
-            width: 10%;
-        }
-
-        .header-table .content {
-            width: 43%;
-        }
-
-        .header-table .city {
-            width: 30%;
-            text-align: left;
-        }
-
-        .header-table .date {
-            width: 0%;
-            text-align: left;
-        }
-
-        /*   */
     </style>
-
-    <div class="bg-white rounded-lg shadow p-6 mb-6 print:hidden flex gap-2">
-        <a href="{{ route('reports.nota.list') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
-            <i class="fas fa-arrow-left"></i> Kembali
-        </a>
-        <button type="button" onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
-            <i class="fas fa-print mr-2"></i> Print
-        </button>
+    
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow border border-transparent dark:border-slate-700 p-6 mb-6 print:hidden flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 uppercase tracking-tight">Pratinjau Nota Pesanan</h2>
+        <div class="flex gap-2">
+            <a href="{{ route('reports.nota.list') }}" class="bg-slate-500 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white px-4 py-2 rounded-lg font-bold shadow transition flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            <button type="button" onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white px-4 py-2 rounded-lg font-bold shadow transition flex items-center gap-2">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
     </div>
 
     <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">

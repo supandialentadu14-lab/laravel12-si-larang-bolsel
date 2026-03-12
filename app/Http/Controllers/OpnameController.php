@@ -92,6 +92,16 @@ class OpnameController extends Controller
             'tanggal' => now()->toDateString(),
             'items' => $this->prefillOpnameItemsByDate(now()->toDateString()),
             'tempat' => $opd->nama_opd ?? '',
+            'pihak_pertama' => [
+                'nama' => $opd->kepala_nama ?? '',
+                'nip' => $opd->kepala_nip ?? '',
+                'jabatan' => $opd->kepala_jabatan ?? 'Mengetahui, Kepala Dinas Komunikasi dan Informatika',
+            ],
+            'pihak_kedua' => [
+                'nama' => $opd->pengurus_nama ?? '',
+                'nip' => $opd->pengurus_nip ?? '',
+                'jabatan' => $opd->pengurus_jabatan ?? 'Yang Melaksanakan Stock Opname, Pengurus Barang Pengguna',
+            ]
         ];
         return view('opname.create', compact('data', 'opd'));
     }
@@ -148,12 +158,12 @@ class OpnameController extends Controller
         }
         $validated['nomor'] = $nomorFormatted;
 
-        $validated['pihak_pertama']['nama'] = $validated['pihak_pertama']['nama'] ?? ($opd->kepala_nama ?? '');
-        $validated['pihak_pertama']['nip'] = $validated['pihak_pertama']['nip'] ?? ($opd->kepala_nip ?? '');
-        $validated['pihak_pertama']['jabatan'] = $validated['pihak_pertama']['jabatan'] ?? ($opd->kepala_jabatan ?? '');
-        $validated['pihak_kedua']['nama'] = $validated['pihak_kedua']['nama'] ?? ($opd->pengurus_nama ?? '');
-        $validated['pihak_kedua']['nip'] = $validated['pihak_kedua']['nip'] ?? ($opd->pengurus_nip ?? '');
-        $validated['pihak_kedua']['jabatan'] = $validated['pihak_kedua']['jabatan'] ?? ($opd->pengurus_jabatan ?? '');
+        $validated['pihak_pertama']['nama'] = $validated['pihak_pertama']['nama'] ?? '';
+        $validated['pihak_pertama']['nip'] = $validated['pihak_pertama']['nip'] ?? '';
+        $validated['pihak_pertama']['jabatan'] = $validated['pihak_pertama']['jabatan'] ?? '';
+        $validated['pihak_kedua']['nama'] = $validated['pihak_kedua']['nama'] ?? '';
+        $validated['pihak_kedua']['nip'] = $validated['pihak_kedua']['nip'] ?? '';
+        $validated['pihak_kedua']['jabatan'] = $validated['pihak_kedua']['jabatan'] ?? '';
         $validated['items'] = $this->prefillOpnameItemsByDate($validated['tanggal']);
         $validated['user_id'] = Auth::id();
         if (empty($validated['pembuka'])) {
@@ -202,12 +212,12 @@ class OpnameController extends Controller
         }
         $validated['nomor'] = $nomorFormatted;
 
-        $validated['pihak_pertama']['nama'] = $validated['pihak_pertama']['nama'] ?? ($opd->kepala_nama ?? '');
-        $validated['pihak_pertama']['nip'] = $validated['pihak_pertama']['nip'] ?? ($opd->kepala_nip ?? '');
-        $validated['pihak_pertama']['jabatan'] = $validated['pihak_pertama']['jabatan'] ?? ($opd->kepala_jabatan ?? '');
-        $validated['pihak_kedua']['nama'] = $validated['pihak_kedua']['nama'] ?? ($opd->pengurus_nama ?? '');
-        $validated['pihak_kedua']['nip'] = $validated['pihak_kedua']['nip'] ?? ($opd->pengurus_nip ?? '');
-        $validated['pihak_kedua']['jabatan'] = $validated['pihak_kedua']['jabatan'] ?? ($opd->pengurus_jabatan ?? '');
+        $validated['pihak_pertama']['nama'] = $validated['pihak_pertama']['nama'] ?? '';
+        $validated['pihak_pertama']['nip'] = $validated['pihak_pertama']['nip'] ?? '';
+        $validated['pihak_pertama']['jabatan'] = $validated['pihak_pertama']['jabatan'] ?? '';
+        $validated['pihak_kedua']['nama'] = $validated['pihak_kedua']['nama'] ?? '';
+        $validated['pihak_kedua']['nip'] = $validated['pihak_kedua']['nip'] ?? '';
+        $validated['pihak_kedua']['jabatan'] = $validated['pihak_kedua']['jabatan'] ?? '';
         $validated['items'] = $this->prefillOpnameItemsByDate($validated['tanggal']);
         $validated['user_id'] = Auth::id();
         if (empty($validated['pembuka'])) {

@@ -137,10 +137,7 @@ class PinjamPakaiController extends Controller
             $fid = basename($file, '.json');
             if ($fid === $currentId) continue;
             if (($existing['nomor'] ?? null) === ($data['nomor'] ?? null)) {
-                return view('reports.pinjam_pakai_report', [
-                    'data' => $data,
-                    'error' => 'Nomor berita acara sudah ada. Tidak bisa menyimpan.',
-                ]);
+                return back()->withInput()->with('error', 'Nomor berita acara sudah ada. Tidak bisa menyimpan.');
             }
         }
         $id = $currentId ?: (string) Str::uuid();
@@ -172,6 +169,7 @@ class PinjamPakaiController extends Controller
             }
             $data['items'] = $unique;
         }
+        $data['id'] = $id; // Pastikan ID ada di dalam data
         session([
             'pinjam_pakai_current' => $data,
             'pinjam_pakai_current_id' => $id,

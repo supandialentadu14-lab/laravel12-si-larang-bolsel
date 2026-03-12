@@ -11,65 +11,89 @@
 
 @section('content')
     <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper text-black">
+        <div id="print-area" class="preview-paper">
         <div class="mb-4">
-            <style>
-                .preview-paper { 
-                    width: 210mm; 
-                    min-height: 330mm; 
-                    margin: 16px auto; 
-                    background: #fff; 
-                    padding: 10mm 15mm;
-                    line-height: 1.4;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-                    border-radius: 8px;
-                }
-                .preview-paper p { margin: 5px 0; }
-                .preview-paper h2 { margin: 5px 0; }
-                .preview-paper table { margin-top: 6px; }
-                @media print {
-                    body * { visibility: hidden; }
-                    #print-area, #print-area * { visibility: visible; }
-                    #print-area { position: static !important; width: auto !important; overflow: visible !important; }
-                    @page { size: 210mm 330mm; margin: 5mm 15mm; }
-                    body { margin: 0; }
-                    .preview-paper { 
-                        width: 100% !important; 
-                        min-height: auto !important; 
-                        padding: 0 !important; 
-                        margin: 0 !important; 
-                        box-sizing: border-box; 
-                        background: #ffffff !important; 
-                        box-shadow: none !important; 
-                        line-height: 1.4;
-                    }
-                    .preview-paper p { margin: 5px 0; }
-                    .preview-paper h2 { margin: 5px 0; }
-                    .preview-paper table { margin-top: 6px; }
-                }
-                @media screen {
-                    #print-area { width: 210mm; margin: 0 auto; }
-                    .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; border-radius: 8px; }
-                }
-                table.items { 
-                    width: 100%; 
-                    border-collapse: collapse; 
-                    table-layout: fixed; 
-                }
-                table.items td, table.items th { 
-                    border: 1px solid #000; 
-                    word-wrap: break-word; 
-                    overflow-wrap: break-word;
-                    white-space: normal !important;
-                    padding: 4px;
-                }
-                .info-table td {
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                    white-space: normal !important;
-                    vertical-align: top;
-                }
-            </style>
+    <style>
+        .preview-paper { 
+            width: 210mm; 
+            min-height: 330mm; 
+            margin: 16px auto; 
+            background-color: #ffffff !important; 
+            color: #1e293b !important;
+            padding: 10mm 15mm;
+            line-height: 1.4;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Dark mode overrides */
+        .theme-dark .preview-paper {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .theme-dark .preview-paper .border-b-4 {
+            border-color: #475569 !important;
+        }
+
+        .preview-paper p { margin: 5px 0; }
+        .preview-paper h2 { margin: 5px 0; }
+        .preview-paper table { margin-top: 6px; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: static !important; width: auto !important; overflow: visible !important; }
+            @page { size: 210mm 330mm; margin: 5mm 15mm; }
+            body { margin: 0; background-color: #ffffff !important; }
+            .preview-paper { 
+                width: 100% !important; 
+                min-height: auto !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                box-sizing: border-box; 
+                background-color: #ffffff !important; 
+                color: #000000 !important;
+                box-shadow: none !important; 
+                line-height: 1.4;
+            }
+            .preview-paper p { margin: 5px 0; }
+            .preview-paper h2 { margin: 5px 0; }
+            .preview-paper table { margin-top: 6px; }
+            thead, tbody, tfoot, tr, th, td { background-color: #ffffff !important; border-color: #000000 !important; color: #000000 !important; }
+            .border-b-4 { border-color: #000000 !important; }
+        }
+
+        @media screen {
+            html, body { transition: background 0.3s ease; }
+            .theme-dark html, .theme-dark body { background-color: #020617 !important; }
+            #print-area { width: 210mm; margin: 0 auto; }
+        }
+
+        table.items { 
+            width: 100%; 
+            border-collapse: collapse; 
+            table-layout: fixed; 
+        }
+        table.items td, table.items th { 
+            border: 1px solid #1e293b; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+            white-space: normal !important;
+            padding: 4px;
+        }
+        .theme-dark table.items td, .theme-dark table.items th {
+            border-color: #475569;
+        }
+        .info-table td {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal !important;
+            vertical-align: top;
+        }
+    </style>
             @include('partials.kop', ['opd' => $opd])
         </div>
         

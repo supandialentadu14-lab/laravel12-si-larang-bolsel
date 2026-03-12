@@ -98,7 +98,7 @@
     }
 </script>
 
-<div x-data="belanjaModalIndex()" class="bg-white rounded-lg shadow p-6 mb-6">
+<div x-data="belanjaModalIndex()" class="bg-white dark:bg-slate-800 rounded-lg shadow border border-transparent dark:border-slate-700/50 p-6 mb-6 transition-all duration-300">
 
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 sm:gap-6 mb-8">
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
@@ -112,15 +112,15 @@
 
         <div class="w-full lg:max-w-xl">
             <form action="{{ route('reports.belanja.modal.list') }}" method="GET">
-                <div x-data="{ query: '{{ request('search') }}' }" class="flex items-center rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all overflow-hidden h-11">
-                    <div class="h-full px-4 border-r border-slate-100 flex items-center justify-center text-slate-400 bg-slate-50/50">
+                <div x-data="{ query: '{{ request('search') }}' }" class="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all overflow-hidden h-11">
+                    <div class="h-full px-4 border-r border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-400 bg-slate-50/50 dark:bg-slate-800/50">
                         <i class="fas fa-search text-sm"></i>
                     </div>
                     <div class="flex-1 flex items-center h-full">
                         <input type="text" name="search" x-model="query" 
                             @input.debounce.750ms="$el.closest('form').requestSubmit()"
                             placeholder="Cari data belanja modal..."
-                            class="w-full py-2.5 px-3 text-sm outline-none bg-transparent font-medium placeholder:text-slate-400 text-slate-700">
+                            class="w-full py-2.5 px-3 text-sm outline-none bg-transparent font-medium placeholder:text-slate-400 text-slate-700 dark:text-slate-200">
                     </div>
                     <button type="button" x-show="query" x-cloak
                         @click="query = ''; $nextTick(() => $el.closest('form').requestSubmit())"
@@ -140,7 +140,7 @@
         <div class="flex items-start justify-center min-h-screen pt-10 px-4 pb-10 text-center">
             <div x-show="showModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showModal = false"></div>
             
-            <div x-show="showModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all w-full max-w-6xl sm:my-8 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
+            <div x-show="showModal" x-transition.scale.95 class="relative inline-block bg-white dark:bg-slate-800 rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 dark:border-slate-700 transform transition-all w-full max-w-6xl sm:my-8 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
                 {{-- Modal Header --}}
                 <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
                     <h3 class="text-base font-bold flex items-center gap-2">
@@ -227,9 +227,9 @@
         </div>
     </div>
 
-    <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-x-auto">
+    <div class="border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-900 shadow-sm overflow-x-auto transition-all duration-300">
         <table class="w-full min-w-[800px] text-sm text-left text-slate-700">
-            <thead class="bg-indigo-50/50 text-[10px] uppercase font-bold text-indigo-600 tracking-widest border-b border-indigo-100 transition-all">
+            <thead class="bg-indigo-50/50 dark:bg-indigo-950/20 text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-widest border-b border-indigo-100 dark:border-indigo-900/50 transition-all">
                 <tr>
                     <th class="px-6 py-4 w-12 text-center text-slate-500">
                         <input type="checkbox" @click="toggleAll()" x-model="allSelected" class="rounded-md border-slate-300 text-indigo-600 h-4 w-4 transition-all">
@@ -245,15 +245,15 @@
             <tbody>
                 @forelse ($items as $i => $row)
                     @php $hl = request('highlight'); @endphp
-                    <tr class="border-t transition-all duration-200 {{ $hl === ($row['id'] ?? null) ? 'bg-orange-50' : '' }}" :class="{ 'bg-indigo-50/50': selected.includes('{{ $row['id'] }}') }">
+                    <tr class="border-t dark:border-slate-800 transition-all duration-200 {{ $hl === ($row['id'] ?? null) ? 'bg-orange-50 dark:bg-orange-950/30' : '' }}" :class="{ 'bg-indigo-50/50 dark:bg-indigo-950/20': selected.includes('{{ $row['id'] }}') }">
                         <td class="px-6 py-4 text-center">
                             <input type="checkbox" value="{{ $row['id'] }}" x-model="selected" @click="updateSelectAll()" class="rounded-md border-slate-300 text-indigo-600 h-4 w-4 focus:ring-indigo-500 transition-all opacity-70 hover:opacity-100">
                         </td>
                         <td class="px-6 py-4">{{ $i + 1 }}</td>
                         <td class="px-6 py-4">{{ $row['tahun'] ?: '-' }}</td>
                         <td class="px-6 py-4 text-center">{{ $row['kontrak_count'] }}</td>
-                        <td class="px-6 py-4 text-right font-medium text-slate-900">{{ number_format($row['nilai_total'], 0, ',', '.') }}</td>
-                        <td class="px-6 py-4 text-slate-500 text-[11px] font-medium tracking-tight">
+                        <td class="px-6 py-4 text-right font-medium text-slate-900 dark:text-slate-100">{{ number_format($row['nilai_total'], 0, ',', '.') }}</td>
+                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-[11px] font-medium tracking-tight">
                             <div class="flex flex-col">
                                 <span>{{ \Carbon\Carbon::createFromTimestamp($row['updated'])->translatedFormat('d F Y') }}</span>
                                 <span class="text-[10px] opacity-60 uppercase">{{ \Carbon\Carbon::createFromTimestamp($row['updated'])->format('H:i') }} WIB</span>
@@ -261,18 +261,19 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('reports.belanja.modal.show', $row['id']) }}" class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Lihat">
+                                <a href="{{ route('reports.belanja.modal.show', $row['id']) }}" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm border border-slate-800 dark:border-slate-600" title="Lihat">
                                     <i class="fas fa-eye text-xs"></i>
                                 </a>
-                                <a href="{{ route('reports.belanja.modal.export_excel', $row['id']) }}" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors shadow-sm border border-emerald-200" title="Export Excel">
+                                <a href="{{ route('reports.belanja.modal.export_excel', $row['id']) }}" class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors shadow-sm border border-emerald-200 dark:border-emerald-800" title="Export Excel">
                                     <i class="fas fa-file-excel text-xs"></i>
                                 </a>
-                                <button type="button" @click='initModal(true, @json($row["id"]), @json($row["tahun"]), @json($row["raw_items"]))' class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Edit">
+                                <button type="button" @click='initModal(true, @json($row["id"]), @json($row["tahun"]), @json($row["raw_items"]))' class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm border border-slate-800 dark:border-slate-600" title="Edit">
                                     <i class="far fa-edit text-xs"></i>
                                 </button>
                                 <form action="{{ route('reports.belanja.modal.delete', $row['id']) }}" method="POST" class="inline">
                                     @csrf
-                                    <button type="button" @click="if(confirm('Hapus transaksi ini?')) $el.form.submit()" class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Hapus">
+                                    @method('DELETE')
+                                    <button type="button" @click="if(confirm('Hapus transaksi ini?')) $el.form.submit()" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm border border-slate-800 dark:border-slate-600" title="Hapus">
                                         <i class="fas fa-trash text-xs"></i>
                                     </button>
                                 </form>

@@ -210,43 +210,57 @@ class StockController extends Controller
             return back()->with('error', 'Tidak ada data yang dipilih.');
         }
 
-        foreach ($ids as $id) {
-            $transaction = StockTransaction::find($id);
-            if ($transaction) {
-                // Update stock before deleting
-                $product = Product::find($transaction->product_id);
-                if ($product) {
-                    if ($transaction->type === 'in') {
-                        $product->decrement('stock', $transaction->quantity);
-                    } else {
-                        $product->increment('stock', $transaction->quantity);
+        try {
+            DB::transaction(function () use ($ids) {
+                foreach ($ids as $id) {
+                    $transaction = StockTransaction::find($id);
+                    if ($transaction) {
+                        // Lock product for update
+                        $product = Product::lockForUpdate()->find($transaction->product_id);
+                        if ($product) {
+                            // Revert stock
+                            if ($transaction->type === 'in') {
+                                $product->decrement('stock', $transaction->quantity);
+                            } else {
+                                $product->increment('stock', $transaction->quantity);
+                            }
+                        }
+                        $transaction->delete();
                     }
                 }
-                $transaction->delete();
-            }
-        }
+            });
 
-        return redirect()->route('stock.index')
-            ->with('success', count($ids) . ' transaksi berhasil dihapus dan stok telah disesuaikan.');
+            return redirect()->route('stock.index')
+                ->with('success', count($ids) . ' transaksi berhasil dihapus dan stok telah disesuaikan.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus transaksi: ' . $e->getMessage());
+        }
     }
 
     /**
      * Menghapus transaksi stok
      */
-    public function destroy(StockTransaction $transaction): RedirectResponse
+    public function destroy($id): RedirectResponse
     {
-        $product = Product::findOrFail($transaction->product_id);
-        
-        // Kembalikan stok seperti sebelum transaksi ini ada
-        if ($transaction->type === 'in') {
-            $product->decrement('stock', $transaction->quantity);
-        } else {
-            $product->increment('stock', $transaction->quantity);
-        }
-        
-        $transaction->delete();
+        try {
+            return DB::transaction(function () use ($id) {
+                $transaction = StockTransaction::findOrFail($id);
+                $product = Product::withTrashed()->lockForUpdate()->findOrFail($transaction->product_id);
+                
+                // Kembalikan stok seperti sebelum transaksi ini ada
+                if ($transaction->type === 'in') {
+                    $product->decrement('stock', $transaction->quantity);
+                } else {
+                    $product->increment('stock', $transaction->quantity);
+                }
+                
+                $transaction->delete();
 
-        return redirect()->route('stock.index')
-            ->with('success', 'Transaksi berhasil dihapus dan stok telah disesuaikan.');
+                return redirect()->route('stock.index')
+                    ->with('success', 'Transaksi berhasil dihapus dan stok telah disesuaikan.');
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus transaksi: ' . $e->getMessage());
+        }
     }
 }

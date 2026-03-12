@@ -712,6 +712,10 @@
             background-color: var(--card-bg) !important;
         }
 
+        .theme-dark .bg-orange-50 {
+            background-color: rgba(251, 146, 60, 0.1) !important;
+        }
+
         .theme-dark .text-slate-800,
         .theme-dark .text-gray-800,
         .theme-dark .text-slate-700,

@@ -21,7 +21,7 @@
 
 @section('content')
     <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper text-black">
+        <div id="print-area" class="preview-paper">
         @if(isset($status))
             <div class="no-print mb-4 px-4 py-3 bg-green-50 text-green-700 border border-green-200 rounded">
                 {{ $status }}
@@ -43,7 +43,7 @@
                 .kop-text .line2 { font-weight: 800; font-size: 22px; }
                 .kop-text .line3, .kop-text .line4 { font-style: italic; font-size: 13px; line-height: 1.25; }
                 @media print {
-                    html, body { background: #ffffff !important; }
+                    html, body { background-color: #ffffff !important; }
                     body * { visibility: hidden; }
                     #print-area, #print-area * { visibility: visible; }
                     #print-area { position: static !important; width: auto !important; overflow: visible !important; }
@@ -56,36 +56,48 @@
                         padding: 0 !important; 
                         margin: 0 !important; 
                         box-sizing: border-box; 
-                        background: #ffffff !important; 
+                        background-color: #ffffff !important; 
+                        color: #000000 !important;
                         box-shadow: none !important; 
                         line-height: 1.4;
                     }
                     .preview-paper p { margin: 5px 0; }
                     .preview-paper h2 { margin: 5px 0; }
                     .preview-paper table { margin-top: 6px; }
-                    #print-area { background: #ffffff !important; box-shadow: none !important; }
-                    .bg-gray-50, .bg-gray-100, .bg-gray-200 { background: #ffffff !important; }
-                    thead, tbody, tfoot, tr, th, td { background: #ffffff !important; }
+                    #print-area { background-color: #ffffff !important; box-shadow: none !important; }
+                    .bg-gray-50, .bg-gray-100, .bg-gray-200 { background-color: #ffffff !important; }
+                    thead, tbody, tfoot, tr, th, td { background-color: #ffffff !important; border-color: #000000 !important; color: #000000 !important; }
                     .shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .ring-1, .ring-2, .ring { box-shadow: none !important; }
-                    * { background: #ffffff !important; }
+                    * { background-color: #ffffff !important; color: #000000 !important; }
                     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                     .kop-logo { width: 100px; }
                     .kop-text .line2 { font-size: 22px; }
+                    .border-b-4 { border-color: #000000 !important; }
                 }
                 @media screen {
-                    html, body { background: #ffffff !important; }
-                    #print-area { box-shadow: none !important; background: #ffffff !important; }
-                    .preview-paper { box-shadow: none !important; background: #ffffff !important; }
+                    html, body { transition: background 0.3s ease; }
+                    .theme-dark html, .theme-dark body { background-color: #020617 !important; }
                 }
                 .preview-paper {
                     width: 210mm;
                     min-height: 330mm;
                     margin: 16px auto;
-                    background: #fff;
+                    background-color: #ffffff !important;
+                    color: #1e293b !important;
                     padding: 10mm 15mm;
                     line-height: 1.4;
                     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
                     border-radius: 8px;
+                    transition: all 0.3s ease;
+                }
+                /* Dark mode overrides */
+                .theme-dark .preview-paper {
+                    background-color: #1e293b !important;
+                    color: #f1f5f9 !important;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+                }
+                .theme-dark .preview-paper .border-b-4 {
+                    border-color: #475569 !important;
                 }
                 .preview-paper p { margin: 5px 0; }
                 .preview-paper h2 { margin: 5px 0; }

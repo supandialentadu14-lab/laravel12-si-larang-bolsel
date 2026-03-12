@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="print:hidden bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 p-5 mb-8 sticky top-0 z-10 transition-all duration-300">
+    <div class="print:hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 mb-8 sticky top-0 z-10 transition-all duration-300">
         <form method="GET" action="{{ route('reports.index') }}" class="flex flex-col lg:flex-row lg:items-end gap-6">
             <div class="flex flex-col sm:flex-row gap-5 flex-1">
                 <div class="w-full sm:w-1/3 group">
@@ -13,7 +13,7 @@
                     </label>
                     <div class="relative">
                         <input type="date" name="start_date" value="{{ $startDate }}"
-                            class="w-full rounded-xl border-slate-200 text-sm bg-white shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 h-11 px-4">
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 dark:text-slate-200 h-11 px-4">
                     </div>
                 </div>
                 <div class="w-full sm:w-1/3 group">
@@ -22,7 +22,7 @@
                     </label>
                     <div class="relative">
                         <input type="date" name="end_date" value="{{ $endDate }}"
-                            class="w-full rounded-xl border-slate-200 text-sm bg-white shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 h-11 px-4">
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 dark:text-slate-200 h-11 px-4">
                     </div>
                 </div>
                 <div class="w-full sm:w-1/3 group">
@@ -30,7 +30,7 @@
                         <i class="fas fa-tags mr-1"></i> Filter Kategori
                     </label>
                     <div class="relative">
-                        <select name="category_id" class="w-full rounded-xl border-slate-200 text-sm bg-white shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 h-11 px-4 appearance-none cursor-pointer">
+                        <select name="category_id" class="w-full rounded-xl border-slate-200 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 dark:text-slate-200 h-11 px-4 appearance-none cursor-pointer">
                             <option value="">Semua Kategori</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->id }}" {{ $categoryId == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
@@ -99,7 +99,7 @@
 
         .report-table th,
         .report-table td {
-            border: 1px solid #000;
+            border: 1px solid #1e293b !important;
             padding: 5px;
             font-size: 11px;
             word-wrap: break-word;
@@ -107,6 +107,11 @@
             overflow-wrap: break-word;
             white-space: normal !important;
             overflow: hidden;
+        }
+
+        .theme-dark .report-table th, 
+        .theme-dark .report-table td {
+            border-color: #475569 !important;
         }
 
         .report-table thead {
@@ -155,8 +160,12 @@
             top: 0;
             bottom: 0;
             width: 1px;
-            background: #9ca3af;
+            background: #1e293b;
             pointer-events: none;
+        }
+
+        .theme-dark td.split-col::after {
+            background: #475569;
         }
 
         /* ============================= */
@@ -168,7 +177,19 @@
                 min-height: 210mm;
                 margin: 16px auto;
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-                background: #ffffff;
+                background-color: #ffffff !important;
+                color: #1e293b !important;
+                transition: all 0.3s ease;
+            }
+
+            .theme-dark #print-area {
+                background-color: #1e293b !important;
+                color: #f1f5f9 !important;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            }
+
+            .theme-dark html, .theme-dark body {
+                background-color: #020617 !important;
             }
 
             .report-table {
@@ -177,7 +198,6 @@
         }
 
         @media print {
-
             body * {
                 visibility: hidden;
             }
@@ -192,6 +212,14 @@
                 width: auto !important;
                 overflow: visible !important;
                 border: none !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+
+            .print-area thead, .print-area tbody, .print-area th, .print-area td {
+                border-color: #000000 !important;
+                color: #000000 !important;
+                background-color: #ffffff !important;
             }
 
             .print\:hidden {
@@ -205,6 +233,11 @@
 
             body {
                 margin: 0;
+                background-color: #ffffff !important;
+            }
+
+            td.split-col::after {
+                background: #000000 !important;
             }
         }
     </style>
@@ -212,7 +245,7 @@
 
 
     <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="print-area bg-white shadow-lg border p-4 sm:p-8 rounded-lg mx-auto" style="min-width: 330mm;">
+        <div id="print-area" class="print-area p-4 sm:p-8 rounded-lg mx-auto" style="min-width: 330mm;">
 
         <div class="border-b-2 border-black pb-4 mb-4">
             <div class="text-center mb-4">
