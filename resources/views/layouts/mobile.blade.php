@@ -175,14 +175,40 @@
     </style>
 </head>
 
-<body class="antialiased select-none h-screen overflow-hidden" x-data="{ mobileMenuOpen: false, masterMenuOpen: false, flowMenuOpen: false, settingsMenuOpen: false, notifOpen: false }">
+<body class="antialiased select-none h-screen overflow-hidden" 
+    x-data="{ 
+        mobileMenuOpen: false, 
+        masterMenuOpen: false, 
+        flowMenuOpen: false, 
+        settingsMenuOpen: false, 
+        notifOpen: false,
+        scrollingDown: false,
+        lastScrollTop: 0,
+        handleScroll(e) {
+            let st = e.target.scrollTop;
+            if (st > this.lastScrollTop && st > 50) {
+                this.scrollingDown = true;
+            } else {
+                this.scrollingDown = false;
+            }
+            this.lastScrollTop = st <= 0 ? 0 : st;
+        }
+    }">
     <div class="flex flex-col h-full overflow-hidden">
-        @include('partials.mobile_header')
+        <div :class="scrollingDown ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'" 
+             class="transition-all duration-500 ease-in-out transform sticky top-0 z-[45]">
+            @include('partials.mobile_header')
+        </div>
 
         <!-- Main Content -->
-        <main id="page-content" class="flex-1 px-5 pt-4 pb-24 overflow-y-auto">
+        <main id="page-content" class="flex-1 px-5 pt-4 pb-24 overflow-y-auto" @scroll="handleScroll">
             @yield('content')
         </main>
+
+        <div :class="scrollingDown ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'" 
+             class="transition-all duration-500 ease-in-out transform fixed bottom-0 inset-x-0 z-[40]">
+            @include('partials.mobile_bottom_nav')
+        </div>
     </div>
 
     <!-- Low Stock Notification Sheet -->
