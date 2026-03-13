@@ -18,31 +18,20 @@
     </div>
 
     <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden">
-        <div class="w-full no-scrollbar">
-            <div class="flex-shrink-0 w-full">
+        <div id="paper-container" class="w-full no-scrollbar flex justify-center">
+            <div id="paper-scale" class="flex-shrink-0 w-full" style="transform-origin: top center;">
                 <style>
                     .preview-paper-mobile {
-                        width: 100%;
-                        min-height: auto;
+                        width: 1200px; /* basis ukuran kanvas untuk diskalakan */
+                        min-height: 760px;
                         margin: 0; 
                         background: #fff; 
-                        padding: 16px 16px; 
+                        padding: 24px; 
                         line-height: 1.4; 
                         color: black; 
                         font-family: 'Nunito', sans-serif;
                         box-shadow: 0 0 30px rgba(0,0,0,0.12);
                         border: 1px solid #f1f5f9;
-                    }
-                    @media (min-width: 640px) {
-                        .preview-paper-mobile {
-                            padding: 24px 28px;
-                        }
-                    }
-                    /* Tampilkan lebar penuh di mobile agar tidak terlalu kecil */
-                    @media screen and (max-width: 768px) {
-                        .preview-paper-mobile {
-                            max-width: 100%;
-                        }
                     }
                     .preview-paper-mobile table { width: 100%; border-collapse: collapse; margin-top: 10px; }
                     .preview-paper-mobile th, .preview-paper-mobile td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
@@ -174,5 +163,24 @@
             </html>`);
         win.document.close();
     }
+    (function() {
+        const paperScale = document.getElementById('paper-scale');
+        const doc = document.getElementById('document-preview');
+        const container = document.getElementById('paper-container');
+        function fit() {
+            if (!paperScale || !doc || !container) return;
+            const baseW = doc.scrollWidth || 1200;
+            const baseH = doc.scrollHeight || 760;
+            const availW = container.clientWidth;
+            const headerHeight = 220; // kira-kira tinggi header + padding
+            const availH = Math.max(300, window.innerHeight - headerHeight);
+            const scale = Math.min(availW / baseW, availH / baseH);
+            const clamped = Math.max(0.35, Math.min(scale, 1));
+            paperScale.style.transform = `scale(${clamped})`;
+        }
+        window.addEventListener('resize', fit);
+        document.addEventListener('DOMContentLoaded', fit);
+        setTimeout(fit, 0);
+    })();
 </script>
 @endsection
