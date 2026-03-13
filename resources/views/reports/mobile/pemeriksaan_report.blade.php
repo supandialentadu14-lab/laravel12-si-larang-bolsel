@@ -19,22 +19,11 @@
     </div>
 
     {{-- Document Preview Card --}}
-    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden flex flex-col items-center">
-        <div class="w-full flex justify-center no-scrollbar overflow-x-auto">
-            <div class="flex-shrink-0 origin-top transform scale-[0.38] min-[400px]:scale-[0.45] sm:scale-100 mb-[-120%] min-[400px]:mb-[-100%] sm:mb-0" style="width: 210mm;">
+    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden">
+        <div id="paper-container" class="w-full no-scrollbar flex justify-center items-start" style="padding-bottom:8px;">
+            <div id="paper-scale" class="flex-shrink-0" style="transform-origin: top center; width: 850px; margin: 0 auto;">
                 <style>
-                    .preview-paper-mobile { 
-                        width: 210mm; 
-                        min-height: 297mm; 
-                        margin: 0; 
-                        background: #fff; 
-                        padding: 10mm 15mm; 
-                        line-height: 1.4; 
-                        color: black; 
-                        font-family: 'Nunito', sans-serif;
-                        box-shadow: 0 0 30px rgba(0,0,0,0.12);
-                        border: 1px solid #f1f5f9;
-                    }
+                    .preview-paper-mobile { width: 850px; min-height: 1200px; margin: 0; background: #fff; padding: 24px; line-height: 1.4; color: black; font-family: 'Nunito', sans-serif; box-shadow: 0 0 30px rgba(0,0,0,0.12); border: 1px solid #f1f5f9; }
                     .preview-paper-mobile p { margin: 5px 0; font-size: 14px; }
                     .preview-paper-mobile h2 { margin: 5px 0; }
                     .preview-paper-mobile table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -212,5 +201,26 @@
         `);
         win.document.close();
     }
+    (function() {
+        const paperScale = document.getElementById('paper-scale');
+        const doc = document.getElementById('document-preview');
+        const container = document.getElementById('paper-container');
+        function fit() {
+            if (!paperScale || !doc || !container) return;
+            const baseW = 850;
+            const baseH = doc.scrollHeight || 1200;
+            const rect = container.getBoundingClientRect();
+            const availW = container.clientWidth;
+            const availH = Math.max(320, window.innerHeight - rect.top - 12);
+            const scale = Math.min(availW / baseW, availH / baseH);
+            const clamped = Math.max(0.22, Math.min(scale, 1));
+            paperScale.style.transform = `scale(${clamped})`;
+            paperScale.style.marginLeft = 'auto';
+            paperScale.style.marginRight = 'auto';
+        }
+        window.addEventListener('resize', fit);
+        document.addEventListener('DOMContentLoaded', fit);
+        setTimeout(fit, 0);
+    })();
 </script>
 @endsection
