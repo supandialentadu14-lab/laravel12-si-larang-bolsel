@@ -1,0 +1,34 @@
+{
+  "resources/css/desktop.css": {
+    "file": "assets/mobile-WTPIYvDI.css",
+    "src": "resources/css/mobile.css",
+    "isEntry": true,
+    "name": "desktop",
+    "names": [
+      "mobile.css",
+      "desktop.css"
+    ]
+  },
+  "resources/css/mobile.css": {
+    "file": "assets/mobile-WTPIYvDI.css",
+    "src": "resources/css/mobile.css",
+    "isEntry": true,
+    "name": "desktop",
+    "names": [
+      "mobile.css",
+      "desktop.css"
+    ]
+  },
+  "resources/js/desktop.js": {
+    "file": "assets/desktop-CAiCLEjY.js",
+    "name": "desktop",
+    "src": "resources/js/desktop.js",
+    "isEntry": true
+  },
+  "resources/js/mobile.js": {
+    "file": "assets/mobile-l0sNRNKZ.js",
+    "name": "mobile",
+    "src": "resources/js/mobile.js",
+    "isEntry": true
+  }
+}
