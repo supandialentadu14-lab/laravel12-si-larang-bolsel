@@ -511,7 +511,7 @@
 
 <!-- Bottom Navigation (Full Scrollable & Auto Center) -->
 <nav x-init="$nextTick(() => { const activeItem = $el.querySelector('.active-menu'); if (activeItem) activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); })"
-    :class="scrollingDown ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'"
+    :class="scrollingDown ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100 pointer-events-auto'"
     class="transition-all duration-500 ease-in-out transform fixed bottom-0 left-0 right-0 z-[9999] glass-card border-t border-gray-100/50 bottom-nav shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:hidden">
     <div class="flex items-center overflow-x-auto no-scrollbar py-4 scroll-smooth snap-x snap-mandatory">
         <!-- Master Barang -->

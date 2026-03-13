@@ -51,9 +51,16 @@
     <style>
         :root {
             --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --bottom-nav-height: 120px;
         }
         
         [x-cloak] { display: none !important; }
+
+        #page-content {
+            padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 16px);
+            scroll-padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 16px);
+            -webkit-overflow-scrolling: touch;
+        }
         
         body {
             background-color: #F9FAFB;
@@ -175,7 +182,7 @@
     </style>
 </head>
 
-<body class="antialiased select-none h-screen overflow-hidden" 
+<body class="antialiased select-none overflow-hidden" style="height: 100vh; height: 100dvh;"
     x-data="{ 
         mobileMenuOpen: false, 
         masterMenuOpen: false, 
@@ -201,7 +208,7 @@
         </div>
 
         <!-- Main Content -->
-        <main id="page-content" class="flex-1 px-5 pt-4 overflow-y-auto" style="padding-bottom: calc(var(--bottom-nav-height, 96px) + var(--safe-area-bottom) + 16px); -webkit-overflow-scrolling: touch;" @scroll="handleScroll">
+        <main id="page-content" class="flex-1 px-5 pt-4 overflow-y-auto" @scroll="handleScroll">
             @if (session('success'))
                 <div class="mb-5 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-4 shadow-sm flex items-start gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
