@@ -1,4 +1,4 @@
-@extends(request()->isMobile() ? 'layouts.mobile' : 'layouts.admin')
+@extends('layouts.mobile')
 
 @section('content')
 <div x-data="{
