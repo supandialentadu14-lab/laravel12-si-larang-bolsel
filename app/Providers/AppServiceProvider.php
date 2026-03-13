@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Gate;
 
 // Class dasar ServiceProvider
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,6 +42,11 @@ class AppServiceProvider extends ServiceProvider
     {
         // Set locale Carbon ke Bahasa Indonesia
         \Carbon\Carbon::setLocale('id');
+
+        // Register Request Macro for isMobile
+        Request::macro('isMobile', function () {
+            return preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $this->header('User-Agent'));
+        });
 
         // Register Observers
         StockTransaction::observe(StockTransactionObserver::class);
