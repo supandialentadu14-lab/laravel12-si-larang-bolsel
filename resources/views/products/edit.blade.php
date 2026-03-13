@@ -1,182 +1,92 @@
-{{-- Menggunakan layout utama admin --}}
-@extends('layouts.admin')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
-{{-- Mengisi bagian header pada layout --}}
-@section('header', 'Edit Barang')
-
-{{-- Mengisi bagian content pada layout --}}
 @section('content')
-
-    {{-- Container utama dengan lebar maksimal 4xl dan posisi di tengah --}}
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-
-            {{-- Header card --}}
-            <div class="px-6 py-4 border-b border-gray-100 bg-slate-800">
-                <h6 class="font-bold text-white flex items-center">
-                    {{-- Icon edit --}}
-                    <i class="fas fa-edit mr-2"></i>
-                    Edit Barang
-                </h6>
-            </div>
-
-            {{-- Form untuk update data produk --}}
-            <form action="{{ route('products.update', $product) }}" method="POST" class="p-6">
-
-                {{-- Token keamanan Laravel --}}
-                @csrf
-
-                {{-- Method spoofing karena HTML tidak mendukung PUT --}}
-                @method('PUT')
-
-                {{-- Grid 2 kolom --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                    <!-- ================= LEFT COLUMN ================= -->
-                    <div class="space-y-6">
-
-                        {{-- Input Nama Barang --}}
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">
-                                Nama Barang <span class="text-red-500">*</span>
-                            </label>
-
-                            {{-- 
-                                old('name', $product->name) 
-                                → Jika validasi gagal, tampilkan input sebelumnya
-                                → Jika tidak, tampilkan data lama dari database
-                            --}}
-                            <input type="text" name="name" value="{{ old('name', $product->name) }}"
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
-                        </div>
-
-                        {{-- Input Kode Barang / SKU --}}
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">
-                                Kode Barang <span class="text-red-500">*</span>
-                            </label>
-
-                            <input type="text" name="sku" value="{{ old('sku', $product->sku) }}"
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none"
-                                readonly>
-                        </div>
-
-                        {{-- Grid Harga + Jumlah + Satuan --}}
-                        <div class="grid grid-cols-3 gap-4">
-
-                            {{-- Input Harga --}}
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">
-                                    Harga
-                                </label>
-
-                                <input type="number" step="0.01" name="price"
-                                    value="{{ old('price', $product->price) }}"
-                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
-                            </div>
-
-                            {{-- Input Jumlah Barang (DISABLE saat edit) --}}
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">
-                                    Jumlah Barang
-                                </label>
-
-                                {{-- Input tampil tapi tidak bisa diedit --}}
-                                <input type="number" value="{{ old('jumlah_barang', $product->stock) }}"
-                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 cursor-not-allowed"
-                                    disabled>
-
-                                {{-- Hidden input agar tetap terkirim ke controller --}}
-                                <input type="hidden" name="jumlah_barang"
-                                    value="{{ old('jumlah_barang', $product->stock) }}">
-                            </div>
-
-
-                            {{-- Dropdown Satuan --}}
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">
-                                    Satuan
-                                </label>
-
-                                <select name="unit" class="w-full px-4 py-2 rounded-lg border border-gray-300" required>
-
-                                    {{-- 
-                                        Mengecek apakah value lama atau value dari database
-                                        sama dengan option, jika ya maka selected
-                                    --}}
-                                    <option value="pcs" {{ old('unit', $product->unit) == 'pcs' ? 'selected' : '' }}>PCS
-                                    </option>
-                                    <option value="buah" {{ old('unit', $product->unit) == 'buah' ? 'selected' : '' }}>
-                                        Buah</option>
-                                    <option value="box" {{ old('unit', $product->unit) == 'box' ? 'selected' : '' }}>Box
-                                    </option>
-                                    <option value="pak" {{ old('unit', $product->unit) == 'pak' ? 'selected' : '' }}>Pak
-                                    </option>
-                                    <option value="rim" {{ old('unit', $product->unit) == 'rim' ? 'selected' : '' }}>Rim
-                                    </option>
-                                    <option value="kg" {{ old('unit', $product->unit) == 'kg' ? 'selected' : '' }}>Kg
-                                    </option>
-                                    <option value="galon" {{ old('unit') == 'galon' ? 'selected' : '' }}>Galon</option>
-                                    <option value="paket" {{ old('unit') == 'paket' ? 'selected' : '' }}>Paket</option>
-                                    <option value="liter" {{ old('unit', $product->unit) == 'liter' ? 'selected' : '' }}>
-                                        Liter</option>
-                                </select>
-                            </div>
-
-                        </div>
-
-                        {{-- Input Stok Minimum --}}
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">
-                                Stok Minimum <span class="text-red-500">*</span>
-                            </label>
-
-                            <input type="number" name="min_stock" value="{{ old('min_stock', $product->min_stock) }}"
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
-                        </div>
-
-                    </div>
-
-                    <!-- ================= RIGHT COLUMN ================= -->
-                    <div class="space-y-6">
-
-                        {{-- Dropdown Jenis Belanja --}}
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">
-                                Jenis Belanja
-                            </label>
-
-                            <select name="category_id" class="w-full px-4 py-2 rounded-lg border border-gray-300" required>
-
-                                {{-- Looping data kategori --}}
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}"
-                                        {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        {{-- Textarea Keterangan --}}
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">
-                                Keterangan
-                            </label>
-
-                            <textarea name="description" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-300">{{ trim(old('description', $product->description)) }}</textarea>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                @include('partials.form-actions', [
-                    'backRoute' => route('products.index'),
-                    'saveText' => 'Perbarui',
-                ])
-            </form>
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Edit Barang</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Perbarui Data Barang</p>
         </div>
+        <a href="{{ route('products.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+            <i class="fas fa-arrow-left text-xs"></i>
+        </a>
     </div>
 
+    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm">
+        <form action="{{ route('products.update', $product->id) }}" method="POST" class="space-y-5">
+            @csrf
+            @method('PUT')
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Barang</label>
+                <input type="text" name="name" value="{{ old('name', $product->name) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                @error('name')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Kode (SKU)</label>
+                    <input type="text" value="{{ $product->sku }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-400 outline-none" readonly>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Stok Minimum</label>
+                    <input type="number" name="min_stock" min="0" value="{{ old('min_stock', $product->min_stock) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                    @error('min_stock')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Harga Satuan</label>
+                    <input type="number" name="price" step="0.01" value="{{ old('price', $product->price) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                    @error('price')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Satuan</label>
+                    <select name="unit" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+                        <option value="">Pilih Satuan</option>
+                        @foreach (['pcs','buah','box','pak','rim','kg','galon','paket','liter'] as $u)
+                            <option value="{{ $u }}" {{ (string)old('unit', $product->unit) === (string)$u ? 'selected' : '' }}>{{ strtoupper($u) }}</option>
+                        @endforeach
+                    </select>
+                    @error('unit')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Jenis Belanja</label>
+                <select name="category_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+                    <option value="">Pilih Jenis Belanja</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ (string)old('category_id', $product->category_id) === (string)$cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+                @error('category_id')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Penyedia (Opsional)</label>
+                <select name="supplier_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none">
+                    <option value="">Pilih Penyedia</option>
+                    @foreach($suppliers as $sup)
+                        <option value="{{ $sup->id }}" {{ (string)old('supplier_id', $product->supplier_id) === (string)$sup->id ? 'selected' : '' }}>{{ $sup->name }}</option>
+                    @endforeach
+                </select>
+                @error('supplier_id')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Keterangan (Opsional)</label>
+                <textarea name="description" rows="4" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">{{ old('description', $product->description) }}</textarea>
+                @error('description')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <a href="{{ route('products.index') }}" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center">Batal</a>
+                <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
+

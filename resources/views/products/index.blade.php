@@ -1,14 +1,7 @@
-@extends('layouts.mobile')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
-<div x-data="{
-    showCreateModal: false,
-    showEditModal: false,
-    showImportModal: false,
-    editData: {},
-    editUrl: '',
-    showFilters: {{ request('search') || request('category_id') ? 'true' : 'false' }}
-}" class="space-y-6">
+<div x-data="{ showFilters: {{ request('search') || request('category_id') ? 'true' : 'false' }} }" class="space-y-6">
 
     {{-- Page Header --}}
     <div class="flex items-center justify-between">
@@ -20,9 +13,12 @@
             <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50' : ''">
                 <i class="fas fa-filter text-xs"></i>
             </button>
-            <button @click="showCreateModal = true" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
+            <a href="{{ route('import.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 active:scale-90 transition-transform">
+                <i class="fas fa-file-import text-xs"></i>
+            </a>
+            <a href="{{ route('products.create') }}" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
                 <i class="fas fa-plus text-xs"></i>
-            </button>
+            </a>
         </div>
     </div>
 
@@ -125,21 +121,9 @@
 
                         {{-- Quick Actions --}}
                         <div class="flex items-center gap-1.5">
-                            <button @click="
-                                showEditModal = true;
-                                editData = {
-                                    id: '{{ $product->id }}',
-                                    name: '{{ addslashes($product->name) }}',
-                                    category_id: '{{ $product->category_id }}',
-                                    sku: '{{ $product->sku }}',
-                                    price: '{{ $product->price }}',
-                                    unit: '{{ $product->unit }}',
-                                    description: '{{ addslashes($product->description) }}'
-                                };
-                                editUrl = '{{ route('products.update', $product->id) }}';
-                            " class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                            <a href="{{ route('products.edit', $product->id) }}" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
                                 <i class="fas fa-edit text-[10px]"></i>
-                            </button>
+                            </a>
                             <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="submit" @click.prevent="if(confirm('Hapus barang ini?')) $el.form.submit()" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
@@ -166,9 +150,6 @@
     <div class="mt-8">
         {{ $products->links() }}
     </div>
-
-    {{-- Modals remain the same structure but optimized for mobile-first --}}
-    @include('products.partials.modals')
 
 </div>
 @endsection

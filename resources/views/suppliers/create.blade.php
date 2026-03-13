@@ -1,104 +1,64 @@
-@extends('layouts.admin') {{-- Menggunakan layout utama admin --}}
-
-@section('header', 'New Supplier') {{-- Judul halaman yang ditampilkan di header --}}
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
-
-    {{-- Container utama dengan lebar maksimal dan posisi di tengah --}}
-    <div class="max-w-4xl mx-auto">
-
-        {{-- Card pembungkus form --}}
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-
-            {{-- Header card --}}
-            <div class="px-6 py-4 border-b border-gray-100 bg-slate-800">
-                <h6 class="font-bold text-white">Informasi Penyedia</h6> {{-- Judul bagian form --}}
-            </div>
-
-            {{-- Form untuk menyimpan data supplier --}}
-            <form action="{{ route('suppliers.store') }}" method="POST" class="p-6 space-y-6">
-
-                @csrf {{-- Token keamanan untuk mencegah CSRF attack --}}
-
-                {{-- Input Nama Perusahaan --}}
-                <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Nama Perusahaan 
-                        <span class="text-red-500">*</span> {{-- Tanda wajib diisi --}}
-                    </label>
-
-                    <input type="text" 
-                        name="name" {{-- Nama field untuk dikirim ke server --}}
-                        value="{{ old('name') }}" {{-- Mengisi kembali input jika validasi gagal --}}
-                        placeholder="contoh: CV. ABCD"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                        required> {{-- Field wajib diisi --}}
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Nama Direktur 
-                        <span class="text-red-500">*</span> {{-- Tanda wajib diisi --}}
-                    </label>
-
-                    <input type="text" 
-                        name="dir" {{-- Nama field untuk dikirim ke server --}}
-                        value="{{ old('dir') }}" {{-- Mengisi kembali input jika validasi gagal --}}
-                        placeholder="contoh: Emon Alentadu"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                        required> {{-- Field wajib diisi --}}
-                </div>
-                {{-- Grid 2 kolom untuk Email dan Nomor HP --}}
-                <div class="grid grid-cols-2 gap-4">
-
-                    {{-- Input Email --}}
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">
-                            Email 
-                            <span class="text-red-500">*</span> {{-- Tanda wajib --}}
-                        </label>
-
-                        <input type="email" 
-                            name="email" 
-                            value="{{ old('email') }}" {{-- Menyimpan input lama jika error --}}
-                            placeholder="...........@gmail.com"
-                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                    </div>
-
-                    {{-- Input Nomor HP --}}
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">
-                            Nomor Hp
-                        </label>
-
-                        <input type="text" 
-                            name="phone" 
-                            value="{{ old('phone') }}" {{-- Mengisi ulang jika validasi gagal --}}
-                            placeholder="+62 .........."
-                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                    </div>
-
-                </div>
-
-                {{-- Input Alamat --}}
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Alamat
-                    </label>
-
-                    <textarea 
-                        name="address" {{-- Field alamat --}}
-                        rows="3" {{-- Tinggi textarea --}}
-                        placeholder="Masukkan Alamat Lengkap Perusahaan"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">{{ old('address') }}</textarea> {{-- Isi kembali jika gagal validasi --}}
-                </div>
-                </div>
-                @include('partials.form-actions', [
-                    'backRoute' => route('suppliers.index'),
-                    'saveText' => 'Simpan',
-                ])
-            </form>
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Tambah Penyedia</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Input Vendor & Supplier</p>
         </div>
+        <a href="{{ route('suppliers.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+            <i class="fas fa-arrow-left text-xs"></i>
+        </a>
     </div>
 
+    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm">
+        <form action="{{ route('suppliers.store') }}" method="POST" class="space-y-5">
+            @csrf
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Perusahaan</label>
+                <input type="text" name="name" value="{{ old('name') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                @error('name')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Direktur</label>
+                <input type="text" name="dir" value="{{ old('dir') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                @error('dir')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Email (Opsional)</label>
+                    <input type="email" name="email" value="{{ old('email') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                    @error('email')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Telepon (Opsional)</label>
+                    <input type="text" name="phone" value="{{ old('phone') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                    @error('phone')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">NPWP (Opsional)</label>
+                <input type="text" name="npwp" value="{{ old('npwp') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                @error('npwp')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Alamat (Opsional)</label>
+                <textarea name="address" rows="3" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">{{ old('address') }}</textarea>
+                @error('address')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <a href="{{ route('suppliers.index') }}" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center">Batal</a>
+                <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
+

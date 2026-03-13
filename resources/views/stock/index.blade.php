@@ -1,46 +1,7 @@
-@extends('layouts.mobile')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
-<div x-data="{
-    selected: [],
-    allSelected: false,
-    showCreateModal: false,
-    showEditModal: false,
-    editData: {},
-    editUrl: '',
-    showFilters: {{ request('search') ? 'true' : 'false' }},
-    
-    toggleAll() {
-        this.allSelected = !this.allSelected;
-        if (this.allSelected) {
-            this.selected = [
-                @foreach ($transactions as $transaction)
-                    '{{ $transaction->id }}',
-                @endforeach
-            ];
-        } else {
-            this.selected = [];
-        }
-    },
-    updateSelectAll() {
-        this.allSelected = this.selected.length === {{ count($transactions) }};
-    },
-    formatNosur(el, dateStr) {
-        if (!el || !dateStr) return;
-        let val = el.value.trim();
-        if (/^\d+$/.test(val) && !val.includes('/')) {
-            const romans = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
-            const dateVal = new Date(dateStr);
-            if (!isNaN(dateVal.getTime())) {
-                const month = dateVal.getMonth() + 1;
-                const year = dateVal.getFullYear();
-                const formatted = `${val}/BAPB/{{ $singkatanOpd ?? 'DISKOMINFO' }}/${romans[month]}/${year}`;
-                el.value = formatted;
-                el.dispatchEvent(new Event('input'));
-            }
-        }
-    }
-}" class="space-y-6">
+<div x-data="{ showFilters: {{ request('search') ? 'true' : 'false' }} }" class="space-y-6">
 
     {{-- Page Header --}}
     <div class="flex items-center justify-between">
@@ -52,9 +13,9 @@
             <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50' : ''">
                 <i class="fas fa-filter text-xs"></i>
             </button>
-            <button @click="showCreateModal = true" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
+            <a href="{{ route('stock.create') }}" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
                 <i class="fas fa-plus text-xs"></i>
-            </button>
+            </a>
         </div>
     </div>
 
@@ -175,21 +136,9 @@
 
                                     {{-- Quick Actions --}}
                                     <div class="flex items-center gap-1.5">
-                                        <button @click="
-                                            showEditModal = true;
-                                            editData = {
-                                                id: '{{ $transaction->id }}',
-                                                product_id: '{{ $transaction->product_id }}',
-                                                date: '{{ \Carbon\Carbon::parse($transaction->date)->format('Y-m-d') }}',
-                                                type: '{{ $transaction->type }}',
-                                                quantity: '{{ $transaction->quantity }}',
-                                                nosur: '{{ addslashes($transaction->nosur) }}',
-                                                notes: '{{ addslashes($transaction->notes) }}'
-                                            };
-                                            editUrl = '{{ route('stock.update', $transaction->id) }}';
-                                        " class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                        <a href="{{ route('stock.edit', $transaction->id) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
                                             <i class="far fa-edit text-[10px]"></i>
-                                        </button>
+                                        </a>
                                         <form action="{{ route('stock.destroy', $transaction->id) }}" method="POST" class="inline">
                                             @csrf @method('DELETE')
                                             <button type="submit" @click.prevent="if(confirm('Hapus transaksi ini?')) $el.form.submit()" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
@@ -218,163 +167,6 @@
 
         <div class="pt-4">
             {{ $transactions->links() }}
-        </div>
-    </div>
-
-    {{-- Modal Tambah (App-like Bottom Sheet) --}}
-    <div x-show="showCreateModal" style="display: none;" class="fixed inset-0 z-[10000] overflow-y-auto" x-cloak>
-        <div class="flex items-end sm:items-center justify-center min-h-screen text-center">
-            <div x-show="showCreateModal" x-transition.opacity class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" @click="showCreateModal = false"></div>
-            
-            <div x-show="showCreateModal" 
-                x-transition:enter="transition ease-out duration-300 transform"
-                x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95"
-                x-transition:enter-end="translate-y-0 sm:scale-100"
-                class="relative w-full sm:max-w-xl bg-white rounded-t-[2.5rem] sm:rounded-[2.5rem] text-left overflow-hidden shadow-2xl p-8">
-                
-                <div class="flex items-center justify-between mb-8">
-                    <div>
-                        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">Transaksi Baru</h3>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Input Mutasi Stok Barang</p>
-                    </div>
-                    <button @click="showCreateModal = false" class="w-10 h-10 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-
-                <form action="{{ route('stock.store') }}" method="POST" class="space-y-6" @submit="formatNosur($el.querySelector('[name=nosur]'), $el.querySelector('[name=date]').value)">
-                    @csrf
-                    <div class="space-y-4">
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Pilih Barang</label>
-                            <select name="product_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
-                                <option value="">Pilih Barang...</option>
-                                @foreach ($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Jenis</label>
-                                <div class="flex p-1.5 bg-slate-50 rounded-2xl">
-                                    <label class="flex-1 cursor-pointer">
-                                        <input type="radio" name="type" value="in" class="peer hidden" checked>
-                                        <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm transition-all">Masuk</div>
-                                    </label>
-                                    <label class="flex-1 cursor-pointer">
-                                        <input type="radio" name="type" value="out" class="peer hidden">
-                                        <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-rose-600 peer-checked:shadow-sm transition-all">Keluar</div>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Jumlah</label>
-                                <input type="number" name="quantity" min="1" placeholder="0" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Tanggal</label>
-                                <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">No. Surat</label>
-                                <input type="text" name="nosur" placeholder="..." class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono">
-                            </div>
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Keterangan</label>
-                            <textarea name="notes" rows="2" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="Opsional..."></textarea>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-transform">
-                        Simpan Transaksi
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- Modal Edit (App-like Bottom Sheet) --}}
-    <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-[10000] overflow-y-auto" x-cloak>
-        <div class="flex items-end sm:items-center justify-center min-h-screen text-center">
-            <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" @click="showEditModal = false"></div>
-            
-            <div x-show="showEditModal" 
-                x-transition:enter="transition ease-out duration-300 transform"
-                x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95"
-                x-transition:enter-end="translate-y-0 sm:scale-100"
-                class="relative w-full sm:max-w-xl bg-white rounded-t-[2.5rem] sm:rounded-[2.5rem] text-left overflow-hidden shadow-2xl p-8">
-                
-                <div class="flex items-center justify-between mb-8">
-                    <div>
-                        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">Edit Transaksi</h3>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Perbarui Data Mutasi</p>
-                    </div>
-                    <button @click="showEditModal = false" class="w-10 h-10 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-
-                <form :action="editUrl" method="POST" class="space-y-6" @submit="formatNosur($el.querySelector('[name=nosur]'), $el.querySelector('[name=date]').value)">
-                    @csrf @method('PUT')
-                    <div class="space-y-4">
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Barang</label>
-                            <select name="product_id" x-model="editData.product_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
-                                @foreach ($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Jenis</label>
-                                <div class="flex p-1.5 bg-slate-50 rounded-2xl">
-                                    <label class="flex-1 cursor-pointer">
-                                        <input type="radio" name="type" value="in" x-model="editData.type" class="peer hidden">
-                                        <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm transition-all">Masuk</div>
-                                    </label>
-                                    <label class="flex-1 cursor-pointer">
-                                        <input type="radio" name="type" value="out" x-model="editData.type" class="peer hidden">
-                                        <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-rose-600 peer-checked:shadow-sm transition-all">Keluar</div>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Jumlah</label>
-                                <input type="number" name="quantity" x-model="editData.quantity" min="1" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Tanggal</label>
-                                <input type="date" name="date" x-model="editData.date" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">No. Surat</label>
-                                <input type="text" name="nosur" x-model="editData.nosur" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono">
-                            </div>
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Keterangan</label>
-                            <textarea name="notes" x-model="editData.notes" rows="2" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none"></textarea>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-transform">
-                        Simpan Perubahan
-                    </button>
-                </form>
-            </div>
         </div>
     </div>
 </div>

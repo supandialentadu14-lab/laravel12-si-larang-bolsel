@@ -1,78 +1,40 @@
-{{-- Menggunakan layout admin --}}
-@extends('layouts.admin')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
-{{-- Mengisi bagian header halaman --}}
-@section('header', 'Edit Jenis Belanja')
-
-{{-- Section utama konten --}}
 @section('content')
-
-    {{-- Container dengan lebar maksimal xl dan posisi di tengah --}}
-    <div class=" mx-auto">
-
-        {{-- Card utama --}}
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-
-            {{-- Header card --}}
-            <div class="px-6 py-4 border-b border-gray-100 bg-slate-800">
-                <h6 class="font-bold text-orange-700">
-                    Uraian Jenis Belanja {{-- Judul form edit --}}
-                </h6>
-            </div>
-
-            {{-- Form untuk update data kategori --}}
-            {{-- Mengarah ke route categories.update dengan parameter $category --}}
-            <form action="{{ route('categories.update', $category) }}" method="POST" class="p-6 space-y-6 no-soft">
-
-                {{-- Token keamanan CSRF --}}
-                @csrf
-
-                {{-- Mengubah method POST menjadi PUT (karena update menggunakan PUT/PATCH) --}}
-                @method('PUT')
-
-                {{-- ================= INPUT NAMA JENIS BELANJA ================= --}}
-                <div>
-                    {{-- Label input --}}
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Jenis Belanja 
-                        <span class="text-red-500">*</span> {{-- Tanda wajib diisi --}}
-                    </label>
-
-                    {{-- Input nama kategori --}}
-                    <input 
-                        type="text"
-                        name="name"
-                        value="{{ old('name', $category->name) }}" 
-                        {{-- Jika validasi gagal pakai old('name'),
-                             jika tidak pakai data dari database ($category->name) --}}
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                        required>
-                </div>
-
-                {{-- ================= INPUT KETERANGAN ================= --}}
-                <div>
-                    {{-- Label textarea --}}
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Keterangan
-                    </label>
-
-                    {{-- Textarea deskripsi --}}
-                    <textarea 
-                        name="description"
-                        rows="3"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition">
-                        {{ old('description', $category->description) }}
-                        {{-- Jika validasi gagal pakai old(),
-                             jika tidak pakai data dari database --}}
-                    </textarea>
-                </div>
-
-                @include('partials.form-actions', [
-                    'backRoute' => route('categories.index'),
-                    'saveText' => 'Perbarui',
-                ])
-            </form>
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Edit Jenis Belanja</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Perbarui Kategori Inventaris</p>
         </div>
+        <a href="{{ route('categories.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+            <i class="fas fa-arrow-left text-xs"></i>
+        </a>
     </div>
 
+    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm">
+        <form action="{{ route('categories.update', $category->id) }}" method="POST" class="space-y-5">
+            @csrf
+            @method('PUT')
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Kategori</label>
+                <input type="text" name="name" value="{{ old('name', $category->name) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                @error('name')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Keterangan (Opsional)</label>
+                <textarea name="description" rows="4" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">{{ old('description', $category->description) }}</textarea>
+                @error('description')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <a href="{{ route('categories.index') }}" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center">Batal</a>
+                <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
+

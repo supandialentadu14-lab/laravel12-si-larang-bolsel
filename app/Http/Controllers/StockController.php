@@ -40,22 +40,10 @@ class StockController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
-
-        if ($isMobile) {
-            // Group the current page's transactions by date
-            $groupedTransactions = collect($transactions->items())->groupBy(function ($item) {
-                return $item->date->format('Y-m-d');
-            });
-            $editTransaction = null;
-            $editId = $request->query('edit');
-            if ($editId) {
-                $editTransaction = StockTransaction::with('product')->find($editId);
-            }
-        } else {
-            $groupedTransactions = null;
-            $editTransaction = null;
-        }
+        $groupedTransactions = collect($transactions->items())->groupBy(function ($item) {
+            return $item->date->format('Y-m-d');
+        });
+        $editTransaction = null;
 
         // Ambil semua produk beserta total stok masuk dan keluar untuk form modal
         $products = Product::withSum(['transactions as stock_in' => function ($q) {
@@ -81,7 +69,7 @@ class StockController extends Controller
         $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
         $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
 
-        $view = $isMobile ? 'mobile.stock.index' : 'stock.index';
+        $view = 'stock.index';
 
         // Kirim data ke view
         return view($view, compact(
@@ -100,13 +88,11 @@ class StockController extends Controller
      */
     public function create(Request $request)
     {
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $products = Product::orderBy('name')->get();
+        $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
+        $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
 
-        if ($isMobile) {
-            return redirect()->route('stock.index', array_merge(['add' => 1], $request->query()));
-        }
-
-        return redirect()->route('stock.index', array_merge(['add' => 1], $request->query()));
+        return view('stock.create', compact('products', 'singkatanOpd'));
     }
 
     /**
@@ -114,8 +100,6 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
-
         $data = $request->all();
         if (empty($data['type']) && ! empty($data['type_radio'])) {
             $data['type'] = $data['type_radio'];
@@ -131,12 +115,6 @@ class StockController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($isMobile) {
-                return redirect()->route('stock.index', array_merge(['add' => 1], $request->query()))
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-
             return back()
                 ->withErrors($validator)
                 ->withInput();
@@ -174,33 +152,23 @@ class StockController extends Controller
                     ->with('success', 'Transaksi berhasil disimpan.');
             });
         } catch (\Exception $e) {
-            if ($isMobile) {
-                return redirect()->route('stock.index', array_merge(['add' => 1], $request->query()))
-                    ->with('error', $e->getMessage())
-                    ->withInput();
-            }
-
             return back()->with('error', $e->getMessage())->withInput();
         }
     }
 
     public function edit($id)
     {
-        $transaction = StockTransaction::findOrFail($id);
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $transaction = StockTransaction::with('product')->findOrFail($id);
+        $products = Product::orderBy('name')->get();
+        $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
+        $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
 
-        if ($isMobile) {
-            return redirect()->route('stock.index', array_merge(['edit' => $transaction->id], request()->query()));
-        }
-
-        return redirect()->route('stock.index', array_merge(['edit' => $id], request()->query()));
+        return view('stock.edit', compact('transaction', 'products', 'singkatanOpd'));
     }
 
     public function update(Request $request, $id)
     {
         $transaction = StockTransaction::findOrFail($id);
-
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
 
         $data = $request->all();
         if (empty($data['type']) && ! empty($data['type_radio'])) {
@@ -217,12 +185,6 @@ class StockController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($isMobile) {
-                return redirect()->route('stock.index', array_merge(['edit' => $id], $request->query()))
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-
             return back()
                 ->withErrors($validator)
                 ->withInput();
@@ -273,12 +235,6 @@ class StockController extends Controller
                     ->with('success', 'Transaksi berhasil diperbarui.');
             });
         } catch (\Exception $e) {
-            if ($isMobile) {
-                return redirect()->route('stock.index', array_merge(['edit' => $id], $request->query()))
-                    ->with('error', $e->getMessage())
-                    ->withInput();
-            }
-
             return back()->with('error', $e->getMessage())->withInput();
         }
     }

@@ -1,86 +1,91 @@
-{{-- Menggunakan layout utama admin --}} @extends('layouts.admin') {{-- Mengisi section header pada layout --}} @section('header', 'Tambah Barang') {{-- Mengisi section content pada layout --}}
-@section('content') {{-- Container utama dengan lebar maksimal 4xl dan posisi tengah --}} <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden"> {{-- Header Card --}} <div
-                class="px-6 py-4 border-b border-gray-100 bg-slate-800">
-                <h6 class="font-bold text-white flex items-center"> {{-- Icon tambah --}} <i
-                        class="fas fa-plus-circle mr-2"></i> Informasi Barang </h6>
-            </div> {{-- Form untuk menyimpan data produk --}} <form action="{{ route('products.store') }}" method="POST"
-                enctype="multipart/form-data" class="p-6"> {{-- Token keamanan Laravel (wajib pada form POST) --}} @csrf {{-- Grid 2 kolom untuk layout form --}} <div
-                    class="grid grid-cols-1 md:grid-cols-2 gap-8"> <!-- ================= LEFT COLUMN ================= -->
-                    <div class="space-y-6"> {{-- Input Nama Barang --}} <div> <label
-                                class="block text-sm font-bold text-gray-700 mb-1"> Nama Barang <span
-                                    class="text-red-500">*</span> {{-- Wajib diisi --}} </label> <input type="text"
-                                name="name" value="{{ old('name') }}" {{-- Mengambil input lama jika validasi gagal --}}
-                                placeholder="e.g. Kertas HVS"
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                                required> </div> {{-- Input Kode Barang / SKU --}} <div> <label
-                                class="block text-sm font-bold text-gray-700 mb-1"> Kode Barang <span
-                                    class="text-red-500">*</span> </label>
-                            <div class="flex"> {{-- Icon barcode --}} <span
-                                    class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                                    <i class="fas fa-barcode"></i> </span> <input type="text" name="sku"
-                                    value="{{ old('sku', $newSku) }}" readonly
-                                    class="w-full px-4 py-2 rounded-r-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                                    required> </div>
-                        </div> {{-- Harga + Satuan dalam Grid --}} <div class="grid grid-cols-2 gap-4"> {{-- Input Harga Satuan --}} <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1"> Harga Satuan <span
-                                        class="text-red-500">*</span> </label>
-                                <div class="relative"> {{-- Prefix mata uang --}} <span
-                                        class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm font-bold">
-                                        Rp </span> <input type="number" step="0.01" name="price"
-                                        value="{{ old('price') }}" placeholder="0"
-                                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                                        required> </div>
-                            </div> {{-- Dropdown Satuan --}} <div> <label class="block text-sm font-bold text-gray-700 mb-1">
-                                    Satuan <span class="text-red-500">*</span> </label> <select name="unit"
-                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-white"
-                                    required>
-                                    <option value="">-- Pilih Satuan --</option> {{-- Menentukan selected jika sama dengan input sebelumnya --}} <option
-                                        value="pcs" {{ old('unit') == 'pcs' ? 'selected' : '' }}>Pcs</option>
-                                    <option value="buah" {{ old('unit') == 'buah' ? 'selected' : '' }}>Buah</option>
-                                    <option value="box" {{ old('unit') == 'box' ? 'selected' : '' }}>Box</option>
-                                    <option value="pak" {{ old('unit') == 'pak' ? 'selected' : '' }}>Pak</option>
-                                    <option value="rim" {{ old('unit') == 'rim' ? 'selected' : '' }}>Rim</option>
-                                    <option value="kg" {{ old('unit') == 'kg' ? 'selected' : '' }}>Kg</option>
-                                    <option value="galon" {{ old('unit') == 'galon' ? 'selected' : '' }}>Galon</option>
-                                    <option value="paket" {{ old('unit') == 'paket' ? 'selected' : '' }}>Paket</option>
-                                    <option value="liter" {{ old('unit') == 'liter' ? 'selected' : '' }}>Liter</option>
-                                </select> </div>
-                            </div> {{-- Input Stok Minimum --}} <div> <label class="block text-sm font-bold text-gray-700 mb-1">
-                                    Stok Minimum <span class="text-red-500">*</span> </label> <input type="number"
-                                    name="min_stock" value="{{ old('min_stock', 10) }}" placeholder="e.g. 10"
-                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                                    required> </div>
-                        </div>
-                    </div> <!-- ================= RIGHT COLUMN ================= -->
-                    <div class="space-y-6"> 
-                        {{-- Dropdown Jenis Belanja --}} 
-                        <div> 
-                            <label class="block text-sm font-bold text-gray-700 mb-1"> Jenis Belanja <span class="text-red-500">*</span> </label> 
-                            <select name="category_id"
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-white"
-                                required>
-                                <option value="">-- Pilih Jenis Belanja --</option> 
-                                {{-- Looping data kategori dari controller --}}
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}"
-                                        {{ old('category_id') == $category->id ? 'selected' : '' }}> {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select> 
-                        </div> 
-                        
-                        {{-- Textarea Deskripsi Produk --}} 
-                        <div> 
-                            <label class="block text-sm font-bold text-gray-700 mb-1"> Keterangan </label>
-                            <textarea name="description" rows="4" placeholder="Product details..."
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"> {{ old('description') }} </textarea>
-                        </div>
-                    </div>
-                </div> @include('partials.form-actions', [
-                    'backRoute' => route('products.index'),
-                    'saveText' => 'Simpan',
-                ])
-            </form>
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
+
+@section('content')
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Tambah Barang</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Input Data Barang Baru</p>
         </div>
-</div> @endsection
+        <a href="{{ route('products.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+            <i class="fas fa-arrow-left text-xs"></i>
+        </a>
+    </div>
+
+    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm">
+        <form action="{{ route('products.store') }}" method="POST" class="space-y-5">
+            @csrf
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Barang</label>
+                <input type="text" name="name" value="{{ old('name') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                @error('name')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Kode (SKU)</label>
+                    <input type="text" value="{{ old('sku', $newSku ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-400 outline-none" readonly>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Stok Minimum</label>
+                    <input type="number" name="min_stock" min="0" value="{{ old('min_stock') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                    @error('min_stock')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Harga Satuan</label>
+                    <input type="number" name="price" step="0.01" value="{{ old('price') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                    @error('price')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Satuan</label>
+                    <select name="unit" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+                        <option value="">Pilih Satuan</option>
+                        @foreach (['pcs','buah','box','pak','rim','kg','galon','paket','liter'] as $u)
+                            <option value="{{ $u }}" {{ old('unit') === $u ? 'selected' : '' }}>{{ strtoupper($u) }}</option>
+                        @endforeach
+                    </select>
+                    @error('unit')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Jenis Belanja</label>
+                <select name="category_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+                    <option value="">Pilih Jenis Belanja</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ (string)old('category_id') === (string)$cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+                @error('category_id')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Penyedia (Opsional)</label>
+                <select name="supplier_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none">
+                    <option value="">Pilih Penyedia</option>
+                    @foreach($suppliers as $sup)
+                        <option value="{{ $sup->id }}" {{ (string)old('supplier_id') === (string)$sup->id ? 'selected' : '' }}>{{ $sup->name }}</option>
+                    @endforeach
+                </select>
+                @error('supplier_id')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Keterangan (Opsional)</label>
+                <textarea name="description" rows="4" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">{{ old('description') }}</textarea>
+                @error('description')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <a href="{{ route('products.index') }}" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center">Batal</a>
+                <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('title', 'Daftar Kontrak Belanja Modal')
 @section('header', 'Belanja Modal')

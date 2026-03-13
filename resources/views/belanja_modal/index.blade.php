@@ -1,95 +1,7 @@
-@extends('layouts.mobile')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
-
-<script>
-    function belanjaModalIndex() {
-        return {
-            selected: [],
-            allSelected: false,
-            
-            // Modal state
-            showModal: false,
-            isEdit: false,
-            
-            // Form state
-            editId: '',
-            tahun: '{{ now()->year }}',
-            opd: '{{ addslashes($master["opd"]["nama"] ?? ($opd->nama_opd ?? "")) }}',
-            items: [],
-
-            toggleAll() {
-                this.allSelected = !this.allSelected;
-                if (this.allSelected) {
-                    this.selected = [
-                        @foreach ($items as $row)
-                            '{{ $row['id'] }}',
-                        @endforeach
-                    ];
-                } else {
-                    this.selected = [];
-                }
-            },
-            updateSelectAll() {
-                this.allSelected = this.selected.length === {{ count($items) }};
-            },
-
-            initModal(editMode, id = '', tahun = '', rawItems = null) {
-                this.isEdit = editMode;
-                this.editId = id;
-                this.tahun = tahun || '{{ now()->year }}';
-                
-                if (rawItems && (Array.isArray(rawItems) ? rawItems.length > 0 : Object.keys(rawItems).length > 0)) {
-                    let itemsArray = Array.isArray(rawItems) ? rawItems : Object.values(rawItems);
-                    this.items = itemsArray.map(it => ({
-                        nama_kegiatan: it.nm || it.nama_kegiatan || '',
-                        pekerjaan: it.pk || it.pekerjaan || '',
-                        nilai_kontrak: it.nk || it.nilai_kontrak || 0,
-                        tanggal_mulai: it.tm || it.tanggal_mulai || '',
-                        tanggal_akhir: it.ta || it.tanggal_akhir || '',
-                        uang_muka: it.um || it.uang_muka || 0,
-                        termin1: it.t1 || it.termin1 || 0,
-                        termin2: it.t2 || it.termin2 || 0,
-                        termin3: it.t3 || it.termin3 || 0,
-                        termin4: it.t4 || it.termin4 || 0,
-                        total: it.ttl || it.total || 0,
-                        status: it.st || it.status || ''
-                    }));
-                } else {
-                    this.items = [];
-                    this.addItem();
-                }
-                
-                this.showModal = true;
-            },
-            addItem() {
-                this.items.push({
-                    nama_kegiatan: '',
-                    pekerjaan: '',
-                    nilai_kontrak: 0,
-                    tanggal_mulai: '',
-                    tanggal_akhir: '',
-                    uang_muka: 0,
-                    termin1: 0,
-                    termin2: 0,
-                    termin3: 0,
-                    termin4: 0,
-                    total: 0,
-                    status: ''
-                });
-            },
-            removeItem(i) { this.items.splice(i, 1); },
-            recalc(i) {
-                const it = this.items[i] || {};
-                const toInt = v => parseInt(v || 0, 10);
-                it.total = toInt(it.uang_muka) + toInt(it.termin1) + toInt(it.termin2) + toInt(it.termin3) + toInt(it.termin4);
-                this.items[i] = it;
-            }
-        }
-    }
-</script>
-
-<div x-data="belanjaModalIndex()" class="space-y-6">
+<div class="space-y-6">
 
     {{-- Page Header --}}
     <div class="flex items-center justify-between">
@@ -101,9 +13,9 @@
             <a href="{{ route('reports.belanja.modal.preview_all') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all hover:text-indigo-600">
                 <i class="fas fa-print text-xs"></i>
             </a>
-            <button @click="initModal(false)" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
+            <a href="{{ route('reports.belanja.modal.form') }}" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
                 <i class="fas fa-plus text-xs"></i>
-            </button>
+            </a>
         </div>
     </div>
 
@@ -177,9 +89,9 @@
 
                         {{-- Quick Actions --}}
                         <div class="flex items-center gap-1.5">
-                            <button @click="initModal(true, '{{ $row['id'] }}', '{{ $row['tahun'] }}', {{ json_encode($row['raw_items']) }})" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                            <a href="{{ route('reports.belanja.modal.edit', $row['id']) }}" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
                                 <i class="fas fa-edit text-[10px]"></i>
-                            </button>
+                            </a>
                             <form action="{{ route('reports.belanja.modal.delete', $row['id']) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="submit" @click.prevent="if(confirm('Hapus laporan ini?')) $el.form.submit()" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
@@ -206,8 +118,5 @@
     <div class="mt-8">
         {{ $items->links() }}
     </div>
-
-    @include('belanja_modal.partials.modals')
-
 </div>
 @endsection
