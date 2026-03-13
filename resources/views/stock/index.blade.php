@@ -13,6 +13,14 @@
             <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50' : ''">
                 <i class="fas fa-filter text-xs"></i>
             </button>
+            @if(($isMobile ?? false) && auth()->user()->hasPermission('laporan_persediaan'))
+                <a href="{{ route('reports.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 active:scale-90 transition-transform">
+                    <i class="fas fa-chart-pie text-xs"></i>
+                </a>
+                <a href="{{ route('reports.kartu.tahunan') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 active:scale-90 transition-transform">
+                    <i class="fas fa-table-list text-xs"></i>
+                </a>
+            @endif
             <a href="{{ route('stock.create') }}" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
                 <i class="fas fa-plus text-xs"></i>
             </a>
