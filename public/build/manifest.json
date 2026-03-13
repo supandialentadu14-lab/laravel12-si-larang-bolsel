@@ -1,22 +1,20 @@
 {
   "resources/css/desktop.css": {
-    "file": "assets/mobile-WTPIYvDI.css",
-    "src": "resources/css/mobile.css",
+    "file": "assets/desktop-A3MM4oTP.css",
+    "src": "resources/css/desktop.css",
     "isEntry": true,
     "name": "desktop",
     "names": [
-      "mobile.css",
       "desktop.css"
     ]
   },
   "resources/css/mobile.css": {
-    "file": "assets/mobile-WTPIYvDI.css",
+    "file": "assets/mobile-DK84R1QQ.css",
     "src": "resources/css/mobile.css",
     "isEntry": true,
-    "name": "desktop",
+    "name": "mobile",
     "names": [
-      "mobile.css",
-      "desktop.css"
+      "mobile.css"
     ]
   },
   "resources/js/desktop.js": {
