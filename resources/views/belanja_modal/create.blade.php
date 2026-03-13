@@ -1,7 +1,6 @@
 @extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
-@section('title', 'Daftar Kontrak Belanja Modal')
-@section('header', 'Belanja Modal')
+@section('title', 'Tambah Belanja Modal')
 
 @section('content')
     <script>
@@ -64,15 +63,19 @@
         }
     </script>
 
-    <div class="max-w-full mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 bg-[#1e293b]">
-                <h6 class="font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-file-invoice-dollar"></i> Form Kontrak Belanja Modal
-                </h6>
+    <div class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Tambah Belanja Modal</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Input Kontrak dan Termin</p>
             </div>
+            <a href="{{ route('reports.belanja.modal.list') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+                <i class="fas fa-arrow-left text-xs"></i>
+            </a>
+        </div>
 
-            <form method="POST" action="{{ route('reports.belanja.modal.save') }}" x-data="belanjaModalForm()" x-init="init()" class="p-6 space-y-6">
+        <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm">
+            <form method="POST" action="{{ route('reports.belanja.modal.save') }}" x-data="belanjaModalForm()" x-init="init()" class="space-y-6">
                 @csrf
 
                 <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-6 transition-all duration-300">
@@ -144,10 +147,10 @@
                     </div>
                 </div>
 
-                @include('partials.form-actions', [
-                    'backRoute' => route('reports.belanja.modal.list'),
-                    'saveRoute' => route('reports.belanja.modal.save'),
-                ])
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <a href="{{ route('reports.belanja.modal.list') }}" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center">Batal</a>
+                    <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100">Simpan</button>
+                </div>
             </form>
         </div>
     </div>
