@@ -18,8 +18,8 @@
     </div>
 
     <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden">
-        <div id="paper-container" class="w-full no-scrollbar flex justify-center">
-            <div id="paper-scale" class="flex-shrink-0 w-full" style="transform-origin: top center;">
+        <div id="paper-container" class="w-full no-scrollbar flex justify-center items-start" style="padding-bottom: 8px;">
+            <div id="paper-scale" class="flex-shrink-0" style="transform-origin: top center; width: 1200px; margin: 0 auto;">
                 <style>
                     .preview-paper-mobile {
                         width: 1200px; /* basis ukuran kanvas untuk diskalakan */
@@ -169,14 +169,20 @@
         const container = document.getElementById('paper-container');
         function fit() {
             if (!paperScale || !doc || !container) return;
-            const baseW = doc.scrollWidth || 1200;
+            const baseW = 1200;
             const baseH = doc.scrollHeight || 760;
+
+            const containerRect = container.getBoundingClientRect();
+            const topOffset = containerRect.top;
             const availW = container.clientWidth;
-            const headerHeight = 220; // kira-kira tinggi header + padding
-            const availH = Math.max(300, window.innerHeight - headerHeight);
+            const availH = Math.max(300, window.innerHeight - topOffset - 12); // sisakan sedikit ruang
+
             const scale = Math.min(availW / baseW, availH / baseH);
-            const clamped = Math.max(0.35, Math.min(scale, 1));
+            const clamped = Math.max(0.25, Math.min(scale, 1));
+
             paperScale.style.transform = `scale(${clamped})`;
+            paperScale.style.marginLeft = 'auto';
+            paperScale.style.marginRight = 'auto';
         }
         window.addEventListener('resize', fit);
         document.addEventListener('DOMContentLoaded', fit);
