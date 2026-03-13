@@ -408,7 +408,8 @@ class BelanjaModalController extends Controller
             'items' => $clean,
         ];
         session(['belanja_modal_current' => $data]);
-        return view('reports.belanja_modal_report', compact('data', 'opd', 'master'));
+        $view = request()->isMobile() ? 'reports.mobile.belanja_modal_report' : 'reports.belanja_modal_report';
+        return view($view, compact('data', 'opd', 'master'));
     }
 
     /**

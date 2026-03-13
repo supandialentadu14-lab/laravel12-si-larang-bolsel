@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="space-y-6 animate-slide-up pb-20">
-    {{-- Header --}}
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Pratinjau</h1>
@@ -18,35 +17,35 @@
         </div>
     </div>
 
-    {{-- Document Preview Card --}}
     <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden flex flex-col items-center">
         <div class="w-full flex justify-center no-scrollbar overflow-x-auto">
-            {{-- Landscape report needs different scale/min-width --}}
-            <div class="flex-shrink-0 origin-top transform scale-[0.25] min-[400px]:scale-[0.3] sm:scale-100 mb-[-150%] min-[400px]:mb-[-130%] sm:mb-0" style="width: 330mm;">
+            <div class="flex-shrink-0 origin-top transform scale-[0.38] min-[400px]:scale-[0.45] sm:scale-100 mb-[-120%] min-[400px]:mb-[-100%] sm:mb-0" style="width: 330mm;">
                 <style>
-                    .preview-paper-mobile-landscape { 
+                    .preview-paper-mobile { 
                         width: 330mm; 
                         min-height: 210mm; 
                         margin: 0; 
                         background: #fff; 
-                        padding: 15mm; 
+                        padding: 10mm 15mm; 
                         line-height: 1.4; 
                         color: black; 
                         font-family: 'Nunito', sans-serif;
                         box-shadow: 0 0 30px rgba(0,0,0,0.12);
                         border: 1px solid #f1f5f9;
                     }
-                    .preview-paper-mobile-landscape h1 { font-size: 20px; font-weight: 800; text-transform: uppercase; margin: 0; text-align: center; }
-                    .preview-paper-mobile-landscape h2 { font-size: 16px; font-weight: 700; text-transform: uppercase; margin: 5px 0; text-align: center; }
-                    .preview-paper-mobile-landscape h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; margin: 5px 0; text-align: center; }
-                    .preview-paper-mobile-landscape table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
-                    .preview-paper-mobile-landscape th, .preview-paper-mobile-landscape td { border: 1px solid black; padding: 8px; font-size: 12px; }
+                    .preview-paper-mobile table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    .preview-paper-mobile th, .preview-paper-mobile td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
+                    .preview-paper-mobile .kop { text-align: center; margin-bottom: 12px; }
+                    .preview-paper-mobile .kop h1 { font-size: 16px; font-weight: 800; text-transform: uppercase; margin: 0; }
+                    .preview-paper-mobile .kop h2 { font-size: 14px; font-weight: 700; text-transform: uppercase; margin: 4px 0 0; }
+                    .preview-paper-mobile .kop h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; margin: 4px 0 0; }
                     .text-center { text-align: center; }
                     .text-right { text-align: right; }
                     .font-bold { font-weight: bold; }
+                    .uppercase { text-transform: uppercase; }
                 </style>
-                <div id="document-preview" class="preview-paper-mobile-landscape">
-                    <div class="mb-8">
+                <div id="document-preview" class="preview-paper-mobile">
+                    <div class="kop">
                         <h1>DAFTAR KONTRAK BELANJA MODAL</h1>
                         <h2>{{ $master['opd']['nama'] ?? null ?: $opd->nama_opd ?? '' }} KABUPATEN BOLAANG MONGONDOW SELATAN</h2>
                         <h3>TAHUN {{ $data['tahun'] }}</h3>
@@ -69,44 +68,47 @@
                             <col style="width:8%">
                         </colgroup>
                         <thead>
-                            <tr style="background-color: #f8fafc;">
-                                <th rowspan="2">No</th>
-                                <th rowspan="2">Nama Kegiatan</th>
-                                <th rowspan="2">Pekerjaan</th>
-                                <th rowspan="2">Nilai Kontrak (Rp)</th>
-                                <th rowspan="2">Tanggal Mulai</th>
-                                <th rowspan="2">Tanggal Akhir</th>
-                                <th colspan="5">SP2D Pembayaran</th>
-                                <th rowspan="2">Total (Rp)</th>
-                                <th rowspan="2">Status</th>
-                            </tr>
-                            <tr style="background-color: #f8fafc;">
-                                <th>Uang Muka</th>
-                                <th>T-I</th>
-                                <th>T-II</th>
-                                <th>T-III</th>
-                                <th>T-IV</th>
-                            </tr>
+                        <tr class="text-center font-bold" style="background-color: #f8fafc;">
+                            <th rowspan="2">No</th>
+                            <th rowspan="2">Nama Kegiatan</th>
+                            <th rowspan="2">Pekerjaan</th>
+                            <th rowspan="2">Nilai Kontrak (Rp)</th>
+                            <th rowspan="2">Tanggal Mulai</th>
+                            <th rowspan="2">Tanggal Akhir Pekerjaan</th>
+                            <th colspan="5">SP2D Pembayaran</th>
+                            <th rowspan="2">Total Pembayaran (Rp)</th>
+                            <th rowspan="2">Status Pekerjaan</th>
+                        </tr>
+                        <tr class="text-center font-bold" style="background-color: #f8fafc;">
+                            <th>Uang Muka (Rp)</th>
+                            <th>Termin I (Rp)</th>
+                            <th>Termin II (Rp)</th>
+                            <th>Termin III (Rp)</th>
+                            <th>Termin IV (Rp)</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @php $no = 1; @endphp
-                            @foreach ($data['items'] as $row)
-                                <tr>
-                                    <td class="text-center">{{ $no++ }}</td>
-                                    <td style="word-wrap: break-word;">{{ $row['nm'] }}</td>
-                                    <td style="word-wrap: break-word;">{{ $row['pk'] }}</td>
-                                    <td class="text-right font-bold">{{ number_format($row['nk'], 0, ',', '.') }}</td>
-                                    <td class="text-center">{{ $row['tm'] ? \Carbon\Carbon::parse($row['tm'])->translatedFormat('d/m/Y') : '-' }}</td>
-                                    <td class="text-center">{{ $row['ta'] ? \Carbon\Carbon::parse($row['ta'])->translatedFormat('d/m/Y') : '-' }}</td>
-                                    <td class="text-right">{{ $row['um'] ? number_format($row['um'], 0, ',', '.') : '-' }}</td>
-                                    <td class="text-right">{{ $row['t1'] ? number_format($row['t1'], 0, ',', '.') : '-' }}</td>
-                                    <td class="text-right">{{ $row['t2'] ? number_format($row['t2'], 0, ',', '.') : '-' }}</td>
-                                    <td class="text-right">{{ $row['t3'] ? number_format($row['t3'], 0, ',', '.') : '-' }}</td>
-                                    <td class="text-right">{{ $row['t4'] ? number_format($row['t4'], 0, ',', '.') : '-' }}</td>
-                                    <td class="text-right font-bold">{{ number_format($row['ttl'], 0, ',', '.') }}</td>
-                                    <td class="text-center">{{ $row['st'] ?: '-' }}</td>
-                                </tr>
-                            @endforeach
+                        @foreach ($data['items'] as $i => $row)
+                            <tr>
+                                <td class="text-center">{{ $i + 1 }}</td>
+                                <td>{{ $row['nm'] }}</td>
+                                <td>{{ $row['pk'] }}</td>
+                                <td class="text-right">{{ number_format($row['nk'], 0, ',', '.') }}</td>
+                                <td class="text-center">
+                                    {{ $row['tm'] ? \Carbon\Carbon::parse($row['tm'])->translatedFormat('d F Y') : '-' }}
+                                </td>
+                                <td class="text-center">
+                                    {{ $row['ta'] ? \Carbon\Carbon::parse($row['ta'])->translatedFormat('d F Y') : '-' }}
+                                </td>
+                                <td class="text-right">{{ $row['um'] ? ' ' . number_format($row['um'], 0, ',', '.') : '-' }}</td>
+                                <td class="text-right">{{ $row['t1'] ? ' ' . number_format($row['t1'], 0, ',', '.') : '-' }}</td>
+                                <td class="text-right">{{ $row['t2'] ? ' ' . number_format($row['t2'], 0, ',', '.') : '-' }}</td>
+                                <td class="text-right">{{ $row['t3'] ? ' ' . number_format($row['t3'], 0, ',', '.') : '-' }}</td>
+                                <td class="text-right">{{ $row['t4'] ? ' ' . number_format($row['t4'], 0, ',', '.') : '-' }}</td>
+                                <td class="text-right">{{ number_format($row['ttl'], 0, ',', '.') }}</td>
+                                <td class="text-center">{{ $row['st'] ?: '-' }}</td>
+                            </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -114,7 +116,7 @@
         </div>
         <div class="mt-4 flex items-center justify-center gap-2 text-slate-400">
             <i class="fas fa-arrows-left-right text-xs animate-pulse"></i>
-            <p class="text-[10px] font-bold uppercase tracking-widest">Geser untuk melihat detail dokumen</p>
+            <p class="text-[10px] font-bold uppercase tracking-widest">Geser untuk melihat dokumen</p>
         </div>
     </div>
 </div>
@@ -123,41 +125,32 @@
     function openPrintPreview() {
         const printArea = document.getElementById('document-preview');
         if (!printArea) return;
-        
         const content = printArea.innerHTML;
-        
-        const win = window.open('', '_blank', 'width=1200,height=900');
-        if (!win) {
-            alert('Silakan izinkan popup untuk mencetak laporan.');
-            return;
-        }
-        
+        const win = window.open('', '_blank', 'width=1000,height=800');
+        if (!win) { alert('Silakan izinkan popup untuk mencetak.'); return; }
         win.document.open();
-        win.document.write(`
-            <!doctype html>
+        win.document.write(`<!doctype html>
             <html>
             <head>
                 <title>Cetak Daftar Kontrak Belanja Modal</title>
                 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
                 <style>
                     body { margin: 0; padding: 20px; font-family: 'Nunito', sans-serif; background: #fff; }
-                    .preview-paper-mobile-landscape { width: 330mm; min-height: 210mm; margin: 0 auto; background: #fff; padding: 15mm; line-height: 1.4; color: black; }
-                    .preview-paper-mobile-landscape h1 { font-size: 20px; font-weight: 800; text-transform: uppercase; margin: 0; text-align: center; }
-                    .preview-paper-mobile-landscape h2 { font-size: 16px; font-weight: 700; text-transform: uppercase; margin: 5px 0; text-align: center; }
-                    .preview-paper-mobile-landscape h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; margin: 5px 0; text-align: center; }
-                    .preview-paper-mobile-landscape table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
-                    .preview-paper-mobile-landscape th, .preview-paper-mobile-landscape td { border: 1px solid black; padding: 8px; font-size: 12px; }
+                    .preview-paper-mobile { width: 330mm; min-height: 210mm; margin: 0 auto; background: #fff; padding: 10mm 15mm; line-height: 1.4; color: black; }
+                    .preview-paper-mobile table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    .preview-paper-mobile th, .preview-paper-mobile td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
                     .text-center { text-align: center; }
                     .text-right { text-align: right; }
                     .font-bold { font-weight: bold; }
+                    .uppercase { text-transform: uppercase; }
                     @media print { 
                         body { padding: 0; }
-                        @page { size: 330mm 210mm; margin: 10mm; }
+                        @page { size: 330mm 210mm; margin: 10mm 15mm; }
                     }
                 </style>
             </head>
             <body>
-                <div class="preview-paper-mobile-landscape">
+                <div class="preview-paper-mobile">
                     ${content}
                 </div>
                 <script>
@@ -167,9 +160,9 @@
                     };
                 <\/script>
             </body>
-            </html>
-        `);
+            </html>`);
         win.document.close();
     }
 </script>
 @endsection
+
