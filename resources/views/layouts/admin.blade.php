@@ -588,9 +588,70 @@
             }
         });
     </script>
+    <script>
+        (function () {
+            function ensureTailwindCdn() {
+                if (window.__twCdnLoaded) return;
+                window.__twCdnLoaded = true;
+                window.tailwind = window.tailwind || {};
+                window.tailwind.config = {
+                    theme: {
+                        extend: {
+                            fontFamily: {
+                                sans: ['Nunito', 'sans-serif'],
+                            },
+                            colors: {
+                                orange: {
+                                    50: '#FFF1E6',
+                                    100: '#FFE3CC',
+                                    200: '#FFD0A3',
+                                    300: '#FFB875',
+                                    400: '#FF9E47',
+                                    500: '#FF7F1A',
+                                    600: '#E76A09',
+                                    700: '#C45508',
+                                    800: '#9A4407',
+                                    900: '#7A3606',
+                                },
+                                indigo: {
+                                    50: '#EEF2FF',
+                                    100: '#E0E7FF',
+                                    200: '#C7D2FE',
+                                    300: '#A5B4FC',
+                                    400: '#818CF8',
+                                    500: '#6366F1',
+                                    600: '#4F46E5',
+                                    700: '#4338CA',
+                                    800: '#3730A3',
+                                    900: '#312E81',
+                                },
+                            },
+                        },
+                    },
+                };
+
+                var s = document.createElement('script');
+                s.src = 'https://cdn.tailwindcss.com';
+                s.async = true;
+                document.head.appendChild(s);
+            }
+
+            function checkTailwindLoaded() {
+                var el = document.getElementById('tw-check');
+                if (!el) return;
+                var display = window.getComputedStyle(el).display;
+                if (display !== 'none') ensureTailwindCdn();
+            }
+
+            window.addEventListener('load', function () {
+                setTimeout(checkTailwindLoaded, 0);
+            });
+        })();
+    </script>
 </head>
 
 <body class="font-sans antialiased theme-light" x-data="{ sidebarOpen: window.innerWidth >= 1024, theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }" @resize.window="sidebarOpen = window.innerWidth >= 1024;">
+    <div id="tw-check" class="hidden"></div>
     <div class="flex h-screen overflow-hidden">
 
         <!-- Mobile Sidebar Backdrop -->
