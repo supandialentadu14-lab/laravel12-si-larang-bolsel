@@ -13,14 +13,6 @@
             <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50' : ''">
                 <i class="fas fa-filter text-xs"></i>
             </button>
-            @if(($isMobile ?? false) && auth()->user()->hasPermission('laporan_persediaan'))
-                <a href="{{ route('reports.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 active:scale-90 transition-transform">
-                    <i class="fas fa-chart-pie text-xs"></i>
-                </a>
-                <a href="{{ route('reports.kartu.tahunan') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 active:scale-90 transition-transform">
-                    <i class="fas fa-table-list text-xs"></i>
-                </a>
-            @endif
             <a href="{{ route('stock.create') }}" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
                 <i class="fas fa-plus text-xs"></i>
             </a>
@@ -62,6 +54,28 @@
             </div>
             <h2 class="text-3xl font-black mt-2 tracking-tight">{{ $transactions->total() }} Record</h2>
             <p class="text-[9px] font-bold mt-2 opacity-80 uppercase tracking-widest">Periode Berjalan</p>
+            @if(($isMobile ?? false) && auth()->user()->hasPermission('laporan_persediaan'))
+                <div class="mt-5 grid grid-cols-2 gap-3">
+                    <a href="{{ route('reports.index') }}" class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/15 text-white shadow-sm active:scale-[0.98] transition flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
+                            <i class="fas fa-chart-pie text-sm"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-black uppercase tracking-widest leading-tight">Laporan</div>
+                            <div class="text-[9px] font-bold opacity-80 uppercase tracking-widest mt-0.5 truncate">Persediaan</div>
+                        </div>
+                    </a>
+                    <a href="{{ route('reports.kartu.tahunan') }}" class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/15 text-white shadow-sm active:scale-[0.98] transition flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
+                            <i class="fas fa-table-list text-sm"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-black uppercase tracking-widest leading-tight">Kartu</div>
+                            <div class="text-[9px] font-bold opacity-80 uppercase tracking-widest mt-0.5 truncate">Persediaan</div>
+                        </div>
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -90,7 +104,10 @@
 
                 @foreach($txs as $transaction)
                     @php
-                        $productId = $transaction->product->id;
+                        $productId = $transaction->product_id ?? ($transaction->product?->id ? (string) $transaction->product->id : ('deleted-'.$transaction->id));
+                        $productName = $transaction->product?->name ?? '(Produk dihapus)';
+                        $productUnit = $transaction->product?->unit ?? 'Unit';
+                        $productStock = $transaction->product?->calculated_stock ?? $transaction->product?->stock;
                         if (!isset($runningStock[$productId])) { $runningStock[$productId] = 0; }
                         if ($transaction->type === 'in') { $runningStock[$productId] += $transaction->quantity; } 
                         else { $runningStock[$productId] -= $transaction->quantity; }
@@ -110,7 +127,7 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-start justify-between">
                                     <div>
-                                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight truncate leading-tight group-hover:text-indigo-600 transition-colors">{{ $transaction->product->name }}</h3>
+                                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight truncate leading-tight group-hover:text-indigo-600 transition-colors">{{ $productName }}</h3>
                                         <div class="flex items-center gap-2 mt-1">
                                             <span class="text-[9px] font-black px-2 py-0.5 rounded-lg {{ $transaction->type === 'in' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700' }} uppercase tracking-widest">
                                                 {{ $transaction->type === 'in' ? 'Masuk' : 'Keluar' }}
@@ -124,7 +141,7 @@
                                         <span class="text-lg font-black {{ $transaction->type === 'in' ? 'text-emerald-600' : 'text-rose-600' }}">
                                             {{ $transaction->type === 'in' ? '+' : '-' }}{{ $transaction->quantity }}
                                         </span>
-                                        <p class="text-[8px] font-black text-slate-300 uppercase tracking-widest">{{ $transaction->product->unit ?? 'Unit' }}</p>
+                                        <p class="text-[8px] font-black text-slate-300 uppercase tracking-widest">{{ $productUnit }}</p>
                                     </div>
                                 </div>
 
@@ -138,7 +155,7 @@
                                         @endif
                                         <div class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 flex items-center gap-2">
                                             <i class="fas fa-box text-[8px] opacity-40"></i>
-                                            <span class="text-[8px] font-black tracking-widest uppercase">{{ $transaction->product->calculated_stock ?? $transaction->product->stock }} Stok</span>
+                                            <span class="text-[8px] font-black tracking-widest uppercase">{{ $productStock ?? '-' }} Stok</span>
                                         </div>
                                     </div>
 

@@ -8,9 +8,12 @@ use App\Models\NotaPesanan;
 use App\Models\OpdSetting;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\BapItem;
+use App\Models\BapPemeriksaan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\ActivityLog;
@@ -349,6 +352,12 @@ class NotaPesananController extends Controller
     public function update(Request $request, string $id): RedirectResponse
     {
         $payload = $request->all();
+        $userId = Auth::id();
+        $disk = Storage::disk('local');
+        $oldPath = "users/{$userId}/nota-pesanan/{$id}.json";
+        $oldData = $disk->exists($oldPath) ? (json_decode($disk->get($oldPath), true) ?: []) : [];
+        $oldNomor = trim((string)($oldData['nomor'] ?? ''));
+
         $itemsRaw = $request->input('items', []);
         $items = is_array($itemsRaw) ? array_values(array_filter($itemsRaw, function ($it) {
             return isset($it['name']) && trim((string)$it['name']) !== '';
@@ -406,6 +415,7 @@ class NotaPesananController extends Controller
             'pengurus_barang' => $master['pengurus_barang'],
             'pengurus_pengguna' => $master['pengurus_pengguna'],
             'ppk' => $master['ppk'],
+            'supplier_id' => $request->input('supplier_id'),
             'penyedia' => $penyedia,
             'bendahara' => $master['bendahara'],
             'nomor' => $nomorFormatted,
@@ -421,69 +431,241 @@ class NotaPesananController extends Controller
         
         // Jika ID berubah (nomor berubah), hapus file lama
         if ($newId !== $id) {
-            if (Storage::disk('local')->exists("users/".Auth::id()."/nota-pesanan/{$id}.json")) {
-                Storage::disk('local')->delete("users/".Auth::id()."/nota-pesanan/{$id}.json");
+            if ($disk->exists($oldPath)) {
+                $disk->delete($oldPath);
             }
         }
         
-        Storage::disk('local')->put("users/".Auth::id()."/nota-pesanan/{$newId}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $disk->put("users/{$userId}/nota-pesanan/{$newId}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         $grand = array_sum(array_map(fn($r) => (int) ($r['total'] ?? 0), $cleanItems));
         $terbilang = $this->toWordsIdInternal($grand);
-        $prev = session('nota_current') ?: [];
-        $nota = NotaPesanan::where('user_id', Auth::id())->where('nomor', $prev['nomor'] ?? '')->first();
-        if (! $nota) {
-            $nota = NotaPesanan::updateOrCreate(['user_id' => Auth::id(), 'nomor' => $data['nomor']], []);
+        $prev = $oldData ?: (session('nota_current') ?: []);
+
+        if (Schema::hasTable('nota_pesanans')) {
+            $nota = null;
+            if ($oldNomor !== '') {
+                $nota = NotaPesanan::where('user_id', $userId)->where('nomor', $oldNomor)->first();
+            }
+            if (! $nota) {
+                $nota = NotaPesanan::updateOrCreate(['user_id' => $userId, 'nomor' => $data['nomor']], []);
+            }
+            $nota->fill([
+                'tanggal' => $data['tanggal'],
+                'kegiatan' => $data['kegiatan'],
+                'sub_kegiatan' => $data['sub_kegiatan'],
+                'rekening' => $data['rekening'],
+                'tahun' => (int) $data['tahun'],
+                'belanja' => $data['belanja'],
+                'penyedia_toko' => $data['penyedia']['toko'] ?? '',
+                'penyedia_pemilik' => $data['penyedia']['pemilik'] ?? '',
+                'penyedia_alamat' => $data['penyedia']['alamat'] ?? '',
+                'pejabat_nama' => $data['pejabat']['nama'] ?? '',
+                'pejabat_nip' => $data['pejabat']['nip'] ?? '',
+                'pptk_nama' => $data['pptk']['nama'] ?? '',
+                'pptk_nip' => $data['pptk']['nip'] ?? '',
+                'ppk_nama' => $data['ppk']['nama'] ?? '',
+                'ppk_nip' => $data['ppk']['nip'] ?? '',
+                'bendahara_nama' => $data['bendahara']['nama'] ?? '',
+                'bendahara_nip' => $data['bendahara']['nip'] ?? '',
+                'total' => $grand,
+                'terbilang' => $terbilang,
+                'nomor' => $data['nomor'],
+            ])->save();
+            $nota->items()->delete();
+            foreach ($cleanItems as $row) {
+                $nota->items()->create([
+                    'name' => $row['name'],
+                    'qty' => (int) $row['qty'],
+                    'unit' => $row['unit'],
+                    'price' => (int) $row['price'],
+                    'total' => (int) $row['total'],
+                ]);
+            }
         }
-        $nota->fill([
-            'tanggal' => $data['tanggal'],
-            'kegiatan' => $data['kegiatan'],
-            'sub_kegiatan' => $data['sub_kegiatan'],
-            'rekening' => $data['rekening'],
-            'tahun' => (int) $data['tahun'],
-            'belanja' => $data['belanja'],
-            'penyedia_toko' => $data['penyedia']['toko'] ?? '',
-            'penyedia_pemilik' => $data['penyedia']['pemilik'] ?? '',
-            'penyedia_alamat' => $data['penyedia']['alamat'] ?? '',
-            'pejabat_nama' => $data['pejabat']['nama'] ?? '',
-            'pejabat_nip' => $data['pejabat']['nip'] ?? '',
-            'pptk_nama' => $data['pptk']['nama'] ?? '',
-            'pptk_nip' => $data['pptk']['nip'] ?? '',
-            'ppk_nama' => $data['ppk']['nama'] ?? '',
-            'ppk_nip' => $data['ppk']['nip'] ?? '',
-            'bendahara_nama' => $data['bendahara']['nama'] ?? '',
-            'bendahara_nip' => $data['bendahara']['nip'] ?? '',
-            'total' => $grand,
-            'terbilang' => $terbilang,
-            'nomor' => $data['nomor'],
-        ])->save();
-        $nota->items()->delete();
-        foreach ($cleanItems as $row) {
-            $nota->items()->create([
-                'name' => $row['name'],
-                'qty' => (int) $row['qty'],
-                'unit' => $row['unit'],
-                'price' => (int) $row['price'],
-                'total' => (int) $row['total'],
-            ]);
-        }
+
+        $this->syncRelatedDocsAfterNotaUpdate($oldNomor !== '' ? $oldNomor : null, $data);
+
         session()->forget('nota_current_id');
 
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'UPDATED',
-            'model_type' => 'App\Models\NotaPesanan',
-            'model_id' => $nota->id,
-            'description' => "Memperbarui Nota Pesanan: " . $data['nomor'],
-            'properties' => [
-                'old' => $prev,
-                'new' => $data
-            ],
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-        ]);
+        if (Schema::hasTable('activity_logs')) {
+            ActivityLog::create([
+                'user_id' => $userId,
+                'action' => 'UPDATED',
+                'model_type' => 'App\Models\NotaPesanan',
+                'model_id' => 0,
+                'description' => "Memperbarui Nota Pesanan: " . $data['nomor'],
+                'properties' => [
+                    'old' => $prev,
+                    'new' => $data
+                ],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+        }
 
         return redirect()->route('reports.nota.list')->with('status', 'Nota pesanan diperbarui');
+    }
+
+    private function syncRelatedDocsAfterNotaUpdate(?string $oldNotaNomor, array $notaData): void
+    {
+        $userId = Auth::id();
+        $disk = Storage::disk('local');
+        $newNotaNomor = trim((string)($notaData['nomor'] ?? ''));
+        $targets = array_values(array_filter([trim((string)$oldNotaNomor), $newNotaNomor], fn($v) => $v !== ''));
+        if (!$targets) {
+            return;
+        }
+
+        $notaItems = is_array($notaData['items'] ?? null) ? $notaData['items'] : [];
+        $bapItems = $this->mapNotaItemsToBapItems($notaItems);
+        $bapTotal = array_sum(array_map(fn($r) => (int)($r['jumlah'] ?? 0), $bapItems));
+        $bapTerbilang = ucwords($this->toWordsIdInternal((int)$bapTotal));
+
+        $affectedPenerimaan = [];
+
+        $pemeriksaanDir = "users/{$userId}/bap-pemeriksaan";
+        if ($disk->exists($pemeriksaanDir)) {
+            foreach ($disk->files($pemeriksaanDir) as $file) {
+                if (!str_ends_with($file, '.json')) continue;
+                $doc = json_decode($disk->get($file), true) ?: [];
+                $docNotaNomor = trim((string)($doc['nota']['nomor'] ?? ''));
+                if ($docNotaNomor === '' || !in_array($docNotaNomor, $targets, true)) {
+                    continue;
+                }
+                $doc['nota'] = $notaData;
+                $doc['items'] = $bapItems;
+                $doc['total'] = $bapTotal;
+                $doc['terbilang'] = $bapTerbilang;
+                $disk->put($file, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+                if (Schema::hasTable('bap_pemeriksaans') && Schema::hasTable('bap_items')) {
+                    $bap = BapPemeriksaan::where('user_id', $userId)->where('nomor', $doc['nomor'] ?? '')->first();
+                    if ($bap) {
+                        $bap->fill([
+                            'nota_nomor' => $notaData['nomor'] ?? '',
+                            'nota_tanggal' => $notaData['tanggal'] ?? null,
+                            'belanja' => $notaData['belanja'] ?? '',
+                            'penyedia_toko' => $notaData['penyedia']['toko'] ?? '',
+                            'penyedia_alamat' => $notaData['penyedia']['alamat'] ?? '',
+                            'total' => $bapTotal,
+                            'terbilang' => $bapTerbilang,
+                        ])->save();
+                        $bap->items()->delete();
+                        foreach ($bapItems as $row) {
+                            BapItem::create([
+                                'bap_id' => $bap->id,
+                                'nama' => $row['nama'] ?? '',
+                                'kuantitas' => (int)($row['kuantitas'] ?? 0),
+                                'satuan' => $row['satuan'] ?? '',
+                                'harga' => (int)($row['harga'] ?? 0),
+                                'jumlah' => (int)($row['jumlah'] ?? 0),
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        $penerimaanDir = "users/{$userId}/bap-penerimaan";
+        if ($disk->exists($penerimaanDir)) {
+            foreach ($disk->files($penerimaanDir) as $file) {
+                if (!str_ends_with($file, '.json')) continue;
+                $doc = json_decode($disk->get($file), true) ?: [];
+                $docNotaNomor = trim((string)($doc['nota']['nomor'] ?? ''));
+                if ($docNotaNomor === '' || !in_array($docNotaNomor, $targets, true)) {
+                    continue;
+                }
+                $doc['nota'] = $notaData;
+                $doc['items'] = $bapItems;
+                $doc['total'] = $bapTotal;
+                $doc['terbilang'] = $bapTerbilang;
+                $disk->put($file, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+                $penerimaanNomor = trim((string)($doc['nomor'] ?? ''));
+                if ($penerimaanNomor !== '') {
+                    $affectedPenerimaan[$penerimaanNomor] = $doc;
+                }
+            }
+        }
+
+        if (!$affectedPenerimaan) {
+            return;
+        }
+
+        $kwitansiDir = "users/{$userId}/kwitansi";
+        if (!$disk->exists($kwitansiDir)) {
+            return;
+        }
+
+        foreach ($disk->files($kwitansiDir) as $file) {
+            if (!str_ends_with($file, '.json')) continue;
+            $doc = json_decode($disk->get($file), true) ?: [];
+            $penerimaanNomor = trim((string)($doc['penerimaan_nomor'] ?? ''));
+            if ($penerimaanNomor === '' || !isset($affectedPenerimaan[$penerimaanNomor])) {
+                continue;
+            }
+            $penerimaanDoc = $affectedPenerimaan[$penerimaanNomor];
+            $total = (int)($penerimaanDoc['total'] ?? 0);
+            $doc['jumlah'] = $total;
+            $doc['terbilang'] = ucwords($this->toWordsIdInternal($total)) . ' Rupiah';
+
+            $nota = $penerimaanDoc['nota'] ?? [];
+            $doc['pembayaran_uraian'] = $this->generateKwitansiUraian(
+                (string)($nota['pekerjaan'] ?? ($nota['belanja'] ?? '')),
+                (string)($nota['sub_kegiatan'] ?? ''),
+                (string)($nota['kegiatan'] ?? ''),
+                (string)($doc['tahun'] ?? ($nota['tahun'] ?? now()->year))
+            );
+
+            if (isset($doc['pejabat']) && is_array($doc['pejabat'])) {
+                $doc['pejabat']['pihak_ketiga'] = ($nota['penyedia']['pemilik'] ?? ($nota['penyedia']['toko'] ?? ($doc['pejabat']['pihak_ketiga'] ?? '')));
+            }
+
+            $disk->put($file, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
+    }
+
+    private function mapNotaItemsToBapItems(array $notaItems): array
+    {
+        $res = [];
+        foreach ($notaItems as $row) {
+            $name = (string)($row['name'] ?? '');
+            $qty = (int)($row['qty'] ?? 0);
+            $unit = (string)($row['unit'] ?? '');
+            $price = (int)($row['price'] ?? 0);
+            $total = (int)($row['total'] ?? ($qty * $price));
+            $res[] = [
+                'nama' => $name,
+                'kuantitas' => $qty,
+                'satuan' => $unit,
+                'harga' => $price,
+                'jumlah' => $total,
+            ];
+        }
+        return $res;
+    }
+
+    private function generateKwitansiUraian(string $pekerjaan, string $subKegiatan, string $kegiatan, string $tahun): string
+    {
+        $pekerjaan = trim($pekerjaan);
+        $res = $pekerjaan;
+        if ($res !== '' && !str_starts_with(strtolower($res), 'belanja')) {
+            $res = 'Belanja ' . $res;
+        }
+        $hasKeg = str_contains(strtolower($res), 'pada keg') || str_contains(strtolower($res), 'pada kegiatan');
+        if (!$hasKeg && trim($subKegiatan) !== '') {
+            $res .= ' Pada Keg. ' . trim($subKegiatan);
+        }
+        if (!$hasKeg && trim($kegiatan) !== '') {
+            if (!str_contains(strtolower($res), strtolower(trim($kegiatan)))) {
+                $res .= ' ' . trim($kegiatan);
+            }
+        }
+        if (!str_contains(strtolower($res), 'tahun') && trim($tahun) !== '') {
+            $res .= ' Tahun ' . trim($tahun);
+        }
+        return trim($res);
     }
 
     public function list(Request $request): View

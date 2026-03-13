@@ -9,7 +9,7 @@
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Kartu Persediaan Tahunan</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route('dashboard') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+            <a href="{{ route('stock.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
                 <i class="fas fa-arrow-left text-xs"></i>
             </a>
             <button onclick="openPrintPreview()" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
@@ -38,9 +38,9 @@
     </div>
 
     {{-- Document Preview Card --}}
-    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden flex flex-col items-center">
-        <div class="w-full flex justify-center no-scrollbar overflow-x-auto">
-            <div class="flex-shrink-0 origin-top transform scale-[0.25] min-[400px]:scale-[0.3] sm:scale-100 mb-[-150%] min-[400px]:mb-[-130%] sm:mb-0" style="width: 330mm;">
+    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden">
+        <div id="paper-container" class="w-full no-scrollbar flex justify-center items-start" style="padding-bottom: 8px;">
+            <div id="paper-scale" class="flex-shrink-0" style="transform-origin: top center; margin: 0 auto;">
                 <style>
                     .preview-paper-mobile-landscape { 
                         width: 330mm; 
@@ -62,6 +62,8 @@
                     .text-center { text-align: center; }
                     .text-right { text-align: right; }
                     .font-bold { font-weight: bold; }
+                    .signature-block { break-inside: avoid; page-break-inside: avoid; }
+                    .signature-block * { break-inside: avoid; page-break-inside: avoid; }
                     .info-table-mobile { border: none !important; margin-bottom: 15px; width: auto !important; }
                     .info-table-mobile td { border: none !important; padding: 2px 5px; font-size: 14px; }
                 </style>
@@ -173,7 +175,7 @@
                         </table>
                     @endforeach
 
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-top: 60px; text-align: center;">
+                    <div class="signature-block" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-top: 60px; text-align: center;">
                         <div>
                             <p>Dibuat Oleh</p>
                             <p>Pengurus Barang</p>
@@ -226,6 +228,8 @@
                     .text-center { text-align: center; }
                     .text-right { text-align: right; }
                     .font-bold { font-weight: bold; }
+                    .signature-block { break-inside: avoid; page-break-inside: avoid; }
+                    .signature-block * { break-inside: avoid; page-break-inside: avoid; }
                     @media print { 
                         body { padding: 0; }
                         @page { size: 330mm 210mm; margin: 10mm; }
@@ -247,5 +251,24 @@
         `);
         win.document.close();
     }
+    (function() {
+        const paperScale = document.getElementById('paper-scale');
+        const doc = document.getElementById('document-preview');
+        const container = document.getElementById('paper-container');
+        function fit() {
+            if (!paperScale || !doc || !container) return;
+            const baseW = doc.scrollWidth || paperScale.scrollWidth || 1;
+            const rect = container.getBoundingClientRect();
+            const availW = container.clientWidth;
+            const scale = availW / baseW;
+            const clamped = Math.max(0.18, Math.min(scale, 1));
+            paperScale.style.transform = `scale(${clamped})`;
+            paperScale.style.marginLeft = 'auto';
+            paperScale.style.marginRight = 'auto';
+        }
+        window.addEventListener('resize', fit);
+        document.addEventListener('DOMContentLoaded', fit);
+        setTimeout(fit, 0);
+    })();
 </script>
 @endsection

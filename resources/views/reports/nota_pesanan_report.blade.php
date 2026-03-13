@@ -187,6 +187,11 @@
         <button type="button" onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
             <i class="fas fa-print mr-2"></i> Print
         </button>
+        @if(session('nota_current_id') && auth()->user()->hasPermission('pemeriksaan') && auth()->user()->hasPermission('penerimaan') && auth()->user()->hasPermission('berkas_lainnya'))
+            <a href="{{ route('reports.paket.show', session('nota_current_id')) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
+                <i class="fas fa-layer-group"></i> Paket 4 Dokumen
+            </a>
+        @endif
         <form action="{{ route('reports.nota.save') }}" method="POST" class="inline">
             @csrf
             {{-- Hidden inputs from $data --}}
@@ -382,7 +387,7 @@
                 sesuai dengan kualitas dan kuantitas barang yang diperiksa.</li>
         </ol>
 
-        <div class="grid grid-cols-2 gap-6 mt-6">
+        <div class="grid grid-cols-2 gap-6 mt-6 signature-block">
             <div class="text-center text-sm">
                 <p class="mb-1">&nbsp;</p>
                 <p class="mb-1">Setuju Untuk Melaksanakan Pekerjaan</p>
@@ -400,7 +405,7 @@
 
         </div>
 
-        <div class="grid grid-cols-1 mt-8 text-sm">
+        <div class="grid grid-cols-1 mt-8 text-sm signature-block">
             <div class="text-center">
                 <p class="mb-1">MENGETAHUI,</p>
                 <p class="mb-1">PENGGUNA ANGGARAN SELAKU PPK</p>

@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\BelanjaModalController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DokumenPaketController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\KwitansiController;
 use App\Http\Controllers\NotaPesananController;
@@ -165,6 +166,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('reports/kwitansi/{id}/update', [KwitansiController::class, 'update'])->name('reports.kwitansi.update');
         Route::delete('reports/kwitansi/{id}/delete', [KwitansiController::class, 'delete'])->name('reports.kwitansi.delete');
         Route::post('reports/kwitansi/bulk-delete', [KwitansiController::class, 'bulkDelete'])->name('reports.kwitansi.bulk_delete');
+    });
+
+    Route::middleware(['permission:surat_pesanan', 'permission:pemeriksaan', 'permission:penerimaan', 'permission:berkas_lainnya'])->group(function () {
+        Route::get('reports/paket-dokumen/{notaId}', [DokumenPaketController::class, 'show'])->name('reports.paket.show');
     });
     // Unified Settings: OPD Profil & Penandatangan
     Route::middleware('permission:pengaturan_opd')->group(function () {

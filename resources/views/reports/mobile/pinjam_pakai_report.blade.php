@@ -28,11 +28,14 @@
                     .preview-paper-mobile h2 { margin: 5px 0; }
                     .preview-paper-mobile table { width: 100%; border-collapse: collapse; margin-top: 10px; }
                     .preview-paper-mobile th, .preview-paper-mobile td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
+                    .preview-paper-mobile .rules-table td, .preview-paper-mobile .rules-table th { border: none !important; }
                     .text-center { text-align: center; }
                     .text-right { text-align: right; }
                     .font-bold { font-weight: bold; }
                     .underline { text-decoration: underline; }
                     .uppercase { text-transform: uppercase; }
+                    .signature-block { break-inside: avoid; page-break-inside: avoid; }
+                    .signature-block * { break-inside: avoid; page-break-inside: avoid; }
                 </style>
                 <div id="document-preview" class="preview-paper-mobile">
                     @include('partials.kop', ['opd' => $opd])
@@ -88,54 +91,78 @@
 
                     <p>Bahwa kedua belah pihak sepakat mengadakan perjanjian serah terima barang inventaris kantor/kendaraan milik Pemerintah Kabupaten Bolaang Mongondow Selatan :</p>
 
-                    <table>
+                    <table style="table-layout: fixed; width: 100%;">
+                        <colgroup>
+                            <col style="width: 30px;">
+                            <col>
+                            <col>
+                            <col>
+                            <col style="width: 86px;">
+                            <col style="width: 70px;">
+                            <col style="width: 80px;">
+                            <col style="width: 70px;">
+                        </colgroup>
                         <thead>
                             <tr class="text-center font-bold" style="background-color: #f8fafc;">
-                                <th>No</th>
+                                <th style="width: 30px;">No</th>
                                 <th>Nama Barang</th>
-                                <th>Merk/Type</th>
-                                <th>No. Polisi</th>
-                                <th>Tahun</th>
-                                <th>Kondisi</th>
-                                <th>Jumlah</th>
+                                <th>Merk</th>
+                                <th>Type</th>
+                                <th style="width: 86px;">No. Polisi<br>(khusus kendaraan)</th>
+                                <th style="width: 70px;">Tahun<br>Perolehan</th>
+                                <th style="width: 80px;">Kondisi<br>Barang</th>
+                                <th style="width: 70px;">Jumlah<br>Barang</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($data['items'] as $i => $item)
                                 <tr>
-                                    <td class="text-center">{{ $i + 1 }}</td>
+                                    <td class="text-center" style="width: 30px;">{{ $i + 1 }}</td>
                                     <td>{{ $item['nama'] }}</td>
-                                    <td>{{ ($item['merk'] ?? '-') . ' / ' . ($item['tipe'] ?? '-') }}</td>
-                                    <td class="text-center">{{ $item['identitas'] ?? '-' }}</td>
-                                    <td class="text-center">{{ $item['tahun'] ?? '-' }}</td>
-                                    <td class="text-center">{{ $item['kondisi'] ?? '-' }}</td>
-                                    <td class="text-center font-bold">{{ $item['jumlah'] }}</td>
+                                    <td>{{ $item['merk'] ?? '-' }}</td>
+                                    <td>{{ $item['tipe'] ?? '-' }}</td>
+                                    <td class="text-center" style="width: 86px;">{{ $item['identitas'] ?? '-' }}</td>
+                                    <td class="text-center" style="width: 70px;">{{ $item['tahun'] ?? '-' }}</td>
+                                    <td class="text-center" style="width: 80px;">{{ $item['kondisi'] ?? '-' }}</td>
+                                    <td class="text-center font-bold" style="width: 70px;">{{ $item['jumlah'] }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
 
                     <p style="margin-top: 15px;">Dengan ketentuan sebagai berikut:</p>
-                    <div style="padding-left: 20px;">
-                        @php
-                            $rulesLines = preg_split("/\r\n|\n|\r/", $data['ketentuan'] ?? '');
-                            $rulesLines = array_values(array_filter($rulesLines, fn($l) => trim($l) !== ''));
-                            $defaultRules = [
-                                'PIHAK PERTAMA selaku Pengguna Barang meminjamkan Barang Milik Daerah tersebut di atas kepada PIHAK KEDUA untuk mendukung kelancaran pelaksanaan tugas.',
-                                'PIHAK KEDUA bertanggung jawab dalam hal penggunaan, pemeliharaan dan pengamanan barang tersebut.',
-                                'PIHAK KEDUA dilarang memindahtangankan barang tersebut kepada pihak lain tanpa seizin PIHAK PERTAMA;',
-                                'PIHAK KEDUA sanggup mengganti rugi apabila barang yang dipinjamkan hilang;',
-                                'PIHAK KEDUA wajib mengembalikan Barang Milik Daerah kepada PIHAK PERTAMA apabila telah selesai masa tugasnya.',
-                            ];
-                            $list = count($rulesLines) ? $rulesLines : $defaultRules;
-                        @endphp
+                    @php
+                        $rulesLines = preg_split("/\r\n|\n|\r/", $data['ketentuan'] ?? '');
+                        $rulesLines = array_values(array_filter($rulesLines, fn($l) => trim($l) !== ''));
+                        $defaultRules = [
+                            'PIHAK PERTAMA selaku Pengguna Barang adalah pejabat pemegang kewenangan penggunaan Barang Milik Daerah, meminjamkan Barang Milik Daerah tersebut di atas kepada PIHAK KEDUA untuk mendukung kegiatan dan kelancaran pelaksanaan tugas pada Dinas Komunikasi dan Informatika.',
+                            'PIHAK KEDUA bertanggung jawab dalam hal penggunaan, pemeliharaan dan pengamanan barang tersebut sejak tanggal serah terima ini.',
+                            'PIHAK KEDUA dilarang memindahtangankan barang tersebut kepada pihak lain tanpa seizin PIHAK PERTAMA;',
+                            'PIHAK KEDUA sanggup mengganti rugi apabila barang yang dipinjamkan hilang;',
+                            'PIHAK KEDUA wajib mengembalikan Barang Milik Daerah tersebut kepada PIHAK PERTAMA apabila telah pensiun/dimutasi/dipindahtugaskan ke Instansi lain, tanpa ada Tuntutan Ganti Rugi dan lain sebagainya yang berkaitan dengan Penyerahan Barang Milik Daerah.',
+                            'Berita Acara Serah Terima ini berlaku hingga 31 Desember 2026.',
+                        ];
+                        $list = count($rulesLines) ? $rulesLines : $defaultRules;
+                    @endphp
+                    <table class="rules-table" style="width: 100%; border: none; border-collapse: collapse; margin-top: 6px;">
                         @foreach ($list as $i => $line)
-                            <div style="display: flex; margin-bottom: 4px;">
-                                <div style="width: 25px;">{{ chr(97 + $i) }}.</div>
-                                <div style="flex: 1;">{!! trim($line) !!}</div>
-                            </div>
+                            @php
+                                $m = [];
+                                $letter = '';
+                                $content = trim($line);
+                                if (preg_match('/^\s*([a-zA-Z])\.\s*(.*)$/', $line, $m)) {
+                                    $letter = strtolower($m[1]);
+                                    $content = $m[2];
+                                } else {
+                                    $letter = chr(97 + $i);
+                                }
+                            @endphp
+                            <tr>
+                                <td style="width: 18px; vertical-align: top; padding: 0 0 4px 0;">{{ $letter }}.</td>
+                                <td style="padding: 0 0 4px 6px; text-align: justify;">{!! $content !!}</td>
+                            </tr>
                         @endforeach
-                    </div>
+                    </table>
 
                     <p style="margin-top: 15px;">Demikian Berita Acara Serah Terima Barang Inventaris ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
                     
@@ -143,7 +170,7 @@
                         {{ ucwords(strtolower($data['tempat'] ?? '')) }}, {{ \Illuminate\Support\Carbon::parse($data['tanggal'])->translatedFormat('d F Y') }}
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 40px; text-align: center;">
+                    <div class="signature-block" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 40px; text-align: center;">
                         <div>
                             <p>PIHAK KEDUA</p>
                             <div style="height: 80px;"></div>
@@ -190,11 +217,14 @@
                     .preview-paper-mobile h2 { margin: 5px 0; }
                     .preview-paper-mobile table { width: 100%; border-collapse: collapse; margin-top: 10px; }
                     .preview-paper-mobile th, .preview-paper-mobile td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
+                    .preview-paper-mobile .rules-table td, .preview-paper-mobile .rules-table th { border: none !important; }
                     .text-center { text-align: center; }
                     .text-right { text-align: right; }
                     .font-bold { font-weight: bold; }
                     .underline { text-decoration: underline; }
                     .uppercase { text-transform: uppercase; }
+                    .signature-block { break-inside: avoid; page-break-inside: avoid; }
+                    .signature-block * { break-inside: avoid; page-break-inside: avoid; }
                     @media print { 
                         body { padding: 0; }
                         @page { size: 210mm 330mm; margin: 10mm; }

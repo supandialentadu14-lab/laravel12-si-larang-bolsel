@@ -13,9 +13,9 @@
             </a>
         </div>
 
-        <form action="{{ route('reports.penerimaan.report') }}" method="POST" class="space-y-6">
+        <form action="{{ route('reports.penerimaan.save') }}" method="POST" class="space-y-6">
             @csrf
-            <input type="hidden" name="id" value="{{ session('penerimaan_current_id') }}">
+            <input type="hidden" name="id" value="{{ $id }}">
             
             {{-- Hubungkan Dokumen --}}
             <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">

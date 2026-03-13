@@ -110,21 +110,32 @@
             </div>
 
             <div class="overflow-x-auto mb-6">
-                <table class="w-full text-xs border border-black print:text-[10px]">
+                <table class="w-full text-xs border border-black print:text-[10px]" style="table-layout: fixed;">
+                    <colgroup>
+                        <col style="width: 34px;">
+                        <col>
+                        <col style="width: 64px;">
+                        <col style="width: 60px;">
+                        <col style="width: 112px;">
+                        <col style="width: 120px;">
+                        <col style="width: 20px;">
+                        <col style="width: 20px;">
+                        <col style="width: 20px;">
+                    </colgroup>
                     <thead>
                         <tr class="text-center font-bold">
-                            <th class="border border-black px-2 py-1" rowspan="2">No</th>
+                            <th class="border border-black px-1 py-1" style="width: 34px;" rowspan="2">No</th>
                             <th class="border border-black px-2 py-1" rowspan="2">Nama Jenis Persediaan Barang</th>
-                            <th class="border border-black px-2 py-1" rowspan="2">Kwantitas</th>
+                            <th class="border border-black px-2 py-1" style="white-space: nowrap; font-size: 11px;" rowspan="2">Kwantitas</th>
                             <th class="border border-black px-2 py-1" rowspan="2">Satuan</th>
                             <th class="border border-black px-2 py-1" rowspan="2">Harga Satuan (Rp)</th>
                             <th class="border border-black px-2 py-1" rowspan="2">Jumlah Harga (Rp)</th>
                             <th class="border border-black px-2 py-1" colspan="3">Kondisi Barang</th>
                         </tr>
                         <tr class="text-center font-bold">
-                            <th class="border border-black px-2 py-1">B</th>
-                            <th class="border border-black px-2 py-1">RR</th>
-                            <th class="border border-black px-2 py-1">RB</th>
+                            <th class="border border-black px-0 py-1" style="width: 20px;">B</th>
+                            <th class="border border-black px-0 py-1" style="width: 20px;">RR</th>
+                            <th class="border border-black px-0 py-1" style="width: 20px;">RB</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -132,7 +143,7 @@
                         @foreach ($data['items'] as $i => $item)
                             @php $total += (int)($item['jumlah'] ?? 0); @endphp
                             <tr>
-                                <td class="border border-black px-2 py-1 text-center">{{ $i + 1 }}</td>
+                                <td class="border border-black px-1 py-1 text-center" style="width: 34px;">{{ $i + 1 }}</td>
                                 <td class="border border-black px-2 py-1">{{ $item['nama'] }}</td>
                                 <td class="border border-black px-2 py-1 text-center">{{ $item['kuantitas'] }}</td>
                                 <td class="border border-black px-2 py-1 text-center">{{ $item['satuan'] ?? '-' }}</td>
@@ -140,11 +151,11 @@
                                     {{ number_format($item['harga'] ?? 0, 0, ',', '.') }}</td>
                                 <td class="border border-black px-2 py-1 text-right">
                                     {{ number_format($item['jumlah'] ?? 0, 0, ',', '.') }}</td>
-                                <td class="border border-black px-2 py-1 text-center">
+                                <td class="border border-black px-0 py-1 text-center" style="width: 20px;">
                                     {{ isset($item['kondisi']) && $item['kondisi'] === 'B' ? 'V' : '' }}</td>
-                                <td class="border border-black px-2 py-1 text-center">
+                                <td class="border border-black px-0 py-1 text-center" style="width: 20px;">
                                     {{ isset($item['kondisi']) && $item['kondisi'] === 'RR' ? 'V' : '' }}</td>
-                                <td class="border border-black px-2 py-1 text-center">
+                                <td class="border border-black px-0 py-1 text-center" style="width: 20px;">
                                     {{ isset($item['kondisi']) && $item['kondisi'] === 'RB' ? 'V' : '' }}</td>
                             </tr>
                         @endforeach
@@ -152,9 +163,9 @@
                             <td colspan="5" class="border border-black px-2 py-1 text-right font-bold">Jumlah</td>
                             <td class="border border-black px-2 py-1 text-right font-bold">
                                 {{ number_format($total, 0, ',', '.') }}</td>
-                            <td class="border border-black px-2 py-1"></td>
-                            <td class="border border-black px-2 py-1"></td>
-                            <td class="border border-black px-2 py-1"></td>
+                            <td class="border border-black px-0 py-1" style="width: 20px;"></td>
+                            <td class="border border-black px-0 py-1" style="width: 20px;"></td>
+                            <td class="border border-black px-0 py-1" style="width: 20px;"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -163,7 +174,7 @@
             <p class="mb-4 text-sm">Demikian Berita Acara Stock Opname Persediaan Barang Habis Pakai ini dibuat untuk
                 diperlukan sebagaimana mestinya.</p>
             
-            <div class="grid grid-cols-2 gap-6 mt-6">
+            <div class="grid grid-cols-2 gap-6 mt-6 signature-block">
                 <div class="text-center">
                     <p class="mb-1">&nbsp;</p>
                     <p class="mb-1">Pengurus Barang Pengguna</p>

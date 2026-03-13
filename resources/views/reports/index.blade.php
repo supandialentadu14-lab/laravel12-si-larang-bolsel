@@ -86,26 +86,30 @@
         }
 
         .split-cell .left {
-            flex: 1;
+            flex: 0 0 var(--qty-w, 38px);
             text-align: center;
-            padding: 6px 8px;
+            padding: 2px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .split-cell .right {
-            flex: 1;
-            text-align: right;
-            padding: 6px 8px;
+            flex: 1 1 auto;
+            text-align: center;
+            padding: 2px 8px;
         }
 
         td.split-col {
             position: relative;
             padding: 0 !important;
+            --qty-w: 38px;
         }
 
         td.split-col::after {
             content: '';
             position: absolute;
-            left: 50%;
+            left: var(--qty-w, 38px);
             top: -1px;
             bottom: -1px;
             width: 1px;
@@ -160,6 +164,16 @@
             body {
                 margin: 0;
             }
+
+            .signature-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .signature-block * {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
         }
     </style>
 
@@ -198,20 +212,20 @@
 
             <thead>
                 <tr class="bg-gray-200 font-bold">
-                    <th rowspan="2" class="border border-gray-400 px-2 py-2">No</th>
-                    <th rowspan="2" class="border border-gray-400 px-2 py-2 text-left">Nama Barang</th>
+                    <th rowspan="2" class="border border-gray-400 px-1 py-1" style="width: 38px;">No</th>
+                    <th rowspan="2" class="border border-gray-400 px-2 py-1 text-left">Nama Barang</th>
 
-                    <th colspan="3" class="border border-gray-400 px-2 py-2">SALDO AWAL</th>
-                    <th colspan="3" class="border border-gray-400 px-2 py-2">MUTASI MASUK</th>
-                    <th colspan="3" class="border border-gray-400 px-2 py-2">MUTASI KELUAR</th>
-                    <th colspan="3" class="border border-gray-400 px-2 py-2">SALDO AKHIR</th>
+                    <th colspan="3" class="border border-gray-400 px-2 py-1">SALDO AWAL</th>
+                    <th colspan="3" class="border border-gray-400 px-2 py-1">MUTASI MASUK</th>
+                    <th colspan="3" class="border border-gray-400 px-2 py-1">MUTASI KELUAR</th>
+                    <th colspan="3" class="border border-gray-400 px-2 py-1">SALDO AKHIR</th>
                 </tr>
 
                 <tr class="bg-gray-100 text-xs">
                     @for ($i = 0; $i < 4; $i++)
-                        <th class="border border-gray-400 px-2 py-2">Jmlh Barang</th>
-                        <th class="border border-gray-400 px-2 py-2">Harga Satuan (Rp)</th>
-                        <th class="border border-gray-400 px-2 py-2">Jumlah (Rp)</th>
+                        <th class="border border-gray-400 px-2 py-1">Jmlh Barang</th>
+                        <th class="border border-gray-400 px-2 py-1">Harga Satuan (Rp)</th>
+                        <th class="border border-gray-400 px-2 py-1">Jumlah (Rp)</th>
                     @endfor
                 </tr>
             </thead>
@@ -233,7 +247,7 @@
                     {{-- HEADER TANGGAL --}}
                     @if ($lastDate != $currentDate)
                         <tr class="bg-gray-100 font-bold text-left">
-                            <td colspan="14" class="border border-gray-400 px-3 py-2">
+                            <td colspan="14" class="border border-gray-400 px-3 py-1">
                                 Tanggal :
                                 {{ \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') }}
                             </td>
@@ -264,11 +278,11 @@
                     @endphp
 
                     <tr>
-                        <td class="border border-gray-400 px-2 py-2 text-center">
+                        <td class="border border-gray-400 px-1 py-1 text-center" style="width: 38px;">
                             {{ $no++ }}
                         </td>
 
-                        <td class="border border-gray-400 px-2 py-2 text-left">
+                        <td class="border border-gray-400 px-2 py-1 text-left">
                             {{ $item['name'] }}
                         </td>
 
@@ -279,10 +293,10 @@
                                 <div class="right">{{ $satuan }}</div>
                             </div>
                         </td>
-                        <td class="border border-gray-400 px-2 py-2">
+                        <td class="border border-gray-400 px-2 py-1 text-right">
                             {{ number_format($harga, 0, ',', '.') }}
                         </td>
-                        <td class="border border-gray-400 px-2 py-2">
+                        <td class="border border-gray-400 px-2 py-1 text-right">
                             {{ number_format($saldoAwal * $harga, 0, ',', '.') }}
                         </td>
 
@@ -293,10 +307,10 @@
                                 <div class="right">{{ $satuan }}</div>
                             </div>
                         </td>
-                        <td class="border border-gray-400 px-2 py-2">
+                        <td class="border border-gray-400 px-2 py-1 text-right">
                             {{ number_format($harga, 0, ',', '.') }}
                         </td>
-                        <td class="border border-gray-400 px-2 py-2">
+                        <td class="border border-gray-400 px-2 py-1 text-right">
                             {{ number_format($masuk * $harga, 0, ',', '.') }}
                         </td>
 
@@ -307,10 +321,10 @@
                                 <div class="right">{{ $satuan }}</div>
                             </div>
                         </td>
-                        <td class="border border-gray-400 px-2 py-2">
+                        <td class="border border-gray-400 px-2 py-1 text-right">
                             {{ number_format($harga, 0, ',', '.') }}
                         </td>
-                        <td class="border border-gray-400 px-2 py-2">
+                        <td class="border border-gray-400 px-2 py-1 text-right">
                             {{ number_format($keluar * $harga, 0, ',', '.') }}
                         </td>
 
@@ -321,10 +335,10 @@
                                 <div class="right">{{ $satuan }}</div>
                             </div>
                         </td>
-                        <td class="border border-gray-400 px-2 py-2">
+                        <td class="border border-gray-400 px-2 py-1 text-right">
                             {{ number_format($harga, 0, ',', '.') }}
                         </td>
-                        <td class="border border-gray-400 px-2 py-2 font-bold">
+                        <td class="border border-gray-400 px-2 py-1 font-bold text-right">
                             {{ number_format($saldoAkhir * $harga, 0, ',', '.') }}
                         </td>
                     </tr>
@@ -346,10 +360,10 @@
                 @endphp
 
                 <tr class="bg-gray-200 font-bold text-right">
-                    <td colspan="13" class="border border-gray-400 px-3 py-3">
+                    <td colspan="13" class="border border-gray-400 px-3 py-2">
                         TOTAL NILAI PERSEDIAAN
                     </td>
-                    <td class="border border-gray-400 px-3 py-3 text-center">
+                    <td class="border border-gray-400 px-3 py-2 text-right">
                         {{ number_format($grandTotal, 0, ',', '.') }}
                     </td>
                 </tr>
@@ -358,7 +372,7 @@
         </table>
         {{-- TANDA TANGAN --}}
 
-        <div class="mt-16 w-full text-sm">
+        <div class="mt-16 w-full text-sm signature-block">
 
             <div class="flex justify-between">
 

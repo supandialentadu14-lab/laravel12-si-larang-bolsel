@@ -160,7 +160,7 @@
         <p class="mb-3 text-sm">1. Barang Baik (V)</p>
         <p class="mb-6 text-sm">2. Barang Tidak Baik (X)</p>
         
-        <div class="grid grid-cols-2 gap-6 mt-6">
+        <div class="grid grid-cols-2 gap-6 mt-6 signature-block">
             <div class="text-center">
                 <p class="mb-1">Penyedia</p>
                 <div class="h-24"></div>
@@ -174,7 +174,7 @@
             </div>
         </div>
 
-        <div class="text-center mt-8">
+        <div class="text-center mt-8 signature-block">
             <p class="mb-1">MENGETAHUI,</p>
             <p class="mb-1">PENGGUNA ANGGARAN SELAKU PPK</p>
             <div class="h-24"></div>

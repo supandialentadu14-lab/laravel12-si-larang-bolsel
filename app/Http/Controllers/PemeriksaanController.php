@@ -356,7 +356,10 @@ class PemeriksaanController extends Controller
                 ]);
             }
         }
-        return redirect()->route('reports.pemeriksaan.list')->with('success', $currentId ? 'Berita acara diperbarui' : 'Berita acara disimpan');
+        if ($currentId) {
+            return redirect()->route('reports.pemeriksaan.list')->with('success', 'Berita acara diperbarui');
+        }
+        return redirect()->route('reports.pemeriksaan.show', $id)->with('success', 'Berita acara disimpan');
     }
 
     public function list(Request $request): View

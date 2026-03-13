@@ -288,7 +288,7 @@
             </div>
 
             @if ($current == $lastIndex)
-                <table class="ttd-table">
+                <table class="ttd-table signature-block">
                     <tr>
                         
                         <td align="center">

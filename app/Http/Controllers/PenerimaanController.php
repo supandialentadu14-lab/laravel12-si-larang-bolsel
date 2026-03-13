@@ -318,7 +318,10 @@ class PenerimaanController extends Controller
 
         Storage::disk('local')->put("users/".Auth::id()."/bap-penerimaan/{$id}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         session()->forget('penerimaan_current_id');
-        return redirect()->route('reports.penerimaan.list')->with('success', $currentId ? 'BAP Penerimaan diperbarui' : 'BAP Penerimaan disimpan');
+        if ($currentId) {
+            return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan diperbarui');
+        }
+        return redirect()->route('reports.penerimaan.show', $id)->with('success', 'BAP Penerimaan disimpan');
     }
 
     public function list(Request $request): View
@@ -410,6 +413,11 @@ class PenerimaanController extends Controller
         if (empty($data['ppk']['nip'])) {
             $data['ppk']['nip'] = (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''));
         }
+
+        session([
+            'penerimaan_current' => $data,
+            'penerimaan_current_id' => $id,
+        ]);
 
         $docs = $this->listPemeriksaanDocs();
         return view('penerimaan.edit', compact('data', 'opd', 'docs', 'id'));
@@ -516,4 +524,3 @@ class PenerimaanController extends Controller
         return redirect()->route('reports.penerimaan.list')->with('status', "{$count} BAP Penerimaan dan Kwitansi terkait dihapus");
     }
 }
-

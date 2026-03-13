@@ -17,6 +17,12 @@
   #print-area, #print-area * { visibility: visible; }
   #print-area { position: absolute; left: 0; top: 0; width: 100%; }
   @page { size: 210mm 330mm; margin: 12mm; }
+
+  .signature-block,
+  .signature-block * {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
 
 /* Tabel header kiri-kanan dengan label, titik dua, isi, dan kolom kanan */

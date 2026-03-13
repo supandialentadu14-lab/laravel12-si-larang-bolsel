@@ -9,7 +9,7 @@
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Laporan Persediaan Barang</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route('dashboard') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+            <a href="{{ route('stock.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
                 <i class="fas fa-arrow-left text-xs"></i>
             </a>
             <button onclick="openPrintPreview()" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
@@ -38,9 +38,9 @@
     </div>
 
     {{-- Document Preview Card --}}
-    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden flex flex-col items-center">
-        <div class="w-full flex justify-center no-scrollbar overflow-x-auto">
-            <div class="flex-shrink-0 origin-top transform scale-[0.22] min-[400px]:scale-[0.28] sm:scale-100 mb-[-160%] min-[400px]:mb-[-140%] sm:mb-0" style="width: 330mm;">
+    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden">
+        <div id="paper-container" class="w-full no-scrollbar flex justify-center items-start" style="padding-bottom: 8px;">
+            <div id="paper-scale" class="flex-shrink-0" style="transform-origin: top center; margin: 0 auto;">
                 <style>
                     .preview-paper-mobile-landscape { 
                         width: 330mm; 
@@ -57,11 +57,18 @@
                     .preview-paper-mobile-landscape h1 { font-size: 20px; font-weight: 800; text-transform: uppercase; margin: 0; text-align: center; }
                     .preview-paper-mobile-landscape h5 { font-size: 14px; font-weight: 700; margin: 5px 0; text-align: center; }
                     .preview-paper-mobile-landscape table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                    .preview-paper-mobile-landscape th, .preview-paper-mobile-landscape td { border: 1px solid black; padding: 6px; font-size: 11px; }
+                    .preview-paper-mobile-landscape th, .preview-paper-mobile-landscape td { border: 1px solid black; padding: 4px 6px; font-size: 11px; }
                     .text-center { text-align: center; }
                     .text-right { text-align: right; }
                     .text-left { text-align: left; }
                     .font-bold { font-weight: bold; }
+                    .split-cell { position: relative; display: flex; width: 100%; height: 100%; }
+                    .split-cell .left { flex: 0 0 var(--qty-w, 28px); padding: 4px 0; display: flex; align-items: center; justify-content: center; }
+                    .split-cell .right { flex: 1 1 auto; padding: 4px 8px; text-align: center; }
+                    td.split-col { position: relative; padding: 0 !important; --qty-w: 28px; }
+                    td.split-col::after { content: ''; position: absolute; left: var(--qty-w, 28px); top: -1px; bottom: -1px; width: 1px; background: #9ca3af; pointer-events: none; }
+                    .signature-block { break-inside: avoid; page-break-inside: avoid; }
+                    .signature-block * { break-inside: avoid; page-break-inside: avoid; }
                     .info-table-mobile { border: none !important; margin-bottom: 15px; width: auto !important; }
                     .info-table-mobile td { border: none !important; padding: 2px 5px; font-size: 14px; }
                 </style>
@@ -89,7 +96,7 @@
                     <table>
                         <thead>
                             <tr style="background-color: #f8fafc;" class="font-bold">
-                                <th rowspan="2" style="width: 30px;">No</th>
+                                <th rowspan="2" style="width: 24px;">No</th>
                                 <th rowspan="2">Nama Barang</th>
                                 <th colspan="3">SALDO AWAL</th>
                                 <th colspan="3">MUTASI MASUK</th>
@@ -119,7 +126,7 @@
 
                                 @if ($lastDate != $currentDate)
                                     <tr style="background-color: #f1f5f9;" class="font-bold text-left">
-                                        <td colspan="14" style="padding: 8px;">
+                                        <td colspan="14" style="padding: 6px 8px;">
                                             Tanggal : {{ \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') }}
                                         </td>
                                     </tr>
@@ -140,18 +147,38 @@
                                 @endphp
 
                                 <tr>
-                                    <td class="text-center">{{ $no++ }}</td>
+                                    <td class="text-center" style="width: 24px;">{{ $no++ }}</td>
                                     <td class="text-left">{{ $item['name'] }}</td>
-                                    <td class="text-center">{{ $saldoAwal }}</td>
+                                    <td class="split-col">
+                                        <div class="split-cell">
+                                            <div class="left">{{ $saldoAwal }}</div>
+                                            <div class="right">{{ $satuan }}</div>
+                                        </div>
+                                    </td>
                                     <td class="text-right">{{ number_format($harga, 0, ',', '.') }}</td>
                                     <td class="text-right">{{ number_format($saldoAwal * $harga, 0, ',', '.') }}</td>
-                                    <td class="text-center font-bold" style="color: #16a34a;">{{ $masuk }}</td>
+                                    <td class="split-col">
+                                        <div class="split-cell">
+                                            <div class="left font-bold" style="color: #16a34a;">{{ $masuk }}</div>
+                                            <div class="right">{{ $satuan }}</div>
+                                        </div>
+                                    </td>
                                     <td class="text-right">{{ number_format($harga, 0, ',', '.') }}</td>
                                     <td class="text-right">{{ number_format($masuk * $harga, 0, ',', '.') }}</td>
-                                    <td class="text-center font-bold" style="color: #dc2626;">{{ $keluar }}</td>
+                                    <td class="split-col">
+                                        <div class="split-cell">
+                                            <div class="left font-bold" style="color: #dc2626;">{{ $keluar }}</div>
+                                            <div class="right">{{ $satuan }}</div>
+                                        </div>
+                                    </td>
                                     <td class="text-right">{{ number_format($harga, 0, ',', '.') }}</td>
                                     <td class="text-right">{{ number_format($keluar * $harga, 0, ',', '.') }}</td>
-                                    <td class="text-center font-bold">{{ $saldoAkhir }}</td>
+                                    <td class="split-col">
+                                        <div class="split-cell">
+                                            <div class="left font-bold">{{ $saldoAkhir }}</div>
+                                            <div class="right">{{ $satuan }}</div>
+                                        </div>
+                                    </td>
                                     <td class="text-right">{{ number_format($harga, 0, ',', '.') }}</td>
                                     <td class="text-right font-bold">{{ number_format($saldoAkhir * $harga, 0, ',', '.') }}</td>
                                 </tr>
@@ -167,13 +194,13 @@
                             @endphp
 
                             <tr style="background-color: #f1f5f9;" class="font-bold">
-                                <td colspan="13" class="text-right" style="padding: 12px;">TOTAL NILAI PERSEDIAAN</td>
+                                <td colspan="13" class="text-right" style="padding: 10px;">TOTAL NILAI PERSEDIAAN</td>
                                 <td class="text-center" style="font-size: 14px;">{{ number_format($grandTotal, 0, ',', '.') }}</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-top: 60px; text-align: center;">
+                    <div class="signature-block" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-top: 60px; text-align: center;">
                         <div>
                             <p class="font-bold">Dibuat Oleh</p>
                             <p>Pengurus Barang</p>
@@ -226,6 +253,8 @@
                     .text-right { text-align: right; }
                     .text-left { text-align: left; }
                     .font-bold { font-weight: bold; }
+                    .signature-block { break-inside: avoid; page-break-inside: avoid; }
+                    .signature-block * { break-inside: avoid; page-break-inside: avoid; }
                     @media print { 
                         body { padding: 0; }
                         @page { size: 330mm 210mm; margin: 10mm; }
@@ -247,5 +276,26 @@
         `);
         win.document.close();
     }
+    (function() {
+        const paperScale = document.getElementById('paper-scale');
+        const doc = document.getElementById('document-preview');
+        const container = document.getElementById('paper-container');
+        function fit() {
+            if (!paperScale || !doc || !container) return;
+            const baseW = doc.scrollWidth || paperScale.scrollWidth || 1;
+            const baseH = doc.scrollHeight || 1;
+            const rect = container.getBoundingClientRect();
+            const availW = container.clientWidth;
+            const availH = Math.max(320, window.innerHeight - rect.top - 12);
+            const scale = Math.min(availW / baseW, availH / baseH);
+            const clamped = Math.max(0.18, Math.min(scale, 1));
+            paperScale.style.transform = `scale(${clamped})`;
+            paperScale.style.marginLeft = 'auto';
+            paperScale.style.marginRight = 'auto';
+        }
+        window.addEventListener('resize', fit);
+        document.addEventListener('DOMContentLoaded', fit);
+        setTimeout(fit, 0);
+    })();
 </script>
 @endsection

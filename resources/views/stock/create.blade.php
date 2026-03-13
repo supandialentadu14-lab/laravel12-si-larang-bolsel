@@ -23,7 +23,7 @@
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Mutasi Masuk & Keluar</p>
         </div>
         <a href="{{ route('stock.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
-            <i class="fas fa-arrow-left text-xs"></i>
+            <i class="fas fa-times text-xs"></i>
         </a>
     </div>
 

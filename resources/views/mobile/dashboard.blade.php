@@ -211,7 +211,7 @@
                             <i class="fas {{ $tx->type == 'in' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
                         </div>
                         <div class="min-w-0">
-                            <p class="text-sm font-bold text-gray-900 truncate">{{ $tx->product->name }}</p>
+                            <p class="text-sm font-bold text-gray-900 truncate">{{ $tx->product?->name ?? '-' }}</p>
                             <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{{ $tx->date->format('H:i') }} • {{ $tx->user->name ?? 'Admin' }}</p>
                         </div>
                     </div>
@@ -219,7 +219,7 @@
                         <p class="text-sm font-black {{ $tx->type == 'in' ? 'text-green-600' : 'text-red-600' }}">
                             {{ $tx->type == 'in' ? '+' : '-' }}{{ number_format($tx->quantity) }}
                         </p>
-                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">{{ $tx->product->unit ?? 'Unit' }}</p>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">{{ $tx->product?->unit ?? 'Unit' }}</p>
                     </div>
                 </div>
             @empty

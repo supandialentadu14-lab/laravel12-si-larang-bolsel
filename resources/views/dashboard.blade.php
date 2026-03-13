@@ -319,7 +319,7 @@
                         <i class="fas {{ $tx->type == 'in' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-gray-800 truncate">{{ $tx->product->name }}</p>
+                        <p class="text-sm font-semibold text-gray-800 truncate">{{ $tx->product?->name ?? '-' }}</p>
                         <p class="text-xs text-gray-400">{{ $tx->date->format('H:i') }}</p>
                     </div>
                     <span class="text-sm font-bold {{ $tx->type == 'in' ? 'text-green-600' : 'text-red-500' }} whitespace-nowrap">

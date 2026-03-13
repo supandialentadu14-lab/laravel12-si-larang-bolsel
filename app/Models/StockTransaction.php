@@ -24,21 +24,59 @@ class StockTransaction extends Model
 
     protected static function booted()
     {
-        $guard = function ($transaction) {
+        $loadLockDate = function ($transaction): ?\Carbon\Carbon {
             $userId = \Illuminate\Support\Facades\Auth::id() ?? $transaction->user_id;
-            if ($userId) {
-                $setting = \App\Models\OpdSetting::where('user_id', $userId)->first();
-                if ($setting && $setting->tutup_buku_date) {
-                    if (\Carbon\Carbon::parse($transaction->date)->lte(\Carbon\Carbon::parse($setting->tutup_buku_date))) {
-                        throw new \Exception('TUTUP BUKU AKTIF: Transaksi pada tanggal ' . $transaction->date . ' tidak bisa ditambahkan, diubah, atau dihapus karena sudah melewati Batas Tutup Buku.');
-                    }
-                }
+            if (! $userId) {
+                return null;
             }
+            $setting = \App\Models\OpdSetting::where('user_id', $userId)->first();
+            if (! $setting || ! $setting->tutup_buku_date) {
+                return null;
+            }
+            return \Carbon\Carbon::parse($setting->tutup_buku_date)->startOfDay();
         };
 
-        static::creating($guard);
-        static::updating($guard);
-        static::deleting($guard);
+        $throwLocked = function (\Carbon\Carbon $lockDate, $trxDate) {
+            $d = \Carbon\Carbon::parse($trxDate)->toDateString();
+            throw new \Exception('TUTUP BUKU AKTIF: Transaksi pada tanggal ' . $d . ' tidak bisa ditambahkan, diubah, atau dihapus karena sudah melewati Batas Tutup Buku.');
+        };
+
+        static::creating(function ($transaction) use ($loadLockDate, $throwLocked) {
+            $lockDate = $loadLockDate($transaction);
+            if (! $lockDate) {
+                return;
+            }
+            $trxDate = \Carbon\Carbon::parse($transaction->date)->startOfDay();
+            if ($trxDate->lte($lockDate)) {
+                $throwLocked($lockDate, $trxDate);
+            }
+        });
+
+        static::updating(function ($transaction) use ($loadLockDate, $throwLocked) {
+            $lockDate = $loadLockDate($transaction);
+            if (! $lockDate) {
+                return;
+            }
+            $newDate = \Carbon\Carbon::parse($transaction->date)->startOfDay();
+            $oldDate = $transaction->getOriginal('date')
+                ? \Carbon\Carbon::parse($transaction->getOriginal('date'))->startOfDay()
+                : null;
+
+            if (($oldDate && $oldDate->lte($lockDate)) || $newDate->lte($lockDate)) {
+                $throwLocked($lockDate, $oldDate ?: $newDate);
+            }
+        });
+
+        static::deleting(function ($transaction) use ($loadLockDate, $throwLocked) {
+            $lockDate = $loadLockDate($transaction);
+            if (! $lockDate) {
+                return;
+            }
+            $trxDate = \Carbon\Carbon::parse($transaction->date)->startOfDay();
+            if ($trxDate->lte($lockDate)) {
+                $throwLocked($lockDate, $trxDate);
+            }
+        });
     }
 
     /**

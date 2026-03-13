@@ -202,6 +202,49 @@
 
         <!-- Main Content -->
         <main id="page-content" class="flex-1 px-5 pt-4 pb-24 overflow-y-auto" @scroll="handleScroll">
+            @if (session('success'))
+                <div class="mb-5 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-4 shadow-sm flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Berhasil</div>
+                        <div class="text-[11px] font-bold text-emerald-700 mt-1 leading-snug">{{ session('success') }}</div>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-5 bg-red-50 border border-red-200 rounded-2xl px-4 py-4 shadow-sm flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-exclamation text-xs"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-[10px] font-black text-red-800 uppercase tracking-widest">
+                            {{ \Illuminate\Support\Str::contains(session('error'), 'TUTUP BUKU AKTIF') ? 'Tutup Buku Aktif' : 'Gagal' }}
+                        </div>
+                        <div class="text-[11px] font-bold text-red-700 mt-1 leading-snug">{{ session('error') }}</div>
+                    </div>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-5 bg-red-50 border border-red-200 rounded-2xl px-4 py-4 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-exclamation text-xs"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-black text-red-800 uppercase tracking-widest">Gagal</div>
+                            <ul class="mt-2 space-y-1">
+                                @foreach ($errors->all() as $msg)
+                                    <li class="text-[11px] font-bold text-red-700 leading-snug">{{ $msg }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            @endif
             @yield('content')
         </main>
 

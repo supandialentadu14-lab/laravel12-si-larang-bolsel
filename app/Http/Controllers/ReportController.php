@@ -154,9 +154,9 @@ class ReportController extends Controller
             $reportData[] = [
                 'date' => $first->date,
                 'product_id' => $first->product_id,
-                'name' => $first->product->name,
-                'harga' => $first->product->price ?? 0,
-                'satuan' => $first->product->unit ?? '',
+                'name' => $first->product?->name ?? '(Produk dihapus)',
+                'harga' => $first->product?->price ?? 0,
+                'satuan' => $first->product?->unit ?? '',
                 'masuk' => $masuk,
                 'keluar' => $keluar,
             ];

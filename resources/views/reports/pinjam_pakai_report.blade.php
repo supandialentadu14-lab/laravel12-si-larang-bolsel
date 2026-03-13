@@ -148,30 +148,40 @@
         </p>
 
         <div class="overflow-x-auto mb-2">
-            <table class="w-full text-xs border border-black print:text-[10px]">
+            <table class="w-full text-xs border border-black print:text-[10px]" style="table-layout: fixed;">
+                <colgroup>
+                    <col style="width: 34px;">
+                    <col>
+                    <col>
+                    <col>
+                    <col style="width: 84px;">
+                    <col style="width: 72px;">
+                    <col style="width: 76px;">
+                    <col style="width: 64px;">
+                </colgroup>
                 <thead>
                     <tr class="text-center font-bold">
-                        <th class="border border-black px-2 py-1">No</th>
+                        <th class="border border-black px-1 py-1" style="width: 34px;">No</th>
                         <th class="border border-black px-2 py-1">Nama Barang</th>
                         <th class="border border-black px-2 py-1">Merk</th>
                         <th class="border border-black px-2 py-1">Type</th>
-                        <th class="border border-black px-2 py-1">Nomor Polisi (Khusus Kendaraan)</th>
-                        <th class="border border-black px-2 py-1">Tahun Pembelian</th>
-                        <th class="border border-black px-2 py-1">Kondisi Barang</th>
-                        <th class="border border-black px-2 py-1">Jumlah Barang</th>
+                        <th class="border border-black px-1 py-1" style="width: 84px;">Nomor Polisi (Khusus Kendaraan)</th>
+                        <th class="border border-black px-1 py-1" style="width: 72px;">Tahun Pembelian</th>
+                        <th class="border border-black px-1 py-1" style="width: 76px;">Kondisi Barang</th>
+                        <th class="border border-black px-1 py-1" style="width: 64px;">Jumlah Barang</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($data['items'] as $i => $item)
                         <tr>
-                            <td class="border border-black px-2 py-1 text-center">{{ $i + 1 }}</td>
+                            <td class="border border-black px-1 py-1 text-center" style="width: 34px;">{{ $i + 1 }}</td>
                             <td class="border border-black px-2 py-1">{{ $item['nama'] }}</td>
                             <td class="border border-black px-2 py-1">{{ $item['merk'] ?? '-' }}</td>
                             <td class="border border-black px-2 py-1">{{ $item['tipe'] ?? '-' }}</td>
-                            <td class="border border-black px-2 py-1 text-center">{{ $item['identitas'] ?? '-' }}</td>
-                            <td class="border border-black px-2 py-1 text-center">{{ $item['tahun'] ?? '-' }}</td>
-                            <td class="border border-black px-2 py-1 text-center">{{ $item['kondisi'] ?? '-' }}</td>
-                            <td class="border border-black px-2 py-1 text-center">{{ $item['jumlah'] }}</td>
+                            <td class="border border-black px-1 py-1 text-center" style="width: 84px;">{{ $item['identitas'] ?? '-' }}</td>
+                            <td class="border border-black px-1 py-1 text-center" style="width: 72px;">{{ $item['tahun'] ?? '-' }}</td>
+                            <td class="border border-black px-1 py-1 text-center" style="width: 76px;">{{ $item['kondisi'] ?? '-' }}</td>
+                            <td class="border border-black px-1 py-1 text-center" style="width: 64px;">{{ $item['jumlah'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -219,7 +229,7 @@
         <div class="text-right text-sm mb-1">
             {{ ucwords(strtolower($data['tempat'])) }}, {{ \Illuminate\Support\Carbon::parse($data['tanggal'])->translatedFormat('d F Y') }}
         </div>
-        <div class="grid grid-cols-2 gap-6 mt-2">
+        <div class="grid grid-cols-2 gap-6 mt-2 signature-block">
             <div class="text-center">
                 <p class="mb-1">PIHAK KEDUA</p>
                 <div class="h-24"></div>

@@ -30,7 +30,7 @@
             </div>
             <div>
                 <h3 class="text-lg font-black uppercase tracking-tight">{{ $user->name }}</h3>
-                <p class="text-[10px] font-bold opacity-60 uppercase tracking-[0.2em]">{{ $user->email }}</p>
+                <p class="text-[10px] font-bold opacity-60 tracking-[0.2em]">{{ $user->email }}</p>
             </div>
         </div>
 

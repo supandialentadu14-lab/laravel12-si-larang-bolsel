@@ -101,7 +101,7 @@
                 <div class="px-2 py-1 flex-1">{{ number_format($data['jumlah'] ?? 0, 0, ',', '.') }}</div>
             </div>
 
-            <div class="p-4 text-sm">
+            <div class="p-4 text-sm signature-block">
                 <div class="flex justify-end mb-8">
                     <div class="text-right">{{ $data['lokasi_tanggal'] ?? '' }}</div>
                 </div>

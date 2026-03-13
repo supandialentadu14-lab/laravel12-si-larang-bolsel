@@ -81,7 +81,7 @@
 
         @forelse($items as $row)
             @php $totalVal = (int)($row['jumlah'] ?? 0); @endphp
-            <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300">
+            <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 overflow-hidden">
                 <div class="flex items-start gap-4">
                     {{-- Icon --}}
                     <div class="w-14 h-14 rounded-[1.5rem] bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-black shadow-inner flex-shrink-0">
@@ -107,23 +107,23 @@
                                 <span class="text-[10px] font-medium line-clamp-2 uppercase tracking-tighter leading-relaxed">{{ $row['uraian'] }}</span>
                             </div>
                             
-                            <div class="flex items-center justify-between pt-2 border-t border-slate-50">
-                                <div class="flex items-center gap-2">
+                            <div class="pt-2 border-t border-slate-50 space-y-2">
+                                <div class="flex items-center gap-2 min-w-0">
                                     <span class="text-[9px] font-black text-slate-400 uppercase">Ref:</span>
                                     <span class="text-[9px] font-bold text-slate-600 uppercase truncate max-w-[120px]">{{ $row['penerimaan_nomor'] }}</span>
                                 </div>
                                 
                                 {{-- Actions --}}
-                                <div class="flex items-center gap-1.5">
-                                    <a href="{{ route('reports.kwitansi.show', $row['id']) }}" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                                    <a href="{{ route('reports.kwitansi.show', $row['id']) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
                                         <i class="fas fa-eye text-[10px]"></i>
                                     </a>
-                                    <a href="{{ route('reports.kwitansi.edit', $row['id']) }}" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                    <a href="{{ route('reports.kwitansi.edit', $row['id']) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
                                         <i class="fas fa-edit text-[10px]"></i>
                                     </a>
                                     <form action="{{ route('reports.kwitansi.delete', $row['id']) }}" method="POST" class="inline">
                                         @csrf @method('DELETE')
-                                        <button type="submit" @click.prevent="if(confirm('Hapus dokumen ini?')) $el.form.submit()" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                                        <button type="submit" @click.prevent="if(confirm('Hapus dokumen ini?')) $el.form.submit()" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
                                             <i class="fas fa-trash text-[10px]"></i>
                                         </button>
                                     </form>

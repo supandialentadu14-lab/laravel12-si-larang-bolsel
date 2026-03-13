@@ -75,21 +75,21 @@
             {{ $data['tanggal_kata'] ?? '' }}
         </p>
 
-        <table class="w-full text-sm mb-3">
+        <table class="w-full text-sm mb-3" style="line-height: 1.25;">
             <tr>
-                <td class="w-28 align-top pl-6">Nama</td>
-                <td class="w-4 align-top pl-6">:</td>
-                <td class="align-top pl-6"><span class="font-bold">{{ $data['pengguna']['nama'] ?? '' }}</span></td>
+                <td class="w-28 align-top pl-6" style="padding: 2px 0;">Nama</td>
+                <td class="w-4 align-top pl-6" style="padding: 2px 0;">:</td>
+                <td class="align-top pl-6" style="padding: 2px 0;"><span class="font-bold">{{ $data['pengguna']['nama'] ?? '' }}</span></td>
             </tr>
             <tr>
-                <td class="align-top pl-6">NIP</td>
-                <td class="align-top pl-6">:</td>
-                <td class="align-top pl-6">{{ $data['pengguna']['nip'] ?? '' }}</td>
+                <td class="align-top pl-6" style="padding: 2px 0;">NIP</td>
+                <td class="align-top pl-6" style="padding: 2px 0;">:</td>
+                <td class="align-top pl-6" style="padding: 2px 0;">{{ $data['pengguna']['nip'] ?? '' }}</td>
             </tr>
             <tr>
-                <td class="align-top pl-6">Jabatan</td>
-                <td class="align-top pl-6">:</td>
-                <td class="align-top pl-6">{{ $data['pengguna']['jabatan'] ?? 'Pengurus Barang Pengguna' }}</td>
+                <td class="align-top pl-6" style="padding: 2px 0;">Jabatan</td>
+                <td class="align-top pl-6" style="padding: 2px 0;">:</td>
+                <td class="align-top pl-6" style="padding: 2px 0;">{{ $data['pengguna']['jabatan'] ?? 'Pengurus Barang Pengguna' }}</td>
             </tr>
         </table>
 
@@ -132,27 +132,23 @@
 
         
 
-        <div class="grid grid-cols-2 gap-6 text-sm mt-8 mb-4">
+        <div class="grid grid-cols-2 gap-6 text-sm mt-8 mb-4 leading-snug signature-block">
             <div class="text-center">
                 <div class="font-bold">Yang Menerima,</div>
                 <div class="font-bold mb-12">Pengurus Barang Pengguna</div>
-                <br>
                 <div class="font-bold underline uppercase">{{ $data['pengguna']['nama'] ?? '' }}</div>
                 <div>NIP: {{ $data['pengguna']['nip'] ?? '' }}</div>
             </div>
             <div class="text-center">
                 <div class="font-bold">Mengetahui,</div>
                 <div class="font-bold mb-12">Pejabat Pembuat Komitmen</div>
-                <br>
                 <div class="font-bold underline uppercase">{{ $data['ppk']['nama'] ?? '' }}</div>
                 <div>NIP: {{ $data['ppk']['nip'] ?? '' }}</div>
             </div>
         </div>
-<br>
-        <div class="text-center text-sm mt-4">
+        <div class="text-center text-sm mt-4 leading-snug signature-block">
             <div class="font-bold mb-2">MENGETAHUI,</div>
             <div class="mb-12">PENGGUNA ANGGARAN SELAKU PPK</div>
-            <br>
             <div class="font-bold underline uppercase">{{ $data['ppk']['nama'] ?? '' }}</div>
             <div>NIP: {{ $data['ppk']['nip'] ?? '' }}</div>
         </div>
