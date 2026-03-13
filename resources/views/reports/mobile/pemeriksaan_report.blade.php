@@ -156,10 +156,6 @@
                 </div>
             </div>
         </div>
-        <div class="mt-4 flex items-center justify-center gap-2 text-slate-400">
-            <i class="fas fa-arrows-left-right text-xs animate-pulse"></i>
-            <p class="text-[10px] font-bold uppercase tracking-widest">Geser untuk melihat detail dokumen</p>
-        </div>
     </div>
 </div>
 
