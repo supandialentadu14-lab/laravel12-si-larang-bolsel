@@ -17,21 +17,32 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden flex flex-col items-center">
-        <div class="w-full flex justify-center no-scrollbar overflow-x-auto">
-            <div class="flex-shrink-0 origin-top transform scale-[0.38] min-[400px]:scale-[0.45] sm:scale-100 mb-[-120%] min-[400px]:mb-[-100%] sm:mb-0" style="width: 330mm;">
+    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden">
+        <div class="w-full no-scrollbar">
+            <div class="flex-shrink-0 w-full">
                 <style>
-                    .preview-paper-mobile { 
-                        width: 330mm; 
-                        min-height: 210mm; 
+                    .preview-paper-mobile {
+                        width: 100%;
+                        min-height: auto;
                         margin: 0; 
                         background: #fff; 
-                        padding: 10mm 15mm; 
+                        padding: 16px 16px; 
                         line-height: 1.4; 
                         color: black; 
                         font-family: 'Nunito', sans-serif;
                         box-shadow: 0 0 30px rgba(0,0,0,0.12);
                         border: 1px solid #f1f5f9;
+                    }
+                    @media (min-width: 640px) {
+                        .preview-paper-mobile {
+                            padding: 24px 28px;
+                        }
+                    }
+                    /* Tampilkan lebar penuh di mobile agar tidak terlalu kecil */
+                    @media screen and (max-width: 768px) {
+                        .preview-paper-mobile {
+                            max-width: 100%;
+                        }
                     }
                     .preview-paper-mobile table { width: 100%; border-collapse: collapse; margin-top: 10px; }
                     .preview-paper-mobile th, .preview-paper-mobile td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
@@ -165,4 +176,3 @@
     }
 </script>
 @endsection
-
