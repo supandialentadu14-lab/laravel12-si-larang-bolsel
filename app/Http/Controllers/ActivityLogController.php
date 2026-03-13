@@ -17,6 +17,9 @@ class ActivityLogController extends Controller
                           $q->where('name', 'like', '%'.$request->search.'%');
                       });
             })
+            ->when($request->date, function($query) use ($request) {
+                $query->whereDate('created_at', $request->date);
+            })
             ->latest()
             ->paginate(50)
             ->withQueryString();

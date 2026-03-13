@@ -336,7 +336,11 @@ class OpnameController extends Controller
             $data['pembuka'] = $this->buildPembuka($data['tanggal'] ?? now()->toDateString(), $opdNama);
         }
         session(['opname_current' => $data, 'opname_current_id' => $id]);
-        return view('reports.opname_report', [
+
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.opname_report' : 'reports.opname_report';
+
+        return view($view, [
             'data' => $data,
             'saved_id' => $id,
             'opd' => $opd,

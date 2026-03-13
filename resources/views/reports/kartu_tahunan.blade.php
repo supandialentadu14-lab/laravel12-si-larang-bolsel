@@ -17,16 +17,11 @@
 
         .report-table th,
         .report-table td {
-            border: 1px solid #1e293b !important;
+            border: 1px solid black;
             padding: 4px;
             font-size: 12px;
             /* Diperkecil agar muat 1 halaman */
             word-wrap: break-word;
-        }
-
-        .theme-dark .report-table th,
-        .theme-dark .report-table td {
-            border-color: #475569 !important;
         }
 
         .report-table th {
@@ -100,21 +95,8 @@
                 min-height: 210mm;
                 margin: 16px auto;
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-                background-color: #ffffff !important;
-                color: #1e293b !important;
-                transition: all 0.3s ease;
+                background: #ffffff;
             }
-
-            .theme-dark #print-area {
-                background-color: #1e293b !important;
-                color: #f1f5f9 !important;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            }
-
-            .theme-dark html, .theme-dark body {
-                background-color: #020617 !important;
-            }
-
             .report-table { width: 100%; }
         }
         @media print {
@@ -126,92 +108,46 @@
                 overflow: visible !important;
                 border: none !important;
                 display: block !important;
-                background-color: #ffffff !important;
-                color: #000000 !important;
-            }
-            .print-area thead, .print-area tbody, .print-area th, .print-area td {
-                border-color: #000000 !important;
-                color: #000000 !important;
-                background-color: #ffffff !important;
+                background: #ffffff !important;
             }
             .print\:hidden { display: none !important; }
             @page { size: 330mm 210mm; margin: 12mm; }
-            body { margin: 0; background-color: #ffffff !important; }
+            body { margin: 0; background: #ffffff !important; }
         }
     </style>
 
 
-    <div class="print:hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 mb-8 sticky top-0 z-10 transition-all duration-300">
-        <form method="GET" action="{{ route('reports.kartu.tahunan') }}" class="flex flex-col lg:flex-row lg:items-end gap-6">
-            <div class="flex flex-col sm:flex-row gap-5 flex-1">
-                <div class="w-full sm:w-1/3 group">
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 group-focus-within:text-indigo-600 transition-colors">
-                        <i class="fas fa-calendar-alt mr-1"></i> Dari Tanggal
-                    </label>
-                    <div class="relative">
-                        <input type="date" name="start_date" value="{{ $startDate }}"
-                            class="w-full rounded-xl border-slate-200 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 dark:text-slate-200 h-11 px-4">
-                    </div>
+    <div class="print:hidden rounded-xl shadow-md border bg-white p-4 mb-6">
+        <form method="GET" action="{{ route('reports.kartu.tahunan') }}" class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div class="flex flex-col sm:flex-row gap-4 flex-1">
+                <div class="w-full sm:w-1/4">
+                    <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1">From Date</label>
+                    <input type="date" name="start_date" value="{{ $startDate }}" class="w-full rounded-lg border-indigo-200 text-sm bg-white shadow-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-500">
                 </div>
-                <div class="w-full sm:w-1/3 group">
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 group-focus-within:text-indigo-600 transition-colors">
-                        <i class="fas fa-calendar-check mr-1"></i> Sampai Tanggal
-                    </label>
-                    <div class="relative">
-                        <input type="date" name="end_date" value="{{ $endDate }}"
-                            class="w-full rounded-xl border-slate-200 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 dark:text-slate-200 h-11 px-4">
-                    </div>
-                </div>
-                <div class="w-full sm:w-1/3 group">
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 group-focus-within:text-indigo-600 transition-colors">
-                        <i class="fas fa-tags mr-1"></i> Filter Kategori
-                    </label>
-                    <div class="relative">
-                        <select name="category_id" class="w-full rounded-xl border-slate-200 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 dark:text-slate-200 h-11 px-4 appearance-none cursor-pointer">
-                            <option value="">Semua Kategori</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ $categoryId == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                            @endforeach
-                        </select>
-                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
-                    </div>
+                <div class="w-full sm:w-1/4">
+                    <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1">To Date</label>
+                    <input type="date" name="end_date" value="{{ $endDate }}" class="w-full rounded-lg border-indigo-200 text-sm bg-white shadow-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-500">
                 </div>
             </div>
-
-            <div class="flex flex-wrap items-center gap-3">
-                <button type="submit"
-                    class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 shadow-md shadow-indigo-100 hover:shadow-indigo-200 transition-all duration-200 flex-1 sm:flex-none">
-                    <i class="fas fa-filter text-indigo-200"></i>
-                    Terapkan Filter
-                </button>
-
-                <div class="flex gap-2 flex-1 sm:flex-none">
-                    <button type="button" onclick="window.print()"
-                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 text-white font-bold text-sm hover:bg-slate-900 shadow-lg shadow-slate-100 transition-all flex-1 sm:flex-none">
-                        <i class="far fa-print text-slate-400"></i>
-                        Cetak
-                    </button>
-                    <a href="{{ route('reports.export_kartu_tahunan', ['start_date' => $startDate, 'end_date' => $endDate, 'category_id' => $categoryId]) }}"
-                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:scale-95 flex-1 sm:flex-none"
-                        style="background-color: #16a34a; color: white; box-shadow: 0 4px 14px rgba(22,163,74,0.3);"
-                        onmouseenter="this.style.backgroundColor='#15803d'"
-                        onmouseleave="this.style.backgroundColor='#16a34a'">
-                        <i class="fas fa-file-excel" style="color: #bbf7d0;"></i>
-                        Excel
-                    </a>
-                </div>
-
-                <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-all flex-1 sm:flex-none">
-                    <i class="fas fa-arrow-left text-slate-400"></i>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('dashboard') }}" class="no-print inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 shadow-sm transition flex-1 sm:flex-none">
+                    <i class="fas fa-arrow-left"></i>
                     Kembali
                 </a>
+                <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-white font-bold hover:bg-orange-600 shadow-sm flex-1 sm:flex-none">
+                    <i class="fas fa-filter"></i>
+                    Filter
+                </button>
+                <button type="button" onclick="window.print()" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-black text-white font-bold hover:bg-gray-800 shadow-sm flex-1 sm:flex-none">
+                    <i class="fas fa-print"></i>
+                    Print
+                </button>
             </div>
         </form>
     </div>
 
-
     <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="print-area p-4 sm:p-8 rounded-lg mx-auto" style="min-width: 330mm;">
+        <div id="print-area" class="print-area bg-white shadow-lg border p-4 sm:p-8 rounded-lg mx-auto" style="min-width: 330mm;">
 
         @php
             $grouped = $grouped ?? [];
@@ -286,10 +222,10 @@
                     <tr>
                         <th rowspan="2">No</th>
                         <th rowspan="2">Tanggal</th>
-                        <th rowspan="2">Nomor Surat Dasar<br>Penerimaan/Pengeluaran</th>
+                        <th rowspan="2">Nomor Surat Dasar Penerimaan/Pengeluaran</th>
                         <th rowspan="2">Uraian</th>
                         <th colspan="3">Barang-Barang</th>
-                        <th rowspan="2">Harga Satuan<br>(Rp)</th>
+                        <th rowspan="2">Harga Satuan (Rp)</th>
                         <th colspan="3">Jumlah Harga (Rp)</th>
                         <th rowspan="2">Keterangan</th>
                     </tr>
@@ -352,20 +288,23 @@
             </div>
 
             @if ($current == $lastIndex)
-                <div style="display: flex; justify-content: space-between; padding: 0 40px; margin-top: 50px; page-break-inside: avoid; font-size: 14px;">
-                    <div style="text-align: center;">
-                        Dibuat Oleh<br>
-                        Pengurus Barang<br><br><br><br><br>
-                        <strong><u>{{ $opd->pengurus_nama ?? '' }}</u></strong><br>
-                        NIP. {{ $opd->pengurus_nip ?? '' }}
-                    </div>
-                    <div style="text-align: center;">
-                        Mengetahui<br>
-                        Kepala Dinas<br><br><br><br><br>
-                        <strong><u>{{ $opd->kepala_nama ?? '' }}</u></strong><br>
-                        NIP. {{ $opd->kepala_nip ?? '' }}
-                    </div>
-                </div>
+                <table class="ttd-table">
+                    <tr>
+                        
+                        <td align="center">
+                            Dibuat Oleh<br>
+                            Pengurus Barang<br><br><br><br><br>
+                            <strong><u>{{ $opd->pengurus_nama ?? '' }}</u></strong><br>
+                            NIP. {{ $opd->pengurus_nip ?? '' }}
+                        </td>
+                        <td align="center">
+                            Mengetahui<br>
+                            Kepala Dinas<br><br><br><br><br>
+                            <strong><u>{{ $opd->kepala_nama ?? '' }}</u></strong><br>
+                            NIP. {{ $opd->kepala_nip ?? '' }}
+                        </td>
+                    </tr>
+                </table>
             @endif
 
             @php $current++; @endphp

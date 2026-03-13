@@ -1,244 +1,178 @@
-@extends('layouts.admin')
+@extends('layouts.mobile')
 
-@section('header', 'Pengaturan Hak Akses')
 @section('content')
+<div x-data="{
+    showFilters: {{ request('search') ? 'true' : 'false' }},
+    showStatusLegend: false
+}" class="space-y-6">
 
-<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-
-    {{-- ── Header + Tombol Tambah ─────────────────────────────────── --}}
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+    {{-- Page Header --}}
+    <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-lg font-bold text-slate-800">Daftar Pengguna</h2>
-            <p class="text-sm text-slate-500 mt-0.5">Kelola hak akses dan status pengguna sistem</p>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Pengguna</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Kelola Akses Sistem</p>
         </div>
-        @if(auth()->user()->isAdmin())
-        <a href="{{ route('users.create') }}"
-           class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-md shadow-indigo-100 transition-all duration-200 hover:-translate-y-0.5 text-sm">
-            <i class="fas fa-user-plus"></i> Tambah Pengguna Baru
-        </a>
-        @endif
+        <div class="flex gap-2">
+            <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50' : ''">
+                <i class="fas fa-filter text-xs"></i>
+            </button>
+            @if(auth()->user()->isAdmin())
+            <a href="{{ route('users.create') }}" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
+                <i class="fas fa-user-plus text-xs"></i>
+            </a>
+            @endif
+        </div>
     </div>
 
+    {{-- Filter Card --}}
+    <div x-show="showFilters" x-collapse x-cloak>
+        <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-4">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Cari Pengguna</h3>
+            <form action="{{ route('users.index') }}" method="GET" class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama atau Email</label>
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..." class="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100">Terapkan</button>
+                    <a href="{{ route('users.index') }}" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    {{-- Summary Card --}}
+    <div class="bg-indigo-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-indigo-100 overflow-hidden relative group">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+        <div class="relative z-10">
+            <div class="flex items-center justify-between">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Total Akun</p>
+                <i class="fas fa-users opacity-20"></i>
+            </div>
+            <h2 class="text-3xl font-black mt-2 tracking-tight">{{ $users->total() }} User</h2>
+            <p class="text-[9px] font-bold mt-2 opacity-80 uppercase tracking-widest">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1"></span> 
+                {{ $users->filter(fn($u) => $u->isOnline())->count() }} Online Sekarang
+            </p>
+        </div>
+    </div>
 
-    {{-- ── Tabel ────────────────────────────────────────────────────── --}}
-    <div class="overflow-x-auto border border-slate-200 rounded-2xl overflow-hidden">
-        <table class="w-full text-sm text-left text-slate-700">
-            <thead class="bg-indigo-50/60 text-[10px] uppercase font-bold text-indigo-600 tracking-widest border-b border-indigo-100">
-                <tr>
-                    <th class="px-5 py-4 text-center">Profil</th>
-                    <th class="px-5 py-4">Nama Lengkap</th>
-                    <th class="px-5 py-4">Alamat Email</th>
-                    <th class="px-5 py-4">Hak Akses</th>
-                    <th class="px-5 py-4 text-center">Status Online</th>
-                    <th class="px-5 py-4 text-center">Status Akun</th>
-                    <th class="px-5 py-4 text-right">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                @forelse($users as $user)
-                @php $isOnline = $user->isOnline(); $isActive = $user->is_active; @endphp
-                <tr class="transition-all duration-200 group {{ !$isActive ? 'opacity-60' : '' }}">
+    {{-- User List --}}
+    <div class="space-y-4 pb-24">
+        @forelse($users as $user)
+            @php $isOnline = $user->isOnline(); $isActive = $user->is_active; @endphp
+            <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl transition-all duration-300 {{ !$isActive ? 'opacity-60' : '' }}">
+                <div class="flex items-start gap-4">
+                    {{-- Avatar Section --}}
+                    <div class="relative flex-shrink-0">
+                        <img class="w-14 h-14 rounded-2xl object-cover ring-4 {{ $isOnline ? 'ring-emerald-50' : 'ring-slate-50' }}"
+                             src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=4F46E5&color=ffffff' }}"
+                             alt="{{ $user->name }}">
+                        <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-sm {{ $isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-slate-300' }}"></span>
+                    </div>
 
-                    {{-- Avatar + Online dot --}}
-                    <td class="px-5 py-3.5 text-center">
-                        <div class="relative inline-block">
-                            <img class="w-10 h-10 rounded-xl object-cover ring-2 {{ $isOnline ? 'ring-emerald-400' : 'ring-slate-200' }} shadow-sm"
-                                 src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=4F46E5&color=ffffff' }}"
-                                 alt="{{ $user->name }}">
-                            {{-- Online indicator dot --}}
-                            <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white shadow-sm
-                                         {{ $isOnline ? 'bg-emerald-400' : 'bg-slate-300' }}"
-                                  title="{{ $isOnline ? 'Online sekarang' : ($user->last_seen_at ? 'Terakhir aktif '.($user->last_seen_at->diffForHumans()) : 'Belum pernah login') }}">
-                            </span>
+                    {{-- Info Section --}}
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between">
+                            <div class="pr-2">
+                                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-tight truncate leading-tight">
+                                    {{ $user->name }}
+                                    @if($user->id === auth()->id())
+                                        <span class="ml-1 text-[8px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full">ANDA</span>
+                                    @endif
+                                </h3>
+                                <p class="text-[9px] font-bold text-slate-400 truncate mt-1">{{ $user->email }}</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <span class="px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest
+                                    {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600' }}">
+                                    {{ $user->role }}
+                                </span>
+                            </div>
                         </div>
-                    </td>
 
-                    {{-- Nama --}}
-                    <td class="px-5 py-3.5">
-                        <span class="font-bold text-slate-800">{{ $user->name }}</span>
-                        @if($user->id === auth()->id())
-                            <span class="ml-1.5 text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-bold">Anda</span>
-                        @endif
-                    </td>
-
-                    {{-- Email --}}
-                    <td class="px-5 py-3.5 text-slate-500">{{ $user->email }}</td>
-
-                    {{-- Role --}}
-                    <td class="px-5 py-3.5">
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                     {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-slate-100 text-slate-600 border border-slate-200' }}">
-                            <i class="fas {{ $user->role === 'admin' ? 'fa-shield-alt' : 'fa-user' }}"></i>
-                            {{ $user->role }}
-                        </span>
-                    </td>
-
-                    {{-- Status Online --}}
-                    <td class="px-5 py-3.5 text-center">
-                        @if($isOnline)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Online
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                                @if($user->last_seen_at)
-                                    {{ $user->last_seen_at->diffForHumans() }}
+                        <div class="mt-4 flex items-center justify-between pt-2 border-t border-slate-50">
+                            <div class="flex items-center gap-2">
+                                @if($isOnline)
+                                    <span class="text-[8px] font-black text-emerald-600 uppercase tracking-widest">ACTIVE NOW</span>
                                 @else
-                                    Offline
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                                        {{ $user->last_seen_at ? $user->last_seen_at->diffForHumans() : 'OFFLINE' }}
+                                    </span>
                                 @endif
-                            </span>
-                        @endif
-                    </td>
+                            </div>
 
-                    {{-- Status Akun (Aktif / Nonaktif) --}}
-                    <td class="px-5 py-3.5 text-center">
-                        @if($user->role === 'admin' || $user->id === auth()->id())
-                            {{-- Admin tidak bisa di-toggle --}}
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-500 border border-indigo-100">
-                                <i class="fas fa-lock text-[8px]"></i> Selalu Aktif
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold
-                                         {{ $isActive ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-red-100 text-red-700 border border-red-200' }}">
-                                <i class="fas {{ $isActive ? 'fa-check-circle' : 'fa-ban' }} text-[10px]"></i>
-                                {{ $isActive ? 'Aktif' : 'Nonaktif' }}
-                            </span>
-                        @endif
-                    </td>
+                            {{-- Actions --}}
+                            <div class="flex items-center gap-1.5">
+                                @if(auth()->user()->isAdmin())
+                                    {{-- Backup --}}
+                                    <a href="{{ route('users.backup', $user) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-blue-500 flex items-center justify-center hover:bg-blue-50 transition-colors" title="Backup Data User" onclick="return confirm('Download backup data milik {{ $user->name }}?')">
+                                        <i class="fas fa-download text-[10px]"></i>
+                                    </a>
 
-                    {{-- Aksi --}}
-                    <td class="px-5 py-3.5 text-right">
-                        <div class="flex items-center justify-end gap-2">
-
-                            {{-- Edit --}}
-                            <a href="{{ route('users.edit', $user) }}"
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors"
-                               title="Edit pengguna">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-
-                            @if(auth()->user()->isAdmin())
-                                {{-- Backup DB User --}}
-                                <a href="{{ route('users.backup', $user) }}"
-                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors shadow-sm"
-                                   title="Download Database SQL untuk User ini"
-                                   onclick="return confirm('Download file backup khusus data milik {{ $user->name }}?')">
-                                    <i class="fas fa-download"></i> Backup
-                                </a>
-
-                                {{-- Restore DB User --}}
-                                <form action="{{ route('users.restore', $user) }}" method="POST" enctype="multipart/form-data" class="inline" id="form-restore-{{ $user->id }}">
-                                    @csrf
-                                    <input type="file" name="backup_file" id="backup-file-{{ $user->id }}" class="hidden" accept=".sql" onchange="if(confirm('Pulihkan data milik {{ $user->name }} menggunakan file ini? Data yang ada akan tertimpa.')) document.getElementById('form-restore-{{ $user->id }}').submit(); else this.value = '';">
-                                    <button type="button"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors shadow-sm"
-                                            title="Upload Database SQL untuk User ini"
-                                            onclick="document.getElementById('backup-file-{{ $user->id }}').click();">
-                                        <i class="fas fa-upload"></i> Restore
-                                    </button>
-                                </form>
-                            @endif
-
-                            @if(auth()->user()->isAdmin() && $user->id !== auth()->id())
-
-                                {{-- Toggle Aktif / Nonaktif (hanya untuk staff) --}}
-                                @if($user->role !== 'admin')
-                                    <form action="{{ route('users.toggle-active', $user) }}" method="POST" class="inline">
+                                    {{-- Restore --}}
+                                    <form action="{{ route('users.restore', $user) }}" method="POST" enctype="multipart/form-data" class="inline" id="form-restore-{{ $user->id }}">
                                         @csrf
-                                        <button type="submit"
-                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors
-                                                       {{ $isActive
-                                                            ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                                                            : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' }}"
-                                                title="{{ $isActive ? 'Nonaktifkan pengguna' : 'Aktifkan pengguna' }}"
-                                                onclick="return confirm('{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} akun {{ $user->name }}?')">
-                                            <i class="fas {{ $isActive ? 'fa-ban' : 'fa-check-circle' }}"></i>
-                                            {{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }}
+                                        <input type="file" name="backup_file" id="backup-file-{{ $user->id }}" class="hidden" accept=".sql" onchange="if(confirm('Pulihkan data {{ $user->name }}? Data lama akan tertimpa.')) document.getElementById('form-restore-{{ $user->id }}').submit();">
+                                        <button type="button" class="w-8 h-8 rounded-xl bg-slate-50 text-emerald-500 flex items-center justify-center hover:bg-emerald-50 transition-colors" title="Restore Data User" onclick="document.getElementById('backup-file-{{ $user->id }}').click();">
+                                            <i class="fas fa-upload text-[10px]"></i>
                                         </button>
                                     </form>
                                 @endif
 
-                                {{-- Hapus --}}
-                                <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline"
-                                      onsubmit="return confirm('Hapus pengguna {{ $user->name }}? Tindakan ini tidak dapat dibatalkan.')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
-                                            title="Hapus pengguna">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            @endif
+                                <a href="{{ route('users.edit', $user) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                    <i class="fas fa-edit text-[10px]"></i>
+                                </a>
+                                
+                                @if(auth()->user()->isAdmin() && $user->id !== auth()->id())
+                                    @if($user->role !== 'admin')
+                                        <form action="{{ route('users.toggle-active', $user) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors {{ $isActive ? 'bg-slate-50 text-orange-400 hover:bg-orange-50 hover:text-orange-600' : 'bg-emerald-50 text-emerald-600' }}"
+                                                    onclick="return confirm('{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} akun {{ $user->name }}?')">
+                                                <i class="fas {{ $isActive ? 'fa-ban' : 'fa-check-circle' }} text-[10px]"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                    <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Hapus pengguna?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                                            <i class="fas fa-trash text-[10px]"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7" class="px-5 py-10 text-center text-slate-400">
-                        <i class="fas fa-users text-3xl mb-2 block opacity-30"></i>
-                        Belum ada data pengguna.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="bg-white rounded-[3rem] p-16 text-center border border-slate-50 shadow-sm">
+                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-users-slash text-3xl text-slate-200"></i>
+                </div>
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Tidak Ada Data</h3>
+            </div>
+        @endforelse
 
-    {{-- Pagination --}}
-    @if($users->hasPages())
-    <div class="mt-4">
-        {{ $users->links() }}
-    </div>
-    @endif
-
-    {{-- Legend --}}
-    <div class="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-500">
-        <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Online (aktif dalam 3 menit terakhir)</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
-            <span>Offline</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-            <span class="w-4 h-4 rounded bg-orange-100 border border-orange-200 inline-flex items-center justify-center">
-                <i class="fas fa-ban text-orange-600 text-[8px]"></i>
-            </span>
-            <span>Nonaktifkan = staf tidak bisa login / input data</span>
+        <div class="pt-4">
+            {{ $users->links() }}
         </div>
     </div>
 </div>
 
-{{-- Auto-refresh status online setiap 30 detik (hanya jika masih di halaman ini) --}}
+{{-- Auto-refresh script --}}
 <script>
     (function() {
         const indexUrl = '{{ route("users.index") }}';
-        let timer = null;
-
-        function scheduleReload() {
-            timer = setTimeout(function() {
-                // Hanya reload jika URL saat ini masih halaman users index
-                const currentPath = window.location.pathname;
-                const indexPath = new URL(indexUrl).pathname;
-                if (currentPath === indexPath) {
-                    window.location.href = indexUrl;
-                }
-            }, 30000);
-        }
-
-        // Batalkan timer jika user submit form (navigasi away)
-        document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function() {
-                clearTimeout(timer);
-            });
-        });
-
-        scheduleReload();
+        let timer = setTimeout(function() {
+            if (window.location.pathname === new URL(indexUrl).pathname) {
+                window.location.href = indexUrl;
+            }
+        }, 30000);
     })();
 </script>
-
 @endsection

@@ -4,13 +4,24 @@
 @section('subheader', 'Ringkasan pembayaran berdasarkan BAP Penerimaan')
 
 @section('actions')
-    <a href="{{ route('reports.kwitansi.list') }}" class="no-print btn btn-outline"><i class="fas fa-arrow-left"></i> Kembali</a>
-    <button onclick="window.print()" class="no-print btn btn-neutral ml-2"><i class="fas fa-print"></i> Cetak</button>
-    @if (!empty($data['penerimaan_nomor']))
-        <a href="{{ route('reports.kwitansi.print_all', ['penerimaan_nomor' => $data['penerimaan_nomor']]) }}" class="no-print btn btn-neutral ml-2">
-            <i class="fas fa-print"></i> Cetak Berkas Full
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+        <a href="{{ route('reports.kwitansi.list') }}" class="no-print btn btn-outline font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+            <i class="fas fa-arrow-left"></i> Kembali
         </a>
-    @endif
+        <button onclick="window.print()" class="no-print btn btn-neutral font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+            <i class="fas fa-print"></i> Cetak
+        </button>
+        @if (!empty($data['penerimaan_nomor']))
+            <a href="{{ route('reports.kwitansi.print_all', ['penerimaan_nomor' => $data['penerimaan_nomor']]) }}" class="no-print btn btn-neutral font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+                <i class="fas fa-file-pdf"></i> Full
+            </a>
+        @endif
+    </div>
+    <form method="POST" action="{{ route('reports.kwitansi.save') }}" class="no-print inline-block ml-2 hidden sm:block">
+        @csrf
+        <input type="hidden" name="id" value="{{ session('kwitansi_current_id') ?? ($saved_id ?? '') }}">
+        <!-- <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button> -->
+    </form>
 @endsection
 
 @section('content')
@@ -18,119 +29,70 @@
         .preview-paper { 
             width: 210mm; 
             min-height: 330mm; 
-            margin: 16px auto; 
-            background-color: #ffffff !important; 
-            color: #1e293b !important;
-            padding: 10mm 15mm;
+            margin: 0 auto; 
+            background: #fff; 
+            padding: 5mm 15mm;
             line-height: 1.4;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            border-radius: 8px;
-            transition: all 0.3s ease;
         }
-
-        /* Dark mode overrides */
-        .theme-dark .preview-paper {
-            background-color: #1e293b !important;
-            color: #f1f5f9 !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .theme-dark .preview-paper .border-black {
-            border-color: #475569 !important;
-        }
-
-        .theme-dark .preview-paper .border-t, 
-        .theme-dark .preview-paper .border-b,
-        .theme-dark .preview-paper .border-l,
-        .theme-dark .preview-paper .border-r {
-            border-color: #475569 !important;
-        }
-
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { position: static !important; width: auto !important; overflow: visible !important; }
             @page { size: 210mm 330mm; margin: 5mm 15mm; }
-            body { margin: 0; background-color: #ffffff !important; }
+            body { margin: 0; }
             .preview-paper { 
                 width: 100% !important; 
                 min-height: auto !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
                 box-sizing: border-box; 
-                background-color: #ffffff !important; 
-                color: #000000 !important;
+                background: #ffffff !important; 
                 box-shadow: none !important; 
                 line-height: 1.4;
             }
-            .border-black, .border-t, .border-b, .border-l, .border-r { border-color: #000000 !important; }
         }
-
         @media screen {
-            html, body { transition: background 0.3s ease; }
-            .theme-dark html, .theme-dark body { background-color: #020617 !important; }
+            html, body { background: #f3f4f6; }
             #print-area { width: 210mm; margin: 0 auto; }
-        }
-
-        .kwitansi-table {
-            width: 100%;
-            table-layout: fixed;
-            border-collapse: collapse;
-        }
-        .kwitansi-table td {
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal !important;
-            vertical-align: top;
+            .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; }
         }
     </style>
-    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper">
-            <div class="text-center font-bold text-xl mb-4 uppercase italic">KWITANSI</div>
+    <div id="print-area" class="preview-paper bg-white rounded-lg shadow p-6">
+        <div class="text-center font-bold text-xl mb-4 uppercase italic">KWITANSI</div>
         <div class="border border-black">
-            <table class="kwitansi-table text-sm">
-                <colgroup>
-                    <col style="width: 30%">
-                    <col style="width: 2%">
-                    <col style="width: 68%">
-                </colgroup>
+            <table class="w-full text-sm">
                 <tr>
-                    <td class="px-2 py-1 italic">TAHUN ANGGARAN</td>
-                    <td class="px-2 py-1 text-center">:</td>
+                    <td class="px-2 py-1 w-1/3 italic">TAHUN ANGGARAN</td>
+                    <td class="px-2 py-1 w-4 text-center">:</td>
                     <td class="px-2 py-1">{{ $data['tahun'] ?? '' }}</td>
                 </tr>
                 <tr>
                     <td class="px-2 py-1 italic">KODE REKENING</td>
-                    <td class="px-2 py-1 text-center">:</td>
+                    <td class="px-2 py-1 w-4 text-center">:</td>
                     <td class="px-2 py-1">{{ $data['rekening'] ?? '' }}</td>
                 </tr>
                 <tr>
                     <td class="px-2 py-1 italic">NO. KWT</td>
-                    <td class="px-2 py-1 text-center">:</td>
+                    <td class="px-2 py-1 w-4 text-center">:</td>
                     <td class="px-2 py-1">{{ $data['nomor_kwt'] ?? '' }}</td>
                 </tr>
             </table>
             
-            <table class="kwitansi-table text-sm border-t border-black mt-1">
-                <colgroup>
-                    <col style="width: 30%">
-                    <col style="width: 2%">
-                    <col style="width: 68%">
-                </colgroup>
+            <table class="w-full text-sm border-t border-black mt-1">
                 <tr>
-                    <td class="px-2 py-1 italic">Sudah Terima Dari</td>
-                    <td class="px-2 py-1 text-center">:</td>
-                    <td class="px-2 py-1 italic">Bendahara Pengeluaran {{ $data['opd_nama'] ?? ($opd->nama_opd ?? '') }} Kabupaten Bolaang Mongondow Selatan</td>
+                    <td class="px-2 py-1 w-1/3 align-top italic">Sudah Terima Dari</td>
+                    <td class="px-2 py-1 align-top w-4 text-center">:</td>
+                    <td class="px-2 py-1 align-top italic">Bendahara Pengeluaran {{ $data['opd_nama'] ?? ($opd->nama_opd ?? '') }} Kabupaten Bolaang Mongondow Selatan</td>
                 </tr>
                 <tr>
-                    <td class="px-2 py-1 italic">Banyaknya Uang</td>
-                    <td class="px-2 py-1 text-center">:</td>
-                    <td class="px-2 py-1 italic font-bold"># {{ \Illuminate\Support\Str::upper($data['terbilang'] ?? '') }} RUPIAH #</td>
+                    <td class="px-2 py-1 align-top italic">Banyaknya Uang</td>
+                    <td class="px-2 py-1 align-top w-4 text-center">:</td>
+                    <td class="px-2 py-1 align-top italic">{{ $data['terbilang'] ?? '' }}</td>
                 </tr>
                 <tr>
-                    <td class="px-2 py-1 italic">Untuk Pembayaran</td>
-                    <td class="px-2 py-1 text-center">:</td>
-                    <td class="px-2 py-1 italic font-bold">{{ $data['pembayaran_uraian'] ?? '' }}</td>
+                    <td class="px-2 py-1 align-top italic">Untuk Pembayaran</td>
+                    <td class="px-2 py-1 align-top w-4 text-center">:</td>
+                    <td class="px-2 py-1 align-top italic">{{ $data['pembayaran_uraian'] ?? '' }}</td>
                 </tr>
             </table>
 
@@ -173,7 +135,6 @@
                     <div>NIP. {{ $data['ppk_nip'] ?? '-' }}</div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
 @endsection

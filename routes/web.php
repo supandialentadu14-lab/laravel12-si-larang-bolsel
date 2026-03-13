@@ -1,24 +1,23 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\BelanjaModalController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\BelanjaModalController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\KwitansiController;
 use App\Http\Controllers\NotaPesananController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OpdController;
+use App\Http\Controllers\OpnameController;
 use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\PenerimaanController;
-use App\Http\Controllers\KwitansiController;
-use App\Http\Controllers\OpnameController;
 use App\Http\Controllers\PinjamPakaiController;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\OpdController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\ActivityLogController;
-use App\Http\Controllers\ImportController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,12 +26,12 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Notifications
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
 
-    // Master Data 
+    // Master Data
     Route::middleware('permission:master_data')->group(function () {
         // Categories
         Route::resource('categories', CategoryController::class);
@@ -51,9 +50,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('import/products', [ImportController::class, 'importProducts'])->name('import.products');
     });
 
-    // Stock Management 
+    // Stock Management
     Route::middleware('permission:transaksi')->group(function () {
         Route::resource('stock', StockController::class)->except(['edit']);
+        Route::get('stock/{stock}/edit', [StockController::class, 'edit'])->name('stock.edit');
         Route::post('stock/bulk-delete', [StockController::class, 'bulkDestroy'])->name('stock.bulk_delete');
     });
 
@@ -70,7 +70,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('permission:pinjam_pakai')->group(function () {
         Route::get('reports/berita-pinjam-pakai', [PinjamPakaiController::class, 'form'])->name('reports.pinjam.form');
         Route::post('reports/berita-pinjam-pakai', [PinjamPakaiController::class, 'report'])->name('reports.pinjam.report');
-        Route::get('reports/berita-pinjam-pakai/save', function () { return redirect()->route('reports.pinjam.form'); });
+        Route::get('reports/berita-pinjam-pakai/save', function () {
+            return redirect()->route('reports.pinjam.form');
+        });
         Route::post('reports/berita-pinjam-pakai/save', [PinjamPakaiController::class, 'save'])->name('reports.pinjam.save');
         Route::get('reports/berita-pinjam-pakai/list', [PinjamPakaiController::class, 'list'])->name('reports.pinjam.list');
         Route::post('reports/berita-pinjam-pakai/bulk-delete', [PinjamPakaiController::class, 'bulkDelete'])->name('reports.pinjam.bulk_delete');
@@ -94,7 +96,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('reports/berita-opname/{id}/delete', [OpnameController::class, 'delete'])->name('reports.opname.delete');
         Route::post('reports/berita-opname/bulk-delete', [OpnameController::class, 'bulkDelete'])->name('reports.opname.bulk_delete');
     });
-    
+
     // Belanja Modal
     Route::middleware('permission:laporan_belanja')->group(function () {
         Route::get('reports/belanja-modal', [BelanjaModalController::class, 'form'])->name('reports.belanja.modal.form');
@@ -112,7 +114,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('reports/belanja-modal/{id}/delete', [BelanjaModalController::class, 'delete'])->name('reports.belanja.modal.delete');
         Route::post('reports/belanja-modal/bulk-delete', [BelanjaModalController::class, 'bulkDelete'])->name('reports.belanja.modal.bulk_delete');
     });
-    
+
     // Nota Pesanan
     Route::middleware('permission:surat_pesanan')->group(function () {
         Route::get('reports/nota-pesanan', [NotaPesananController::class, 'form'])->name('reports.nota.form');
@@ -130,7 +132,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('permission:pemeriksaan')->group(function () {
         Route::get('reports/berita-pemeriksaan', [PemeriksaanController::class, 'form'])->name('reports.pemeriksaan.form');
         Route::post('reports/berita-pemeriksaan', [PemeriksaanController::class, 'report'])->name('reports.pemeriksaan.report');
-        Route::get('reports/berita-pemeriksaan/save', function() { return redirect()->route('reports.pemeriksaan.form'); });
+        Route::get('reports/berita-pemeriksaan/save', function () {
+            return redirect()->route('reports.pemeriksaan.form');
+        });
         Route::post('reports/berita-pemeriksaan/save', [PemeriksaanController::class, 'save'])->name('reports.pemeriksaan.save');
         Route::get('reports/berita-pemeriksaan/list', [PemeriksaanController::class, 'list'])->name('reports.pemeriksaan.list');
         Route::get('reports/berita-pemeriksaan/{id}', [PemeriksaanController::class, 'show'])->name('reports.pemeriksaan.show');
@@ -138,7 +142,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('reports/berita-pemeriksaan/{id}/delete', [PemeriksaanController::class, 'delete'])->name('reports.pemeriksaan.delete');
         Route::post('reports/berita-pemeriksaan/bulk-delete', [PemeriksaanController::class, 'bulkDelete'])->name('reports.pemeriksaan.bulk_delete');
     });
-    
+
     Route::middleware('permission:penerimaan')->group(function () {
         Route::get('reports/berita-penerimaan', [PenerimaanController::class, 'form'])->name('reports.penerimaan.form');
         Route::post('reports/berita-penerimaan', [PenerimaanController::class, 'report'])->name('reports.penerimaan.report');
@@ -149,7 +153,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('reports/berita-penerimaan/{id}/delete', [PenerimaanController::class, 'delete'])->name('reports.penerimaan.delete');
         Route::post('reports/berita-penerimaan/bulk-delete', [PenerimaanController::class, 'bulkDelete'])->name('reports.penerimaan.bulk_delete');
     });
-    
+
     Route::middleware('permission:berkas_lainnya')->group(function () {
         Route::get('reports/kwitansi', [KwitansiController::class, 'form'])->name('reports.kwitansi.form');
         Route::post('reports/kwitansi', [KwitansiController::class, 'report'])->name('reports.kwitansi.report');
@@ -172,8 +176,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('settings/nota-master/list', [OpdController::class, 'edit'])->name('settings.nota.master.list');
     });
 
-
-
     // Legacy Aliases for Consolidated Settings
 
     Route::get('profile', [UserController::class, 'editSelf'])->name('profile.edit');
@@ -183,7 +185,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('can:admin-access')->group(function () {
         Route::resource('users', UserController::class);
         // GET fallback: redirect ke index jika akses langsung via URL
-        Route::get('users/{user}/toggle-active', fn() => redirect()->route('users.index'));
+        Route::get('users/{user}/toggle-active', fn () => redirect()->route('users.index'));
         Route::post('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
         Route::get('users/{user}/backup', [\App\Http\Controllers\BackupController::class, 'downloadUser'])->name('users.backup');
         Route::post('users/{user}/restore', [\App\Http\Controllers\UserRestoreController::class, 'restore'])->name('users.restore');

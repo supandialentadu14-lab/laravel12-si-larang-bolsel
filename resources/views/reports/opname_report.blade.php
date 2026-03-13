@@ -5,18 +5,19 @@
 @section('subheader', 'Pratinjau & cetak')
 
 @section('actions')
-    <a href="{{ route('reports.opname.list') }}" class="no-print btn btn-outline font-bold"><i class="fas fa-arrow-left"></i> Kembali</a>
-    <button type="button" onclick="openPrintPreview()" class="no-print btn btn-neutral ml-2"><i class="fas fa-print"></i> Cetak</button>
-    <form method="POST" action="{{ route('reports.opname.save') }}" class="no-print inline-block ml-2">
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+        <a href="{{ route('reports.opname.list') }}" class="no-print btn btn-outline font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+        <button type="button" onclick="openPrintPreview()" class="no-print btn btn-neutral font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+            <i class="fas fa-print"></i> Cetak
+        </button>
+    </div>
+    <form method="POST" action="{{ route('reports.opname.save') }}" class="no-print inline-block ml-2 hidden sm:block">
         @csrf
         <input type="hidden" name="id" value="{{ session('opname_current_id') ?? ($saved_id ?? '') }}">
         <!-- <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button> -->
     </form>
-    <!-- @if (isset($saved_id))
-        <a href="{{ route('reports.opname.edit', $saved_id) }}" class="no-print btn btn-outline ml-2">Edit</a>
-    @else
-        <a href="{{ route('reports.opname.form') }}" class="no-print btn btn-outline ml-2">Edit</a>
-    @endif -->
 @endsection
 
 @section('content')
@@ -39,111 +40,32 @@
             };
         }
     </script>
-    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper">
-            @if (isset($status))
-                <div class="no-print mb-4 px-4 py-3 bg-green-50 text-green-700 border border-green-200 rounded">
-                    {{ $status }}
-                </div>
-            @endif
-        @if (isset($error))
-            <div class="no-print mb-4 px-4 py-3 bg-red-50 text-red-700 border border-red-200 rounded">
-                {{ $error }}
-            </div>
-        @endif
-        <div class="mb-4">
-    <style>
-        .preview-paper { 
-            width: 210mm; 
-            min-height: 330mm; 
-            margin: 16px auto; 
-            background-color: #ffffff !important; 
-            color: #1e293b !important;
-            padding: 10mm 15mm;
-            line-height: 1.4;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        /* Dark mode overrides */
-        .theme-dark .preview-paper {
-            background-color: #1e293b !important;
-            color: #f1f5f9 !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .theme-dark .preview-paper .border-b-4 {
-            border-color: #475569 !important;
-        }
-
-        .preview-paper p { margin: 5px 0; }
-        .preview-paper h2 { margin: 5px 0; }
-        .preview-paper table { margin-top: 6px; }
-
-        @media print { 
-            body * { visibility: hidden; }
-            #print-area, #print-area * { visibility: visible; }
-            #print-area { position: static !important; width: auto !important; overflow: visible !important; }
-            @page { size: 210mm 330mm; margin: 5mm 15mm; } 
-            body { margin: 0; background-color: #ffffff !important; }
-            .kop { margin-top: 0 !important; }
-            .preview-paper { 
-                width: 100% !important; 
-                min-height: auto !important; 
-                padding: 0 !important; 
-                margin: 0 !important; 
-                box-sizing: border-box; 
-                background-color: #ffffff !important; 
-                color: #000000 !important;
-                box-shadow: none !important; 
+        <style>
+            .preview-paper {
+                width: 210mm;
+                min-height: 330mm;
+                margin: 0 auto;
+                background: #fff;
+                padding: 10mm 15mm;
                 line-height: 1.4;
+                box-shadow: 0 0 20px rgba(0,0,0,0.05);
             }
-            .preview-paper p { margin: 5px 0; }
-            .preview-paper h2 { margin: 5px 0; }
-            .preview-paper table { margin-top: 6px; }
-            thead, tbody, tfoot, tr, th, td { background-color: #ffffff !important; border-color: #000000 !important; color: #000000 !important; }
-            .border-b-4 { border-color: #000000 !important; }
-            .kop-logo { width: 100px; }
-            .kop-text .line2 { font-size: 22px; }
-        }
-
-        @media screen {
-            html, body { transition: background 0.3s ease; }
-            .theme-dark html, .theme-dark body { background-color: #020617 !important; }
-            #print-area { width: 210mm; margin: 0 auto; }
-        }
-
-        .report-table {
-            table-layout: fixed;
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .report-table th, .report-table td {
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            white-space: normal !important;
-            border: 1px solid #1e293b !important;
-            padding: 4px;
-        }
-
-        .theme-dark .report-table th, .theme-dark .report-table td {
-            border-color: #475569 !important;
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: normal;
-            max-height: 2.8em; /* 2 Baris */
-        }
-    </style>
-            @include('partials.kop', ['opd' => $opd])
-        </div>
+            @media print { 
+                @page { size: 210mm 330mm; margin: 5mm 15mm; } 
+                body { margin: 0; background: #fff !important; }
+                .preview-paper { 
+                    width: 100% !important; 
+                    min-height: auto !important; 
+                    padding: 0 !important; 
+                    margin: 0 !important; 
+                    box-shadow: none !important; 
+                }
+            }
+        </style>
+        <div id="print-area" class="preview-paper bg-white text-black shadow-sm mx-auto">
+            <div class="mb-4">
+                @include('partials.kop', ['opd' => $opd])
+            </div>
         
             @if (isset($error))
                 <div class="no-print mb-4 px-4 py-3 bg-red-50 text-red-700 border border-red-200 rounded">
@@ -187,19 +109,8 @@
                 </div>
             </div>
 
-            <div class="mb-6">
-                <table class="report-table w-full text-xs border border-black print:text-[10px]">
-                    <colgroup>
-                        <col style="width: 5%">   <!-- No -->
-                        <col style="width: 26%">  <!-- Nama Barang -->
-                        <col style="width: 11%">  <!-- Kwantitas -->
-                        <col style="width: 9%">   <!-- Satuan -->
-                        <col style="width: 14%">  <!-- Harga Satuan -->
-                        <col style="width: 17%">  <!-- Jumlah Harga -->
-                        <col style="width: 6%">   <!-- B -->
-                        <col style="width: 6%">   <!-- RR -->
-                        <col style="width: 6%">   <!-- RB -->
-                    </colgroup>
+            <div class="overflow-x-auto mb-6">
+                <table class="w-full text-xs border border-black print:text-[10px]">
                     <thead>
                         <tr class="text-center font-bold">
                             <th class="border border-black px-2 py-1" rowspan="2">No</th>
@@ -222,7 +133,7 @@
                             @php $total += (int)($item['jumlah'] ?? 0); @endphp
                             <tr>
                                 <td class="border border-black px-2 py-1 text-center">{{ $i + 1 }}</td>
-                                <td class="border border-black px-2 py-1"><div class="line-clamp-2">{{ $item['nama'] }}</div></td>
+                                <td class="border border-black px-2 py-1">{{ $item['nama'] }}</td>
                                 <td class="border border-black px-2 py-1 text-center">{{ $item['kuantitas'] }}</td>
                                 <td class="border border-black px-2 py-1 text-center">{{ $item['satuan'] ?? '-' }}</td>
                                 <td class="border border-black px-2 py-1 text-right">
@@ -257,17 +168,16 @@
                     <p class="mb-1">&nbsp;</p>
                     <p class="mb-1">Pengurus Barang Pengguna</p>
                     <div class="h-24"></div>
-                    <p class="font-bold underline">{{ $data['pihak_kedua']['nama'] ?? '' }}</p>
-                    <p class="text-sm">NIP. {{ $data['pihak_kedua']['nip'] ?? '-' }}</p>
+                    <p class="font-bold underline">{{ $opd->pengurus_nama ?? ($data['pihak_kedua']['nama'] ?? '') }}</p>
+                    <p class="text-sm">NIP. {{ $opd->pengurus_nip ?? ($data['pihak_kedua']['nip'] ?? '-') }}</p>
                 </div>
                 <div class="text-center">
                     <p class="mb-1">Mengetahui</p>
-                    <p class="mb-1">Kepala Dinas</p>
+                    <p class="mb-1">Kepala Dinas Komunikasi dan Informatika</p>
                     <div class="h-24"></div>
-                    <p class="font-bold underline">{{ $data['pihak_pertama']['nama'] ?? '' }}</p>
-                    <p class="text-sm">NIP. {{ $data['pihak_pertama']['nip'] ?? '-' }}</p>
+                    <p class="font-bold underline">{{ $opd->kepala_nama ?? ($data['pihak_pertama']['nama'] ?? '') }}</p>
+                    <p class="text-sm">NIP. {{ $opd->kepala_nip ?? ($data['pihak_pertama']['nip'] ?? '-') }}</p>
                 </div>
             </div>
-        </div>
-    </div>
+        
     @endsection

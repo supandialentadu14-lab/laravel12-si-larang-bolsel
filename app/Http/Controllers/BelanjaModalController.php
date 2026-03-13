@@ -105,7 +105,11 @@ class BelanjaModalController extends Controller
             ]);
         }
         session(['belanja_modal_current' => $data, 'belanja_modal_current_id' => $id]);
-        return view('reports.belanja_modal_report', compact('data', 'opd', 'master'))->with('saved_id', $id);
+
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.belanja_modal_report' : 'reports.belanja_modal_report';
+
+        return view($view, compact('data', 'opd', 'master'))->with('saved_id', $id);
     }
 
     public function save(Request $request): RedirectResponse|View
@@ -235,7 +239,10 @@ class BelanjaModalController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('belanja_modal.index', compact('items', 'opd', 'master'));
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $request->header('User-Agent'));
+        $view = $isMobile ? 'belanja_modal.index' : 'belanja_modal.desktop.index';
+
+        return view($view, compact('items', 'opd', 'master'));
     }
 
     public function show(string $id): View

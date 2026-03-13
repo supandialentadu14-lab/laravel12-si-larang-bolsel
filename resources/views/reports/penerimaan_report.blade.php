@@ -4,8 +4,19 @@
 @section('subheader', 'Pratinjau & cetak')
 
 @section('actions')
-    <a href="{{ route('reports.penerimaan.list') }}" class="no-print btn btn-outline"><i class="fas fa-arrow-left"></i> Kembali</a>
-    <button onclick="window.print()" class="no-print btn btn-neutral ml-2"><i class="fas fa-print"></i> Cetak</button>
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+        <a href="{{ route('reports.penerimaan.list') }}" class="no-print btn btn-outline font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+        <button onclick="window.print()" class="no-print btn btn-neutral font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+            <i class="fas fa-print"></i> Cetak
+        </button>
+    </div>
+    <form method="POST" action="{{ route('reports.penerimaan.save') }}" class="no-print inline-block ml-2 hidden sm:block">
+        @csrf
+        <input type="hidden" name="id" value="{{ session('penerimaan_current_id') }}">
+        <!-- <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button> -->
+    </form>
 @endsection
 
 @section('content')
@@ -13,84 +24,47 @@
         .preview-paper { 
             width: 210mm; 
             min-height: 330mm; 
-            margin: 16px auto; 
-            background-color: #ffffff !important; 
-            color: #1e293b !important;
-            padding: 10mm 15mm;
+            margin: 0 auto; 
+            background: #fff; 
+            padding: 5mm 15mm;
             line-height: 1.4;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            border-radius: 8px;
-            transition: all 0.3s ease;
         }
-
-        /* Dark mode overrides */
-        .theme-dark .preview-paper {
-            background-color: #1e293b !important;
-            color: #f1f5f9 !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .theme-dark .preview-paper .border-b-4 {
-            border-color: #475569 !important;
-        }
-
         .preview-paper p { margin: 5px 0; }
         .preview-paper h2 { margin: 5px 0; }
         .preview-paper table { margin-top: 6px; }
-
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { position: static !important; width: auto !important; overflow: visible !important; }
             @page { size: 210mm 330mm; margin: 5mm 15mm; }
-            body { margin: 0; background-color: #ffffff !important; }
+            body { margin: 0; }
             .preview-paper { 
                 width: 100% !important; 
                 min-height: auto !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
                 box-sizing: border-box; 
-                background-color: #ffffff !important; 
-                color: #000000 !important;
+                background: #ffffff !important; 
                 box-shadow: none !important; 
                 line-height: 1.4;
             }
             .preview-paper p { margin: 5px 0; }
             .preview-paper h2 { margin: 5px 0; }
             .preview-paper table { margin-top: 6px; }
-            thead, tbody, tfoot, tr, th, td { background-color: #ffffff !important; border-color: #000000 !important; color: #000000 !important; }
-            .border-b-4 { border-color: #000000 !important; }
         }
-
         @media screen {
-            html, body { transition: background 0.3s ease; }
-            .theme-dark html, .theme-dark body { background-color: #020617 !important; }
+            html, body { background: #f3f4f6; }
             #print-area { width: 210mm; margin: 0 auto; }
+            .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; }
         }
-
-        .report-table { 
-            border-collapse: collapse; 
-            width: 100%; 
-            table-layout: fixed;
-        }
-        .report-table th, .report-table td { 
-            border: 1px solid #1e293b; 
-            padding: 4px; 
-            font-size: 12px; 
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal !important;
-        }
-        .theme-dark .report-table th, .theme-dark .report-table td {
-            border-color: #475569;
-        }
+        .report-table { border-collapse: collapse; width: 100%; }
+        .report-table th, .report-table td { border: 1px solid #000; padding: 6px; font-size: 12px; }
         .kop { margin-bottom: 10px; }
         .kop h1 { text-align: center; font-weight: 800; text-transform: uppercase; font-size: 16px; margin: 6px 0; }
     </style>
 
-    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper">
-            @include('partials.kop', ['opd' => $opd])
+    <div id="print-area" class="preview-paper">
+        @include('partials.kop', ['opd' => $opd])
 
         <div class="text-center mb-2">
             <h2 class="font-extrabold text-lg">BERITA ACARA PENERIMAAN BARANG/PEKERJAAN</h2>
@@ -101,48 +75,35 @@
             {{ $data['tanggal_kata'] ?? '' }}
         </p>
 
-        <table class="w-full text-sm mb-3" style="table-layout: fixed;">
-            <colgroup>
-                <col style="width: 20%">
-                <col style="width: 2%">
-                <col style="width: 78%">
-            </colgroup>
+        <table class="w-full text-sm mb-3">
             <tr>
-                <td class="align-top pl-6">Nama</td>
-                <td class="align-top">:</td>
-                <td class="align-top"><span class="font-bold">{{ $data['pengguna']['nama'] ?? '' }}</span></td>
+                <td class="w-28 align-top pl-6">Nama</td>
+                <td class="w-4 align-top pl-6">:</td>
+                <td class="align-top pl-6"><span class="font-bold">{{ $data['pengguna']['nama'] ?? '' }}</span></td>
             </tr>
             <tr>
                 <td class="align-top pl-6">NIP</td>
-                <td class="align-top">:</td>
-                <td class="align-top">{{ $data['pengguna']['nip'] ?? '' }}</td>
+                <td class="align-top pl-6">:</td>
+                <td class="align-top pl-6">{{ $data['pengguna']['nip'] ?? '' }}</td>
             </tr>
             <tr>
                 <td class="align-top pl-6">Jabatan</td>
-                <td class="align-top">:</td>
-                <td class="align-top pr-2">{{ $data['pengguna']['jabatan'] ?? 'Pengurus Barang' }}</td>
+                <td class="align-top pl-6">:</td>
+                <td class="align-top pl-6">{{ $data['pengguna']['jabatan'] ?? 'Pengurus Barang Pengguna' }}</td>
             </tr>
         </table>
 
         <p class="mb-1 text-sm">Berdasarkan Berita Acara Pemeriksaan Barang Nomor: {{ $data['pemeriksaan_nomor'] ?? '-' }}. Telah menerima barang yang diserahkan oleh Pihak Ketiga sebagai berikut :</p>
 
         <table class="report-table items text-sm mb-3">
-            <colgroup>
-                <col style="width: 5%">
-                <col style="width: 40%">
-                <col style="width: 10%">
-                <col style="width: 10%">
-                <col style="width: 17%">
-                <col style="width: 18%">
-            </colgroup>
             <thead>
                 <tr>
-                    <th>No</th>
+                    <th style="width:30px">No</th>
                     <th>Jenis Bahan/Alat (Barang)</th>
-                    <th>Kuantitas</th>
-                    <th>Satuan</th>
-                    <th>Harga<br>Satuan</th>
-                    <th>Total</th>
+                    <th style="width:80px">Kuantitas</th>
+                    <th style="width:80px">Satuan</th>
+                    <th style="width:120px">Harga Satuan</th>
+                    <th style="width:120px">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -174,7 +135,7 @@
         <div class="grid grid-cols-2 gap-6 text-sm mt-8 mb-4">
             <div class="text-center">
                 <div class="font-bold">Yang Menerima,</div>
-                <div class="font-bold mb-12 uppercase">{{ $data['pengguna']['jabatan'] ?? 'Pengurus Barang' }}</div>
+                <div class="font-bold mb-12">Pengurus Barang Pengguna</div>
                 <br>
                 <div class="font-bold underline uppercase">{{ $data['pengguna']['nama'] ?? '' }}</div>
                 <div>NIP: {{ $data['pengguna']['nip'] ?? '' }}</div>
@@ -194,7 +155,6 @@
             <br>
             <div class="font-bold underline uppercase">{{ $data['ppk']['nama'] ?? '' }}</div>
             <div>NIP: {{ $data['ppk']['nip'] ?? '' }}</div>
-        </div>
         </div>
     </div>
 @endsection

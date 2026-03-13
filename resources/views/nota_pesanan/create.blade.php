@@ -1,6 +1,4 @@
-@extends('layouts.admin')
-
-@section('header', 'Nota Pesanan')
+@extends('layouts.mobile')
 
 @section('content')
     <script>
@@ -10,21 +8,23 @@
                 tanggal: '{{ $data['tanggal'] ?? now()->toDateString() }}',
                 belanja: '{{ $data['belanja'] ?? ($categories->first()->name ?? '') }}',
                 items: {!! json_encode(($data['items'] ?? [])) !!},
+                nextKey: 1,
                 products: {!! json_encode($products->map(fn($p) => ['id'=>$p->id,'name'=>$p->name,'unit'=>$p->unit,'price'=>$p->price ?? 0,'category_id'=>$p->category_id,'category_name'=>optional($p->category)->name])) !!},
                 init() {
-                    this.items = (this.items || []).filter(it => (String(it.name || '').trim() !== '')).map(it => {
-                        const p = Number(it.price ?? 0);
-                        const q = Number(it.qty ?? 0);
-                        const price = Number.isFinite(p) ? Math.round(p) : (parseInt(String(it.price).replace(/\D+/g,''),10) || '');
-                        const qty = Number.isFinite(q) ? Math.round(q) : (parseInt(String(it.qty).replace(/\D+/g,''),10) || '');
-                        const total = (Number.isFinite(qty) && Number.isFinite(price)) ? qty * price : '';
-                        return { ...it, price, qty, total };
-                    });
+                    if (this.items.length === 0) this.addItem();
+                    this.ensureKeys();
+                },
+                ensureKeys() {
+                    this.items = (this.items || []).map(it => ({ ...it, _key: it._key || (this.nextKey++) }));
                 },
                 addItem() {
-                    this.items.push({ name: '', qty: '', unit: '', price: '', total: '' });
+                    this.items.push({ _key: this.nextKey++, name: '', qty: '', unit: '', price: '', total: '' });
                 },
-                removeItem(i) { this.items.splice(i, 1); },
+                removeItem(i) { 
+                    if (this.items.length > 1) {
+                        this.items.splice(i, 1); 
+                    }
+                },
                 onProductChange(i, name) {
                     const p = this.products.find(x => x.name === name);
                     if (p) {
@@ -52,146 +52,172 @@
                     } else {
                         this.items[i].total = '';
                     }
+                },
+                getTotal() {
+                    return this.items.reduce((sum, item) => sum + (Number(item.total) || 0), 0);
                 }
             }
         }
     </script>
 
-    <div class="max-w-full mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 bg-[#1e293b]">
-                <h6 class="font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-file-invoice"></i> Form Dokumen Nota Pesanan
-                </h6>
+    <div class="space-y-6 pb-24">
+        {{-- Page Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Nota Pesanan</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Buat Surat Pesanan Baru</p>
+            </div>
+            <a href="{{ route('reports.nota.list') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+                <i class="fas fa-times text-xs"></i>
+            </a>
+        </div>
+
+        <form method="POST" action="{{ route('reports.nota.save') }}" x-data="notaForm()" x-init="init()" class="space-y-6">
+            @csrf
+
+            {{-- Informasi Kegiatan --}}
+            <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-project-diagram text-xs"></i>
+                    </div>
+                    <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Informasi Kegiatan</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Kegiatan</label>
+                        <textarea name="kegiatan" rows="2" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed" placeholder="Contoh: Penyediaan Jasa Penunjang..." required>{{ old('kegiatan', $data['kegiatan'] ?? '') }}</textarea>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Sub Kegiatan</label>
+                        <textarea name="sub_kegiatan" rows="2" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed" placeholder="Contoh: Penyelenggaraan Rapat..." required>{{ old('sub_kegiatan', $data['sub_kegiatan'] ?? '') }}</textarea>
+                    </div>
+                </div>
             </div>
 
-            <form method="POST" action="{{ session('nota_current_id') ? route('reports.nota.update', session('nota_current_id')) : route('reports.nota.save') }}" x-data="notaForm()" x-init="init()" class="p-6 space-y-6">
-                @csrf
-                <input type="hidden" name="id" value="{{ session('nota_current_id') }}">
-
-                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-6 transition-all duration-300">
-                    <h4 class="text-slate-800 font-bold mb-5 flex items-center gap-2 border-b border-slate-200 pb-2">
-                        <i class="fas fa-info-circle text-indigo-500"></i> Informasi Kegiatan & Dokumen
-                    </h4>
-                    
-                    <div class="grid grid-cols-1 gap-6 mb-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Kegiatan <span class="text-rose-500">*</span></label>
-                            <textarea name="kegiatan" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold shadow-sm" placeholder="Contoh: Penyediaan Jasa Penunjang..." rows="2" required>{{ old('kegiatan', $data['kegiatan'] ?? '') }}</textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Sub Kegiatan <span class="text-rose-500">*</span></label>
-                            <textarea name="sub_kegiatan" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold shadow-sm" placeholder="Contoh: Penyelenggaraan Rapat..." rows="2" required>{{ old('sub_kegiatan', $data['sub_kegiatan'] ?? '') }}</textarea>
-                        </div>
+            {{-- Detail Dokumen --}}
+            <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <i class="fas fa-file-invoice text-xs"></i>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Kode Rekening</label>
-                            <input type="text" name="rekening" list="opt-rekening" value="{{ old('rekening', $data['rekening'] ?? '') }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono" placeholder="5.1.02.01.01.0024">
-                            <datalist id="opt-rekening">
-                                @foreach(($options['rekening'] ?? []) as $v)
-                                    <option value="{{ $v }}"></option>
-                                @endforeach
-                            </datalist>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nomor Nota Pesanan <span class="text-rose-500">*</span></label>
-                            <input type="text" name="nomor" value="{{ old('nomor', $data['nomor'] ?? '') }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold shadow-sm" placeholder="Contoh: 001/NOTA/2024" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tanggal Nota <span class="text-rose-500">*</span></label>
-                            <input type="date" name="tanggal" x-model="tanggal" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold" required>
-                        </div>
-                    </div>
+                    <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Detail Dokumen</h3>
                 </div>
 
-                <div class="bg-indigo-50/50 p-6 rounded-xl border border-indigo-100 mb-6 group">
-                    <h4 class="text-indigo-900 font-bold mb-5 flex items-center gap-2 border-b border-indigo-100 pb-2">
-                        <i class="fas fa-tags text-indigo-500"></i> Klasifikasi Belanja & Penyedia
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Kategori Jenis Belanja <span class="text-rose-500">*</span></label>
-                            <select name="belanja" x-model="belanja" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold bg-white" required>
-                                <option value="">-- Pilih Jenis Belanja --</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->name }}">{{ $cat->name }}</option>
-                                @endforeach
-                            </select>
-                            <p class="text-[10px] text-slate-400 mt-1 italic italic">Memfilter daftar barang yang dapat dipilih.</p>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Kode Rekening</label>
+                            <input type="text" name="rekening" value="{{ old('rekening', $data['rekening'] ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-mono font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="5.1.02.01...">
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Penyedia / Supplier <span class="text-rose-500">*</span></label>
-                            <select name="supplier_id" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold bg-white" required>
-                                <option value="">-- Pilih Penyedia --</option>
-                                @foreach($suppliers as $s)
-                                    <option value="{{ $s->id }}" {{ (old('supplier_id', $data['supplier_id'] ?? '') == $s->id) ? 'selected' : '' }}>
-                                        {{ $s->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <p class="text-[10px] text-slate-400 mt-1 italic">Detail penyedia akan tampil di footer laporan.</p>
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
+                            <input type="date" name="tanggal" x-model="tanggal" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
                         </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Nota Pesanan</label>
+                        <input type="text" name="nomor" value="{{ old('nomor', $data['nomor'] ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001/NPB/..." required>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Kategori Belanja</label>
+                        <select name="belanja" x-model="belanja" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+                            <option value="">-- Pilih Kategori --</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->name }}">{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Penyedia / Supplier</label>
+                        <select name="supplier_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+                            <option value="">-- Pilih Penyedia --</option>
+                            @foreach($suppliers as $s)
+                                <option value="{{ $s->id }}" {{ (old('supplier_id', $data['supplier_id'] ?? '') == $s->id) ? 'selected' : '' }}>
+                                    {{ $s->name }} ({{ $s->toko }})
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+            </div>
 
-                <div class="bg-indigo-50/30 p-4 rounded-xl border border-indigo-100 mb-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                        <h4 class="text-indigo-900 font-bold flex items-center gap-2">
-                            <i class="fas fa-shopping-cart text-indigo-500"></i> Daftar Pesanan Barang
-                        </h4>
-                        <button type="button" @click="addItem()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-md shadow-indigo-100 hover:bg-indigo-700 transition flex items-center justify-center gap-2">
-                            <i class="fas fa-plus"></i> Tambah Item Barang
-                        </button>
+            {{-- Daftar Barang --}}
+            <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6 overflow-hidden">
+                <div class="flex items-center justify-between border-b border-slate-50 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-boxes text-xs"></i>
+                        </div>
+                        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Rincian Barang</h3>
                     </div>
-                    <div class="overflow-x-auto border border-indigo-100 rounded-xl bg-white shadow-sm">
-                        <table class="w-full text-left text-slate-700">
-                            <thead class="bg-indigo-50 text-[10px] uppercase font-bold text-indigo-600 tracking-wider">
-                                <tr>
-                                    <th class="px-4 py-3 border-b border-indigo-100">Nama Barang / Spesifikasi</th>
-                                    <th class="px-4 py-3 border-b border-indigo-100 w-24">Volume</th>
-                                    <th class="px-4 py-3 border-b border-indigo-100 w-24">Satuan</th>
-                                    <th class="px-4 py-3 border-b border-indigo-100 w-36">Harga Satuan (Rp)</th>
-                                    <th class="px-4 py-3 border-b border-indigo-100 w-36 text-right">Total (Rp)</th>
-                                    <th class="px-4 py-3 border-b border-indigo-100 w-12 text-center">Aksi</th>
+                    <button type="button" @click="addItem()" class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 transition active:scale-90">
+                        <i class="fas fa-plus text-[10px]"></i>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto -mx-6 px-6">
+                    <table class="min-w-[800px] w-full text-left">
+                        <thead class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            <tr>
+                                <th class="pb-4 px-3 w-[250px]">Nama Barang</th>
+                                <th class="pb-4 px-3 w-[80px] text-center">Qty</th>
+                                <th class="pb-4 px-3 w-[100px] text-center">Satuan</th>
+                                <th class="pb-4 px-3 w-[150px] text-right">Harga (Rp)</th>
+                                <th class="pb-4 px-3 w-[150px] text-right">Total (Rp)</th>
+                                <th class="pb-4 px-3 w-[50px]"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <template x-for="(item, i) in items" :key="item._key">
+                                <tr class="hover:bg-slate-50/50 transition">
+                                    <td class="py-3 px-1">
+                                        <input type="text" :name="`items[${i}][name]`" x-model="item.name" list="opt-products" @change="onProductChange(i, $event.target.value)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="Cari barang...">
+                                        <datalist id="opt-products">
+                                            <template x-for="p in productsByBelanja()" :key="p.id">
+                                                <option :value="p.name" x-text="p.name"></option>
+                                            </template>
+                                        </datalist>
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="number" :name="`items[${i}][qty]`" x-model="item.qty" @input="recalc(i)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold text-center outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="0">
+                                    </td>
+                                    <td class="py-3 px-1 text-center uppercase font-bold text-[10px] text-slate-400">
+                                        <input type="text" :name="`items[${i}][unit]`" x-model="item.unit" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold text-center outline-none focus:ring-1 focus:ring-indigo-500/20 uppercase" placeholder="...">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="number" :name="`items[${i}][price]`" x-model="item.price" @input="recalc(i)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-mono font-bold text-right outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="0">
+                                    </td>
+                                    <td class="py-3 px-3 text-right font-mono text-[11px] font-black text-indigo-600" x-text="new Intl.NumberFormat('id-ID').format(item.total || 0)"></td>
+                                    <td class="py-3 px-1 text-center">
+                                        <button type="button" @click="removeItem(i)" class="text-slate-300 hover:text-rose-500 transition">
+                                            <i class="fas fa-trash-alt text-[10px]"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody class="divide-y divide-indigo-50">
-                                <template x-for="(item, i) in items" :key="i">
-                                    <tr class="hover:bg-indigo-50/50 transition">
-                                        <td class="p-3">
-                                            <input type="text" :name="`items[${i}][name]`" x-model="item.name" list="opt-products" @change="onProductChange(i, $event.target.value)" class="w-full rounded-lg border border-slate-300 bg-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 px-3 transition" placeholder="Cari barang...">
-                                            <datalist id="opt-products">
-                                                <template x-for="p in productsByBelanja()" :key="p.id">
-                                                    <option :value="p.name" x-text="p.name"></option>
-                                                </template>
-                                            </datalist>
-                                        </td>
-                                        <td class="p-3">
-                                            <input type="number" :name="`items[${i}][qty]`" x-model="item.qty" @input="recalc(i)" class="w-full rounded-lg border border-slate-300 bg-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 px-3 transition text-center font-bold" min="0">
-                                        </td>
-                                        <td class="p-3">
-                                            <input type="text" :name="`items[${i}][unit]`" x-model="item.unit" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-sm py-1.5 px-3 transition text-center uppercase font-medium" placeholder="...">
-                                        </td>
-                                        <td class="p-3">
-                                            <input type="number" :name="`items[${i}][price]`" x-model="item.price" @input="recalc(i)" class="w-full rounded-lg border border-indigo-200 bg-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 px-3 transition text-right font-mono" min="0">
-                                        </td>
-                                        <td class="p-3 text-right font-mono text-sm font-bold text-indigo-700" x-text="new Intl.NumberFormat('id-ID').format(item.total || 0)"></td>
-                                        <td class="p-3 text-center">
-                                            <button type="button" @click="removeItem(i)" class="text-rose-400 hover:text-rose-600 transition p-2"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
+                            </template>
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-indigo-600 text-white">
+                                <td colspan="4" class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Total Keseluruhan</td>
+                                <td class="px-3 py-4 text-right font-mono text-sm font-black" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(getTotal())"></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
+            </div>
 
-                @include('partials.form-actions', [
-                    'backRoute' => route('reports.nota.list'),
-                ])
-            </form>
-        </div>
+            {{-- Actions --}}
+            <div class="flex gap-3 px-2">
+                <a href="{{ route('reports.nota.list') }}" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
+                <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">Simpan Nota</button>
+            </div>
+        </form>
     </div>
 @endsection

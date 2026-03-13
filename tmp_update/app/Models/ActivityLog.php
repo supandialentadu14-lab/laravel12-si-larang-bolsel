@@ -67,6 +67,10 @@ class ActivityLog extends Model
                 $oldValue = $oldValue === 'in' ? 'Masuk' : ($oldValue === 'out' ? 'Keluar' : $oldValue);
                 $newValue = $newValue === 'in' ? 'Masuk' : ($newValue === 'out' ? 'Keluar' : $newValue);
             }
+
+            // Ensure values are strings for view rendering
+            $oldValue = is_array($oldValue) ? json_encode($oldValue) : (string)$oldValue;
+            $newValue = is_array($newValue) ? json_encode($newValue) : (string)$newValue;
             
             $changes[] = [
                 'label' => $label,

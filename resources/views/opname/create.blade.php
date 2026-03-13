@@ -1,7 +1,4 @@
-@extends('layouts.admin')
-
-@section('title', 'Berita Acara Stock Opname')
-@section('header', 'Berita Acara Stock Opname Persediaan Barang Habis Pakai')
+@extends('layouts.mobile')
 
 @section('content')
     <script>
@@ -12,21 +9,13 @@
                 updatePembuka() {
                     try {
                         const v = this.$refs.tanggal?.value;
-                        const tempat = this.$refs.tempat?.value || '-';
                         if (!v) return;
-                        const parts = v.split('-');
-                        const year = parseInt(parts[0], 10);
-                        const monthIndex = parseInt(parts[1], 10) - 1;
-                        const day = parseInt(parts[2], 10);
-                        const d = new Date(year, monthIndex, day);
+                        const d = new Date(v);
+                        const hari = d.toLocaleDateString('id-ID', { weekday: 'long' });
+                        const bulan = d.toLocaleDateString('id-ID', { month: 'long' });
+                        const tanggal = d.getDate();
+                        const tahun = d.getFullYear();
                         
-                        const hariMap = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                        const bulanMap = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                        
-                        const hari = hariMap[d.getDay()];
-                        const bulan = bulanMap[d.getMonth()];
-                        const tanggal = day;
-                        const tahun = year;
                         const toWords = (n) => {
                             n = parseInt(n, 10);
                             const h = ["","satu","dua","tiga","empat","lima","enam","tujuh","delapan","sembilan","sepuluh","sebelas"];
@@ -39,149 +28,132 @@
                                 if (v < 1000) return w(Math.floor(v/100)) + " ratus " + w(v%100);
                                 if (v < 2000) return "seribu " + w(v-1000);
                                 if (v < 1000000) return w(Math.floor(v/1000)) + " ribu " + w(v%1000);
-                                if (v < 1000000000) return w(Math.floor(v/1000000)) + " juta " + w(v%1000000);
                                 return String(v);
                             };
                             return cap(w(n).trim());
                         };
-                        const tanggalKata = toWords(tanggal);
-                        const tahunKata = toWords(tahun);
-                        const cap = s => s.replace(/\b\w/g, c => c.toUpperCase());
-                        this.$refs.pembuka.value =
-                            `Pada hari ini ${hari} Tanggal ${cap(tanggalKata)} Bulan ${bulan} Tahun ${cap(tahunKata)}, yang bertanda tangan di bawah ini:`;
+                        const tglKata = toWords(tanggal);
+                        const thnKata = toWords(tahun);
+                        this.$refs.pembuka.value = `Pada hari ini ${hari} Tanggal ${tglKata} Bulan ${bulan} Tahun ${thnKata}, yang bertanda tangan di bawah ini:`;
                     } catch (e) {}
                 }
             }
         }
     </script>
 
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 bg-[#1e293b]">
-                <h6 class="font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-clipboard-check"></i> Form Berita Acara Opname
-                </h6>
+    <div class="space-y-6 pb-24">
+        {{-- Page Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Form Opname</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Input Pemeriksaan Stok</p>
             </div>
+            <a href="{{ route('reports.opname.list') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+                <i class="fas fa-times text-xs"></i>
+            </a>
+        </div>
 
-            <form method="POST" action="{{ route('reports.opname.save') }}" x-data="opnameForm()" x-init="$nextTick(() => { updatePembuka(); })" class="p-6 space-y-6">
-                @csrf
-                @if(session('opname_current_id'))
-                    <input type="hidden" name="id" value="{{ session('opname_current_id') }}">
-                @endif
-                @if(isset($data['id']))
-                    <input type="hidden" name="id" value="{{ $data['id'] }}">
-                @endif
+        <form method="POST" action="{{ route('reports.opname.save') }}" x-data="opnameForm()" x-init="$nextTick(() => updatePembuka())" class="space-y-6">
+            @csrf
+            @if(session('opname_current_id') || isset($data['id']))
+                <input type="hidden" name="id" value="{{ session('opname_current_id') ?? $data['id'] }}">
+            @endif
 
-                <div class="bg-white dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-sm transition-all duration-300">
-                    <h4 class="text-slate-800 dark:text-slate-100 font-bold mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                        <i class="fas fa-info-circle text-indigo-500"></i> Informasi Umum
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {{-- Informasi Umum --}}
+            <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-info-circle text-xs"></i>
+                    </div>
+                    <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Informasi Dokumen</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Berita Acara</label>
+                        <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono" placeholder="001/BA-SO/..." required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                            <label class="block text-xs sm:text-sm font-black text-black dark:text-white uppercase tracking-widest transition-colors duration-300">Nomor Surat <span class="text-rose-500">*</span></label>
-                            <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono" placeholder="001" required>
-                            <p class="text-[10px] text-slate-500 dark:text-slate-400 italic">Masukkan nomor urut, otomatis diformat.</p>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
+                            <input x-ref="tanggal" @change="updatePembuka()" type="date" name="tanggal" value="{{ $data['tanggal'] ?? now()->toDateString() }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
                         </div>
                         <div class="space-y-1.5">
-                            <label class="block text-xs sm:text-sm font-black text-black dark:text-white uppercase tracking-widest transition-colors duration-300">Tanggal <span class="text-rose-500">*</span></label>
-                            <input x-ref="tanggal" @change="updatePembuka()" type="date" name="tanggal" value="{{ $data['tanggal'] ?? now()->toDateString() }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm" required>
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="block text-xs sm:text-sm font-black text-black dark:text-white uppercase tracking-widest transition-colors duration-300">Tempat <span class="text-rose-500">*</span></label>
-                            <input x-ref="tempat" @input="updatePembuka()" type="text" name="tempat" value="{{ $data['tempat'] ?? ($opd->nama_opd ?? '') }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm" placeholder="Contoh: Boroko" required>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tempat</label>
+                            <input x-ref="tempat" @input="updatePembuka()" type="text" name="tempat" value="{{ $data['tempat'] ?? ($opd->nama_opd ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="Boroko" required>
                         </div>
                     </div>
 
                     <div class="space-y-1.5">
-                        <label class="block text-xs sm:text-sm font-black text-black dark:text-white uppercase tracking-widest transition-colors duration-300">Narasi Pembuka</label>
-                        <textarea x-ref="pembuka" name="pembuka" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm leading-relaxed">{{ $data['pembuka'] ?? '' }}</textarea>
-                        <p class="text-[10px] text-slate-500 dark:text-slate-400 italic text-right">Otomatis terisi berdasarkan tanggal.</p>
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Narasi Pembuka</label>
+                        <textarea x-ref="pembuka" name="pembuka" rows="3" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed">{{ $data['pembuka'] ?? '' }}</textarea>
                     </div>
                 </div>
+            </div>
 
-                <!-- Pihak Pihak -->
-                <div class="bg-indigo-50/30 dark:bg-slate-950/40 p-6 rounded-2xl border border-indigo-100/50 dark:border-slate-800 transition-all duration-300 shadow-inner">
-                    <h4 class="text-indigo-900 dark:text-indigo-400 font-bold mb-6 flex items-center gap-2 border-b border-indigo-100/50 dark:border-slate-800 pb-3">
-                        <i class="fas fa-users text-indigo-500"></i> Pihak Yang Bertanda Tangan
-                    </h4>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                        <!-- Kolom Kiri: Pihak Pertama -->
-                        <div class="space-y-5">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                                <h3 class="font-black text-slate-800 dark:text-slate-200 text-xs uppercase tracking-widest border-l-4 border-indigo-500 pl-3">Pihak Pertama</h3>
-                                @if(isset($opd) && $opd->kepala_nama)
-                                    <button type="button" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-indigo-700 transition-all shadow-sm active:scale-95" @click="
-                                        $refs.pp_nama.value='{{ $opd->kepala_nama }}';
-                                        $refs.pp_nip.value='{{ $opd->kepala_nip }}';
-                                        $refs.pp_jabatan.value='{{ $opd->kepala_jabatan }}';
-                                    ">Cepat Isi Kepala OPD</button>
-                                @endif
+            {{-- Pihak Berwenang --}}
+            <div class="grid grid-cols-1 gap-6">
+                {{-- Pihak Pertama (Atasan) --}}
+                <div class="bg-indigo-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-indigo-100 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                                <i class="fas fa-user-tie text-[10px]"></i>
                             </div>
-                            
-                            <div class="grid grid-cols-12 gap-x-4 gap-y-2 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-xs sm:text-xs font-black text-black dark:text-white uppercase tracking-widest sm:text-right transition-colors duration-300">Nama</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm shadow-sm" placeholder="Nama Lengkap">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-12 gap-x-4 gap-y-2 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-xs sm:text-xs font-black text-black dark:text-white uppercase tracking-widest sm:text-right transition-colors duration-300">NIP</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono shadow-sm" placeholder="NIP">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-12 gap-x-4 gap-y-2 items-start">
-                                <label class="col-span-12 sm:col-span-3 text-xs sm:text-xs font-black text-black dark:text-white uppercase tracking-widest sm:text-right mt-2 transition-colors duration-300">Jabatan</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pp_jabatan" type="text" name="pihak_pertama[jabatan]" value="" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm shadow-sm" placeholder="Jabatan">
-                                </div>
-                            </div>
+                            <h3 class="text-[11px] font-black uppercase tracking-widest opacity-80">Pihak Pertama (Atasan)</h3>
                         </div>
-
-                        <!-- Kolom Kanan: Pihak Kedua -->
-                        <div class="space-y-5 border-l-0 md:border-l border-slate-200 dark:border-slate-800 pl-0 md:pl-12">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                                <h3 class="font-black text-slate-800 dark:text-slate-200 text-xs uppercase tracking-widest border-l-4 border-emerald-500 pl-3">Pihak Kedua</h3>
-                                @if(isset($opd) && $opd->pengurus_nama)
-                                    <button type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-sm active:scale-95" @click="
-                                        $refs.pk_nama.value='{{ $opd->pengurus_nama }}';
-                                        $refs.pk_nip.value='{{ $opd->pengurus_nip }}';
-                                        $refs.pk_jabatan.value='{{ $opd->pengurus_jabatan }}';
-                                    ">Cepat Isi Pengurus</button>
-                                @endif
-                            </div>
-                            
-                            <div class="grid grid-cols-12 gap-x-4 gap-y-2 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-xs sm:text-xs font-black text-black dark:text-white uppercase tracking-widest sm:text-right transition-colors duration-300">Nama</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pk_nama" type="text" name="pihak_kedua[nama]" value="" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm shadow-sm" placeholder="Nama Lengkap">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-12 gap-x-4 gap-y-2 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-xs sm:text-xs font-black text-black dark:text-white uppercase tracking-widest sm:text-right transition-colors duration-300">NIP</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pk_nip" type="text" name="pihak_kedua[nip]" value="" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono shadow-sm" placeholder="NIP">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-12 gap-x-4 gap-y-2 items-start">
-                                <label class="col-span-12 sm:col-span-3 text-xs sm:text-xs font-black text-black dark:text-white uppercase tracking-widest sm:text-right mt-2 transition-colors duration-300">Jabatan</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pk_jabatan" type="text" name="pihak_kedua[jabatan]" value="" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm shadow-sm" placeholder="Jabatan">
-                                </div>
-                            </div>
+                        <button type="button" @click="$refs.pp_nama.value='{{ $opd->kepala_nama }}'; $refs.pp_nip.value='{{ $opd->kepala_nip }}'; $refs.pp_jabatan.value='{{ $opd->kepala_jabatan }}';" class="text-[8px] font-black uppercase px-2 py-1 bg-white/20 rounded-lg">Auto</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Nama Lengkap</label>
+                            <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" placeholder="Nama Atasan" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">NIP</label>
+                            <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" placeholder="NIP" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-mono placeholder:text-white/40 outline-none">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Jabatan</label>
+                            <input x-ref="pp_jabatan" type="text" name="pihak_pertama[jabatan]" value="{{ $data['pihak_pertama']['jabatan'] ?? '' }}" placeholder="Jabatan" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none">
                         </div>
                     </div>
                 </div>
 
-                @include('partials.form-actions', [
-                    'backRoute' => route('reports.opname.list'),
-                ])
-            </form>
-        </div>
+                {{-- Pihak Kedua (Pengurus) --}}
+                <div class="bg-rose-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-rose-100 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                                <i class="fas fa-user text-[10px]"></i>
+                            </div>
+                            <h3 class="text-[11px] font-black uppercase tracking-widest opacity-80">Pihak Kedua (Pengurus)</h3>
+                        </div>
+                        <button type="button" @click="$refs.pk_nama.value='{{ $opd->pengurus_nama }}'; $refs.pk_nip.value='{{ $opd->pengurus_nip }}'; $refs.pk_jabatan.value='{{ $opd->pengurus_jabatan }}';" class="text-[8px] font-black uppercase px-2 py-1 bg-white/20 rounded-lg">Auto</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Nama Lengkap</label>
+                            <input x-ref="pk_nama" type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" placeholder="Nama Pengurus" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">NIP</label>
+                            <input x-ref="pk_nip" type="text" name="pihak_kedua[nip]" value="{{ $data['pihak_kedua']['nip'] ?? '' }}" placeholder="NIP" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-mono placeholder:text-white/40 outline-none">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Jabatan</label>
+                            <input x-ref="pk_jabatan" type="text" name="pihak_kedua[jabatan]" value="{{ $data['pihak_kedua']['jabatan'] ?? '' }}" placeholder="Jabatan" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex gap-3 px-2">
+                <a href="{{ route('reports.opname.list') }}" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
+                <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">Simpan Laporan</button>
+            </div>
+        </form>
     </div>
 @endsection

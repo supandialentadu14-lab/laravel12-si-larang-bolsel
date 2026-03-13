@@ -1,151 +1,112 @@
-@extends('layouts.admin') {{-- Menggunakan layout utama admin --}}
-
-@section('header', 'Pengguna Baru') {{-- Judul halaman tambah user baru --}}
+@extends('layouts.mobile')
 
 @section('content')
-
-    {{-- Container utama dengan lebar maksimal dan posisi tengah --}}
-    <div class="max-w-xl mx-auto">
-
-        {{-- Card pembungkus form --}}
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-
-            {{-- Header card --}}
-            <div class="px-6 py-4 border-b border-gray-100 bg-slate-800">
-                <h6 class="font-bold text-white">
-                    Data Pengguna {{-- Judul form --}}
-                </h6>
-            </div>
-
-            {{-- Form tambah user --}}
-            <form action="{{ route('users.store') }}" method="POST" class="p-6 space-y-6">
-
-                @csrf {{-- Token keamanan Laravel untuk mencegah CSRF --}}
-
-                {{-- ⚠️ Error Validasi --}}
-                @if ($errors->any())
-                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                        <p class="text-sm font-bold text-red-700 mb-2">
-                            <i class="fas fa-exclamation-circle mr-1"></i> Terdapat kesalahan:
-                        </p>
-                        <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                {{-- Input Nama Lengkap --}}
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Nama Lengkap <span class="text-red-500">*</span> {{-- Tanda wajib --}}
-                    </label>
-
-                    {{-- Field input nama --}}
-                    <input type="text" 
-                        name="name" 
-                        value="{{ old('name') }}" {{-- Menyimpan input lama jika validasi gagal --}}
-                        placeholder="John Doe"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                        required>
-                </div>
-
-                {{-- Input Email --}}
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Email <span class="text-red-500">*</span>
-                    </label>
-
-                    {{-- Field input email --}}
-                    <input type="email" 
-                        name="email" 
-                        value="{{ old('email') }}" {{-- Mengisi ulang jika gagal validasi --}}
-                        placeholder="john@example.com"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                        required>
-                </div>
-
-                {{-- Dropdown Role --}}
-                <div x-data="{ role: '{{ old('role', 'staff') }}' }">
-                    <label class="block text-sm font-bold text-gray-700 mb-1">
-                        Hak Akses <span class="text-red-500">*</span>
-                    </label>
-
-                    {{-- Pilihan role user --}}
-                    <select name="role" x-model="role"
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-white"
-                        required>
-
-                        {{-- Role Staff --}}
-                        <option value="staff">Staff</option>
-
-                        {{-- Role Administrator --}}
-                        <option value="admin">
-                            Administrator (Full Access)
-                        </option>
-
-                    </select>
-
-                    {{-- Hak Akses Khusus Staff --}}
-                    <div x-show="role === 'staff'" x-transition class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                        <label class="block text-sm font-bold text-gray-700 mb-2 border-b border-slate-200 pb-2">
-                            <i class="fas fa-user-shield text-indigo-500 mr-1"></i> Izin Akses Halaman (Khusus Staff)
-                        </label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                            @foreach(config('permissions', []) as $key => $label)
-                                @php
-                                    $userPermissions = old('permissions', array_keys(config('permissions'))); // Default all checked for new staff
-                                @endphp
-                                <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" name="permissions[]" value="{{ $key }}" 
-                                           {{ in_array($key, $userPermissions) ? 'checked' : '' }}
-                                           class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 transition-all">
-                                    <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">{{ $label }}</span>
-                                </label>
-                            @endforeach
-                        </div>
-                        <p class="text-xs text-slate-500 mt-3"><i class="fas fa-info-circle"></i> Centang halaman yang boleh diakses oleh user ini. Jika tidak dicentang, user tidak bisa mengakses menu tersebut.</p>
-                    </div>
-                </div>
-
-                {{-- Grid Password & Konfirmasi --}}
-                <div class="grid grid-cols-2 gap-4">
-
-                    {{-- Input Password --}}
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">
-                            Password <span class="text-red-500">*</span>
-                        </label>
-
-                        {{-- Field password --}}
-                        <input type="password" 
-                            name="password"
-                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                            required>
-                    </div>
-
-                    {{-- Input Konfirmasi Password --}}
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">
-                            Confirm Password
-                        </label>
-
-                        {{-- Field konfirmasi password --}}
-                        <input type="password" 
-                            name="password_confirmation"
-                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition"
-                            required>
-                    </div>
-
-                </div>
-
-                @include('partials.form-actions', [
-                    'backRoute' => route('users.index'),
-                    'saveText' => 'Simpan',
-                ])
-            </form>
+<div class="space-y-6 pb-24">
+    {{-- Page Header --}}
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Tambah User</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Daftarkan Pengguna Baru</p>
         </div>
+        <a href="{{ route('users.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+            <i class="fas fa-times text-xs"></i>
+        </a>
     </div>
 
+    <form action="{{ route('users.store') }}" method="POST" class="space-y-6">
+        @csrf
+
+        {{-- Informasi Akun --}}
+        <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+            <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                    <i class="fas fa-user-circle text-xs"></i>
+                </div>
+                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Informasi Akun</h3>
+            </div>
+
+            <div class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Lengkap</label>
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Contoh: John Doe" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Alamat Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}" placeholder="email@example.com" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                </div>
+            </div>
+        </div>
+
+        {{-- Hak Akses (Permission) --}}
+        <div x-data="{ role: '{{ old('role', 'staff') }}' }" class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+            <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-xs"></i>
+                </div>
+                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Hak Akses & Izin</h3>
+            </div>
+
+            <div class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Peran Pengguna</label>
+                    <div class="flex p-1.5 bg-slate-50 rounded-2xl">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="role" value="staff" x-model="role" class="peer hidden">
+                            <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all">Staff</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="role" value="admin" x-model="role" class="peer hidden">
+                            <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-purple-600 peer-checked:shadow-sm transition-all">Admin</div>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Permission Checkboxes --}}
+                <div x-show="role === 'staff'" x-transition class="space-y-3 pt-2">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Izin Akses Menu</label>
+                    <div class="grid grid-cols-1 gap-2">
+                        @foreach(config('permissions', []) as $key => $label)
+                            @php $userPermissions = old('permissions', array_keys(config('permissions'))); @endphp
+                            <label class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-indigo-100 transition-all cursor-pointer group">
+                                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-tight group-hover:text-indigo-600">{{ $label }}</span>
+                                <div class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="permissions[]" value="{{ $key }}" {{ in_array($key, $userPermissions) ? 'checked' : '' }} class="sr-only peer">
+                                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                </div>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Keamanan --}}
+        <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+            <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                    <i class="fas fa-lock text-xs"></i>
+                </div>
+                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Keamanan</h3>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Password</label>
+                    <input type="password" name="password" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                </div>
+            </div>
+        </div>
+
+        {{-- Actions --}}
+        <div class="flex gap-3 px-2">
+            <a href="{{ route('users.index') }}" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
+            <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">Simpan User</button>
+        </div>
+    </form>
+</div>
 @endsection

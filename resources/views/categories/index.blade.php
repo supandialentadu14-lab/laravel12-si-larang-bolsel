@@ -1,246 +1,139 @@
 {{-- Menggunakan layout admin --}}
-@extends('layouts.admin')
+@extends('layouts.mobile')
 
-@section('header', 'Jenis Belanja')
 @section('content')
-
 <div x-data="{
     showCreateModal: false,
     showEditModal: false,
     editData: {},
     editUrl: '',
-    selected: [],
-    allSelected: false,
-    toggleAll() {
-        this.allSelected = !this.allSelected;
-        if (this.allSelected) {
-            this.selected = [
-                @foreach ($categories as $category)
-                    '{{ $category->id }}',
-                @endforeach
-            ];
-        } else {
-            this.selected = [];
-        }
-    },
-    updateSelectAll() {
-        this.allSelected = this.selected.length === {{ count($categories) }};
-    }
-}" class="bg-white rounded-lg shadow p-6 mb-6">
+    showFilters: {{ request('search') ? 'true' : 'false' }}
+}" class="space-y-6">
 
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-        <div class="flex items-center gap-3 w-full md:w-auto">
-            <button type="button" @click="showCreateModal = true" class="inline-flex justify-center w-full md:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all duration-200">
-                <i class="fas fa-plus"></i> <span class="whitespace-nowrap">Tambah Jenis Belanja</span>
+    {{-- Page Header --}}
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Jenis Belanja</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Kategori Inventaris</p>
+        </div>
+        <div class="flex gap-2">
+            <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50' : ''">
+                <i class="fas fa-filter text-xs"></i>
+            </button>
+            <button @click="showCreateModal = true" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
+                <i class="fas fa-plus text-xs"></i>
             </button>
         </div>
+    </div>
 
-        <div class="w-full md:max-w-md">
-            <form action="{{ route('categories.index') }}" method="GET">
-                <div x-data="{ query: '{{ request('search') }}' }" class="flex items-center rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all overflow-hidden h-11">
-                    <div class="h-full px-4 border-r border-slate-100 flex items-center justify-center text-slate-400 bg-slate-50/50">
-                        <i class="fas fa-search text-sm"></i>
+    {{-- Filter Card --}}
+    <div x-show="showFilters" x-collapse x-cloak>
+        <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-4">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Cari Kategori</h3>
+            <form action="{{ route('categories.index') }}" method="GET" class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Kategori</label>
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari jenis belanja..." class="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
                     </div>
-                    <div class="flex-1 flex items-center h-full">
-                        <input type="text" name="search" x-model="query" 
-                            @input.debounce.750ms="$el.closest('form').requestSubmit()"
-                            placeholder="Cari jenis belanja..."
-                            class="w-full py-2.5 px-3 text-sm outline-none bg-transparent font-medium placeholder:text-slate-400 text-slate-700">
-                    </div>
-                    <button type="button" x-show="query" x-cloak
-                        @click="query = ''; $nextTick(() => $el.closest('form').requestSubmit())"
-                        class="px-2 text-slate-300 hover:text-rose-500 transition-colors">
-                        <i class="fas fa-times-circle"></i>
-                    </button>
-                    <button type="submit" class="bg-indigo-600 h-full px-6 text-white text-sm font-bold hover:bg-indigo-700 transition-colors flex items-center whitespace-nowrap">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100">
                         Cari
                     </button>
+                    <a href="{{ route('categories.index') }}" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center">
+                        Reset
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 
-    {{-- Modal Tambah --}}
-    <div x-show="showCreateModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showCreateModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showCreateModal = false"></div>
-            
-            <div x-show="showCreateModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all w-full max-w-md sm:my-8 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
-                {{-- Modal Header --}}
-                <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
-                    <h3 class="text-base font-bold flex items-center gap-2">
-                        <i class="fas fa-plus"></i> Tambah Jenis Belanja
-                    </h3>
-                    <button type="button" @click="showCreateModal = false" class="text-white hover:text-gray-300 font-bold focus:outline-none">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-
-                <form action="{{ route('categories.store') }}" method="POST" class="p-0 no-soft">
-                    @csrf
-                    
-                    <div class="p-6">
-                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-6">
-                            <h4 class="text-slate-800 font-bold mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
-                                <i class="fas fa-tags text-indigo-500"></i> Detail Jenis Belanja
-                            </h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Jenis Belanja <span class="text-rose-500">*</span></label>
-                                    <input type="text" name="name" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm" required placeholder="Contoh: Alat Tulis Kantor">
-                                    <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
-                                        <i class="fas fa-info-circle text-indigo-400"></i> Masukkan nama kategori belanja secara spesifik.
-                                    </p>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Keterangan (Opsional)</label>
-                                    <textarea name="description" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm" placeholder="Penjelasan singkat mengenai kategori ini..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8 flex justify-end gap-3 px-2">
-                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
-                                <i class="fas fa-save"></i> Simpan Data
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+    {{-- Summary Card --}}
+    <div class="bg-emerald-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-emerald-100 overflow-hidden relative group">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+        <div class="relative z-10">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Total Kategori</p>
+            <h2 class="text-3xl font-black mt-2 tracking-tight">{{ $categories->total() }} Jenis</h2>
+            <p class="text-[9px] font-bold mt-2 opacity-80 uppercase tracking-widest">Digunakan oleh {{ \App\Models\Product::count() }} Item Barang</p>
         </div>
     </div>
 
-    {{-- Modal Edit --}}
-    <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-start justify-center min-h-screen pt-24 px-4 pb-10 text-center">
-            <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showEditModal = false"></div>
-            
-            <div x-show="showEditModal" x-transition.scale.95 class="relative inline-block bg-white rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 transform transition-all w-full max-w-md sm:my-8 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
-                {{-- Modal Header --}}
-                <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
-                    <h3 class="text-base font-bold flex items-center gap-2">
-                        <i class="fas fa-edit"></i> Edit&nbsp;<span x-text="editData.name"></span>
-                    </h3>
-                    <button type="button" @click="showEditModal = false" class="text-white hover:text-gray-300 font-bold focus:outline-none">
-                        <i class="fas fa-times"></i>
-                    </button>
+    {{-- Category List --}}
+    <div class="space-y-4">
+        <div class="flex items-center justify-between px-2">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Daftar Jenis Belanja</h3>
+            <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{{ $categories->count() }} Kategori</span>
+        </div>
+
+        @forelse($categories as $category)
+        <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300">
+            <div class="flex items-start gap-4">
+                {{-- Category Icon --}}
+                <div class="w-14 h-14 rounded-[1.5rem] bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-black shadow-inner flex-shrink-0">
+                    {{ substr($category->name, 0, 1) }}
                 </div>
 
-                <form :action="editUrl" method="POST" class="p-0 no-soft">
-                    @csrf
-                    @method('PUT')
-                    
-                    <div class="p-6">
-                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-6">
-                            <h4 class="text-slate-800 font-bold mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
-                                <i class="fas fa-edit text-amber-500"></i> Perbarui Jenis Belanja
-                            </h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Jenis Belanja <span class="text-rose-500">*</span></label>
-                                    <input type="text" name="name" x-model="editData.name" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm" required>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Keterangan (Opsional)</label>
-                                    <textarea name="description" x-model="editData.description" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8 flex justify-end gap-3 px-2">
-                            <button type="button" @click="showEditModal = false" class="px-5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition">
-                                Batal
-                            </button>
-                            <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
-                                <i class="fas fa-save"></i> Simpan Perubahan
-                            </button>
+                {{-- Category Info --}}
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight truncate leading-tight">{{ $category->name }}</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 line-clamp-1">{{ $category->description ?: 'Tidak ada keterangan' }}</p>
                         </div>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    <div class="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
-        <table class="w-full text-sm text-left text-slate-700">
-            <thead class="bg-indigo-50/50 text-[10px] uppercase font-bold text-indigo-600 tracking-widest">
-                <tr>
-                    <th class="px-5 py-4 border-b border-indigo-100 w-10">
-                        <input type="checkbox" @click="toggleAll()" x-model="allSelected" class="rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all">
-                    </th>
-                    <th class="px-5 py-4 border-b border-indigo-100">Nama Jenis Belanja</th>
-                    <th class="px-5 py-4 border-b border-indigo-100">Keterangan</th>
-                    <th class="px-3 py-4 border-b border-indigo-100 text-center">Data Barang</th>
-                    <th class="px-5 py-4 border-b border-indigo-100 text-right">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                @forelse($categories as $category)
-                    <tr class="transition-all duration-200" :class="{ 'bg-indigo-50/50': selected.includes('{{ $category->id }}') }">
-                        <td class="px-5 py-3">
-                            <input type="checkbox" value="{{ $category->id }}" x-model="selected" @click="updateSelectAll()" class="rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all">
-                        </td>
-                        <td class="px-5 py-3">
-                            <div class="font-bold text-slate-800">{{ $category->name }}</div>
-                        </td>
-                        <td class="px-5 py-3 text-slate-500 italic text-xs">{{ Str::limit($category->description, 60) ?: '-' }}</td>
-                        <td class="px-3 py-3 text-center">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
-                                <i class="fas fa-box text-[8px] mr-1.5 opacity-50"></i>{{ $category->products_count }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-3 text-right">
-                            <div class="flex justify-end items-center gap-2">
-                                <button @click="
-                                    showEditModal = true;
-                                    editData = {
-                                        id: '{{ $category->id }}',
-                                        name: '{{ addslashes($category->name) }}',
-                                        description: '{{ addslashes($category->description) }}'
-                                    };
-                                    editUrl = '{{ route('categories.update', $category->id) }}';
-                                " class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Edit">
-                                    <i class="far fa-edit text-xs"></i>
+                    <div class="flex items-center justify-between mt-5">
+                        <div class="flex items-center gap-2">
+                            <div class="px-4 py-1.5 rounded-full bg-slate-50 text-slate-500 flex items-center gap-2">
+                                <i class="fas fa-box text-[9px] opacity-40"></i>
+                                <span class="text-[9px] font-black tracking-widest">{{ $category->products_count }} ITEM</span>
+                            </div>
+                        </div>
+
+                        {{-- Quick Actions --}}
+                        <div class="flex items-center gap-1.5">
+                            <button @click="
+                                showEditModal = true;
+                                editData = {
+                                    id: '{{ $category->id }}',
+                                    name: '{{ addslashes($category->name) }}',
+                                    description: '{{ addslashes($category->description) }}'
+                                };
+                                editUrl = '{{ route('categories.update', $category->id) }}';
+                            " class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                <i class="fas fa-edit text-[10px]"></i>
+                            </button>
+                            <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="inline">
+                                @csrf @method('DELETE')
+                                <button type="submit" @click.prevent="if(confirm('Hapus jenis belanja ini?')) $el.form.submit()" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                                    <i class="fas fa-trash text-[10px]"></i>
                                 </button>
-                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" @click.prevent="if(confirm('Hapus jenis belanja ini?')) $el.form.submit()" class="w-8 h-8 rounded-lg bg-white text-slate-800 flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm border border-slate-800" title="Hapus">
-                                        <i class="fas fa-trash text-xs"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="px-5 py-10 text-center text-slate-400 italic">
-                            <i class="fas fa-folder-open text-4xl mb-3 block opacity-20"></i>
-                            Belum ada data jenis belanja.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="mt-4 flex justify-between items-center">
-        <form x-show="selected.length > 0" method="POST" action="{{ route('categories.bulk_delete') }}" class="inline-block">
-            @csrf
-            <template x-for="id in selected" :key="id">
-                <input type="hidden" name="ids[]" :value="id">
-            </template>
-            <button type="button" @click="if(confirm('Hapus ' + selected.length + ' item terpilih?')) $el.closest('form').submit()" 
-                class="inline-flex items-center gap-2 px-3 py-2 bg-white border border-slate-800 rounded-lg text-slate-800 font-bold text-[10px] hover:bg-slate-50 transition-all shadow-sm group">
-                <i class="fas fa-trash text-slate-800 group-hover:text-rose-600 transition-colors"></i>
-                <span>HAPUS <span x-text="selected.length"></span> ITEM TERPILIH</span>
-            </button>
-        </form>
-        <div class="flex-1">
-            {{ $categories->links() }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        @empty
+        <div class="bg-white rounded-[3rem] p-16 text-center border border-slate-50 shadow-sm">
+            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-tags text-3xl text-slate-200"></i>
+            </div>
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Tidak Ada Kategori</h3>
+            <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Klik (+) untuk menambah kategori baru</p>
+        </div>
+        @endforelse
     </div>
+
+    {{-- Pagination --}}
+    <div class="mt-8">
+        {{ $categories->links() }}
+    </div>
+
+    @include('categories.partials.modals')
+
 </div>
 @endsection

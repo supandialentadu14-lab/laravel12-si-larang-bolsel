@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             \App\Http\Middleware\TrackLastSeen::class,
+            \App\Http\Middleware\MobileDetection::class,
         ]);
         $middleware->alias([
             'permission' => \App\Http\Middleware\CheckPermission::class,

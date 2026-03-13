@@ -1,6 +1,5 @@
-@extends('layouts.admin')
+@extends('layouts.mobile')
 
-@section('header', 'Daftar Kontrak Belanja Modal')
 @section('content')
 
 <script>
@@ -40,8 +39,9 @@
                 this.editId = id;
                 this.tahun = tahun || '{{ now()->year }}';
                 
-                if (rawItems && rawItems.length > 0) {
-                    this.items = JSON.parse(JSON.stringify(rawItems)).map(it => ({
+                if (rawItems && (Array.isArray(rawItems) ? rawItems.length > 0 : Object.keys(rawItems).length > 0)) {
+                    let itemsArray = Array.isArray(rawItems) ? rawItems : Object.values(rawItems);
+                    this.items = itemsArray.map(it => ({
                         nama_kegiatan: it.nm || it.nama_kegiatan || '',
                         pekerjaan: it.pk || it.pekerjaan || '',
                         nilai_kontrak: it.nk || it.nilai_kontrak || 0,
@@ -61,9 +61,6 @@
                 }
                 
                 this.showModal = true;
-                if (!this.isEdit) {
-                    this.focusRow(0);
-                }
             },
             addItem() {
                 this.items.push({
@@ -82,12 +79,6 @@
                 });
             },
             removeItem(i) { this.items.splice(i, 1); },
-            focusRow(i) {
-                this.$nextTick(() => {
-                    const el = this.$refs[`row_${i}_kegiatan`];
-                    if (el) el.focus();
-                });
-            },
             recalc(i) {
                 const it = this.items[i] || {};
                 const toInt = v => parseInt(v || 0, 10);
@@ -98,212 +89,125 @@
     }
 </script>
 
-<div x-data="belanjaModalIndex()" class="bg-white dark:bg-slate-800 rounded-lg shadow border border-transparent dark:border-slate-700/50 p-6 mb-6 transition-all duration-300">
+<div x-data="belanjaModalIndex()" class="space-y-6">
 
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 sm:gap-6 mb-8">
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-            <button @click="initModal(false)" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-100 transition-all duration-200">
-                <i class="fas fa-plus"></i> <span class="whitespace-nowrap">Tambah Kontrak Modal</span>
-            </button>
-            <a href="{{ route('reports.belanja.modal.preview_all') }}" class="inline-flex justify-center w-full sm:w-auto items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-slate-100 transition-all duration-200">
-                <i class="fas fa-print"></i> <span class="whitespace-nowrap">Cetak Laporan</span>
-            </a>
+    {{-- Page Header --}}
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Belanja Modal</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Laporan Kontrak & Pekerjaan</p>
         </div>
-
-        <div class="w-full lg:max-w-xl">
-            <form action="{{ route('reports.belanja.modal.list') }}" method="GET">
-                <div x-data="{ query: '{{ request('search') }}' }" class="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all overflow-hidden h-11">
-                    <div class="h-full px-4 border-r border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-400 bg-slate-50/50 dark:bg-slate-800/50">
-                        <i class="fas fa-search text-sm"></i>
-                    </div>
-                    <div class="flex-1 flex items-center h-full">
-                        <input type="text" name="search" x-model="query" 
-                            @input.debounce.750ms="$el.closest('form').requestSubmit()"
-                            placeholder="Cari data belanja modal..."
-                            class="w-full py-2.5 px-3 text-sm outline-none bg-transparent font-medium placeholder:text-slate-400 text-slate-700 dark:text-slate-200">
-                    </div>
-                    <button type="button" x-show="query" x-cloak
-                        @click="query = ''; $nextTick(() => $el.closest('form').requestSubmit())"
-                        class="px-2 text-slate-300 hover:text-rose-500 transition-colors">
-                        <i class="fas fa-times-circle"></i>
-                    </button>
-                    <button type="submit" class="bg-indigo-600 h-full px-6 text-white text-sm font-bold hover:bg-indigo-700 transition-colors flex items-center whitespace-nowrap">
-                        Cari
-                    </button>
-                </div>
-            </form>
+        <div class="flex gap-2">
+            <a href="{{ route('reports.belanja.modal.preview_all') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all hover:text-indigo-600">
+                <i class="fas fa-print text-xs"></i>
+            </a>
+            <button @click="initModal(false)" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
+                <i class="fas fa-plus text-xs"></i>
+            </button>
         </div>
     </div>
 
-    {{-- Modal Form Spreadsheet --}}
-    <div x-show="showModal" style="display: none;" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-start justify-center min-h-screen pt-10 px-4 pb-10 text-center">
-            <div x-show="showModal" x-transition.opacity class="fixed inset-0 transition-opacity" style="background-color: rgba(15, 23, 42, 0.5);" @click="showModal = false"></div>
+    {{-- Summary Card --}}
+    <div class="bg-slate-800 rounded-[2.5rem] p-6 text-white shadow-xl shadow-slate-100 overflow-hidden relative group">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+        <div class="relative z-10">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Total Anggaran Berjalan</p>
+            <h2 class="text-3xl font-black mt-2 tracking-tight">Rp{{ number_format($items->sum('nilai_total'), 0, ',', '.') }}</h2>
             
-            <div x-show="showModal" x-transition.scale.95 class="relative inline-block bg-white dark:bg-slate-800 rounded-xl text-left overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 dark:border-slate-700 transform transition-all w-full max-w-6xl sm:my-8 antialiased" style="backface-visibility: hidden; transform: translateZ(0);">
-                {{-- Modal Header --}}
-                <div class="bg-[#1e293b] px-5 py-4 flex justify-between items-center text-white">
-                    <h3 class="text-base font-bold flex items-center gap-2">
-                        <i class="fas" :class="isEdit ? 'fa-edit' : 'fa-plus'"></i> 
-                        <span x-text="isEdit ? 'Edit Kontrak Belanja Modal' : 'Tambah Kontrak Belanja Modal'"></span>
-                    </h3>
-                    <button type="button" @click="showModal = false" class="text-white hover:text-gray-300 font-bold focus:outline-none">
-                        <i class="fas fa-times"></i>
-                    </button>
+            <div class="flex items-center gap-4 mt-6">
+                <div class="flex flex-col">
+                    <span class="text-[9px] font-black uppercase tracking-widest opacity-60">Total Laporan</span>
+                    <span class="text-sm font-black">{{ $items->total() }} File</span>
                 </div>
-
-                <form method="POST" action="{{ route('reports.belanja.modal.save') }}" class="p-6 pt-5 min-h-[500px]">
-                    @csrf
-                    <input type="hidden" name="id" x-model="editId">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end mb-6">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Tahun <span class="text-red-500">*</span></label>
-                            <input type="number" min="2000" max="2100" name="tahun" x-model="tahun" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-bold text-gray-700 mb-1">OPD</label>
-                            <input type="text" name="opd" x-model="opd" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" disabled>
-                        </div>
-                        <div class="flex justify-end">
-                            <button type="button" @click="addItem()" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-bold shadow hover:bg-indigo-700 transition w-full sm:w-auto">
-                                <i class="fas fa-plus mr-1"></i> Tambah Baris
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto border rounded-lg bg-white mb-6">
-                        <table class="w-full text-sm text-left text-gray-700 whitespace-nowrap">
-                            <thead class="bg-gray-100 text-xs uppercase font-bold text-gray-600">
-                                <tr>
-                                    <th class="px-3 py-2 min-w-[200px]">Nama Kegiatan</th>
-                                    <th class="px-3 py-2 min-w-[200px]">Pekerjaan</th>
-                                    <th class="px-3 py-2 w-32">Nilai Kontrak</th>
-                                    <th class="px-3 py-2 w-36">Mulai</th>
-                                    <th class="px-3 py-2 w-36">Akhir</th>
-                                    <th class="px-3 py-2 w-32">Uang Muka</th>
-                                    <th class="px-3 py-2 w-32">Termin 1</th>
-                                    <th class="px-3 py-2 w-32">Termin 2</th>
-                                    <th class="px-3 py-2 w-32">Termin 3</th>
-                                    <th class="px-3 py-2 w-32">Termin 4</th>
-                                    <th class="px-3 py-2 w-32">Total</th>
-                                    <th class="px-3 py-2 min-w-[150px]">Status</th>
-                                    <th class="px-3 py-2 w-12 text-center"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="(item, i) in items" :key="i">
-                                    <tr class="border-t hover:bg-indigo-50 transition group focus-within:bg-indigo-50">
-                                        <td class="p-1"><input type="text" :name="`items[${i}][nama_kegiatan]`" x-model="item.nama_kegiatan" :x-ref="`row_${i}_kegiatan`" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
-                                        <td class="p-1"><input type="text" :name="`items[${i}][pekerjaan]`" x-model="item.pekerjaan" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
-                                        <td class="p-1"><input type="number" :name="`items[${i}][nilai_kontrak]`" x-model="item.nilai_kontrak" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
-                                        <td class="p-1"><input type="date" :name="`items[${i}][tanggal_mulai]`" x-model="item.tanggal_mulai" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
-                                        <td class="p-1"><input type="date" :name="`items[${i}][tanggal_akhir]`" x-model="item.tanggal_akhir" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
-                                        <td class="p-1"><input type="number" :name="`items[${i}][uang_muka]`" x-model="item.uang_muka" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
-                                        <td class="p-1"><input type="number" :name="`items[${i}][termin1]`" x-model="item.termin1" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
-                                        <td class="p-1"><input type="number" :name="`items[${i}][termin2]`" x-model="item.termin2" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
-                                        <td class="p-1"><input type="number" :name="`items[${i}][termin3]`" x-model="item.termin3" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
-                                        <td class="p-1"><input type="number" :name="`items[${i}][termin4]`" x-model="item.termin4" @input="recalc(i)" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 text-right transition"></td>
-                                        <td class="p-1 text-right font-mono text-xs font-bold text-gray-800 bg-gray-50/50" x-text="item.total"></td>
-                                        <td class="p-1"><input type="text" :name="`items[${i}][status]`" x-model="item.status" class="w-full rounded border border-gray-300 bg-white text-xs focus:ring-indigo-500 focus:border-indigo-500 px-2 py-1.5 transition"></td>
-                                        <td class="p-1 text-center">
-                                            <button type="button" @click="removeItem(i)" class="text-red-400 hover:text-red-600 focus:outline-none transition w-8 h-8 rounded-full hover:bg-red-50" title="Hapus Baris">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="mt-8 flex justify-end border-t pt-4">
-                        <button type="submit" class="px-5 py-2 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition flex items-center gap-2">
-                            <i class="fas fa-save"></i> <span x-text="isEdit ? 'Perbarui Kontrak' : 'Simpan Kontrak'"></span>
-                        </button>
-                    </div>
-                </form>
+                <div class="w-px h-8 bg-white/10"></div>
+                <div class="flex flex-col">
+                    <span class="text-[9px] font-black uppercase tracking-widest opacity-60">Total Pekerjaan</span>
+                    <span class="text-sm font-black text-indigo-400">{{ $items->sum('kontrak_count') }} Item</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-900 shadow-sm overflow-x-auto transition-all duration-300">
-        <table class="w-full min-w-[800px] text-sm text-left text-slate-700">
-            <thead class="bg-indigo-50/50 dark:bg-indigo-950/20 text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-widest border-b border-indigo-100 dark:border-indigo-900/50 transition-all">
-                <tr>
-                    <th class="px-6 py-4 w-12 text-center text-slate-500">
-                        <input type="checkbox" @click="toggleAll()" x-model="allSelected" class="rounded-md border-slate-300 text-indigo-600 h-4 w-4 transition-all">
-                    </th>
-                    <th class="px-6 py-4">No.</th>
-                    <th class="px-6 py-4">Tahun Anggaran</th>
-                    <th class="px-6 py-4 text-center">Jumlah Item</th>
-                    <th class="px-6 py-4 text-right">Total Anggaran (Rp)</th>
-                    <th class="px-6 py-4">Update Terakhir</th>
-                    <th class="px-6 py-4 text-right">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($items as $i => $row)
-                    @php $hl = request('highlight'); @endphp
-                    <tr class="border-t dark:border-slate-800 transition-all duration-200 {{ $hl === ($row['id'] ?? null) ? 'bg-orange-50 dark:bg-orange-950/30' : '' }}" :class="{ 'bg-indigo-50/50 dark:bg-indigo-950/20': selected.includes('{{ $row['id'] }}') }">
-                        <td class="px-6 py-4 text-center">
-                            <input type="checkbox" value="{{ $row['id'] }}" x-model="selected" @click="updateSelectAll()" class="rounded-md border-slate-300 text-indigo-600 h-4 w-4 focus:ring-indigo-500 transition-all opacity-70 hover:opacity-100">
-                        </td>
-                        <td class="px-6 py-4">{{ $i + 1 }}</td>
-                        <td class="px-6 py-4">{{ $row['tahun'] ?: '-' }}</td>
-                        <td class="px-6 py-4 text-center">{{ $row['kontrak_count'] }}</td>
-                        <td class="px-6 py-4 text-right font-medium text-slate-900 dark:text-slate-100">{{ number_format($row['nilai_total'], 0, ',', '.') }}</td>
-                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-[11px] font-medium tracking-tight">
-                            <div class="flex flex-col">
-                                <span>{{ \Carbon\Carbon::createFromTimestamp($row['updated'])->translatedFormat('d F Y') }}</span>
-                                <span class="text-[10px] opacity-60 uppercase">{{ \Carbon\Carbon::createFromTimestamp($row['updated'])->format('H:i') }} WIB</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('reports.belanja.modal.show', $row['id']) }}" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm border border-slate-800 dark:border-slate-600" title="Lihat">
-                                    <i class="fas fa-eye text-xs"></i>
-                                </a>
-                                <a href="{{ route('reports.belanja.modal.export_excel', $row['id']) }}" class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors shadow-sm border border-emerald-200 dark:border-emerald-800" title="Export Excel">
-                                    <i class="fas fa-file-excel text-xs"></i>
-                                </a>
-                                <button type="button" @click='initModal(true, @json($row["id"]), @json($row["tahun"]), @json($row["raw_items"]))' class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm border border-slate-800 dark:border-slate-600" title="Edit">
-                                    <i class="far fa-edit text-xs"></i>
-                                </button>
-                                <form action="{{ route('reports.belanja.modal.delete', $row['id']) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" @click="if(confirm('Hapus transaksi ini?')) $el.form.submit()" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm border border-slate-800 dark:border-slate-600" title="Hapus">
-                                        <i class="fas fa-trash text-xs"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td class="px-3 py-6 text-center text-gray-500" colspan="7">Belum ada data belanja modal</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+    {{-- Search Bar --}}
+    <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm">
+        <form action="{{ route('reports.belanja.modal.list') }}" method="GET" class="relative">
+            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari laporan belanja modal..." class="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+        </form>
     </div>
 
-    <div class="mt-4 flex justify-between items-center">
-        <form x-show="selected.length > 0" method="POST" action="{{ route('reports.belanja.modal.bulk_delete') }}" class="inline-block">
-            @csrf
-            <template x-for="id in selected" :key="id">
-                <input type="hidden" name="ids[]" :value="id">
-            </template>
-            <button type="button" @click="if(confirm('Hapus ' + selected.length + ' item terpilih?')) $el.closest('form').submit()" 
-                class="inline-flex items-center gap-2 px-3 py-2 bg-white border border-slate-800 rounded-lg text-slate-800 font-bold text-[10px] hover:bg-slate-50 transition-all shadow-sm group">
-                <i class="fas fa-trash text-slate-800 group-hover:text-rose-600 transition-colors"></i>
-                <span>HAPUS <span x-text="selected.length"></span> ITEM TERPILIH</span>
-            </button>
-        </form>
-        <div class="flex-1">
-            {{ $items->links() }}
+    {{-- Report List --}}
+    <div class="space-y-4">
+        <div class="flex items-center justify-between px-2">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Daftar Kontrak Modal</h3>
+            <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{{ $items->count() }} File</span>
         </div>
+
+        @forelse($items as $row)
+        <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300">
+            <div class="flex items-start gap-4">
+                {{-- Year Icon --}}
+                <div class="w-14 h-14 rounded-[1.5rem] bg-slate-50 text-slate-400 flex flex-col items-center justify-center shadow-inner flex-shrink-0">
+                    <span class="text-[8px] font-black uppercase tracking-tighter opacity-60">TAHUN</span>
+                    <span class="text-sm font-black text-slate-800 leading-none">{{ $row['tahun'] }}</span>
+                </div>
+
+                {{-- Report Info --}}
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight truncate leading-tight">Laporan Modal {{ $row['tahun'] }}</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Diperbarui: {{ \Carbon\Carbon::createFromTimestamp($row['updated'])->translatedFormat('d M Y, H:i') }}</p>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="text-xs font-black text-slate-900">Rp{{ number_format($row['nilai_total'], 0, ',', '.') }}</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{{ $row['kontrak_count'] }} PEKERJAAN</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-5">
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('reports.belanja.modal.show', $row['id']) }}" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas fa-eye"></i> DETAIL
+                            </a>
+                            <a href="{{ route('reports.belanja.modal.export_excel', $row['id']) }}" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas fa-file-excel"></i> EXCEL
+                            </a>
+                        </div>
+
+                        {{-- Quick Actions --}}
+                        <div class="flex items-center gap-1.5">
+                            <button @click="initModal(true, '{{ $row['id'] }}', '{{ $row['tahun'] }}', {{ json_encode($row['raw_items']) }})" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                <i class="fas fa-edit text-[10px]"></i>
+                            </button>
+                            <form action="{{ route('reports.belanja.modal.delete', $row['id']) }}" method="POST" class="inline">
+                                @csrf @method('DELETE')
+                                <button type="submit" @click.prevent="if(confirm('Hapus laporan ini?')) $el.form.submit()" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                                    <i class="fas fa-trash text-[10px]"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="bg-white rounded-[3rem] p-16 text-center border border-slate-50 shadow-sm">
+            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-file-invoice-dollar text-3xl text-slate-200"></i>
+            </div>
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Tidak Ada Laporan</h3>
+            <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Klik (+) untuk membuat laporan baru</p>
+        </div>
+        @endforelse
     </div>
+
+    {{-- Pagination --}}
+    <div class="mt-8">
+        {{ $items->links() }}
+    </div>
+
+    @include('belanja_modal.partials.modals')
+
 </div>
 @endsection

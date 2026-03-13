@@ -58,6 +58,12 @@ class ActivityLog extends Model
 
         foreach ($new as $key => $newValue) {
             $oldValue = $old[$key] ?? '-';
+
+            // Skip if values are identical to avoid noise
+            if ($oldValue == $newValue) {
+                continue;
+            }
+
             $label = $labels[$key] ?? ucfirst(str_replace('_', ' ', $key));
             
             // Format values
@@ -68,6 +74,18 @@ class ActivityLog extends Model
                 $oldValue = $oldValue === 'in' ? 'Masuk' : ($oldValue === 'out' ? 'Keluar' : $oldValue);
                 $newValue = $newValue === 'in' ? 'Masuk' : ($newValue === 'out' ? 'Keluar' : $newValue);
             }
+
+            // Extract name if array
+            if (is_array($oldValue)) {
+                $oldValue = $oldValue['nama'] ?? ($oldValue['name'] ?? ($oldValue['toko'] ?? json_encode($oldValue)));
+            }
+            if (is_array($newValue)) {
+                $newValue = $newValue['nama'] ?? ($newValue['name'] ?? ($newValue['toko'] ?? json_encode($newValue)));
+            }
+
+            // Ensure values are strings for view rendering
+            $oldValue = (string)$oldValue;
+            $newValue = (string)$newValue;
             
             $changes[] = [
                 'label' => $label,

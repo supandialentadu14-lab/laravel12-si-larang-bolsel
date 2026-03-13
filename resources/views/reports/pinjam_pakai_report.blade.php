@@ -5,23 +5,23 @@
 @section('subheader', 'Pratinjau & cetak')
 
 @section('actions')
-    <a href="{{ route('reports.pinjam.list') }}" class="no-print btn btn-outline font-bold"><i class="fas fa-arrow-left"></i> Kembali</a>
-    <button onclick="window.print()" class="no-print btn btn-neutral ml-2"><i class="fas fa-print"></i> Cetak</button>
-    <form method="POST" action="{{ route('reports.pinjam.save') }}" class="no-print inline-block ml-2">
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+        <a href="{{ route('reports.pinjam.list') }}" class="no-print btn btn-outline font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+        <button onclick="window.print()" class="no-print btn btn-neutral font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
+            <i class="fas fa-print"></i> Cetak
+        </button>
+    </div>
+    <form method="POST" action="{{ route('reports.pinjam.save') }}" class="no-print inline-block ml-2 hidden sm:block">
         @csrf
         <input type="hidden" name="id" value="{{ session('pinjam_pakai_current_id') ?? ($saved_id ?? '') }}">
         <!-- <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button> -->
     </form>
-    <!-- @if(isset($saved_id))
-        <a href="{{ route('reports.pinjam.edit', $saved_id) }}" class="no-print btn btn-outline ml-2">Edit</a>
-    @else
-        <a href="{{ route('reports.pinjam.form') }}" class="no-print btn btn-outline ml-2">Edit</a>
-    @endif -->
 @endsection
 
 @section('content')
-    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper">
+    <div id="print-area" class="preview-paper bg-white text-black">
         @if(isset($status))
             <div class="no-print mb-4 px-4 py-3 bg-green-50 text-green-700 border border-green-200 rounded">
                 {{ $status }}
@@ -43,7 +43,7 @@
                 .kop-text .line2 { font-weight: 800; font-size: 22px; }
                 .kop-text .line3, .kop-text .line4 { font-style: italic; font-size: 13px; line-height: 1.25; }
                 @media print {
-                    html, body { background-color: #ffffff !important; }
+                    html, body { background: #ffffff !important; }
                     body * { visibility: hidden; }
                     #print-area, #print-area * { visibility: visible; }
                     #print-area { position: static !important; width: auto !important; overflow: visible !important; }
@@ -56,74 +56,38 @@
                         padding: 0 !important; 
                         margin: 0 !important; 
                         box-sizing: border-box; 
-                        background-color: #ffffff !important; 
-                        color: #000000 !important;
+                        background: #ffffff !important; 
                         box-shadow: none !important; 
                         line-height: 1.4;
                     }
                     .preview-paper p { margin: 5px 0; }
                     .preview-paper h2 { margin: 5px 0; }
                     .preview-paper table { margin-top: 6px; }
-                    #print-area { background-color: #ffffff !important; box-shadow: none !important; }
-                    .bg-gray-50, .bg-gray-100, .bg-gray-200 { background-color: #ffffff !important; }
-                    thead, tbody, tfoot, tr, th, td { background-color: #ffffff !important; border-color: #000000 !important; color: #000000 !important; }
+                    #print-area { background: #ffffff !important; box-shadow: none !important; }
+                    .bg-gray-50, .bg-gray-100, .bg-gray-200 { background: #ffffff !important; }
+                    thead, tbody, tfoot, tr, th, td { background: #ffffff !important; }
                     .shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .ring-1, .ring-2, .ring { box-shadow: none !important; }
-                    * { background-color: #ffffff !important; color: #000000 !important; }
+                    * { background: #ffffff !important; }
                     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                     .kop-logo { width: 100px; }
                     .kop-text .line2 { font-size: 22px; }
-                    .border-b-4 { border-color: #000000 !important; }
                 }
                 @media screen {
-                    html, body { transition: background 0.3s ease; }
-                    .theme-dark html, .theme-dark body { background-color: #020617 !important; }
+                    html, body { background: #ffffff !important; }
+                    #print-area { box-shadow: none !important; background: #ffffff !important; }
+                    .preview-paper { box-shadow: none !important; background: #ffffff !important; }
                 }
                 .preview-paper {
                     width: 210mm;
                     min-height: 330mm;
-                    margin: 16px auto;
-                    background-color: #ffffff !important;
-                    color: #1e293b !important;
-                    padding: 10mm 15mm;
+                    margin: 0 auto;
+                    background: #fff;
+                    padding: 5mm 15mm;
                     line-height: 1.4;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-                    border-radius: 8px;
-                    transition: all 0.3s ease;
-                }
-                /* Dark mode overrides */
-                .theme-dark .preview-paper {
-                    background-color: #1e293b !important;
-                    color: #f1f5f9 !important;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-                }
-                .theme-dark .preview-paper .border-b-4 {
-                    border-color: #475569 !important;
                 }
                 .preview-paper p { margin: 5px 0; }
                 .preview-paper h2 { margin: 5px 0; }
                 .preview-paper table { margin-top: 6px; }
-
-                .report-table {
-                    table-layout: fixed;
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                .report-table th, .report-table td {
-                    word-wrap: break-word;
-                    word-break: break-word;
-                    overflow-wrap: break-word;
-                    white-space: normal !important;
-                    overflow: hidden;
-                }
-                .line-clamp-2 {
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: normal;
-                    max-height: 2.8em;
-                }
             </style>
             @include('partials.kop', ['opd' => $opd])
         </div>
@@ -183,28 +147,18 @@
             Bahwa kedua belah pihak sepakat mengadakan perjanjian serah terima barang inventaris kantor/kendaraan milik Pemerintah Kabupaten Bolaang Mongondow Selatan : 
         </p>
 
-        <div class="mb-2">
-            <table class="report-table w-full text-xs border border-black print:text-[10px]">
-                <colgroup>
-                    <col style="width: 4%">    <!-- No -->
-                    <col style="width: 17%">   <!-- Nama Barang -->
-                    <col style="width: 11%">   <!-- Merk -->
-                    <col style="width: 11%">   <!-- Type -->
-                    <col style="width: 21%">   <!-- Plat Nomor -->
-                    <col style="width: 12%">   <!-- Tahun -->
-                    <col style="width: 12%">   <!-- Kondisi -->
-                    <col style="width: 12%">   <!-- Jumlah -->
-                </colgroup>
+        <div class="overflow-x-auto mb-2">
+            <table class="w-full text-xs border border-black print:text-[10px]">
                 <thead>
                     <tr class="text-center font-bold">
-                        <th rowspan="2" class="border border-black px-1 py-1">No</th>
-                        <th rowspan="2" class="border border-black px-1 py-1">Nama<br>Barang</th>
-                        <th rowspan="2" class="border border-black px-1 py-1">Merk</th>
-                        <th rowspan="2" class="border border-black px-1 py-1">Type</th>
-                        <th rowspan="2" class="border border-black px-1 py-1">Nomor Polisi<br>(Khusus Kendaraan)</th>
-                        <th rowspan="2" class="border border-black px-1 py-1">Tahun<br>Pembelian</th>
-                        <th rowspan="2" class="border border-black px-1 py-1">Kondisi<br>Barang</th>
-                        <th rowspan="2" class="border border-black px-1 py-1">Jumlah<br>Barang</th>
+                        <th class="border border-black px-2 py-1">No</th>
+                        <th class="border border-black px-2 py-1">Nama Barang</th>
+                        <th class="border border-black px-2 py-1">Merk</th>
+                        <th class="border border-black px-2 py-1">Type</th>
+                        <th class="border border-black px-2 py-1">Nomor Polisi (Khusus Kendaraan)</th>
+                        <th class="border border-black px-2 py-1">Tahun Pembelian</th>
+                        <th class="border border-black px-2 py-1">Kondisi Barang</th>
+                        <th class="border border-black px-2 py-1">Jumlah Barang</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -239,10 +193,8 @@
             $list = count($rulesLines) ? $rulesLines : $defaultRules;
         @endphp
         <style>
-            .rules-table { width: 100%; table-layout: fixed; }
-            .rules-table td { word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
-            .rules-table td:first-child { width: 22px; vertical-align: top; }
-            .rules-table td:last-child { padding-left: 6px; text-align: justify; }
+            .rules-table td:first-child { width: 18px; vertical-align: top; }
+            .rules-table td:last-child { padding-left: 6px; }
         </style>
         <table class="rules-table text-sm mb-3">
             @foreach ($list as $i => $line)
@@ -258,8 +210,8 @@
                     }
                 @endphp
                 <tr>
-                    <td class="text-black">{{ $letter }}.</td>
-                    <td>{!! $content !!}</td>
+                    <td class=" text-black">{{ $letter }}.</td>
+                    <td class="text-justify">{!! $content !!}</td>
                 </tr>
             @endforeach
         </table>
@@ -282,5 +234,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection

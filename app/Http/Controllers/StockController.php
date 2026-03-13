@@ -1,24 +1,22 @@
 <?php
 
 // Menentukan namespace controller
+
 namespace App\Http\Controllers;
 
 // Mengimpor model Product
 use App\Models\Product;
-
 // Mengimpor model StockTransaction
 use App\Models\StockTransaction;
-
 // use App\Models\Transaction; // REMOVED: Redundant
 
 // Digunakan untuk menangkap request dari form
 use Illuminate\Http\RedirectResponse;
-
 // Digunakan untuk transaksi database (agar aman & konsisten)
 use Illuminate\Http\Request;
-
 // Digunakan untuk tipe return View
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
 // Controller untuk mengelola transaksi stok
@@ -32,19 +30,37 @@ class StockController extends Controller
         // Mengambil transaksi stok beserta relasi product dan user
         $transactions = StockTransaction::with(['product', 'user'])
             ->when($request->search, function ($query) use ($request) {
-                $query->whereHas('product', function($q) use ($request) {
+                $query->whereHas('product', function ($q) use ($request) {
                     $q->where('name', 'like', '%'.$request->search.'%')
-                      ->orWhere('sku', 'like', '%'.$request->search.'%');
+                        ->orWhere('sku', 'like', '%'.$request->search.'%');
                 })->orWhere('nosur', 'like', '%'.$request->search.'%');
             })
-            ->latest()        // Urutkan dari terbaru
-            ->paginate(20)   // Tampilkan 20 data per halaman
-            ->withQueryString(); 
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20)
+            ->withQueryString();
+
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+
+        if ($isMobile) {
+            // Group the current page's transactions by date
+            $groupedTransactions = collect($transactions->items())->groupBy(function ($item) {
+                return $item->date->format('Y-m-d');
+            });
+            $editTransaction = null;
+            $editId = $request->query('edit');
+            if ($editId) {
+                $editTransaction = StockTransaction::with('product')->find($editId);
+            }
+        } else {
+            $groupedTransactions = null;
+            $editTransaction = null;
+        }
 
         // Ambil semua produk beserta total stok masuk dan keluar untuk form modal
         $products = Product::withSum(['transactions as stock_in' => function ($q) {
-                $q->where('type', 'in');
-            }], 'quantity')
+            $q->where('type', 'in');
+        }], 'quantity')
             ->withSum(['transactions as stock_out' => function ($q) {
                 $q->where('type', 'out');
             }], 'quantity')
@@ -65,9 +81,13 @@ class StockController extends Controller
         $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
         $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
 
+        $view = $isMobile ? 'mobile.stock.index' : 'stock.index';
+
         // Kirim data ke view
-        return view('stock.index', compact(
+        return view($view, compact(
             'transactions',
+            'groupedTransactions',
+            'editTransaction',
             'totalSaldoAkhir',
             'grandTotal',
             'products',
@@ -76,11 +96,17 @@ class StockController extends Controller
     }
 
     /**
-     * Redirect to index and open modal via query param
+     * Show form for adding stock transaction
      */
-    public function create()
+    public function create(Request $request)
     {
-        return redirect()->route('stock.index', ['add' => 1]);
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+
+        if ($isMobile) {
+            return redirect()->route('stock.index', array_merge(['add' => 1], $request->query()));
+        }
+
+        return redirect()->route('stock.index', array_merge(['add' => 1], $request->query()));
     }
 
     /**
@@ -88,65 +114,122 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
-        $request->validate([
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+
+        $data = $request->all();
+        if (empty($data['type']) && ! empty($data['type_radio'])) {
+            $data['type'] = $data['type_radio'];
+        }
+
+        $validator = Validator::make($data, [
             'product_id' => 'required|exists:products,id',
             'type' => 'required|in:in,out',
             'quantity' => 'required|integer|min:1',
             'date' => 'required|date',
+            'nosur' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
         ]);
 
+        if ($validator->fails()) {
+            if ($isMobile) {
+                return redirect()->route('stock.index', array_merge(['add' => 1], $request->query()))
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            return back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
         try {
-            return DB::transaction(function () use ($request) {
+            return DB::transaction(function () use ($data) {
                 // Lock product for update to ensure stock consistency
-                $product = Product::lockForUpdate()->findOrFail($request->product_id);
+                $product = Product::lockForUpdate()->findOrFail($data['product_id']);
 
                 // Jika tipe transaksi adalah stok keluar, cek apakah stok mencukupi
-                if ($request->type === 'out' && $product->stock < $request->quantity) {
+                if (($data['type'] ?? '') === 'out' && $product->stock < (int) $data['quantity']) {
                     throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini.');
                 }
 
                 // Simpan transaksi stok ke database
                 StockTransaction::create([
                     'product_id' => $product->id,
-                    'type' => $request->type,
-                    'quantity' => $request->quantity,
-                    'date' => $request->date,
-                    'nosur' => $request->nosur,
-                    'notes' => $request->notes,
+                    'type' => $data['type'],
+                    'quantity' => (int) $data['quantity'],
+                    'date' => $data['date'],
+                    'nosur' => $data['nosur'] ?? null,
+                    'notes' => $data['notes'] ?? null,
                     'user_id' => auth()->id(),
                 ]);
 
                 // Update physical stock in product table
-                if ($request->type === 'in') {
-                    $product->increment('stock', $request->quantity);
+                if (($data['type'] ?? '') === 'in') {
+                    $product->increment('stock', (int) $data['quantity']);
                 } else {
-                    $product->decrement('stock', $request->quantity);
+                    $product->decrement('stock', (int) $data['quantity']);
                 }
 
                 return redirect()->route('stock.index')
                     ->with('success', 'Transaksi berhasil disimpan.');
             });
         } catch (\Exception $e) {
+            if ($isMobile) {
+                return redirect()->route('stock.index', array_merge(['add' => 1], $request->query()))
+                    ->with('error', $e->getMessage())
+                    ->withInput();
+            }
+
             return back()->with('error', $e->getMessage())->withInput();
         }
+    }
+
+    public function edit($id)
+    {
+        $transaction = StockTransaction::findOrFail($id);
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+
+        if ($isMobile) {
+            return redirect()->route('stock.index', array_merge(['edit' => $transaction->id], request()->query()));
+        }
+
+        return redirect()->route('stock.index', array_merge(['edit' => $id], request()->query()));
     }
 
     public function update(Request $request, $id)
     {
         $transaction = StockTransaction::findOrFail($id);
 
-        $request->validate([
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+
+        $data = $request->all();
+        if (empty($data['type']) && ! empty($data['type_radio'])) {
+            $data['type'] = $data['type_radio'];
+        }
+
+        $validator = Validator::make($data, [
             'product_id' => 'required|exists:products,id',
-            'date'       => 'required|date',
-            'type'       => 'required|in:in,out',
-            'quantity'   => 'required|integer|min:1',
-            'nosur'      => 'nullable|string|max:255',
-            'notes'      => 'nullable|string'
+            'date' => 'required|date',
+            'type' => 'required|in:in,out',
+            'quantity' => 'required|integer|min:1',
+            'nosur' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
         ]);
 
+        if ($validator->fails()) {
+            if ($isMobile) {
+                return redirect()->route('stock.index', array_merge(['edit' => $id], $request->query()))
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            return back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
         try {
-            return DB::transaction(function () use ($request, $transaction) {
+            return DB::transaction(function () use ($data, $transaction) {
                 // Revert old product stock
                 $oldProduct = Product::lockForUpdate()->find($transaction->product_id);
                 if ($oldProduct) {
@@ -158,38 +241,44 @@ class StockController extends Controller
                 }
 
                 // Load target product (could be the same)
-                $newProduct = ($request->product_id == $transaction->product_id) 
-                    ? $oldProduct 
-                    : Product::lockForUpdate()->findOrFail($request->product_id);
+                $newProduct = (($data['product_id'] ?? null) == $transaction->product_id)
+                    ? $oldProduct
+                    : Product::lockForUpdate()->findOrFail($data['product_id']);
 
                 // Check if stock enough for "out" transaction
-                if ($request->type === 'out') {
-                    if ($newProduct->stock < $request->quantity) {
+                if (($data['type'] ?? '') === 'out') {
+                    if ($newProduct->stock < (int) $data['quantity']) {
                         throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini.');
                     }
                 }
 
                 // Update transaction
                 $transaction->update([
-                    'product_id' => $request->product_id,
-                    'date'       => $request->date,
-                    'type'       => $request->type,
-                    'quantity'   => $request->quantity,
-                    'nosur'      => $request->nosur,
-                    'notes'      => $request->notes,
+                    'product_id' => $data['product_id'],
+                    'date' => $data['date'],
+                    'type' => $data['type'],
+                    'quantity' => (int) $data['quantity'],
+                    'nosur' => $data['nosur'] ?? null,
+                    'notes' => $data['notes'] ?? null,
                 ]);
 
                 // Apply new stock
-                if ($request->type === 'in') {
-                    $newProduct->increment('stock', $request->quantity);
+                if (($data['type'] ?? '') === 'in') {
+                    $newProduct->increment('stock', (int) $data['quantity']);
                 } else {
-                    $newProduct->decrement('stock', $request->quantity);
+                    $newProduct->decrement('stock', (int) $data['quantity']);
                 }
 
                 return redirect()->route('stock.index')
                     ->with('success', 'Transaksi berhasil diperbarui.');
             });
         } catch (\Exception $e) {
+            if ($isMobile) {
+                return redirect()->route('stock.index', array_merge(['edit' => $id], $request->query()))
+                    ->with('error', $e->getMessage())
+                    ->withInput();
+            }
+
             return back()->with('error', $e->getMessage())->withInput();
         }
     }
@@ -202,11 +291,10 @@ class StockController extends Controller
         return redirect()->route('stock.index');
     }
 
-
     public function bulkDestroy(Request $request): RedirectResponse
     {
         $ids = $request->ids;
-        if (!$ids || !is_array($ids)) {
+        if (! $ids || ! is_array($ids)) {
             return back()->with('error', 'Tidak ada data yang dipilih.');
         }
 
@@ -231,9 +319,9 @@ class StockController extends Controller
             });
 
             return redirect()->route('stock.index')
-                ->with('success', count($ids) . ' transaksi berhasil dihapus dan stok telah disesuaikan.');
+                ->with('success', count($ids).' transaksi berhasil dihapus dan stok telah disesuaikan.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus transaksi: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus transaksi: '.$e->getMessage());
         }
     }
 
@@ -246,21 +334,21 @@ class StockController extends Controller
             return DB::transaction(function () use ($id) {
                 $transaction = StockTransaction::findOrFail($id);
                 $product = Product::withTrashed()->lockForUpdate()->findOrFail($transaction->product_id);
-                
+
                 // Kembalikan stok seperti sebelum transaksi ini ada
                 if ($transaction->type === 'in') {
                     $product->decrement('stock', $transaction->quantity);
                 } else {
                     $product->increment('stock', $transaction->quantity);
                 }
-                
+
                 $transaction->delete();
 
                 return redirect()->route('stock.index')
                     ->with('success', 'Transaksi berhasil dihapus dan stok telah disesuaikan.');
             });
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus transaksi: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus transaksi: '.$e->getMessage());
         }
     }
 }

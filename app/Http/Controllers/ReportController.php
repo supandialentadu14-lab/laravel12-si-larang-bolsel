@@ -110,7 +110,10 @@ class ReportController extends Controller
             ];
         }
 
-        return view('reports.kartu_tahunan', compact('grouped', 'startDate', 'endDate', 'opd', 'master', 'categories', 'categoryId'));
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.kartu_tahunan' : 'reports.kartu_tahunan';
+
+        return view($view, compact('grouped', 'startDate', 'endDate', 'opd', 'master', 'categories', 'categoryId'));
     }
 
     /**
@@ -159,7 +162,18 @@ class ReportController extends Controller
             ];
         }
 
-        return view('reports.index', compact('reportData', 'startDate', 'endDate', 'opd', 'master', 'categories', 'categoryId'));
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.index' : 'reports.index';
+
+        return view($view, compact(
+            'startDate',
+            'endDate',
+            'categories',
+            'categoryId',
+            'reportData',
+            'opd',
+            'master'
+        ));
     }
 
     /**

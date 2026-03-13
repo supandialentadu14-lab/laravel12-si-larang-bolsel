@@ -31,7 +31,7 @@
                     
                     <div class="mb-6">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Alamat Kantor OPD</label>
-                        <input type="text" name="alamat_opd" value="{{ old('alamat_opd', $setting->alamat_opd) }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm" placeholder="Contoh: Kompleks Perkantoran Pemerintah Daerah Bolsel, Boroko">
+                        <textarea name="alamat_opd" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm leading-relaxed" placeholder="Contoh: Kompleks Perkantoran Pemerintah Daerah Bolsel, Boroko">{{ old('alamat_opd', $setting->alamat_opd) }}</textarea>
                     </div>
 
                     <div class="p-4 bg-rose-50 border border-rose-100 rounded-xl">

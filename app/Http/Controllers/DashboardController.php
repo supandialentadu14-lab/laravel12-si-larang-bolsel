@@ -52,7 +52,7 @@ class DashboardController extends Controller
             $p->stock_on_date = (int)($agg[$p->id]->net ?? 0);
             return $p;
         });
-        $criticalProducts = $productsWithNet->filter(fn ($p) => $p->stock_on_date <= $p->min_stock)->values();
+        $criticalProducts = $productsWithNet->filter(fn ($p) => $p->stock_on_date <= 1)->values();
         $lowStockCount = $criticalProducts->count();
         $totalStock = $productsWithNet->sum('stock_on_date');
         $totalInventoryValue = $productsWithNet->sum(function ($p) {
@@ -60,12 +60,25 @@ class DashboardController extends Controller
         });
         $supplierCount = Supplier::count();
         $opd = OpdSetting::where('user_id', Auth::id())->first();
-        $userDir = 'users/'.Auth::id().'/pinjam_pakai';
-        $pinjamFiles = Storage::disk('local')->exists($userDir) ? Storage::disk('local')->files($userDir) : [];
+        $disk = Storage::disk('local');
+        $uid = Auth::id();
+        $pinjamFiles = $disk->exists('users/'.$uid.'/pinjam_pakai') ? $disk->files('users/'.$uid.'/pinjam_pakai') : [];
+        $belanjaFiles = $disk->exists('users/'.$uid.'/belanja-modal') ? $disk->files('users/'.$uid.'/belanja-modal') : [];
+        $notaFiles = $disk->exists('users/'.$uid.'/nota-pesanan') ? $disk->files('users/'.$uid.'/nota-pesanan') : [];
+        $pemeriksaanFiles = $disk->exists('users/'.$uid.'/bap-pemeriksaan') ? $disk->files('users/'.$uid.'/bap-pemeriksaan') : [];
+        $penerimaanFiles = $disk->exists('users/'.$uid.'/bap-penerimaan') ? $disk->files('users/'.$uid.'/bap-penerimaan') : [];
+        $kwitansiFiles = $disk->exists('users/'.$uid.'/kwitansi') ? $disk->files('users/'.$uid.'/kwitansi') : [];
+        $opnameFiles = $disk->exists('users/'.$uid.'/opname') ? $disk->files('users/'.$uid.'/opname') : [];
         // ============================
         // DATA HARI INI
         // ============================
-        $pinjamCount = count($pinjamFiles);
+        $pinjamCount = collect($pinjamFiles)->filter(fn($f) => str_ends_with($f, '.json'))->count();
+        $belanjaModalCount = collect($belanjaFiles)->filter(fn($f) => str_ends_with($f, '.json'))->count();
+        $notaCount = collect($notaFiles)->filter(fn($f) => str_ends_with($f, '.json'))->count();
+        $pemeriksaanCount = collect($pemeriksaanFiles)->filter(fn($f) => str_ends_with($f, '.json'))->count();
+        $penerimaanCount = collect($penerimaanFiles)->filter(fn($f) => str_ends_with($f, '.json'))->count();
+        $kwitansiCount = collect($kwitansiFiles)->filter(fn($f) => str_ends_with($f, '.json'))->count();
+        $opnameCount = collect($opnameFiles)->filter(fn($f) => str_ends_with($f, '.json'))->count();
         $today = $selectedDate;
         $yesterday = (clone $selectedDate)->subDay();
         $inToday = StockTransaction::where('type', 'in')->whereDate('date', $today)->sum('quantity');
@@ -185,7 +198,10 @@ class DashboardController extends Controller
         $categoryLabels = $categoryDistribution->pluck('name');
         $categoryValues = $categoryDistribution->pluck('total_stock');
 
-        return view('dashboard', compact(
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'mobile.dashboard' : 'dashboard';
+
+        return view($view, compact(
             'totalProducts',
             'totalCategories',
             'totalStock',
@@ -212,7 +228,13 @@ class DashboardController extends Controller
             'categoryValues',
             'topProducts',
             'monthlyValueIn',
-            'monthlyValueOut'
+            'monthlyValueOut',
+            'belanjaModalCount',
+            'notaCount',
+            'pemeriksaanCount',
+            'penerimaanCount',
+            'kwitansiCount',
+            'opnameCount'
         ));
 }
 }

@@ -1,29 +1,28 @@
-@extends('layouts.admin')
-
-@section('title', 'Berita Acara Pinjam Pakai')
-@section('header', 'Berita Acara Pinjam Pakai')
+@extends('layouts.mobile')
 
 @section('content')
     <script>
         window.formData = function () {
             return {
-                items: [{ _key: 1 }],
-                nextKey: 2,
+                items: {!! json_encode(($data['items'] ?? [['_key' => 1]])) !!},
+                nextKey: {{ count($data['items'] ?? []) + 2 }},
                 ensureKeys() {
-                    const withKeys = (this.items || []).map(it => ({ ...it, _key: it._key || (this.nextKey++) }));
-                    this.items = withKeys;
+                    this.items = (this.items || []).map(it => ({ ...it, _key: it._key || (this.nextKey++) }));
                 },
                 init() {
                     this.ensureKeys();
                     this.updatePembuka();
                 },
-                prefill() { this.items = {!! json_encode(($data['items'] ?? [])) !!}; this.ensureKeys(); },
+                prefill() { 
+                    this.items = {!! json_encode(($data['items'] ?? [])) !!}; 
+                    if (this.items.length === 0) this.items = [{ '_key': this.nextKey++ }];
+                    this.ensureKeys(); 
+                },
                 addItem() { this.items.push({ _key: this.nextKey++ }); },
-                removeItem(i) { this.items.splice(i, 1); },
+                removeItem(i) { if(this.items.length > 1) this.items.splice(i, 1); },
                 updatePembuka() {
                     try {
                         const v = this.$refs.tanggal?.value;
-                        const tempat = this.$refs.tempat?.value || '-';
                         if (!v) return;
                         const d = new Date(v);
                         const hari = d.toLocaleDateString('id-ID', { weekday: 'long' });
@@ -42,183 +41,194 @@
                                 if (v < 1000) return w(Math.floor(v/100)) + " ratus " + w(v%100);
                                 if (v < 2000) return "seribu " + w(v-1000);
                                 if (v < 1000000) return w(Math.floor(v/1000)) + " ribu " + w(v%1000);
-                                if (v < 1000000000) return w(Math.floor(v/1000000)) + " juta " + w(v%1000000);
                                 return String(v);
                             };
                             return cap(w(n).trim());
                         };
                         const tanggalKata = toWords(tanggal);
                         const tahunKata = toWords(tahun);
-                        this.$refs.pembuka.value =
-                            `Pada hari ini ${hari} Tanggal ${tanggalKata} Bulan ${bulan} Tahun ${tahunKata}, yang bertanda tangan di bawah ini:`;
+                        this.$refs.pembuka.value = `Pada hari ini ${hari} Tanggal ${tanggalKata} Bulan ${bulan} Tahun ${tahunKata}, yang bertanda tangan di bawah ini:`;
                     } catch (e) {}
                 }
             }
         }
     </script>
 
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-[#1e293b]">
-                <h6 class="font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-hand-holding"></i> Form Berita Acara Pinjam Pakai
-                </h6>
+    <div class="space-y-6 pb-24">
+        {{-- Page Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Pinjam Pakai</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Buat Berita Acara Baru</p>
+            </div>
+            <a href="{{ route('reports.pinjam.list') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+                <i class="fas fa-times text-xs"></i>
+            </a>
+        </div>
+
+        <form method="POST" action="{{ route('reports.pinjam.save') }}" x-data="formData()" x-init="init()" class="space-y-6">
+            @csrf
+            @if(session('pinjam_pakai_current_id') || isset($data['id']))
+                <input type="hidden" name="id" value="{{ session('pinjam_pakai_current_id') ?? $data['id'] }}">
+            @endif
+
+            {{-- Informasi Umum --}}
+            <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-file-alt text-xs"></i>
+                    </div>
+                    <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Informasi Dokumen</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Berita Acara</label>
+                        <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono" placeholder="001/BA-PP/..." required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
+                            <input x-ref="tanggal" @change="updatePembuka()" type="date" name="tanggal" value="{{ $data['tanggal'] ?? now()->toDateString() }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tempat</label>
+                            <input x-ref="tempat" @input="updatePembuka()" type="text" name="tempat" value="{{ $data['tempat'] ?? ($opd->nama_opd ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="Boroko" required>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Narasi Pembuka</label>
+                        <textarea x-ref="pembuka" name="pembuka" rows="3" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed">{{ $data['pembuka'] ?? '' }}</textarea>
+                    </div>
+                </div>
             </div>
 
-            <form method="POST" action="{{ route('reports.pinjam.save') }}" x-data="formData()" x-init="init()" class="p-6 space-y-6">
-                @csrf
-                @if(session('pinjam_pakai_current_id'))
-                    <input type="hidden" name="id" value="{{ session('pinjam_pakai_current_id') }}">
-                @endif
-                @if(isset($data['id']))
-                    <input type="hidden" name="id" value="{{ $data['id'] }}">
-                @endif
-
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700 mb-6 transition-all duration-300">
-                    <h4 class="text-slate-800 dark:text-slate-200 font-bold mb-4 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
-                        <i class="fas fa-info-circle text-indigo-500"></i> Informasi Umum
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                       <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Nomor Surat <span class="text-rose-500">*</span></label>
-                            <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono" placeholder="Contoh: 001" required>
+            {{-- Pihak Bersepakat --}}
+            <div class="grid grid-cols-1 gap-6">
+                {{-- Pihak Pertama (Pemberi) --}}
+                <div class="bg-indigo-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-indigo-100 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                                <i class="fas fa-user-tie text-[10px]"></i>
+                            </div>
+                            <h3 class="text-[11px] font-black uppercase tracking-widest opacity-80">Pihak Pertama (Pemberi)</h3>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tanggal Berita Acara <span class="text-rose-500">*</span></label>
-                            <input x-ref="tanggal" @change="updatePembuka()" type="date" name="tanggal" value="{{ $data['tanggal'] ?? now()->toDateString() }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold shadow-sm" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tempat Penandatanganan <span class="text-rose-500">*</span></label>
-                            <input x-ref="tempat" @input="updatePembuka()" type="text" name="tempat" value="{{ $data['tempat'] ?? 'Bolaang Uki' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm" placeholder="Nama Tempat" required>
-                        </div>
+                        <button type="button" @click="$refs.pp_nama.value='{{ $opd->kepala_nama }}'; $refs.pp_nip.value='{{ $opd->kepala_nip }}'; $refs.pp_jabatan.value='{{ $opd->kepala_jabatan }}';" class="text-[8px] font-black uppercase px-2 py-1 bg-white/20 rounded-lg">Auto</button>
                     </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Narasi Pembuka</label>
-                        <textarea x-ref="pembuka" name="pembuka" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm leading-relaxed" placeholder="Narasi ini akan terisi otomatis berdasarkan tanggal..."></textarea>
-                        <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1 italic text-right leading-tight">Narasi pembuka diperbarui otomatis berdasarkan input Tanggal.</p>
-                    </div>
-                </div>
-
-                <div class="bg-indigo-50/50 dark:bg-indigo-900/10 p-6 rounded-xl border border-indigo-100 dark:border-indigo-900/30 mb-6 font-medium">
-                    <h4 class="text-indigo-900 dark:text-indigo-300 font-bold mb-5 flex items-center gap-2 border-b border-indigo-100 dark:border-indigo-900/30 pb-2">
-                        <i class="fas fa-users text-indigo-500"></i> Pihak Yang Bersepakat
-                    </h4>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <!-- Pihak Pertama -->
-                        <div class="space-y-4">
-                            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-2 mb-4">
-                                <h3 class="font-bold text-indigo-800 text-xs uppercase tracking-wider">PIHAK PERTAMA (Pemberi)</h3>
-                                @if(isset($opd) && $opd->kepala_nama)
-                                    <button type="button" class="px-2 py-1 rounded bg-indigo-600 text-white text-[10px] font-bold hover:bg-indigo-700 transition" @click="
-                                        $refs.pp_nama.value='{{ $opd->kepala_nama }}';
-                                        $refs.pp_nip.value='{{ $opd->kepala_nip }}';
-                                        $refs.pp_jabatan.value='{{ $opd->kepala_jabatan }}';
-                                    ">Cepat Isi Kepala OPD</button>
-                                @endif
-                            </div>
-                            
-                            <div class="grid grid-cols-12 gap-3 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-tighter text-left sm:text-right">Nama</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold" required>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-12 gap-3 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-tighter text-left sm:text-right">NIP</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-mono" required>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-12 gap-3 items-start">
-                                <label class="col-span-12 sm:col-span-3 mt-2 text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-tighter text-left sm:text-right">Jabatan</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <textarea x-ref="pp_jabatan" name="pihak_pertama[jabatan]" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm leading-snug" required>{{ $data['pihak_pertama']['jabatan'] ?? '' }}</textarea>
-                                </div>
-                            </div>
+                    <div class="space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Nama Lengkap</label>
+                            <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" placeholder="Nama Atasan" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none" required>
                         </div>
-
-                        <!-- Pihak Kedua -->
-                        <div class="space-y-4 border-l border-indigo-100 pl-4 md:pl-8">
-                            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-2 mb-4">
-                                <h3 class="font-bold text-rose-800 text-xs uppercase tracking-wider">PIHAK KEDUA (Peminjam)</h3>
-                            </div>
-                            <div class="grid grid-cols-12 gap-3 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-rose-500 dark:text-rose-400 uppercase tracking-tighter text-left sm:text-right">Nama</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm font-bold" required>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-12 gap-3 items-center">
-                                <label class="col-span-12 sm:col-span-3 text-[11px] font-bold text-rose-500 dark:text-rose-400 uppercase tracking-tighter text-left sm:text-right">NIP</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <input type="text" name="pihak_kedua[nip]" value="{{ $data['pihak_kedua']['nip'] ?? '' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm font-mono" required>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-12 gap-3 items-start">
-                                <label class="col-span-12 sm:col-span-3 mt-2 text-[11px] font-bold text-rose-500 dark:text-rose-400 uppercase tracking-tighter text-left sm:text-right">Jabatan</label>
-                                <div class="col-span-12 sm:col-span-9">
-                                    <textarea name="pihak_kedua[jabatan]" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition text-sm leading-snug" required>{{ $data['pihak_kedua']['jabatan'] ?? '' }}</textarea>
-                                </div>
-                            </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">NIP</label>
+                            <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" placeholder="NIP" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-mono placeholder:text-white/40 outline-none" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Jabatan</label>
+                            <textarea x-ref="pp_jabatan" name="pihak_pertama[jabatan]" rows="2" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none leading-snug" required>{{ $data['pihak_pertama']['jabatan'] ?? '' }}</textarea>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 border-b border-slate-200 dark:border-slate-700 pb-3">
-                        <h4 class="text-slate-800 dark:text-slate-200 font-bold flex items-center gap-2">
-                             <i class="fas fa-boxes text-indigo-500"></i> Daftar Barang Pinjam Pakai
-                        </h4>
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            <button type="button" @click="prefill()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 hover:bg-emerald-100 transition flex items-center justify-center gap-1">
-                                <i class="fas fa-sync"></i> Ambil Ulang Data
-                            </button>
-                            <button type="button" @click="addItem()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-md shadow-indigo-100 hover:bg-indigo-700 transition flex items-center justify-center gap-1">
-                                <i class="fas fa-plus"></i> Tambah Baris
-                            </button>
+                {{-- Pihak Kedua (Peminjam) --}}
+                <div class="bg-rose-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-rose-100 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-user text-[10px]"></i>
+                        </div>
+                        <h3 class="text-[11px] font-black uppercase tracking-widest opacity-80">Pihak Kedua (Peminjam)</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Nama Lengkap</label>
+                            <input type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" placeholder="Nama Peminjam" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">NIP</label>
+                            <input type="text" name="pihak_kedua[nip]" value="{{ $data['pihak_kedua']['nip'] ?? '' }}" placeholder="NIP / Identitas" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-mono placeholder:text-white/40 outline-none" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Jabatan</label>
+                            <textarea name="pihak_kedua[jabatan]" rows="2" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none leading-snug" required>{{ $data['pihak_kedua']['jabatan'] ?? '' }}</textarea>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900">
-                        <table class="w-full text-[11px] text-left text-slate-700 dark:text-slate-300">
-                            <thead class="bg-slate-100 dark:bg-slate-800 text-[10px] uppercase font-bold text-slate-600 dark:text-slate-400 tracking-wider">
+            {{-- Daftar Barang --}}
+            <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6 overflow-hidden">
+                <div class="flex items-center justify-between border-b border-slate-50 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i class="fas fa-boxes text-xs"></i>
+                        </div>
+                        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Daftar Barang</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" @click="prefill()" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center transition active:scale-90">
+                            <i class="fas fa-sync text-[10px]"></i>
+                        </button>
+                        <button type="button" @click="addItem()" class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 transition active:scale-90">
+                            <i class="fas fa-plus text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto -mx-6 px-6">
+                    <table class="min-w-[800px] w-full text-left">
+                        <thead class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            <tr>
+                                <th class="pb-4 px-3 w-[200px]">Nama Barang</th>
+                                <th class="pb-4 px-3 w-[150px]">Merk</th>
+                                <th class="pb-4 px-3 w-[150px]">Type</th>
+                                <th class="pb-4 px-3 w-[150px]">No. Kendaraan</th>
+                                <th class="pb-4 px-3 w-[80px]">Tahun</th>
+                                <th class="pb-4 px-3 w-[80px] text-center">Jumlah</th>
+                                <th class="pb-4 px-3 w-[50px]"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <template x-for="(item, i) in items" :key="item._key">
                                 <tr>
-                                    <th class="px-3 py-3 border-b border-slate-200 dark:border-slate-700">Nama / Jenis Barang</th>
-                                    <th class="px-3 py-3 border-b border-slate-200">Merk</th>
-                                    <th class="px-3 py-3 border-b border-slate-200">Tipe</th>
-                                    <th class="px-3 py-3 border-b border-slate-200">No. Pabrik / Identitas</th>
-                                    <th class="px-3 py-3 border-b border-slate-200 w-20 text-center">Tahun</th>
-                                    <th class="px-3 py-3 border-b border-slate-200 w-24 text-center">Kondisi</th>
-                                    <th class="px-3 py-3 border-b border-slate-200 w-20 text-center">Jumlah</th>
-                                    <th class="px-3 py-3 border-b border-slate-200 w-10"></th>
+                                    <td class="py-3 px-1">
+                                        <input type="text" :name="`items[${i}][nama]`" x-model="item.nama" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="Nama">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="text" :name="`items[${i}][merk]`" x-model="item.merk" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="Merk">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="text" :name="`items[${i}][tipe]`" x-model="item.tipe" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="Type">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="text" :name="`items[${i}][identitas]`" x-model="item.identitas" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="No. Kendaraan">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="text" :name="`items[${i}][tahun]`" x-model="item.tahun" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold text-center outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="2024">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="text" :name="`items[${i}][jumlah]`" x-model="item.jumlah" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-black text-center outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="1">
+                                    </td>
+                                    <td class="py-3 px-1 text-center">
+                                        <button type="button" @click="removeItem(i)" class="text-slate-300 hover:text-rose-500 transition">
+                                            <i class="fas fa-trash-alt text-[10px]"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <template x-for="(item, i) in items" :key="item._key">
-                                    <tr class="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/20 transition border-t dark:border-slate-800">
-                                        <td class="p-2"><input type="text" :name="`items[${i}][nama]`" x-model="item.nama" class="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Nama Barang"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][merk]`" x-model="item.merk" class="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Merk"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][tipe]`" x-model="item.tipe" class="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Tipe"></td>
-                                        <td class="p-2"><input type="text" :name="`items[${i}][identitas]`" x-model="item.identitas" class="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="No. Seri"></td>
-                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][tahun]`" x-model="item.tahun" class="w-full text-center rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="2024"></td>
-                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][kondisi]`" x-model="item.kondisi" class="w-full text-center rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Baik"></td>
-                                        <td class="p-2 text-center"><input type="text" :name="`items[${i}][jumlah]`" x-model="item.jumlah" class="w-full text-center rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition font-bold" placeholder="1"></td>
-                                        <td class="p-2 text-center">
-                                            <button type="button" @click="removeItem(i)" class="text-rose-400 hover:text-rose-600 transition p-1"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-                @include('partials.form-actions', [
-                    'backRoute' => route('reports.pinjam.list'),
-                ])
-            </form>
-        </div>
+            {{-- Actions --}}
+            <div class="flex gap-3 px-2">
+                <a href="{{ route('reports.pinjam.list') }}" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
+                <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">Simpan Laporan</button>
+            </div>
+        </form>
     </div>
 @endsection

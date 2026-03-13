@@ -436,8 +436,15 @@ class PemeriksaanController extends Controller
         }
 
         session(['bap_current' => $data, 'bap_current_id' => $id]);
-        $saved_id = $id;
-        return view('reports.pemeriksaan_report', compact('data', 'opd', 'saved_id'));
+
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.pemeriksaan_report' : 'reports.pemeriksaan_report';
+
+        return view($view, [
+            'data' => $data,
+            'opd' => $opd,
+            'saved_id' => $id,
+        ]);
     }
 
     public function edit(string $id): View

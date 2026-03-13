@@ -6,27 +6,11 @@
         .preview-paper { 
             width: 210mm; 
             min-height: 330mm; 
-            margin: 16px auto; 
-            background-color: #ffffff !important; 
-            color: #1e293b !important;
-            padding: 10mm 15mm;
+            margin: 0 auto; 
+            background: #ffffff; 
+            padding: 5mm 15mm;
             line-height: 1.4;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            border-radius: 8px;
-            transition: all 0.3s ease;
         }
-
-        /* Dark mode overrides */
-        .theme-dark .preview-paper {
-            background-color: #1e293b !important;
-            color: #f1f5f9 !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .theme-dark .preview-paper .border-b-4 {
-            border-color: #475569 !important;
-        }
-
         @media print {
             body * {
                 visibility: hidden;
@@ -41,64 +25,91 @@
                 position: static !important;
                 width: auto !important;
                 overflow: visible !important;
-                color: #000000 !important;
-                background-color: #ffffff !important;
             }
 
             @page {
                 size: 210mm 330mm;
                 margin: 5mm 15mm;
             }
-            body { margin: 0; background-color: white !important; }
+            body { margin: 0; }
             .preview-paper { 
                 width: 100% !important; 
                 min-height: auto !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
                 box-sizing: border-box; 
-                background-color: #ffffff !important; 
+                background: #ffffff !important; 
                 box-shadow: none !important; 
-                color: #000000 !important;
+                line-height: 1.4;
             }
-            .border-b-4 { border-color: #000000 !important; }
         }
 
         @media screen {
-            html, body { transition: background 0.3s ease; }
-            .theme-dark html, .theme-dark body { background-color: #0f172a; }
+            html, body { background: #f3f4f6; }
             #print-area { width: 210mm; margin: 0 auto; }
+            .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; }
+        }
+
+        .kop {
+            width: 100%;
+        }
+
+        .kop-logo {
+            width: 80px;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .kop-logo img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        .kop-text {
+            text-align: center;
+        }
+
+        .kop-text .line1 {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+
+        .kop-text .line2 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 0.1px;
+        }
+
+        .kop-text .line3 {
+            font-size: 12px;
+            margin-top: 0.1px;
+        }
+
+        .kop-text .line4 {
+            font-size: 12px;
         }
 
         .report-table {
             border-collapse: collapse;
             width: 100%;
-            table-layout: fixed;
         }
 
         .report-table th,
         .report-table td {
-            border: 1px solid #1e293b;
+            border: 1px solid black;
             padding: 6px;
             font-size: 12px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal !important;
-        }
-
-        /* Dark mode table borders */
-        .theme-dark .report-table th,
-        .theme-dark .report-table td {
-            border-color: #475569;
         }
 
         .report-table th {
             text-align: center;
             font-weight: bold;
-            background: rgba(0,0,0,0.02);
         }
 
-        .theme-dark .report-table th {
-            background: rgba(255,255,255,0.05);
+        .kop {
+            margin-bottom: 10px;
         }
 
         .kop h1 {
@@ -109,10 +120,27 @@
             margin: 6px 0;
         }
 
+        .bold {
+            font-weight: 700;
+        }
+
+        .rules {
+            padding-left: 20px;
+            margin-left: 6px;
+        }
+
+        .rules li {
+            margin: 2px 0;
+            line-height: 1.4;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
         .header-table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
         }
 
         .header-table td {
@@ -120,27 +148,98 @@
             vertical-align: top;
             font-size: 12px;
             line-height: 1.2;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal !important;
         }
+
+        .header-table .label {
+            width: 40px;
+            font-weight: 700;
+        }
+
+        .header-table .colon {
+            width: 8px;
+        }
+
+        .header-table .spacer {
+            width: 100px;
+        }
+
+        .header-table .content {
+            width: 300px;
+        }
+
+        .header-table .city {
+            width: 80px;
+            text-align: left;
+        }
+
+        .header-table .date {
+            width: 80px;
+            text-align: left;
+        }
+
+        /*   */
     </style>
-    
-    <div class="bg-white dark:bg-slate-800 rounded-lg shadow border border-transparent dark:border-slate-700 p-6 mb-6 print:hidden flex justify-between items-center">
-        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 uppercase tracking-tight">Pratinjau Nota Pesanan</h2>
-        <div class="flex gap-2">
-            <a href="{{ route('reports.nota.list') }}" class="bg-slate-500 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white px-4 py-2 rounded-lg font-bold shadow transition flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
-            <button type="button" onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white px-4 py-2 rounded-lg font-bold shadow transition flex items-center gap-2">
-                <i class="fas fa-print"></i> Print
-            </button>
-        </div>
+
+    <div class="bg-white rounded-lg shadow p-6 mb-6 print:hidden flex gap-2">
+        <a href="{{ route('reports.nota.list') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+        <button type="button" onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
+            <i class="fas fa-print mr-2"></i> Print
+        </button>
+        <form action="{{ route('reports.nota.save') }}" method="POST" class="inline">
+            @csrf
+            {{-- Hidden inputs from $data --}}
+            <input type="hidden" name="nomor" value="{{ $data['nomor'] }}">
+            <input type="hidden" name="tanggal" value="{{ $data['tanggal'] }}">
+            <input type="hidden" name="tahun" value="{{ $data['tahun'] }}">
+            <input type="hidden" name="kegiatan" value="{{ $data['kegiatan'] }}">
+            <input type="hidden" name="sub_kegiatan" value="{{ $data['sub_kegiatan'] }}">
+            <input type="hidden" name="rekening" value="{{ $data['rekening'] }}">
+            <input type="hidden" name="belanja" value="{{ $data['belanja'] }}">
+            
+            {{-- Pihak-pihak --}}
+            <input type="hidden" name="pejabat_nama" value="{{ $data['pejabat']['nama'] ?? '' }}">
+            <input type="hidden" name="pejabat_nip" value="{{ $data['pejabat']['nip'] ?? '' }}">
+            <input type="hidden" name="pptk_nama" value="{{ $data['pptk']['nama'] ?? '' }}">
+            <input type="hidden" name="pptk_nip" value="{{ $data['pptk']['nip'] ?? '' }}">
+            <input type="hidden" name="pb_nama" value="{{ $data['pengurus_barang']['nama'] ?? '' }}">
+            <input type="hidden" name="pb_nip" value="{{ $data['pengurus_barang']['nip'] ?? '' }}">
+            <input type="hidden" name="pbp_nama" value="{{ $data['pengurus_pengguna']['nama'] ?? '' }}">
+            <input type="hidden" name="pbp_nip" value="{{ $data['pengurus_pengguna']['nip'] ?? '' }}">
+            <input type="hidden" name="ppk_nama" value="{{ $data['ppk']['nama'] ?? '' }}">
+            <input type="hidden" name="ppk_nip" value="{{ $data['ppk']['nip'] ?? '' }}">
+            <input type="hidden" name="bendahara_nama" value="{{ $data['bendahara']['nama'] ?? '' }}">
+            <input type="hidden" name="bendahara_nip" value="{{ $data['bendahara']['nip'] ?? '' }}">
+
+            {{-- Penyedia --}}
+            {{-- Note: Controller prioritizes supplier_id, then session. We pass values directly to be safe or rely on session if controller supports it. 
+                 But controller 'save' reads from session('nota_current') only for penyedia fallback. 
+                 Since we are passing explicit data, we might need to pass penyedia details if they are editable? 
+                 Actually 'save' doesn't seem to read penyedia_toko etc from request directly unless we modify it.
+                 Wait, 'save' uses: 
+                 $penyedia = ['toko' => '', ...];
+                 if ($sid = $request->input('supplier_id')) { ... } else { $existing = session('nota_current') ... }
+                 So if we don't pass supplier_id, it will look in session.
+                 Since 'report' method saved to session 'nota_current', 'save' should pick it up!
+            --}}
+            
+            {{-- Items --}}
+            @foreach($data['items'] as $idx => $item)
+                <input type="hidden" name="items[{{ $idx }}][name]" value="{{ $item['name'] }}">
+                <input type="hidden" name="items[{{ $idx }}][qty]" value="{{ $item['qty'] }}">
+                <input type="hidden" name="items[{{ $idx }}][unit]" value="{{ $item['unit'] }}">
+                <input type="hidden" name="items[{{ $idx }}][price]" value="{{ $item['price'] }}">
+            @endforeach
+
+            <!-- <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
+                <i class="fas fa-save"></i> Simpan
+            </button> -->
+        </form>
     </div>
 
-    <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-        <div id="print-area" class="preview-paper">
-            @php
+    <div id="print-area" class="preview-paper">
+        @php
             function toWordsId($value)
             {
                 $huruf = [
@@ -212,7 +311,10 @@
                 <td class="label">Perihal</td>
                 <td class="colon">:</td>
                 <td class="content bold">
-                    {{ $data['pekerjaan'] ?? '' }}
+                    Belanja {{ $data['belanja'] }}
+                    Pada Keg. {{ $data['kegiatan'] }}
+                    Sub Keg. {{ $data['sub_kegiatan'] }} Tahun 
+                        {{ $data['tahun'] }}
                 </td>
                 <td class="spacer"></td>
                 <td class="city">
@@ -229,26 +331,20 @@
         </div>
 
         <p class="text-sm mb-2">Dengan hormat,</p>
-        <p class="text-sm mb-2 justify-between px-1">
-            Untuk keperluan pengadaan barang/jasa sebagaimana terurai dalam {{ $data['pekerjaan'] ?? '' }}, harap dapat diberikan barang/bahan di bawah ini:
+        <p class="text-sm mb-2 justify-between">
+            Untuk keperluan pengadaan {{ $data['belanja'] }} dalam Kegiatan {{ $data['kegiatan'] }},
+            Sub Kegiatan {{ $data['sub_kegiatan'] }} pada Tahun {{ $data['tahun'] }},
+            harap dapat diberikan barang/bahan di bawah ini:
         </p>
 
         <table class="report-table mb-2">
-            <colgroup>
-                <col style="width: 5%">
-                <col style="width: 45%">
-                <col style="width: 10%">
-                <col style="width: 10%">
-                <col style="width: 15%">
-                <col style="width: 15%">
-            </colgroup>
             <thead>
                 <tr>
                     <th>No</th>
                     <th>Jenis Bahan/Alat (Barang)</th>
                     <th>Kuantitas</th>
                     <th>Satuan</th>
-                    <th>Harga<br>Satuan (Rp)</th>
+                    <th>Harga Satuan (Rp)</th>
                     <th>Total (Rp)</th>
                 </tr>
             </thead>

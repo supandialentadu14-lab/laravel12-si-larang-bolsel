@@ -29,7 +29,10 @@ class OpdController extends Controller
             $notaMaster = NotaMaster::create(['user_id' => Auth::id()]);
         }
         
-        return view('settings.combined', compact('setting', 'notaMaster'));
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'mobile.settings.combined' : 'settings.combined';
+        
+        return view($view, compact('setting', 'notaMaster'));
     }
 
     public function update(Request $request): RedirectResponse

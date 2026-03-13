@@ -558,7 +558,15 @@ class NotaPesananController extends Controller
         $data = json_decode($json, true) ?: [];
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         session(['nota_current' => $data, 'nota_current_id' => $id]);
-        return view('reports.nota_pesanan_report', compact('data', 'opd'));
+
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.nota_pesanan_report' : 'reports.nota_pesanan_report';
+
+        return view($view, [
+            'data' => $data,
+            'opd' => $opd,
+            'saved_id' => $id,
+        ]);
     }
 
     public function edit(string $id): View

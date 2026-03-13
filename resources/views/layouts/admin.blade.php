@@ -3,16 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-    <!-- PWA Setup -->
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4f46e5">
-    <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
-
     <title>{{ config('app.name', 'Inventory') }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/silarang-logo.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/desktop.css', 'resources/js/desktop.js'])
     @else
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
@@ -57,34 +50,16 @@
                                 800: '#3730A3',
                                 900: '#312E81',
                             },
-                            green: {
-                                500: '#22c55e',
-                                600: '#16a34a',
-                            },
-                            blue: {
-                                500: '#3b82f6',
-                                600: '#2563eb',
-                            },
-                            rose: {
-                                500: '#f43f5e',
-                                600: '#e11d48',
-                            },
                         }
                     },
                 },
             }
         </script>
     @endif
-    <!-- Alpine Plugins -->
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Flatpickr -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     {{-- CSS laporan global untuk preview F4, KOP, dan tabel --}}
     <link rel="stylesheet" href="{{ asset('css/report.css') }}">
 
@@ -101,88 +76,32 @@
         }
 
         .theme-light {
-            --body-bg: #F8FAFC;
-            --body-text: #1F2937;
-            --sidebar-bg: #F1F5F9;
-            --sidebar-text: #1F2937;
-            --sidebar-muted: #64748B;
-            --sidebar-hover: #E2E8F0;
-            --sidebar-active: #CBD5E1;
+            --body-bg: #F3F4F6;
+            --body-text: #111827;
+            --sidebar-bg: #F8FAFC;
+            --sidebar-text: #111827;
+            --sidebar-muted: #6B7280;
+            --sidebar-hover: #E5E7EB;
+            --sidebar-active: #D1D5DB;
             --accent: #4F46E5;
-            --marquee-start: #60A5FA;
-            --marquee-end: #A78BFA;
-            --card-bg: #ffffff;
-            --card-border: #f1f5f9;
-            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-            --input-bg: #ffffff;
-            --input-border: #e2e8f0;
-            --input-text: #1f2937;
-            --topbar-bg: #ffffff;
-            --muted-text: #64748B;
-            --subtle-text: #94A3B8;
-            --border-color: #f1f5f9;
-            --hover-bg: #f8fafc;
         }
 
         .theme-dark {
-            --body-bg: #030712;
-            --body-text: #f8fafc;
-            --sidebar-bg: #020617;
-            --sidebar-text: #f1f5f9;
-            --sidebar-muted: #94a3b8;
-            --sidebar-hover: #1e293b;
-            --sidebar-active: #334155;
-            --accent: #6366f1;
-            --marquee-start: #818cf8;
-            --marquee-end: #c084fc;
-            --card-bg: #0f172a;
-            --card-border: rgba(255, 255, 255, 0.05);
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-            --input-bg: #030712;
-            --input-border: #1e293b;
-            --input-text: #f8fafc;
-            --topbar-bg: #030712;
-            --muted-text: #94a3b8;
-            --subtle-text: #64748b;
-            --border-color: rgba(255, 255, 255, 0.03);
-            --hover-bg: rgba(255, 255, 255, 0.02);
+            --body-bg: #0F131A;
+            --body-text: #E5E7EB;
+            --sidebar-bg: #12171F;
+            --sidebar-text: #E5E7EB;
+            --sidebar-muted: #94A3B8;
+            --sidebar-hover: #1B2230;
+            --sidebar-active: #253047;
+            --accent: #60A5FA;
+            --marquee-start: #93C5FD;
+            --marquee-end: #C4B5FD;
         }
 
-        /* ───── Mobile View Stability & Safe Area ───── */
-        :root {
-            --safe-area-bottom: env(safe-area-inset-bottom, 20px);
-        }
-
-        @supports (height: 100svh) or (height: 100dvh) {
-            .h-screen-dynamic {
-                height: 100svh;
-                height: 100dvh;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .pb-safe {
-                padding-bottom: var(--safe-area-bottom) !important;
-            }
-            main {
-                padding-bottom: 80px !important;
-                padding-bottom: calc(60px + var(--safe-area-bottom)) !important;
-            }
-            .sidebar-footer-safe {
-                padding-bottom: calc(1rem + var(--safe-area-bottom)) !important;
-            }
-        }
-
-        /* ───── Mobile View Stability ───── */
-        * {
-            touch-action: manipulation; /* Prevents double-tap zoom behavior */
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Prevent iOS Zoom on Focus & General Input Stability */
-        input, select, textarea {
-            font-size: 16px !important; 
-            max-width: 100% !important;
+        .theme-light {
+            --marquee-start: #60A5FA;
+            --marquee-end: #A78BFA;
         }
 
         [x-cloak] {
@@ -190,7 +109,9 @@
         }
 
         .sidebar-modern {
-            background-color: var(--sidebar-bg);
+            background: radial-gradient(1200px 600px at -10% 10%, rgba(167, 139, 250, 0.25) 0%, rgba(14, 20, 40, 0) 50%),
+                radial-gradient(1200px 600px at 120% 40%, rgba(56, 189, 248, 0.25) 0%, rgba(14, 20, 40, 0) 50%),
+                var(--sidebar-bg);
             color: var(--sidebar-text);
             min-height: 100vh;
             will-change: transform, opacity;
@@ -216,282 +137,55 @@
 
         .nav-link.active {
             color: var(--sidebar-text);
-            background-color: var(--sidebar-active);
-            box-shadow: none;
+            background: linear-gradient(90deg, rgba(125, 211, 252, .25), rgba(192, 132, 252, .25));
+            box-shadow: 0 0 0 1px rgba(125, 211, 252, .25) inset, 0 6px 18px rgba(125, 211, 252, .22);
             font-weight: 700;
             border-left: 3px solid var(--accent);
         }
 
         .bg-indigo-800 {
-            background-color: var(--sidebar-active);
-            box-shadow: none;
+            background: linear-gradient(90deg, rgba(125, 211, 252, .22), rgba(192, 132, 252, .22));
+            box-shadow: 0 0 0 1px rgba(125, 211, 252, .18) inset, 0 6px 18px rgba(192, 132, 252, .18);
         }
 
         #page-header h2 {
             font-size: 1.75rem;
             font-weight: 800;
-            color: var(--body-text);
+            color: #111827;
             letter-spacing: .2px;
         }
 
         #page-header p {
-            color: var(--muted-text);
+            color: #6b7280;
         }
 
         .card {
-            border: 1px solid var(--card-border);
+            border: 1px solid #f3f4f6;
             border-radius: .75rem;
-            background: var(--card-bg);
-            box-shadow: var(--card-shadow);
-            color: var(--body-text);
+            background: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .05), 0 4px 6px -4px rgba(0, 0, 0, .05);
         }
 
         .table-clean thead {
-            background: var(--hover-bg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .table-clean tbody tr {
-            border-bottom: 1px solid var(--border-color);
+            background: #f3f4f6;
         }
 
         .table-clean tbody tr:hover {
-            background: var(--hover-bg);
+            background: #fff7ed;
         }
 
-        /* ── Global: semua baris tabel hover ── */
-        table tbody tr:hover {
-            background-color: var(--hover-bg) !important;
-            transition: background-color 0.2s ease;
-        }
-
-        /* Dark mode adjustment for table hover (solid if needed) */
-        body.theme-dark table tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-        }
-
-        /* ── Responsive: Table global scroll ── */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border-radius: 0.75rem;
-        }
-        table {
-            min-width: 600px;
-        }
         /* Prevent text wrapping in tables on small screens to enforce horizontal scroll */
         table th, table td {
             white-space: nowrap;
         }
 
-        /* ══════════════════════════════════════
-           RESPONSIVE BREAKPOINTS
-           ══════════════════════════════════════ */
-
-        /* ── Auto scroll all tables globally ── */
-        /* Wrap any direct table parent that doesn't have overflow */
-        .rounded-lg.shadow > table,
-        .rounded-xl.shadow > table,
-        .card > table,
-        .p-6 > table,
-        .p-4 > table {
-            display: block;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* MOBILE: 360px - 767px */
-        @media (max-width: 767px) {
-            /* Touch targets minimum 36px */
-            button { min-height: 34px; }
-
-            /* Sidebar fully hidden when closed on mobile */
-            .sidebar-modern { transition: width 0.3s ease, transform 0.3s ease; }
-
-            /* Page header stack on mobile */
-            #page-header { flex-direction: column !important; align-items: flex-start !important; }
-            #page-header h2 { font-size: 1.15rem !important; }
-            #page-header > div:last-child { width: 100%; flex-wrap: wrap; gap: 0.5rem; }
-
-            /* Section card reduced padding on mobile */
-            .bg-white.rounded-lg.shadow.p-6,
-            .bg-white.rounded-xl.p-6 { padding: 0.875rem !important; }
-
-            /* All main card containers: auto-scroll for tables inside */
-            main .bg-white,
-            main [class~="rounded-xl"],
-            main [class~="rounded-lg"] { 
-                overflow-x: auto;
-                background-color: var(--card-bg) !important;
-                color: var(--body-text) !important;
-            }
-
-            /* Form grids: single column on mobile */
-            .md\:grid-cols-2,
-            .md\:grid-cols-3,
-            .md\:grid-cols-4 { grid-template-columns: 1fr !important; }
-            .sm\:grid-cols-2 { grid-template-columns: 1fr 1fr !important; }
-            
-            /* Modal sizing on mobile */
-            .fixed.inset-0 .inline-block {
-                max-width: calc(100vw - 1.5rem) !important;
-                width: 100% !important;
-                margin: 0.75rem auto !important;
-            }
-
-            /* Topbar tight on mobile */
-            header { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
-
-            /* KPI cards on mobile */
-            .grid.grid-cols-2.lg\:grid-cols-4 > * { padding: 0.875rem !important; }
-            .grid.grid-cols-2.lg\:grid-cols-4 p.text-3xl,
-            .grid.grid-cols-2.lg\:grid-cols-4 p.text-2xl { font-size: 1.375rem !important; }
-
-            /* Footer compact */
-            footer .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
-
-            /* Action buttons top area - wrap nicely */
-            #page-header .flex.items-center { flex-wrap: wrap !important; }
-
-            /* ── Mobile Button Layout & Touch Optimization (Exclude Sidebar & Topbar Utility) ── */
-            main button, main .btn, main [type="submit"], main [type="button"],
-            #page-header button, #page-header .btn,
-            a[class*="bg-indigo-"]:not(.sidebar-modern *), a[class*="bg-emerald-"]:not(.sidebar-modern *), 
-            a[class*="bg-orange-"]:not(.sidebar-modern *), a[class*="bg-rose-"]:not(.sidebar-modern *), 
-            a[class*="bg-blue-"]:not(.sidebar-modern *) {
-                padding-top: 0.75rem !important;
-                padding-bottom: 0.75rem !important;
-                border-radius: 0.875rem !important;
-            }
-
-            /* Table action buttons (icons only): make them easier to tap */
-            td button.w-8.h-8, td a.w-8.h-8 {
-                width: 2.5rem !important;
-                height: 2.5rem !important;
-                padding: 0 !important;
-            }
-
-            /* Remove backgrounds from topbar utility buttons on mobile */
-            header button, header .btn-utility {
-                background-color: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-        }
-
-        /* ── Universal Premium Button Aesthetics (Excluded from Sidebar & Topbar Utility) ── */
-        main button, main .btn, main [type="submit"], main [type="button"],
-        #page-header button:not(header *), #page-header .btn:not(header *) {
-            font-weight: 800;
-            letter-spacing: 0.02em;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255,255,255,0.1);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff !important;
-        }
-        
-        /* Links that look like buttons with backgrounds */
-        a[class*="bg-indigo-"]:not(.sidebar-modern *):not(header *), 
-        a[class*="bg-emerald-"]:not(.sidebar-modern *):not(header *), 
-        a[class*="bg-orange-"]:not(.sidebar-modern *):not(header *), 
-        a[class*="bg-rose-"]:not(.sidebar-modern *):not(header *), 
-        a[class*="bg-blue-"]:not(.sidebar-modern *):not(header *) {
-            color: #ffffff !important;
-            font-weight: 800;
-        }
-
-        /* Ensure icons and spans inside stay white */
-        main button i, main .btn i, #page-header button i, a[class*="bg-"]:not(.sidebar-modern *) i,
-        main button span, main .btn span, #page-header button span, a[class*="bg-"]:not(.sidebar-modern *) span {
-            color: #ffffff !important;
-        }
-
-        /* Hover & Active States (Tactile Feedback) - Exclude Header & Sidebar */
-        button:hover:not(.sidebar-modern *):not(header *), 
-        .btn:hover:not(.sidebar-modern *):not(header *), 
-        a[class*="bg-"]:not(.sidebar-modern *):not(header *):hover {
-            transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-            filter: brightness(1.05);
-            color: #ffffff !important;
-        }
-
-        button:active:not(.sidebar-modern *):not(header *), 
-        .btn:active:not(.sidebar-modern *):not(header *), 
-        a:active:not(.sidebar-modern *):not(header *) {
-            transform: scale(0.96);
-            filter: brightness(0.95);
-        }
-
-        /* Premium Gradients (Applied to Action Buttons Only) */
-        .bg-indigo-600, .bg-indigo-500:not(.sidebar-modern *), .btn-primary { 
-            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%) !important; 
-        }
-        .bg-emerald-600, .bg-green-600, .btn-success { 
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
-        }
-        .bg-blue-600, .bg-blue-500:not(.sidebar-modern *), .btn-primary-blue { 
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important; 
-        }
-        .bg-orange-500, .bg-orange-600, .btn-warning { 
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; 
-        }
-        .bg-rose-500, .bg-rose-600, .bg-red-500, .bg-red-600 { 
-            background: linear-gradient(135deg, #f43f5e 0%, #b91c1c 100%) !important; 
-        }
-        .bg-slate-800, .bg-gray-800, .btn-neutral:not(.sidebar-modern *) {
-            background: linear-gradient(135deg, #475569 0%, #1e293b 100%) !important;
-            color: white !important;
-        }
-        
-        .bg-white:not([class*="text-white"]):not(.sidebar-modern *), .btn-outline:not(.sidebar-modern *) {
-            background: var(--card-bg) !important;
-            border: 1px solid var(--border-color) !important;
-            color: var(--body-text) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
-        }
-
-        /* TABLET: 768px - 1023px */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .sidebar-modern { transition: width 0.3s ease, transform 0.3s ease; }
-            
-            #page-header { flex-direction: row; align-items: center; }
-            main { padding: 1.25rem !important; }
-
-            /* 2-col forms on tablet */
-            .md\:grid-cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-
-        /* DESKTOP: 1024px+ */
-        @media (min-width: 1024px) {
-            .sidebar-modern { position: relative !important; }
-            main { padding: 1.5rem; }
-        }
-
-        /* LARGE DESKTOP: 1440px+ */
-        @media (min-width: 1440px) {
-            .marquee-text { font-size: 20px; }
-        }
-
-        /* Touch device interactions */
-        @media (hover: none) and (pointer: coarse) {
-            .group:hover .group-hover\:opacity-100 { opacity: 1; }
-            /* Larger tap targets for touch */
-            nav a, nav button { padding-top: 0.65rem !important; padding-bottom: 0.65rem !important; }
-        }
-
         input[type="text"],
-        input[type="number"],
         input[type="email"],
         input[type="password"],
         input[type="date"],
         textarea,
         select {
-            background-color: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--input-text);
+            border-color: #e5e7eb;
             border-radius: 0.5rem;
             padding: 0.6rem 0.9rem;
             transition: all .2s;
@@ -509,30 +203,8 @@
             transition: transform .05s ease, box-shadow .2s ease;
         }
 
-        /* Fix Safari/Mobile input date width bug */
-        input[type="date"] {
-            width: 100% !important;
-            min-width: 100% !important;
-            box-sizing: border-box !important;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-
         button:hover {
             transform: translateY(-1px);
-        }
-
-        /* Flatpickr Customizations */
-        .flatpickr-calendar {
-            font-family: inherit !important;
-            border: none !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
-            padding: 8px !important;
-        }
-        .flatpickr-day.selected {
-            background: #6366f1 !important;
-            border-color: #6366f1 !important;
         }
 
         /* GLOBAL CURSOR RULES */
@@ -555,95 +227,7 @@
             cursor: pointer !important;
         }
 
-        /* ══════════════════════════════════════════════════
-           GENERALIZED THEME OVERRIDES (Global)
-        ════════════════════════════════════════════════════ */
-        
-        /* Smooth transitions for theme switch */
-        body, aside, header, main, footer, .card, table, tr, td, th, input, select, textarea, button {
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Text color overrides for both themes */
-        .text-gray-400, .text-slate-400 { color: var(--subtle-text) !important; }
-        .text-gray-500, .text-slate-500 { color: var(--muted-text) !important; }
-        .text-gray-600, .text-slate-600 { color: var(--muted-text) !important; }
-        .text-gray-700, .text-slate-700 { color: var(--body-text) !important; }
-        .text-gray-800, .text-slate-800, .text-gray-900, .text-slate-900 { color: var(--body-text) !important; }
-
-        /* Target all white backgrounds in dark mode */
-        .theme-dark main .bg-white,
-        .theme-dark .bg-white,
-        .theme-dark .dash-card {
-            background-color: var(--card-bg) !important;
-            border-color: var(--card-border) !important;
-            color: var(--body-text) !important;
-        }
-
-        /* Specific text color adjustments for dark mode if defaults aren't enough */
-        .theme-dark .text-gray-500, .theme-dark .text-gray-400 { 
-            color: var(--muted-text) !important; 
-        }
-
-        /* Border overrides */
-        .theme-dark .border-gray-50, .theme-dark .border-gray-100, .theme-dark .border-gray-200, .theme-dark .border-gray-300,
-        .theme-dark .border-slate-50, .theme-dark .border-slate-100, .theme-dark .border-slate-200 {
-            border-color: var(--border-color) !important;
-        }
-
-        /* Form elements specificity for dark mode */
-        .theme-dark input, .theme-dark select, .theme-dark textarea {
-            background-color: var(--input-bg) !important;
-            border-color: var(--input-border) !important;
-            color: var(--input-text) !important;
-        }
-        .theme-dark input::placeholder, .theme-dark textarea::placeholder {
-            color: rgba(255, 255, 255, 0.3) !important;
-        }
-
-        /* Subtle backgrounds used for headers or alternates */
-        .theme-dark .bg-gray-50, .theme-dark .bg-gray-100, .theme-dark .bg-gray-200,
-        .theme-dark .bg-slate-50, .theme-dark .bg-slate-100, .theme-dark .bg-slate-200, .theme-dark .bg-slate-50\/50 {
-            background-color: rgba(255, 255, 255, 0.03) !important;
-        }
-
-        /* Special backgrounds (Green/Red success/danger) in dark mode */
-        .theme-dark .bg-green-50  { background-color: rgba(34, 197, 94, 0.1) !important; color: #4ade80 !important; }
-        .theme-dark .bg-red-50    { background-color: rgba(239, 68, 68, 0.1) !important; color: #f87171 !important; }
-        .theme-dark .bg-blue-50   { background-color: rgba(59, 130, 246, 0.1) !important; color: #60a5fa !important; }
-        .theme-dark .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.1) !important; color: #818cf8 !important; }
-        .theme-dark .text-green-600, .theme-dark .text-green-700 { color: #4ade80 !important; }
-        .theme-dark .text-red-500, .theme-dark .text-red-600, .theme-dark .text-red-700 { color: #f87171 !important; }
-        .theme-dark .text-indigo-600, .theme-dark .text-indigo-700 { color: #818cf8 !important; }
-
-        /* Badge and Icon styles */
-        .theme-dark .bg-indigo-100 { background-color: rgba(99, 102, 241, 0.2) !important; color: #818cf8 !important; }
-        .theme-dark .bg-red-100    { background-color: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; }
-        .theme-dark .bg-green-100  { background-color: rgba(34, 197, 94, 0.2) !important; color: #4ade80 !important; }
-
-        /* Flatpickr dark mode support */
-        .theme-dark .flatpickr-calendar {
-            background: #1e293b !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
-            color: #f8fafc !important;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-        }
-        .theme-dark .flatpickr-day { color: #94a3b8 !important; }
-        .theme-dark .flatpickr-day:hover { background: #334155 !important; }
-        .theme-dark .flatpickr-day.selected { background: var(--accent) !important; color: #fff !important; }
-        .theme-dark .flatpickr-month, .theme-dark .flatpickr-weekday { color: #f8fafc !important; fill: #f8fafc !important; }
-        .theme-dark .flatpickr-current-month .flatpickr-monthDropdown-months { background: #1e293b !important; }
-
-        /* Smooth scrollbar global */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
-        .theme-dark ::-webkit-scrollbar-thumb { background: #1e293b; }
-        ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
-        .theme-dark ::-webkit-scrollbar-thumb:hover { background: #334155; }
-
         .submenu-stagger a {
-...
             opacity: 0;
             transform: translateY(4px);
             transition: opacity .18s ease, transform .18s ease;
@@ -944,59 +528,6 @@
         .no-anim .overflow-y-auto {
             scroll-behavior: auto;
         }
-        /* ── Global Dark Theme Overrides for Tailwind Classes ── */
-        .theme-dark body {
-            background-color: var(--body-bg);
-            color: var(--body-text);
-        }
-
-        .theme-dark .bg-white,
-        .theme-dark .bg-slate-50,
-        .theme-dark .bg-gray-50 {
-            background-color: var(--card-bg) !important;
-        }
-
-        .theme-dark .bg-orange-50 {
-            background-color: rgba(251, 146, 60, 0.1) !important;
-        }
-
-        .theme-dark .text-slate-800,
-        .theme-dark .text-gray-800,
-        .theme-dark .text-slate-700,
-        .theme-dark .text-gray-700 {
-            color: var(--body-text) !important;
-        }
-
-        .theme-dark .text-slate-600,
-        .theme-dark .text-gray-600,
-        .theme-dark .text-slate-500,
-        .theme-dark .text-gray-500 {
-            color: #94a3b8 !important;
-        }
-
-        .theme-dark .border-slate-200,
-        .theme-dark .border-gray-200,
-        .theme-dark .border-slate-100,
-        .theme-dark .border-gray-100,
-        .theme-dark .border-indigo-100 {
-            border-color: var(--card-border) !important;
-        }
-
-        .theme-dark .divide-slate-100 > *,
-        .theme-dark .divide-gray-100 > *,
-        .theme-dark .divide-slate-200 > * {
-            border-color: var(--card-border) !important;
-        }
-
-        .theme-dark footer {
-            border-color: var(--card-border) !important;
-        }
-
-        .theme-dark .bg-indigo-50,
-        .theme-dark .bg-slate-100,
-        .theme-dark .bg-gray-100 {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-        }
     </style>
     <style>
         html {
@@ -1059,15 +590,8 @@
     </script>
 </head>
 
-<body class="font-sans antialiased theme-light" 
-    x-data="{ 
-        sidebarOpen: window.innerWidth >= 1024, 
-        theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-        isMobile: window.innerWidth < 1024
-    }" 
-    x-effect="$el.classList.toggle('theme-dark', theme === 'dark'); $el.classList.toggle('theme-light', theme === 'light'); localStorage.setItem('theme', theme);"
-    @resize.window="sidebarOpen = window.innerWidth >= 1024; isMobile = window.innerWidth < 1024;">
-    <div class="flex h-screen h-screen-dynamic overflow-hidden">
+<body class="font-sans antialiased theme-light" x-data="{ sidebarOpen: window.innerWidth >= 1024, theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }" @resize.window="sidebarOpen = window.innerWidth >= 1024;">
+    <div class="flex h-screen overflow-hidden">
 
         <!-- Mobile Sidebar Backdrop -->
         <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false" x-cloak></div>
@@ -1075,20 +599,14 @@
         <!-- Sidebar -->
         <aside
             class="sidebar-modern flex-shrink-0 flex flex-col transition-all duration-300 shadow-xl z-30 overflow-x-hidden absolute lg:relative inset-y-0 left-0 h-full"
-            :class="[
-                sidebarOpen ? 'w-64 translate-x-0' : (isMobile ? 'w-0 -translate-x-full overflow-hidden' : 'w-20 translate-x-0'),
-                (theme === 'dark' ? 'theme-dark' : 'theme-light')
-            ]">
+            :class="[sidebarOpen ? 'w-64 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0', (theme === 'dark' ? 'theme-dark' : 'theme-light')]">
 
             <div class="h-16 flex items-center justify-center border-b border-white/20 relative">
                 <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 group cursor-pointer"
                     style="color: var(--sidebar-text)">
                     <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo SI-LARANG"
                         class="h-8 w-8 rounded-md ring-2 ring-white/40" onerror="this.style.display='none'">
-                    <span class="text-xl font-bold tracking-wider" x-show="sidebarOpen" x-cloak
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 -translate-x-4"
-                        x-transition:enter-end="opacity-100 translate-x-0">SI-LARANG</span>
+                    <span class="text-xl font-bold tracking-wider" x-show="sidebarOpen" x-cloak>SI-LARANG</span>
                 </a>
             </div>
 
@@ -1096,7 +614,6 @@
 
                 <a href="{{ route('dashboard') }}"
                     @click="(() => {
-                        if (isMobile) setTimeout(() => { sidebarOpen = false }, 150);
                         const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                         for (let k in s) s[k] = false;
                         localStorage.setItem('sidebarOpenGroups', JSON.stringify(s));
@@ -1107,66 +624,45 @@
 
                     <span class="flex items-center gap-2">
                         <i class="fas fa-tachometer-alt"></i>
-                        <span x-show="sidebarOpen" x-cloak
-                            x-transition:enter="transition ease-out duration-300"
-                            x-transition:enter-start="opacity-0 -translate-x-4"
-                            x-transition:enter-end="opacity-100 translate-x-0">Dashboard</span>
+                        <span x-show="sidebarOpen" x-cloak>Dashboard</span>
                     </span>
                 </a>
 
                 <div class="w-full space-y-2">
-                    @if(auth()->user()->hasPermission('master_data'))
                     <div x-data="{ key: 'master', open: false, popover: false }" class="relative"
                         @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-                            open = s[key] ?? ({{ request()->routeIs('categories.*') || request()->routeIs('products.*') || request()->routeIs('suppliers.*') || request()->routeIs('import.index') ? 'true' : 'false' }}); })()">
+                            open = s[key] ?? ({{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'true' : 'false' }}); })()">
                         <button
-                            @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
-                            class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white group relative"
+                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (popover = !popover)"
+                            class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-                            <span class="flex items-center gap-2 relative">
-                                <i class="fas fa-boxes"></i>
-                                <span x-show="sidebarOpen" x-cloak
-                                    x-transition:enter="transition ease-out duration-300"
-                                    x-transition:enter-start="opacity-0 -translate-x-4"
-                                    x-transition:enter-end="opacity-100 translate-x-0">Master Data</span>
-                                
-                                @if (isset($lowStockCount) && $lowStockCount > 0)
-                                    <span x-show="!sidebarOpen" x-cloak class="absolute -top-1 -right-1 flex h-3 w-3">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                                    </span>
-                                @endif
-                                
+                            <span class="flex items-center gap-2">
+                                <i class="fas fa-database"></i>
+                                <span x-show="sidebarOpen" x-cloak>Master Data</span>
                             </span>
                             <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
-                                x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="opacity-0 scale-50"
-                                x-transition:enter-end="opacity-100 scale-100"
                                 class="w-4 h-4 transform transition-transform duration-300" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
-                            class="mt-2 rounded-lg overflow-hidden submenu-stagger"
-                            :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-                            <a href="{{ route('categories.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                        <div x-show="sidebarOpen && open" x-cloak
+                            class="mt-2 rounded-lg overflow-hidden submenu-stagger" :class="open ? 'submenu-open' : ''"
+                            style="background: var(--sidebar-hover)">
+                            <a href="{{ route('products.index') }}"
+                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('products.*') ? 'bg-indigo-500 text-white' : '' }}"
+                                style="color: var(--sidebar-text)">
+                                Barang
+                            </a>
+                            <a href="{{ route('categories.index') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('categories.*') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
-                                Kategori
+                                Jenis Belanja
                             </a>
-                            <a href="{{ route('products.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
-                                class="flex items-center justify-between pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('products.*') ? 'bg-indigo-500 text-white' : '' }}"
-                                style="color: var(--sidebar-text)">
-                                <span>Barang</span>
-                                @if (isset($lowStockCount) && $lowStockCount > 0)
-                                    <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $lowStockCount }}</span>
-                                @endif
-                            </a>
-                            <a href="{{ route('suppliers.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('suppliers.index') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('suppliers.*') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Penyedia
@@ -1176,21 +672,21 @@
                             class="absolute left-full ml-2 top-0 z-50 w-56 rounded-xl shadow-xl ring-1 ring-black/10 p-2"
                             :style="{ backgroundColor: (theme === 'dark' ? '#1B2230' : '#ffffff'), color: (
                                     theme === 'dark' ? '#E5E7EB' : '#111827') }">
-                            <a href="{{ route('categories.index') }}"
-                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Kategori</a>
                             <a href="{{ route('products.index') }}"
                                 class="block px-3 py-2 rounded hover:bg-gray-700/40">Barang</a>
+                            <a href="{{ route('categories.index') }}"
+                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Jenis Belanja</a>
+                            <a href="{{ route('suppliers.index') }}"
+                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Penyedia</a>
                         </div>
                     </div>
-                    @endif
 
-                    @if(auth()->user()->hasPermission('transaksi') || auth()->user()->hasPermission('laporan_belanja'))
                     <div x-data="{ key: 'transaksi', open: false, popover: false }" class="relative"
                         @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                             open = s[key] ?? ({{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.list') || request()->routeIs('reports.nota.list') || request()->routeIs('reports.belanja.modal.preview_all') ? 'true' : 'false' }}); })()">
                         <button
-                            @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
+                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (popover = !popover)"
                             class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -1199,61 +695,47 @@
                                 <span x-show="sidebarOpen" x-cloak>Transaksi</span>
                             </span>
                             <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
-                                x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="opacity-0 scale-50"
-                                x-transition:enter-end="opacity-100 scale-100"
                                 class="w-4 h-4 transform transition-transform duration-300" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
+                        <div x-show="sidebarOpen && open" x-cloak
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger" :class="open ? 'submenu-open' : ''"
                             style="background: var(--sidebar-hover)">
-                            
-                            @if(auth()->user()->hasPermission('transaksi'))
-                            <a href="{{ route('stock.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('stock.index') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('stock.index') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Mutasi Masuk/Keluar
                             </a>
-                            @endif
-                            
-                            @if(auth()->user()->hasPermission('laporan_belanja'))
-                            <a href="{{ route('reports.belanja.modal.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('reports.belanja.modal.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.belanja.modal.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Belanja Modal
                             </a>
-                            @endif
                         </div>
                         <div x-show="!sidebarOpen && popover" x-cloak @click.away="popover=false"
                             class="absolute left-full ml-2 top-0 z-50 w-56 rounded-xl shadow-xl ring-1 ring-black/10 p-2"
                             :style="{ backgroundColor: (theme === 'dark' ? '#1B2230' : '#ffffff'), color: (
                                     theme === 'dark' ? '#E5E7EB' : '#111827') }">
-                            
-                            @if(auth()->user()->hasPermission('transaksi'))
                             <a href="{{ route('stock.index') }}"
                                 class="block px-3 py-2 rounded hover:bg-gray-700/40">Mutasi Masuk/Keluar</a>
-                            @endif
-                            
-                            @if(auth()->user()->hasPermission('laporan_belanja'))
-                            <a href="{{ route('reports.belanja.modal.list') }}"
+                            <a href="{{ route('reports.belanja.modal.preview_all') }}"
                                 class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Belanja Modal</a>
-                            @endif
-                            
+                            <a href="{{ route('reports.nota.list') }}"
+                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Surat Pesanan</a>
+                            <a href="{{ route('reports.belanja.modal.list') }}"
+                                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Belanja</a>
                         </div>
                     </div>
-                    @endif
 
-                    @if(auth()->user()->hasPermission('laporan_persediaan') || auth()->user()->hasPermission('stock_opname') || auth()->user()->hasPermission('pinjam_pakai'))
                     <div x-data="{ key: 'laporan', open: false }"
                         @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
                             open = s[key] ?? ({{ request()->routeIs('reports.index') || request()->routeIs('reports.kartu.tahunan') ? 'true' : 'false' }}); })()">
                         <button
-                            @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
+                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.index') }}')"
                             class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -1268,49 +750,38 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
+                        <div x-show="sidebarOpen && open" x-cloak
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-                            
-                            @if(auth()->user()->hasPermission('laporan_persediaan'))
-                            <a href="{{ route('reports.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('reports.index') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.index') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Laporan Persediaan
                             </a>
-                            <a href="{{ route('reports.kartu.tahunan') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('reports.kartu.tahunan') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kartu.tahunan') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Kartu Persediaan Tahunan
                             </a>
-                            @endif
-                            
-                            @if(auth()->user()->hasPermission('stock_opname'))
-                            <a href="{{ route('reports.opname.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                                                        <a href="{{ route('reports.opname.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.opname.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Stock Opname
                             </a>
-                            @endif
-                            
-                            @if(auth()->user()->hasPermission('pinjam_pakai'))
-                            <a href="{{ route('reports.pinjam.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('reports.pinjam.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pinjam.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Pinjam Pakai
                             </a>
-                            @endif
                         </div>
                     </div>
-                    @endif
 
-                    @if(auth()->user()->hasPermission('surat_pesanan') || auth()->user()->hasPermission('pemeriksaan') || auth()->user()->hasPermission('penerimaan') || auth()->user()->hasPermission('berkas_lainnya'))
                     <div x-data="{ key: 'kwitansi', open: false }"
                         @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                         x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-                            open = s[key] ?? ({{ request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.nota.list') || request()->routeIs('reports.pemeriksaan.list') || request()->routeIs('reports.penerimaan.list') ? 'true' : 'false' }}); })()">
+                            open = s[key] ?? ({{ request()->routeIs('reports.kwitansi.*') ? 'true' : 'false' }}); })()">
                         <button
-                            @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
+                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.kwitansi.list') }}')"
                             class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                             style="color: var(--sidebar-text)"
                             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -1325,53 +796,39 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="sidebarOpen && open" x-cloak x-collapse.duration.300ms
+                        <div x-show="sidebarOpen && open" x-cloak
                             class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                             :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-                            
-                            @if(auth()->user()->hasPermission('surat_pesanan'))
-                            <a href="{{ route('reports.nota.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('reports.nota.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.nota.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Surat Pesanan
                             </a>
-                            @endif
-                            
-                            @if(auth()->user()->hasPermission('pemeriksaan'))
-                            <a href="{{ route('reports.pemeriksaan.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('reports.pemeriksaan.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pemeriksaan.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Pemeriksaan
                             </a>
-                            @endif
-                            
-                            @if(auth()->user()->hasPermission('penerimaan'))
-                            <a href="{{ route('reports.penerimaan.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('reports.penerimaan.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.penerimaan.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Penerimaan
                             </a>
-                            @endif
-                            
-                            @if(auth()->user()->hasPermission('berkas_lainnya'))
-                            <a href="{{ route('reports.kwitansi.list') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                            <a href="{{ route('reports.kwitansi.list') }}"
                                 class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kwitansi.list') ? 'bg-indigo-500 text-white' : '' }}"
                                 style="color: var(--sidebar-text)">
                                 Daftar Kwitansi
                             </a>
-                            @endif
                         </div>
                     </div>
-                    @endif
 
                     
-                    @if(auth()->user()->isAdmin() || auth()->user()->hasPermission('pengaturan_opd'))
                         <div x-data="{ key: 'settings', open: false }"
                             @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                             x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-                                open = s[key] ?? ({{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') || request()->routeIs('settings.backup.*') ? 'true' : 'false' }}); })()">
+                                open = s[key] ?? ({{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') ? 'true' : 'false' }}); })()">
                             <button
-                                @click="if (!sidebarOpen) { sidebarOpen = true; open = true; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = true; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); $dispatch('sidebar-group-opened', { key: key }); return; } open = !open; open && $dispatch('sidebar-group-opened', { key: key }); (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()"
+                                @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('settings.opd.index') }}')"
                                 class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
                                 style="color: var(--sidebar-text)"
                                 :class="sidebarOpen ? 'justify-between' : 'justify-center'">
@@ -1387,31 +844,26 @@
                                 </svg>
                             </button>
                             <div x-show="sidebarOpen && open" x-cloak
-                                x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="opacity-0 -translate-y-4"
-                                x-transition:enter-end="opacity-100 translate-y-0"
-                                x-transition:leave="transition ease-in duration-200"
-                                x-transition:leave-start="opacity-100 translate-y-0"
-                                x-transition:leave-end="opacity-0 -translate-y-4"
                                 class="mt-2 rounded-lg overflow-hidden submenu-stagger"
                                 :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-                                
-                                @if(auth()->user()->hasPermission('pengaturan_opd'))
-                                <a href="{{ route('settings.opd.edit') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
-                                    class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') ? 'bg-indigo-500 text-white' : '' }}"
+                                <a href="{{ route('settings.opd.index') }}"
+                                    class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.opd.*') ? 'bg-indigo-500 text-white' : '' }}"
                                     style="color: var(--sidebar-text)">
-                                    Profil & Penandatangan
+                                    OPD
                                 </a>
-                                @endif
+                                <a href="{{ route('settings.nota.master.list') }}"
+                                    class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.nota.master.*') ? 'bg-indigo-500 text-white' : '' }}"
+                                    style="color: var(--sidebar-text)">
+                                    Penandatangan
+                                </a>
 
                                 @if (Auth::check() && Auth::user()->isAdmin())
-
-                                    <a href="{{ route('users.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                                    <a href="{{ route('users.index') }}"
                                         class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('users.*') ? 'bg-indigo-500 text-white' : '' }}"
                                         style="color: var(--sidebar-text)">
                                         Pengguna
                                     </a>
-                                    <a href="{{ route('activity_log.index') }}" @click="if (isMobile) setTimeout(() => { sidebarOpen = false }, 150)"
+                                    <a href="{{ route('activity_log.index') }}"
                                         class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('activity_log.index') ? 'bg-indigo-500 text-white' : '' }}"
                                         style="color: var(--sidebar-text)">
                                         Activity Log
@@ -1419,81 +871,43 @@
                                 @endif
                             </div>
                         </div>
-                    @endif
-                                   </div>
+                    </div>
+
             </nav>
 
-            {{-- Sidebar Footer - Fixed at bottom --}}
-            <div class="mt-auto border-t transition-all duration-300 sidebar-footer-safe" 
-                :class="[
-                    sidebarOpen ? 'px-4 py-4' : 'px-0 py-4',
-                    theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-slate-200 bg-slate-100/50'
-                ]">
-                
-                <div x-show="sidebarOpen" x-cloak x-transition:enter="transition ease-out duration-300 delay-100" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                    <p class="text-[9px] font-black uppercase tracking-[0.2em] mb-3 opacity-50 text-center" :style="{ color: 'var(--sidebar-text)' }">Developer</p>
-                </div>
-
-                <div class="flex items-center justify-center transition-all duration-300" :class="sidebarOpen ? 'gap-3' : 'flex-col gap-4'">
-                    {{-- WhatsApp --}}
-                    <a href="https://wa.me/6285824268216" target="_blank"
-                        x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#25D366'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(37,211,102,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
-                        x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
-                        class="flex items-center justify-center transition-all duration-300 group"
-                        :class="[
-                            sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
-                            sidebarOpen ? (theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50') : 'bg-transparent border-transparent'
-                        ]" title="WhatsApp">
-                        <i class="fab fa-whatsapp transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
-                    </a>
-
-                    {{-- Email --}}
-                    <a href="mailto:supandialentadu14@gmail.com" target="_blank"
-                        x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#EA4335'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(234,67,53,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
-                        x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
-                        class="flex items-center justify-center transition-all duration-300 group"
-                        :class="[
-                            sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
-                            sidebarOpen ? (theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50') : 'bg-transparent border-transparent'
-                        ]" title="Email Developer">
-                        <i class="far fa-envelope transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
-                    </a>
-
-                    {{-- Instagram --}}
-                    <a href="https://www.instagram.com/emonn_65?igsh=MWM4c2JzdjNvZG4xMQ%3D%3D&utm_source=qr" target="_blank"
-                        x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#E1306C'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(225,48,108,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
-                        x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
-                        class="flex items-center justify-center transition-all duration-300 group"
-                        :class="[
-                            sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
-                            sidebarOpen ? (theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50') : 'bg-transparent border-transparent'
-                        ]" title="Instagram">
-                        <i class="fab fa-instagram transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
-                    </a>
-
-                    {{-- Facebook --}}
-                    <a href="https://www.facebook.com/share/18J61xd2XQ/?mibextid=wwXIfr" target="_blank"
-                        x-on:mouseenter="$el.style.transform='translateY(-4px)'; $el.querySelector('i').style.color='#1877F2'; $el.querySelector('i').style.filter='drop-shadow(0 0 6px rgba(24,119,242,0.8))'; $el.querySelector('i').style.transform='scale(1.15)'"
-                        x-on:mouseleave="$el.style.transform=''; $el.querySelector('i').style.color=''; $el.querySelector('i').style.filter=''; $el.querySelector('i').style.transform=''"
-                        class="flex items-center justify-center transition-all duration-300 group"
-                        :class="[
-                            sidebarOpen ? 'w-10 h-10 rounded-xl border transition-colors' : 'w-6 h-6',
-                            sidebarOpen ? (theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-200 hover:bg-slate-50') : 'bg-transparent border-transparent'
-                        ]" title="Facebook">
-                        <i class="fab fa-facebook-f transition-all duration-300" :style="{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }" :class="sidebarOpen ? 'text-lg' : 'text-xs'"></i>
-                    </a>
+            <div class="p-4 text-center" style="background: var(--sidebar-hover)">
+                <button @click="sidebarOpen = !sidebarOpen"
+                    class="w-8 h-8 rounded-full flex items-center justify-center transition focus:outline-none cursor-pointer"
+                    :style="{ backgroundColor: (theme === 'dark' ? '#1F2937' : '#E5E7EB'), color: (theme === 'dark' ?
+                            '#E5E7EB' : '#111827') }">
+                    <i class="fas" :class="sidebarOpen ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
+                </button>
+                <div class="mt-3 flex items-center justify-center gap-2" x-show="sidebarOpen" x-cloak>
+                    <button @click="theme = 'light'; localStorage.setItem('theme','light')"
+                        class="px-3 py-1 rounded-full text-xs font-semibold cursor-pointer"
+                        :style="{ backgroundColor: theme === 'light' ? 'var(--sidebar-active)' : 'transparent',
+                            color: 'var(--sidebar-text)', border: '1px solid ' + (theme === 'light' ?
+                                'transparent' : 'var(--sidebar-muted)') }">
+                        <i class="fas fa-sun"></i> Light
+                    </button>
+                    <button @click="theme = 'dark'; localStorage.setItem('theme','dark')"
+                        class="px-3 py-1 rounded-full text-xs font-semibold cursor-pointer"
+                        :style="{ backgroundColor: theme === 'dark' ? 'var(--sidebar-active)' : 'transparent',
+                            color: 'var(--sidebar-text)', border: '1px solid ' + (theme === 'dark' ?
+                                'transparent' : 'var(--sidebar-muted)') }">
+                        <i class="fas fa-moon"></i> Dark
+                    </button>
                 </div>
             </div>
-
         </aside>
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden" :style="{ backgroundColor: 'var(--body-bg)' }">
             <!-- Topbar -->
-            <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2 transition-colors duration-300"
-                :style="{ backgroundColor: 'var(--topbar-bg)', color: 'var(--body-text)', borderBottom: '1px solid var(--border-color)' }">
-                <button @click="sidebarOpen = !sidebarOpen" class="focus:outline-none p-2 rounded-xl transition hover:bg-opacity-80"
-                    :class="theme === 'dark' ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-500 md:bg-gray-100 bg-transparent hover:bg-gray-200'">
+            <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2"
+                :style="{ backgroundColor: '#ffffff', color: 'var(--body-text)' }">
+                <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden focus:outline-none"
+                    :style="{ color: '#374151' }">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
 
@@ -1504,7 +918,8 @@
                         <div class="marquee-text">
                             <span class="inline-flex items-center">
                                 <i class="fas fa-bullhorn mr-2 text-indigo-600 group-hover:text-indigo-700"></i>
-                                Sistem Informasi Pengelolaan Persediaan Barang (SI-LARANG) • {{ \App\Models\OpdSetting::where('user_id', Auth::id())->value('nama_opd') ?? 'Dinas Komunikasi dan Informatika' }} • Bolaang Mongondow Selatan
+                                Sistem Informasi Pengelolaan Persediaan Barang (SI-LARANG) • Dinas Komunikasi dan
+                                Informatika • Bolaang Mongondow Selatan
                             </span>
                         </div>
                     </div>
@@ -1512,98 +927,51 @@
 
 
                 <div class="flex items-center space-x-4 flex-shrink-0">
-                    @php
-                        $unreadCount = Auth::user()->unreadNotifications->count();
-                        $lowStockCount = isset($lowStockProducts) ? $lowStockProducts->count() : 0;
-                        $totalAlerts = $unreadCount + $lowStockCount;
-                    @endphp
-
                     <div class="relative" x-data="{ notifyOpen: false }">
                         <button @click="notifyOpen = !notifyOpen"
                             class="text-gray-400 hover:text-blue-600 transition relative focus:outline-none cursor-pointer">
                             <i class="fas fa-bell text-xl"></i>
-                            @if ($totalAlerts > 0)
+                            @if (Auth::user()->unreadNotifications->count() > 0)
                                 <span
                                     class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white bg-red-500 transform translate-x-1/2 -translate-y-1/2 animate-pulse"></span>
                             @endif
                         </button>
 
                         <div x-show="notifyOpen" x-cloak @click.away="notifyOpen = false"
-                            class="fixed md:absolute left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:right-auto md:inset-x-auto mt-2 top-[4.5rem] md:top-full w-auto md:w-80 sm:max-w-sm rounded-xl shadow-2xl z-[9999] ring-2 overflow-hidden transition-all duration-300 transform md:-translate-x-1/2"
-                            :class="theme === 'dark' ? 'ring-white/10' : 'ring-black/5'"
-                            :style="{ backgroundColor: 'var(--card-bg)' }"
-                            x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 scale-95"
-                            x-transition:enter-end="opacity-100 scale-100">
+                            class="absolute right-[-1rem] md:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100">
 
-                            <div class="px-4 py-3 border-b flex justify-between items-center transition-colors"
-                                :style="{ borderColor: 'var(--border-color)', backgroundColor: 'var(--hover-bg)' }">
-                                <span class="text-xs font-bold uppercase tracking-wider" :style="{ color: 'var(--muted-text)' }">Notifikasi Sistem</span>
-                                @if($totalAlerts > 0)
-                                <span class="bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold">{{ $totalAlerts }}</span>
-                                @endif
+                            <div
+                                class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Notifikasi Sistem</span>
+                                <span
+                                    class="bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold">{{ Auth::user()->unreadNotifications->count() }}</span>
                             </div>
 
-                            <div class="max-h-[70vh] md:max-h-80 overflow-y-auto custom-scrollbar">
-                                {{-- Low Stock Alerts (Real-time) --}}
-                                @if(isset($lowStockProducts) && $lowStockProducts->count() > 0)
-                                    <div class="px-4 py-2 border-b transition-colors"
-                                        :class="theme === 'dark' ? 'bg-rose-500/10 border-rose-500/20' : 'bg-rose-50/50 border-rose-100'">
-                                        <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Peringatan Stok</p>
-                                    </div>
-                                    @foreach($lowStockProducts as $product)
-                                        <div class="block px-4 py-3 transition-colors border-b last:border-0 relative"
-                                            :class="theme === 'dark' ? 'hover:bg-rose-500/5 border-white/5' : 'hover:bg-rose-50/30 border-gray-50'">
-                                            <div class="flex items-center gap-3">
-                                                <div class="flex-shrink-0 bg-rose-100 rounded-full h-8 w-8 flex items-center justify-center">
-                                                    <i class="fas fa-exclamation-circle text-rose-600 text-xs"></i>
-                                                </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <div class="flex justify-between items-baseline mb-0.5">
-                                                        <p class="text-[11px] font-bold truncate" :class="theme === 'dark' ? 'text-slate-200' : 'text-gray-800'">
-                                                            {{ $product->name }}
-                                                        </p>
-                                                        <span class="text-[9px] font-bold text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded flex-shrink-0">STOK RENDAH</span>
-                                                    </div>
-                                                    <p class="text-[10px] leading-tight" :class="theme === 'dark' ? 'text-slate-400' : 'text-gray-500'">
-                                                        Sisa stok: <strong :class="theme === 'dark' ? 'text-rose-400' : 'text-gray-700'">{{ $product->stock }}</strong> {{ $product->unit }}. Segera pengadaan.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @endif
-
-                                {{-- Database Notifications --}}
-                                @if($unreadCount > 0)
-                                    <div class="px-4 py-2 border-b transition-colors"
-                                        :class="theme === 'dark' ? 'bg-slate-800/50 border-white/5' : 'bg-gray-50 border-gray-100'">
-                                        <p class="text-[10px] font-bold uppercase tracking-widest" :class="theme === 'dark' ? 'text-slate-500' : 'text-gray-400'">Riwayat Notifikasi</p>
-                                    </div>
-                                @endif
-
+                            <div class="max-h-80 overflow-y-auto custom-scrollbar">
                                 @forelse (Auth::user()->unreadNotifications as $notification)
-                                    <div class="block px-4 py-3 transition group border-b last:border-0 relative"
-                                        :class="theme === 'dark' ? 'hover:bg-white/5 border-white/5' : 'hover:bg-gray-50 border-gray-50'">
+                                    <div class="block px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50 last:border-0 relative group">
                                         <div class="flex items-center gap-3">
-                                            <div class="flex-shrink-0 bg-indigo-100 rounded-full h-8 w-8 flex items-center justify-center">
-                                                <i class="fas fa-bell text-indigo-600 text-xs"></i>
+                                            <div class="flex-shrink-0 bg-orange-100 rounded-full h-8 w-8 flex items-center justify-center">
+                                                <i class="fas fa-exclamation-triangle text-orange-600 text-xs"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex justify-between items-baseline mb-0.5">
-                                                    <p class="text-[11px] font-bold truncate" :class="theme === 'dark' ? 'text-slate-200' : 'text-gray-800'">
+                                                    <p class="text-[11px] font-bold text-gray-800 truncate">
                                                         {{ $notification->data['product_name'] ?? 'Peringatan' }}
                                                     </p>
-                                                    <p class="text-[9px] whitespace-nowrap ml-2" :class="theme === 'dark' ? 'text-slate-500' : 'text-gray-400'">
+                                                    <p class="text-[9px] text-gray-400 whitespace-nowrap ml-2">
                                                         {{ $notification->created_at->diffForHumans() }}
                                                     </p>
                                                 </div>
-                                                <p class="text-[10px] line-clamp-2 leading-tight" :class="theme === 'dark' ? 'text-slate-400' : 'text-gray-500'">
+                                                <p class="text-[10px] text-gray-500 line-clamp-2 leading-tight">
                                                     {{ $notification->data['message'] }}
                                                 </p>
                                             </div>
                                         </div>
-                                        <form action="{{ route('notifications.mark-as-read', $notification->id) }}" method="POST" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition no-soft">
+                                        <form action="{{ route('notifications.mark-as-read', $notification->id) }}" method="POST" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition">
                                             @csrf
                                             <button type="submit" class="text-gray-300 hover:text-indigo-500 p-1" title="Tandai sudah dibaca">
                                                 <i class="fas fa-check-circle text-[10px]"></i>
@@ -1611,20 +979,18 @@
                                         </form>
                                     </div>
                                 @empty
-                                    @if(!isset($lowStockProducts) || $lowStockProducts->count() == 0)
-                                        <div class="py-12 text-center text-gray-400">
-                                            <i class="fas fa-bell-slash text-3xl mb-3 block opacity-20"></i>
-                                            <p class="text-xs font-medium">Tidak ada notifikasi baru</p>
-                                        </div>
-                                    @endif
+                                    <div class="py-12 text-center text-gray-400">
+                                        <i class="fas fa-bell-slash text-3xl mb-3 block opacity-20"></i>
+                                        <p class="text-xs font-medium">Tidak ada notifikasi baru</p>
+                                    </div>
                                 @endforelse
                             </div>
                             
                             @if(Auth::user()->unreadNotifications->count() > 0)
                             <div class="p-2 bg-gray-50 border-t border-gray-100 text-center">
-                                <form action="{{ route('notifications.mark-all-read') }}" method="POST" class="no-soft">
+                                <form action="{{ route('notifications.mark-all-read') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="px-7 py-2.5 bg-emerald-600 rounded-lg text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition flex items-center gap-2">
+                                    <button type="submit" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-tighter">
                                         Tandai Semua Sudah Dibaca
                                     </button>
                                 </form>
@@ -1633,15 +999,7 @@
                         </div>
                     </div>
 
-                    <!-- Theme Toggle Button -->
-                    <button @click="theme = (theme === 'dark' ? 'light' : 'dark')"
-                        class="relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 focus:outline-none"
-                        :class="theme === 'dark' ? 'bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20' : 'bg-transparent md:bg-gray-100 text-gray-500 hover:bg-gray-200'"
-                        :title="theme === 'dark' ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'">
-                        <i class="fas text-lg transition-all duration-300" :class="theme === 'dark' ? 'fa-sun' : 'fa-moon'"></i>
-                    </button>
-
-                    <div class="h-6 w-px mx-2" :style="{ backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.15)' : '#d1d5db' }"></div>
+                    <div class="h-6 w-px bg-gray-300 mx-2"></div>
 
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open"
@@ -1650,16 +1008,15 @@
                                 src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}"
                                 alt="User">
                             <div class="hidden md:block text-left">
-                                <p class="text-sm font-bold leading-tight" :style="{ color: theme === 'dark' ? '#f1f5f9' : '#111827' }">
+                                <p class="text-sm font-bold leading-tight" style="color:#111827">
                                     {{ Auth::user()->name }}</p>
-                                <p class="text-xs" :style="{ color: theme === 'dark' ? '#94a3b8' : '#6B7280' }">{{ Auth::user()->email }}</p>
+                                <p class="text-xs" style="color:#6B7280">{{ Auth::user()->email }}</p>
                             </div>
-                            <i class="fas fa-chevron-down hidden md:block" :style="{ color: theme === 'dark' ? '#64748b' : '#9CA3AF' }"></i>
+                            <i class="fas fa-chevron-down hidden md:block" style="color:#9CA3AF"></i>
                         </button>
 
                         <div x-show="open" x-cloak @click.away="open = false"
-                            class="absolute right-0 mt-2 w-64 rounded-xl shadow-xl z-50 ring-1 ring-black ring-opacity-5 overflow-hidden transition-all duration-300"
-                            :class="theme === 'dark' ? 'bg-[#1e293b] ring-white/10' : 'bg-white'"
+                            class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
                             x-transition:enter="transition ease-out duration-150"
                             x-transition:enter-start="transform opacity-0 scale-95"
                             x-transition:enter-end="transform opacity-100 scale-100">
@@ -1676,19 +1033,17 @@
                             </div>
                             <div class="py-2">
                                 <a href="{{ route('profile.edit') }}"
-                                    class="flex items-center gap-2 px-4 py-2 text-sm transition-colors"
-                                    :class="theme === 'dark' ? 'hover:bg-slate-700/50 text-slate-200' : 'hover:bg-gray-50 text-gray-700'"
-                                    :style="{ color: theme === 'dark' ? '#e2e8f0' : '#374151' }">
-                                    <i class="fas fa-user-edit text-indigo-500"></i>
+                                    class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+                                    style="color:#374151">
+                                    <i class="fas fa-user-edit text-indigo-600"></i>
                                     Edit Profil
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}" class="no-soft">
                                     @csrf
                                     <button type="submit"
-                                        class="w-full flex items-center gap-2 px-4 py-2 text-sm transition-colors"
-                                        :class="theme === 'dark' ? 'hover:bg-slate-700/50 text-slate-200' : 'hover:bg-gray-50 text-gray-700'"
-                                        :style="{ color: theme === 'dark' ? '#e2e8f0' : '#374151' }">
-                                        <i class="fas fa-sign-out-alt text-rose-500"></i>
+                                        class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+                                        style="color:#374151">
+                                        <i class="fas fa-sign-out-alt text-red-600"></i>
                                         Keluar
                                     </button>
                                 </form>
@@ -1698,23 +1053,15 @@
                 </div>
             </header>
 
-            <!-- Loading Progress Bar -->
-            <div id="nav-loader" class="fixed top-0 left-0 right-0 h-1 z-[9999] transition-all duration-300 opacity-0 pointer-events-none" style="background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #6366f1 100%); background-size: 200% 100%; animation: navLoading 2s linear infinite;"></div>
-            <style>
-                @keyframes navLoading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-                .nav-loading-active #nav-loader { opacity: 1; }
-            </style>
-
             <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 transition-colors duration-300"
-                :style="{ backgroundColor: 'var(--body-bg)', color: 'var(--body-text)' }">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6" style="color:#111827">
                 <!-- Page Header & Actions -->
-                <div id="page-header" class="mb-4 md:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div id="page-header" class="mb-6 bg-white md:bg-transparent p-6 md:p-0 rounded-[2.5rem] md:rounded-none shadow-sm md:shadow-none border border-slate-50 md:border-none flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <h2 class="text-xl md:text-2xl font-bold" :style="{ color: 'var(--body-text)' }">@yield('header')</h2>
-                        <p class="text-xs md:text-sm mt-1" :style="{ color: theme === 'dark' ? '#94a3b8' : '#6B7280' }">@yield('subheader')</p>
+                        <h2 class="text-2xl font-bold" style="color:#111827">@yield('header')</h2>
+                        <p class="text-sm mt-1" style="color:#6B7280">@yield('subheader')</p>
                     </div>
-                    <div class="flex items-center flex-wrap gap-2">
+                    <div id="page-actions" class="flex items-center gap-3 flex-wrap w-full md:w-auto">
                         @yield('actions')
                     </div>
                 </div>
@@ -1752,13 +1099,12 @@
 
                 @yield('content')
             </main>
-            <footer class="no-print border-t transition-colors duration-300 pb-safe lg:pb-0"
-                :style="{ backgroundColor: theme === 'dark' ? '#12171F' : '#ffffff', color: theme === 'dark' ? '#94a3b8' : '#6B7280', borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : '#f3f4f6' }">
+            <footer class="no-print bg-white text-gray-600 border-t ring-1 ring-gray-100">
                 <div class="px-6 py-4 flex items-center justify-between">
                     <p class="text-xs md:text-sm font-medium">
                         Copyright © 2026 Emon Alentadu. Seluruh Hak Cipta Dilindungi.
                     </p>
-                    <div class="hidden md:flex items-center gap-3 text-xs">
+                    <div class="hidden md:flex items-center gap-3 text-xs text-gray-400">
                         <span class="inline-flex items-center gap-1">
                             <i class="fas fa-shield-alt text-indigo-500"></i>
                             Keamanan Data Terjaga
@@ -1807,17 +1153,6 @@
                 const target = sidebar.querySelector(`a[href="${href}"]`);
                 if (target) target.classList.add('bg-indigo-500', 'text-white');
             };
-            const initDatepickr = (root) => {
-                if (typeof flatpickr !== 'undefined') {
-                    flatpickr(root.querySelectorAll('input[type="date"]'), {
-                        dateFormat: "Y-m-d",
-                        altInput: true,
-                        altFormat: "d M Y",
-                        locale: "id",
-                        disableMobile: "true"
-                    });
-                }
-            };
             const initScripts = (root) => {
                 const scripts = root.querySelectorAll('script');
                 scripts.forEach(s => {
@@ -1831,15 +1166,8 @@
                     root.appendChild(n);
                 });
                 if (window.Alpine && Alpine.initTree) Alpine.initTree(root);
-                initDatepickr(root);
             };
-
-            // Initialize global pickers on initial run
-            initDatepickr(document);
-
-            const loader = document.getElementById('nav-loader');
             const swapMain = async (href, push = true) => {
-                document.body.classList.add('nav-loading-active');
                 try {
                     const res = await fetch(href, {
                         headers: {
@@ -1856,15 +1184,12 @@
                     }
                     document.title = doc.title || document.title;
                     main.innerHTML = newMain.innerHTML;
-                    setActive(res.url);
+                    setActive(href);
                     initScripts(main);
-                    if (push) history.pushState({}, '', res.url);
+                    if (push) history.pushState({}, '', href);
                     main.scrollTop = 0;
-                } catch (e) {
-                    console.error('Nav error:', e);
+                } catch {
                     window.location.href = href;
-                } finally {
-                    document.body.classList.remove('nav-loading-active');
                 }
             };
             sidebar.addEventListener('click', (e) => {
@@ -1880,17 +1205,9 @@
             document.addEventListener('click', (e) => {
                 const a = e.target.closest('a[href]');
                 if (!a) return;
-                
-                // Sidebar already handled by specific listener, but we check here too for safety
+                if (a.closest('aside')) return;
                 if (!shouldSoftLink(a)) return;
                 if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-                
-                // Avoid redundant click on active link
-                if (a.getAttribute('href') === window.location.href) {
-                    e.preventDefault();
-                    return;
-                }
-
                 e.preventDefault();
                 const href = a.getAttribute('href');
                 swapMain(href, true);
@@ -1922,10 +1239,7 @@
                         options.body = fd;
                     }
 
-                    const res = await fetch(url, {
-                        ...options,
-                        cache: 'no-cache'
-                    });
+                    const res = await fetch(url, options);
                     const html = await res.text();
                     const doc = new DOMParser().parseFromString(html, 'text/html');
                     const newMain = doc.querySelector('main');
@@ -1935,9 +1249,8 @@
                     }
                     document.title = doc.title || document.title;
                     main.innerHTML = newMain.innerHTML;
-                    setActive(res.url);
                     initScripts(main);
-                    history.pushState({}, '', res.url);
+                    history.pushState({}, '', url);
                     main.scrollTop = 0;
                 } catch {
                     window.location.href = action;
@@ -1947,16 +1260,161 @@
     </script>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then((registration) => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }).catch((error) => {
-                    console.error('ServiceWorker registration failed: ', error);
-                });
-            });
-        }
+        (() => {
+            const findPreviewPaper = () => {
+                return document.querySelector('#print-area.preview-paper')
+                    || document.querySelector('#print-area .preview-paper')
+                    || document.querySelector('.preview-paper');
+            };
+
+            const fitPreviewToViewport = () => {
+                const paper = findPreviewPaper();
+                if (paper) {
+                    document.documentElement.dataset.docPreview = '1';
+                } else {
+                    delete document.documentElement.dataset.docPreview;
+                }
+                if (!paper) return;
+                if (window.matchMedia('print').matches) return;
+
+                const isMobile = window.matchMedia('(max-width: 768px)').matches;
+                const existingViewport = document.querySelector('[data-doc-fit-viewport]');
+
+                if (!isMobile) {
+                    if (existingViewport) {
+                        existingViewport.style.height = '';
+                        existingViewport.style.overflow = '';
+                    }
+                    paper.style.transform = '';
+                    paper.style.transformOrigin = '';
+                    paper.style.margin = '';
+                    return;
+                }
+
+                let viewport = existingViewport;
+                if (!viewport) {
+                    viewport = document.createElement('div');
+                    viewport.dataset.docFitViewport = '1';
+                    viewport.style.position = 'relative';
+                    viewport.style.width = '100%';
+                    viewport.style.overflow = 'hidden';
+                    viewport.style.marginTop = '12px';
+                    viewport.style.marginBottom = '12px';
+                    const parent = paper.parentElement;
+                    parent.insertBefore(viewport, paper);
+                    viewport.appendChild(paper);
+                }
+
+                const top = viewport.getBoundingClientRect().top;
+                const availableHeight = Math.max(240, window.innerHeight - top - 16);
+                viewport.style.height = `${availableHeight}px`;
+
+                paper.style.transform = 'none';
+                paper.style.transformOrigin = 'top left';
+                paper.style.margin = '0';
+
+                const naturalWidth = paper.scrollWidth;
+                const naturalHeight = paper.scrollHeight;
+                if (!naturalWidth || !naturalHeight) return;
+
+                const scale = Math.min(viewport.clientWidth / naturalWidth, viewport.clientHeight / naturalHeight);
+                const left = Math.max(0, (viewport.clientWidth - (naturalWidth * scale)) / 2);
+                paper.style.transform = `scale(${scale}) translateX(${left / scale}px)`;
+            };
+
+            document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(fitPreviewToViewport));
+            window.addEventListener('resize', () => requestAnimationFrame(fitPreviewToViewport));
+            window.addEventListener('orientationchange', () => requestAnimationFrame(fitPreviewToViewport));
+            const main = document.querySelector('main');
+            if (main && 'MutationObserver' in window) {
+                const obs = new MutationObserver(() => requestAnimationFrame(fitPreviewToViewport));
+                obs.observe(main, { childList: true, subtree: true });
+            }
+        })();
     </script>
+
+    <style>
+        #print-area, .preview-paper {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            hyphens: auto;
+        }
+        #print-area * {
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        #print-area table {
+            table-layout: fixed;
+            width: 100% !important;
+        }
+        #print-area td, #print-area th {
+            white-space: normal !important;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+        #print-area p,
+        #print-area span,
+        #print-area div,
+        #print-area li {
+            white-space: normal !important;
+        }
+        #print-area img, #print-area svg, #print-area canvas {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        @media (max-width: 768px) {
+            html[data-doc-preview="1"] #page-header {
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                background: rgba(243, 244, 246, 0.86);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border: 1px solid rgba(229, 231, 235, 0.75);
+                border-radius: 18px;
+                padding: 12px;
+                margin-bottom: 14px;
+            }
+
+            html[data-doc-preview="1"] #page-header > div:first-child h2 {
+                font-size: 18px;
+                line-height: 1.2;
+            }
+
+            html[data-doc-preview="1"] #page-header > div:first-child p {
+                font-size: 12px;
+            }
+
+            html[data-doc-preview="1"] #page-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            html[data-doc-preview="1"] #page-actions form {
+                display: contents;
+            }
+
+            html[data-doc-preview="1"] #page-actions .btn,
+            html[data-doc-preview="1"] #page-actions button.btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 14px;
+                border-radius: 16px;
+                font-weight: 800;
+                font-size: 13px;
+            }
+
+            html[data-doc-preview="1"] #page-actions .btn.ml-2,
+            html[data-doc-preview="1"] #page-actions button.ml-2,
+            html[data-doc-preview="1"] #page-actions form.ml-2 {
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+
 </body>
 
 </html>

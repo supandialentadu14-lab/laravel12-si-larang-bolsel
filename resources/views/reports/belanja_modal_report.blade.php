@@ -24,29 +24,9 @@
 
         .report-table th,
         .report-table td {
-            border: 1px solid #1e293b !important;
+            border: 1px solid black;
             padding: 6px;
-            font-size: 11px;
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            white-space: normal !important;
-            overflow: hidden;
-        }
-
-        .theme-dark .report-table th,
-        .theme-dark .report-table td {
-            border-color: #475569 !important;
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: normal;
-            max-height: 2.8em;
+            font-size: 12px;
         }
 
         .report-table th {
@@ -86,19 +66,7 @@
                 min-height: 210mm;
                 margin: 16px auto;
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-                background-color: #ffffff !important;
-                color: #1e293b !important;
-                transition: all 0.3s ease;
-            }
-
-            .theme-dark #print-area {
-                background-color: #1e293b !important;
-                color: #f1f5f9 !important;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            }
-
-            .theme-dark html, .theme-dark body {
-                background-color: #020617 !important;
+                background: #ffffff;
             }
 
             .report-table {
@@ -121,14 +89,6 @@
                 width: auto !important;
                 overflow: visible !important;
                 border: none !important;
-                background-color: #ffffff !important;
-                color: #000000 !important;
-            }
-
-            .print-area thead, .print-area tbody, .print-area th, .print-area td {
-                border-color: #000000 !important;
-                color: #000000 !important;
-                background-color: #ffffff !important;
             }
 
             .print\:hidden {
@@ -142,37 +102,22 @@
 
             body {
                 margin: 0;
-                background-color: #ffffff !important;
             }
         }
     </style>
 
-    <div class="bg-white dark:bg-slate-800 rounded-lg shadow border border-transparent dark:border-slate-700 p-6 mb-6 print:hidden">
+    <div class="bg-white rounded-lg shadow p-6 mb-6 print:hidden">
         <a href="{{ route('reports.belanja.modal.list') }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-gray-500 text-white hover:bg-gray-600 mr-2">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
         <button type="button" onclick="window.print()"
-            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-black text-white hover:bg-gray-800 mr-2">
+            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-black text-white hover:bg-black">
             <i class="fas fa-print"></i>
             Print
         </button>
-
-        @if(isset($saved_id))
-            {{-- Tombol Excel untuk laporan individual --}}
-            <a href="{{ route('reports.belanja.modal.export_excel', $saved_id) }}"
-                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white hover:bg-emerald-700 mr-2 font-bold">
-                <i class="fas fa-file-excel"></i> Export Excel
-            </a>
-        @else
-            {{-- Tombol Excel untuk preview-all (semua data) --}}
-            <a href="{{ route('reports.belanja.modal.export_excel_all') }}"
-                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white hover:bg-emerald-700 mr-2 font-bold">
-                <i class="fas fa-file-excel"></i> Export Excel
-            </a>
-        @endif
     </div>
 
-    <div id="print-area" class="print-area p-8 rounded-lg">
+    <div id="print-area" class="print-area bg-white shadow-lg border p-8 rounded-lg">
         <div class="kop">
             <h1>DAFTAR KONTRAK BELANJA MODAL</h1>
             <h2>{{ $master['opd']['nama'] ?? null ?: $opd->nama_opd ?? '' }} KABUPATEN BOLAANG MONGONDOW SELATAN</h2>
@@ -181,39 +126,38 @@
 
         <table class="report-table">
             <colgroup>
-                <col style="width:3%">  {{-- No --}}
-                <col style="width:14%"> {{-- Nama Kegiatan --}}
-                <col style="width:14%"> {{-- Pekerjaan --}}
-                <col style="width:9%">  {{-- Nilai Kontrak --}}
-                <col style="width:7%">  {{-- Mulai --}}
-                <col style="width:8%">  {{-- Akhir --}}
-                
-                <col style="width:7%">  {{-- UM --}}
-                <col style="width:6%">  {{-- T1 --}}
-                <col style="width:6%">  {{-- T2 --}}
-                <col style="width:6%">  {{-- T3 --}}
-                <col style="width:6%">  {{-- T4 --}}
-                <col style="width:8%">  {{-- Total --}}
-                <col style="width:6%">  {{-- Status --}}
+                <col style="width:3%">
+                <col style="width:14%">
+                <col style="width:16%">
+                <col style="width:10%">
+                <col style="width:8%">
+                <col style="width:10%">
+                <col style="width:8%">
+                <col style="width:8%">
+                <col style="width:8%">
+                <col style="width:8%">
+                <col style="width:8%">
+                <col style="width:10%">
+                <col style="width:8%">
             </colgroup>
             <thead>
                 <tr>
                     <th rowspan="2">No</th>
                     <th rowspan="2">Nama Kegiatan</th>
                     <th rowspan="2">Pekerjaan</th>
-                    <th rowspan="2">Nilai Kontrak<br>(Rp)</th>
-                    <th rowspan="2">Tanggal<br>Mulai</th>
-                    <th rowspan="2">Tanggal Akhir<br>Pekerjaan</th>
+                    <th rowspan="2">Nilai Kontrak (Rp)</th>
+                    <th rowspan="2">Tanggal Mulai</th>
+                    <th rowspan="2">Tanggal Akhir Pekerjaan</th>
                     <th colspan="5">SP2D Pembayaran</th>
-                    <th rowspan="2">Total Pembayaran<br>(Rp)</th>
-                    <th rowspan="2">Status<br>Pekerjaan</th>
+                    <th rowspan="2">Total Pembayaran (Rp)</th>
+                    <th rowspan="2">Status Pekerjaan</th>
                 </tr>
                 <tr>
-                    <th>Uang Muka<br>(Rp)</th>
-                    <th>Termin I<br>(Rp)</th>
-                    <th>Termin II<br>(Rp)</th>
-                    <th>Termin III<br>(Rp)</th>
-                    <th>Termin IV<br>(Rp)</th>
+                    <th>Uang Muka (Rp)</th>
+                    <th>Termin I (Rp)</th>
+                    <th>Termin II (Rp)</th>
+                    <th>Termin III (Rp)</th>
+                    <th>Termin IV (Rp)</th>
                 </tr>
             </thead>
             <tbody>
@@ -221,8 +165,8 @@
                 @foreach ($data['items'] as $row)
                     <tr>
                         <td align="center">{{ $no++ }}</td>
-                        <td><div class="line-clamp-2">{{ $row['nm'] }}</div></td>
-                        <td><div class="line-clamp-2">{{ $row['pk'] }}</div></td>
+                        <td>{{ $row['nm'] }}</td>
+                        <td>{{ $row['pk'] }}</td>
                         <td align="right">{{ number_format($row['nk'], 0, ',', '.') }}</td>
                         <td align="center">
                             {{ $row['tm'] ? \Carbon\Carbon::parse($row['tm'])->translatedFormat('d F Y') : '-' }}</td>

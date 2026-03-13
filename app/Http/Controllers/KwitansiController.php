@@ -472,8 +472,16 @@ class KwitansiController extends Controller
         $data = json_decode($disk->get($path), true);
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $saved_id = $id;
-        
-        return view('reports.kwitansi_report', compact('data', 'opd', 'saved_id'));
+        session(['kwitansi_current' => $data, 'kwitansi_current_id' => $id]);
+
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.kwitansi_report' : 'reports.kwitansi_report';
+
+        return view($view, [
+            'data' => $data,
+            'opd' => $opd,
+            'saved_id' => $id,
+        ]);
     }
 
     public function edit($id)

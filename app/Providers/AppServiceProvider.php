@@ -46,6 +46,30 @@ class AppServiceProvider extends ServiceProvider
         StockTransaction::observe(StockTransactionObserver::class);
 
         /**
+         * Global variable for mobile detection and low stock data
+         */
+        \Illuminate\Support\Facades\View::composer('*', function ($view) {
+            $userAgent = request()->header('User-Agent');
+            $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
+            
+            $data = [
+                'isMobile' => (bool) $isMobile
+            ];
+
+            // Tambahkan data stok rendah jika tabel products sudah ada
+            if (\Illuminate\Support\Facades\Schema::hasTable('products')) {
+                $lowStockProducts = \App\Models\Product::where('stock', '<=', 1)
+                    ->take(5)
+                    ->get();
+                
+                $data['lowStockProducts'] = $lowStockProducts;
+                $data['lowStockCount'] = \App\Models\Product::where('stock', '<=', 1)->count();
+            }
+
+            $view->with($data);
+        });
+
+        /**
          * ==========================================
          * 🔐 GATE: ADMIN ACCESS
          * ==========================================
@@ -60,39 +84,6 @@ class AppServiceProvider extends ServiceProvider
          */
         Gate::define('admin-access', function (User $user) {
             return $user->role === 'admin';
-        });
-
-
-        /**
-         * ==========================================
-         * 📦 VIEW COMPOSER: layouts.admin
-         * ==========================================
-         * 
-         * View Composer akan otomatis menjalankan kode ini
-         * setiap kali view 'layouts.admin' dipanggil.
-         * 
-         * Tujuannya:
-         * Mengirim data produk dengan stok rendah ke layout admin.
-         */
-        \Illuminate\Support\Facades\View::composer('layouts.admin', function ($view) {
-
-            // Cek dulu apakah tabel products sudah ada
-            // Ini mencegah error saat pertama kali migrate
-            if (\Illuminate\Support\Facades\Schema::hasTable('products')) {
-
-                // Ambil produk yang stoknya <= min_stock
-                $lowStockProducts = \App\Models\Product::whereColumn(
-                    'stock',
-                    '<=',
-                    'min_stock'
-                )
-                ->take(5) // Batasi hanya 5 produk
-                ->get();
-
-                // Kirim data ke view dengan nama variable:
-                // $lowStockProducts
-                $view->with('lowStockProducts', $lowStockProducts);
-            }
         });
     }
 }

@@ -352,6 +352,7 @@ class PenerimaanController extends Controller
                 'nomor' => $data['nomor'] ?? '',
                 'tanggal' => $data['tanggal'] ?? '',
                 'total' => $data['total'] ?? 0,
+                'tempat' => $data['tempat'] ?? '',
                 'pemeriksaan_nomor' => $realBapNomor,
                 'raw_data' => $data,
             ];
@@ -444,7 +445,14 @@ class PenerimaanController extends Controller
         }
 
         session(['penerimaan_current' => $data, 'penerimaan_current_id' => $id]);
-        return view('reports.penerimaan_report', compact('data', 'opd'));
+
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.penerimaan_report' : 'reports.penerimaan_report';
+
+        return view($view, [
+            'data' => $data,
+            'opd' => $opd,
+        ]);
     }
 
     public function delete(string $id): RedirectResponse

@@ -1,55 +1,79 @@
-@extends('layouts.admin')
-
-@section('title', 'Edit Berita Acara Pemeriksaan')
-@section('header', 'Berita Acara Pemeriksaan')
+@extends('layouts.mobile')
 
 @section('content')
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 bg-slate-800">
-                <h6 class="font-bold text-white">Form Edit Berita Acara Pemeriksaan</h6>
+    <div class="space-y-6 pb-24">
+        {{-- Page Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Pemeriksaan</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Perbarui BAP Pemeriksaan</p>
             </div>
+            <a href="{{ route('reports.pemeriksaan.list') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+                <i class="fas fa-times text-xs"></i>
+            </a>
+        </div>
 
-            <form action="{{ route('reports.pemeriksaan.report') }}" method="POST" class="p-6 space-y-6">
-                @csrf
-                <input type="hidden" name="id" value="{{ session('bap_current_id') }}">
+        <form action="{{ route('reports.pemeriksaan.report') }}" method="POST" class="space-y-6">
+            @csrf
+            <input type="hidden" name="id" value="{{ session('bap_current_id') }}">
+            
+            {{-- Hubungkan Dokumen --}}
+            <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-edit text-xs"></i>
+                    </div>
+                    <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Hubungkan Dokumen</h3>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Nomor Nota Pesanan</label>
-                        <select name="nota_nomor" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
-                            <option value="">-- pilih nomor --</option>
+                <div class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nota Pesanan Referensi</label>
+                        <select name="nota_nomor" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+                            <option value="">-- Pilih Nota Pesanan --</option>
                             @foreach ($notaDocs as $n)
                                 <option value="{{ $n['nomor'] }}" {{ ($data['nota_nomor'] ?? '') === ($n['nomor'] ?? '') ? 'selected' : '' }}>
                                     {{ $n['nomor'] }} • {{ \Carbon\Carbon::parse($n['tanggal'] ?? now())->translatedFormat('d F Y') }}
                                 </option>
                             @endforeach
                         </select>
-                        <p class="text-xs text-gray-500 mt-1">Data barang & penyedia akan diprefill dari Nota Pesanan tersebut.</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Nomor Berita Acara Pemeriksaan</label>
-                        <input type="text" name="nomor" value="{{ old('nomor', preg_replace('/\D+/', '', $data['nomor'] ?? '')) }}" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/\D/g,'')" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" placeholder="contoh: 001" required>
                     </div>
                 </div>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tempat Surat</label>
-                        <input type="text" name="tempat" value="{{ old('tempat', $data['tempat'] ?? 'Bolaang Uki') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
+            {{-- Detail Pemeriksaan --}}
+            <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <i class="fas fa-file-signature text-xs"></i>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tanggal Surat</label>
-                        <input type="date" name="tanggal" value="{{ old('tanggal', $data['tanggal'] ?? now()->toDateString()) }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition" required>
-                    </div>
+                    <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Detail Pemeriksaan</h3>
                 </div>
 
-                @include('partials.form-actions', [
-                    'backRoute' => route('reports.pemeriksaan.list'),
-                    'saveText' => 'Perbarui',
-                    'target' => '_blank',
-                ])
-            </form>
-        </div>
+                <div class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor BAP (Angka)</label>
+                        <input type="text" name="nomor" value="{{ old('nomor', preg_replace('/\D+/', '', $data['nomor'] ?? '')) }}" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/\D/g,'')" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-mono font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
+                            <input type="date" name="tanggal" value="{{ old('tanggal', $data['tanggal'] ?? now()->toDateString()) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tempat</label>
+                            <input type="text" name="tempat" value="{{ old('tempat', $data['tempat'] ?? 'Bolaang Uki') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="Contoh: Boroko" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex gap-3 px-2">
+                <a href="{{ route('reports.pemeriksaan.list') }}" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
+                <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">Perbarui BAP</button>
+            </div>
+        </form>
     </div>
 @endsection
