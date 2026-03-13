@@ -201,7 +201,7 @@
         </div>
 
         <!-- Main Content -->
-        <main id="page-content" class="flex-1 px-5 pt-4 pb-24 overflow-y-auto" @scroll="handleScroll">
+        <main id="page-content" class="flex-1 px-5 pt-4 overflow-y-auto" style="padding-bottom: calc(var(--bottom-nav-height, 96px) + var(--safe-area-bottom) + 16px); -webkit-overflow-scrolling: touch;" @scroll="handleScroll">
             @if (session('success'))
                 <div class="mb-5 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-4 shadow-sm flex items-start gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
@@ -247,11 +247,6 @@
             @endif
             @yield('content')
         </main>
-
-        <div :class="scrollingDown ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'" 
-             class="transition-all duration-500 ease-in-out transform fixed bottom-0 inset-x-0 z-[40]">
-            @include('partials.mobile_bottom_nav')
-        </div>
     </div>
 
     <!-- Low Stock Notification Sheet -->
@@ -312,6 +307,22 @@
 
     @include('partials.mobile_bottom_nav')
     @stack('scripts')
+
+    <script>
+        (() => {
+            const setBottomNavHeight = () => {
+                const nav = document.querySelector('nav.bottom-nav');
+                if (!nav) return;
+                const h = Math.ceil(nav.getBoundingClientRect().height || 0);
+                if (h > 0) document.documentElement.style.setProperty('--bottom-nav-height', `${h}px`);
+            };
+            window.addEventListener('load', setBottomNavHeight, { passive: true });
+            window.addEventListener('resize', setBottomNavHeight, { passive: true });
+            window.addEventListener('orientationchange', setBottomNavHeight, { passive: true });
+            document.addEventListener('DOMContentLoaded', setBottomNavHeight);
+            setTimeout(setBottomNavHeight, 0);
+        })();
+    </script>
 
     <script>
         (() => {
