@@ -256,7 +256,9 @@ class BelanjaModalController extends Controller
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $master = $this->loadNotaMaster();
         session(['belanja_modal_current' => $data, 'belanja_modal_current_id' => $id]);
-        return view('reports.belanja_modal_report', compact('data', 'opd', 'master'))->with('saved_id', $id);
+
+        $view = request()->isMobile() ? 'reports.mobile.belanja_modal_report' : 'reports.belanja_modal_report';
+        return view($view, compact('data', 'opd', 'master'))->with('saved_id', $id);
     }
 
     public function edit(string $id): View

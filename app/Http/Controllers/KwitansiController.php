@@ -62,13 +62,23 @@ class KwitansiController extends Controller
         foreach ($files as $file) {
             if (! str_ends_with($file, '.json')) continue;
             $data = json_decode($disk->get($file), true) ?: [];
+            
+            // Re-sync with fresh nota if possible
+            $notaData = $data['nota'] ?? [];
+            if (!empty($notaData['nomor'])) {
+                $fresh = $this->findFullNota($notaData['nomor'], $notaData['id'] ?? null);
+                if (!empty($fresh)) {
+                    $notaData = array_merge($notaData, $fresh);
+                }
+            }
+
             $items[] = [
                 'id' => basename($file, '.json'),
                 'nomor' => $data['nomor'] ?? '',
                 'tanggal' => $data['tanggal'] ?? '',
                 'total' => (int)($data['total'] ?? 0),
-                'nota' => $data['nota'] ?? [],
-                'belanja' => $data['nota']['belanja'] ?? '',
+                'nota' => $notaData,
+                'belanja' => $notaData['belanja'] ?? '',
             ];
         }
         usort($items, fn($a, $b) => ($b['tanggal'] ?? '') <=> ($a['tanggal'] ?? ''));
@@ -113,72 +123,70 @@ class KwitansiController extends Controller
         return null;
     }
 
-    protected function findNotaByNomor(?string $nomor): ?array
+    protected function normalizeNomor($nomor)
     {
-        if (!$nomor) return null;
-        $disk = Storage::disk('local');
-        $dir = 'users/'.Auth::id().'/nota-pesanan';
-        $files = $disk->exists($dir) ? $disk->files($dir) : [];
-        foreach ($files as $file) {
-            if (! str_ends_with($file, '.json')) continue;
-            $data = json_decode($disk->get($file), true) ?: [];
-            if (trim(($data['nomor'] ?? '')) === trim($nomor)) {
-                return [
-                    'id' => basename($file, '.json'),
-                    'nomor' => $data['nomor'] ?? '',
-                    'tanggal' => $data['tanggal'] ?? '',
-                ];
-            }
-        }
-        return null;
+        return preg_replace('/[^A-Za-z0-9]/', '', strtoupper((string)$nomor));
     }
 
-    protected function findFullNotaByNomor(?string $nomor): array
+    protected function findFullNota(?string $nomor, ?string $id = null): array
     {
-        if (!$nomor) return [];
         $disk = Storage::disk('local');
         $dir = 'users/'.Auth::id().'/nota-pesanan';
-        $files = $disk->exists($dir) ? $disk->files($dir) : [];
-        foreach ($files as $file) {
-            if (! str_ends_with($file, '.json')) continue;
-            $data = json_decode($disk->get($file), true) ?: [];
-            if (trim(($data['nomor'] ?? '')) === trim($nomor)) {
-                return $data;
+        if (!$disk->exists($dir)) return [];
+
+        // 1. Try by ID (file name)
+        if ($id) {
+            $path = "{$dir}/{$id}.json";
+            if ($disk->exists($path)) {
+                return json_decode($disk->get($path), true) ?: [];
             }
         }
+
+        // 2. Try by normalized nomor
+        if ($nomor) {
+            $searchNomor = $this->normalizeNomor($nomor);
+            foreach ($disk->files($dir) as $file) {
+                if (!str_ends_with($file, '.json')) continue;
+                $data = json_decode($disk->get($file), true) ?: [];
+                if ($this->normalizeNomor($data['nomor'] ?? '') === $searchNomor) {
+                    return $data;
+                }
+            }
+        }
+
+        // 3. Try matching filename with normalized nomor
+        if ($nomor) {
+            $searchNomor = $this->normalizeNomor($nomor);
+            foreach ($disk->files($dir) as $file) {
+                if ($this->normalizeNomor(basename($file, '.json')) === $searchNomor) {
+                    return json_decode($disk->get($file), true) ?: [];
+                }
+            }
+        }
+
         return [];
     }
 
-    private function generateUraian($pekerjaan, $subKegiatan, $kegiatan, $tahun)
+    protected function findNotaByNomor(?string $nomor): ?array
     {
-        $pekerjaan = trim($pekerjaan);
+        $data = $this->findFullNota($nomor);
+        if (empty($data)) return null;
         
-        // 1. Handle "Belanja" prefix
-        $res = $pekerjaan;
-        if (!empty($res) && !str_starts_with(strtolower($res), 'belanja')) {
-            $res = 'Belanja ' . $res;
-        }
+        return [
+            'id' => $data['id'] ?? basename($data['nomor'] ?? 'nota', '.json'),
+            'nomor' => $data['nomor'] ?? '',
+            'tanggal' => $data['tanggal'] ?? '',
+        ];
+    }
 
-        // 2. Handle "Pada Keg." connector
-        $hasKeg = str_contains(strtolower($res), 'pada keg') || str_contains(strtolower($res), 'pada kegiatan');
-        if (!$hasKeg && !empty($subKegiatan)) {
-            $res .= ' Pada Keg. ' . $subKegiatan;
-        }
+    private function generateUraian($belanja, $subKegiatan, $kegiatan, $tahun)
+    {
+        $belanja = trim((string)$belanja);
+        $subKegiatan = trim((string)$subKegiatan);
+        $kegiatan = trim((string)$kegiatan);
+        $tahun = trim((string)$tahun);
 
-        // 3. Handle Kegiatan
-        if (!$hasKeg && !empty($kegiatan)) {
-            // Cek jika kegiatan sudah ada di dalam string (misal sub_kegiatan sudah mencakupnya)
-            if (!str_contains(strtolower($res), strtolower($kegiatan))) {
-                $res .= ' ' . $kegiatan;
-            }
-        }
-
-        // 4. Handle Tahun
-        if (!str_contains(strtolower($res), 'tahun') && !empty($tahun)) {
-            $res .= ' Tahun ' . $tahun;
-        }
-
-        return trim($res);
+        return "Belanja {$belanja} Pada Keg. {$kegiatan} Sub Keg. {$subKegiatan} Tahun {$tahun}";
     }
 
     public function form(Request $request)
@@ -200,12 +208,20 @@ class KwitansiController extends Controller
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $master = $this->loadNotaMaster();
         $payload = $request->all();
-        $selected = null;
+        $searchRef = $this->normalizeNomor($payload['penerimaan_nomor'] ?? '');
         foreach ($this->listPenerimaanDocs() as $doc) {
-            if (($doc['nomor'] ?? '') === ($payload['penerimaan_nomor'] ?? '')) { $selected = $doc; break; }
+            if ($this->normalizeNomor($doc['nomor'] ?? '') === $searchRef) { $selected = $doc; break; }
         }
         $total = (int)($selected['total'] ?? 0);
         $bulanNama = \Carbon\Carbon::parse($payload['tanggal'] ?? now()->toDateString())->locale('id')->translatedFormat('F Y');
+        $notaData = $selected['nota'] ?? [];
+        if (!empty($notaData['nomor'])) {
+            $freshNota = $this->findFullNota($notaData['nomor'], $notaData['id'] ?? null);
+            if (!empty($freshNota)) {
+                $notaData = array_merge($notaData, $freshNota);
+            }
+        }
+
         $data = [
             'tahun' => $payload['tahun'] ?? now()->year,
             'rekening' => $payload['rekening'] ?? '',
@@ -215,9 +231,9 @@ class KwitansiController extends Controller
             'jumlah' => $total,
             'terbilang' => ucwords($this->toWordsId((int)$total)),
             'pembayaran_uraian' => $this->generateUraian(
-                $selected['nota']['pekerjaan'] ?? ($selected['belanja'] ?? ''),
-                $selected['nota']['sub_kegiatan'] ?? '',
-                $selected['nota']['kegiatan'] ?? '',
+                $notaData['belanja'] ?? ($selected['belanja'] ?? ($selected['nota']['belanja'] ?? '')),
+                $notaData['sub_kegiatan'] ?? ($selected['nota']['sub_kegiatan'] ?? ''),
+                $notaData['kegiatan'] ?? ($selected['nota']['kegiatan'] ?? ''),
                 $payload['tahun'] ?? now()->year
             ),
             'lokasi_tanggal' => ($opd->nama_opd ?? 'Bolaang Uki') . ', ' . $bulanNama,
@@ -233,7 +249,11 @@ class KwitansiController extends Controller
             'ppk_nip' => ($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''),
         ];
         session(['kwitansi_current' => $data]);
-        return view('reports.kwitansi_report', compact('data', 'opd'));
+        
+        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $view = $isMobile ? 'reports.mobile.kwitansi_report' : 'reports.kwitansi_report';
+
+        return view($view, compact('data', 'opd'));
     }
 
     public function save(Request $request)
@@ -284,8 +304,9 @@ class KwitansiController extends Controller
             $penerimaanNomor = $payload['penerimaan_nomor'] ?? '';
             
             if ($penerimaanNomor) {
+                $searchPenerimaan = $this->normalizeNomor($penerimaanNomor);
                 foreach ($this->listPenerimaanDocs() as $doc) {
-                    if (trim($doc['nomor'] ?? '') === trim($penerimaanNomor)) { 
+                    if ($this->normalizeNomor($doc['nomor'] ?? '') === $searchPenerimaan) { 
                         $selected = $doc; 
                         break; 
                     }
@@ -302,18 +323,18 @@ class KwitansiController extends Controller
             
             // Ambil data nota pesanan terbaru jika ada
             if (!empty($notaData['nomor'])) {
-                $freshNota = $this->findFullNotaByNomor($notaData['nomor']);
+                $freshNota = $this->findFullNota($notaData['nomor'], $notaData['id'] ?? null);
                 if (!empty($freshNota)) {
                     $notaData = array_merge($notaData, $freshNota);
                 }
             }
             
-            $kegiatan = $notaData['kegiatan'] ?? '';
-            $subKegiatan = $notaData['sub_kegiatan'] ?? '';
-            $namaPekerjaan = $notaData['pekerjaan'] ?? $uraianBelanja;
+            $kegiatan = $notaData['kegiatan'] ?? ($selected['nota']['kegiatan'] ?? '');
+            $subKegiatan = $notaData['sub_kegiatan'] ?? ($selected['nota']['sub_kegiatan'] ?? '');
+            $belanjaName = $notaData['belanja'] ?? ($uraianBelanja ?: ($selected['nota']['belanja'] ?? ''));
             $tahunAnggaran = $payload['tahun'] ?? now()->year;
             
-            $uraianFull = $this->generateUraian($namaPekerjaan, $subKegiatan, $kegiatan, $tahunAnggaran);
+            $uraianFull = $this->generateUraian($belanjaName, $subKegiatan, $kegiatan, $tahunAnggaran);
             
             // Format Nomor KWT Otomatis: [Input]/KW/KOMINFO/[BulanRomawi]/[Tahun]
             $inputNomor = trim((string)($payload['nomor_kwt'] ?? ''));

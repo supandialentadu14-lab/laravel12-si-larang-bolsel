@@ -612,7 +612,7 @@ class NotaPesananController extends Controller
 
             $nota = $penerimaanDoc['nota'] ?? [];
             $doc['pembayaran_uraian'] = $this->generateKwitansiUraian(
-                (string)($nota['pekerjaan'] ?? ($nota['belanja'] ?? '')),
+                (string)($nota['belanja'] ?? ($nota['pekerjaan'] ?? '')),
                 (string)($nota['sub_kegiatan'] ?? ''),
                 (string)($nota['kegiatan'] ?? ''),
                 (string)($doc['tahun'] ?? ($nota['tahun'] ?? now()->year))
@@ -646,26 +646,14 @@ class NotaPesananController extends Controller
         return $res;
     }
 
-    private function generateKwitansiUraian(string $pekerjaan, string $subKegiatan, string $kegiatan, string $tahun): string
+    private function generateKwitansiUraian(string $belanja, string $subKegiatan, string $kegiatan, string $tahun): string
     {
-        $pekerjaan = trim($pekerjaan);
-        $res = $pekerjaan;
-        if ($res !== '' && !str_starts_with(strtolower($res), 'belanja')) {
-            $res = 'Belanja ' . $res;
-        }
-        $hasKeg = str_contains(strtolower($res), 'pada keg') || str_contains(strtolower($res), 'pada kegiatan');
-        if (!$hasKeg && trim($subKegiatan) !== '') {
-            $res .= ' Pada Keg. ' . trim($subKegiatan);
-        }
-        if (!$hasKeg && trim($kegiatan) !== '') {
-            if (!str_contains(strtolower($res), strtolower(trim($kegiatan)))) {
-                $res .= ' ' . trim($kegiatan);
-            }
-        }
-        if (!str_contains(strtolower($res), 'tahun') && trim($tahun) !== '') {
-            $res .= ' Tahun ' . trim($tahun);
-        }
-        return trim($res);
+        $belanja = trim($belanja);
+        $kegiatan = trim($kegiatan);
+        $subKegiatan = trim($subKegiatan);
+        $tahun = trim($tahun);
+        
+        return "Belanja {$belanja} Pada Keg. {$kegiatan} Sub Keg. {$subKegiatan} Tahun {$tahun}";
     }
 
     public function list(Request $request): View

@@ -58,6 +58,8 @@ class PemeriksaanController extends Controller
                 'nomor' => $data['nomor'] ?? '',
                 'tanggal' => $data['tanggal'] ?? '',
                 'belanja' => $data['belanja'] ?? '',
+                'kegiatan' => $data['kegiatan'] ?? '',
+                'sub_kegiatan' => $data['sub_kegiatan'] ?? '',
                 'penyedia' => $data['penyedia'] ?? [],
                 'items' => $data['items'] ?? [],
             ];
@@ -201,6 +203,8 @@ class PemeriksaanController extends Controller
                 'nomor' => $nota['nomor'] ?? '',
                 'tanggal' => $nota['tanggal'] ?? '',
                 'belanja' => $nota['belanja'] ?? '',
+                'kegiatan' => $nota['kegiatan'] ?? '',
+                'sub_kegiatan' => $nota['sub_kegiatan'] ?? '',
                 'penyedia' => [
                     'toko' => $nota['penyedia']['toko'] ?? '',
                     'pemilik' => $nota['penyedia']['pemilik'] ?? '',
@@ -296,6 +300,8 @@ class PemeriksaanController extends Controller
                     'nomor' => $nota['nomor'] ?? '',
                     'tanggal' => $nota['tanggal'] ?? '',
                     'belanja' => $nota['belanja'] ?? '',
+                    'kegiatan' => $nota['kegiatan'] ?? '',
+                    'sub_kegiatan' => $nota['sub_kegiatan'] ?? '',
                     'penyedia' => $nota['penyedia'] ?? [],
                 ],
                 'items' => $cleanItems,
