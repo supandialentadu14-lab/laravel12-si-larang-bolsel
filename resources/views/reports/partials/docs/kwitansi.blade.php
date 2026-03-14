@@ -49,27 +49,26 @@
       <div class="text-right">{{ $data['lokasi_tanggal'] ?? '' }}</div>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; margin-bottom: 40px;">
-      <div>
-        <div class="italic font-bold">PPTK</div>
-        <div style="height: 80px;"></div>
-        <div class="font-bold underline uppercase">{{ $data['pejabat']['pptk'] ?? '' }}</div>
-        <div style="font-size: 10px;">NIP. {{ $data['pptk_nip'] ?? '-' }}</div>
-      </div>
-      <div>
-        <div class="italic font-bold">Bendahara Pengeluaran,</div>
-        <div style="height: 80px;"></div>
-        <div class="font-bold underline uppercase">{{ $data['pejabat']['bendahara'] ?? '' }}</div>
-        <div style="font-size: 10px;">NIP. {{ $data['bendahara_nip'] ?? '-' }}</div>
-      </div>
-      <div>
-        <div class="italic font-bold">Yang Menerima,</div>
-        <div class="italic font-bold">Pihak Ketiga</div>
-        <div style="height: 52px;"></div> <!-- Reduced to align with bendahara total height -->
-        <div class="font-bold underline uppercase">{{ $data['pejabat']['pihak_ketiga'] ?? '' }}</div>
-        <div style="font-size: 10px; visibility: hidden;">placeholder</div> <!-- For symmetry with NIP line -->
-      </div>
-    </div>
+    <table style="width: 100%; text-align: center; margin-bottom: 30px; table-layout: fixed;">
+      <tr>
+        <td style="vertical-align: top;" class="italic font-bold">PPTK</td>
+        <td style="vertical-align: top;" class="italic font-bold">Bendahara Pengeluaran,</td>
+        <td style="vertical-align: top;" class="italic font-bold">Yang Menerima,<br>Pihak Ketiga</td>
+      </tr>
+      <tr>
+        <td colspan="3" style="height: 60px;"></td>
+      </tr>
+      <tr>
+        <td class="font-bold underline uppercase">{{ $data['pejabat']['pptk'] ?? '' }}</td>
+        <td class="font-bold underline uppercase">{{ $data['pejabat']['bendahara'] ?? '' }}</td>
+        <td class="font-bold underline uppercase">{{ $data['pejabat']['pihak_ketiga'] ?? '' }}</td>
+      </tr>
+      <tr>
+        <td style="font-size: 10px;">NIP. {{ $data['pptk_nip'] ?? '-' }}</td>
+        <td style="font-size: 10px;">NIP. {{ $data['bendahara_nip'] ?? '-' }}</td>
+        <td style="font-size: 10px;">&nbsp;</td>
+      </tr>
+    </table>
 
     <div class="text-center" style="margin-top: 40px;">
       <div class="italic font-bold">Mengetahui,</div>

@@ -214,6 +214,10 @@
                 <input type="text" name="pengurus_jabatan" value="{{ old('pengurus_jabatan', $setting->pengurus_jabatan) }}" placeholder="Pengurus Barang" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[13px] focus:bg-white focus:border-orange-500 transition-all">
               </div>
             </div>
+            <div class="space-y-1.5 mt-4">
+              <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nomor SK Pengurus</label>
+              <input type="text" name="pengurus_sk" value="{{ old('pengurus_sk', $setting->pengurus_sk) }}" placeholder="27 Tahun 2026" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all">
+            </div>
           </div>
         </x-master-card>
 

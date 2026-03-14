@@ -65,7 +65,7 @@
             </tr>
           </table>
 
-          <p>Sebagai pengurus barang pengguna berdasarkan Surat Keputusan Bupati Bolaang Mongondow Selatan Nomor: 27 Tahun 2025 Tanggal 6 Januari 2025 telah melaksanakan Stock Opname Persediaan Barang Habis Pakai per {{ \Illuminate\Support\Carbon::parse($data['tanggal'])->locale('id')->translatedFormat('d F Y') }}, dengan hasil sebagai berikut:</p>
+          <p>Sebagai pengurus barang pengguna berdasarkan Surat Keputusan Bupati Bolaang Mongondow Selatan Nomor: {{ $opd->pengurus_sk ?? '27 Tahun 2026' }} telah melaksanakan Stock Opname Persediaan Barang Habis Pakai per {{ \Illuminate\Support\Carbon::parse($data['tanggal'])->locale('id')->translatedFormat('d F Y') }}, dengan hasil sebagai berikut:</p>
 
           <table style="table-layout: fixed; width: 100%;">
             <colgroup>

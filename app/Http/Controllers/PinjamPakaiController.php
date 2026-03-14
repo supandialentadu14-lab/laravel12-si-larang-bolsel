@@ -19,9 +19,69 @@ class PinjamPakaiController extends Controller
     {
         session()->forget('pinjam_pakai_current');
         session()->forget('pinjam_pakai_current_id');
-        $data = null;
+        
         $opd = OpdSetting::where('user_id', Auth::id())->first();
+        
+        // Cek nomor terakhir untuk auto-increment
+        $docs = $this->listPinjamPakaiDocs();
+        $nextNum = 1;
+        if (!empty($docs)) {
+            foreach ($docs as $doc) {
+                if (preg_match('/^(\d+)/', (string)($doc['nomor'] ?? ''), $m)) {
+                    $num = (int)$m[1];
+                    if ($num >= $nextNum) {
+                        $nextNum = $num + 1;
+                    }
+                }
+            }
+        }
+        $paddedNum = str_pad((string)$nextNum, 3, '0', STR_PAD_LEFT);
+        
+        $data = [
+            'nomor' => $paddedNum,
+        ];
+
         return view('pinjam_pakai.create', compact('data', 'opd'));
+    }
+
+    private function listPinjamPakaiDocs(): array
+    {
+        $disk = Storage::disk('local');
+        $userDir = 'users/'.Auth::id().'/pinjam_pakai';
+        if (!$disk->exists($userDir)) return [];
+        
+        $files = $disk->files($userDir);
+        $items = [];
+        foreach ($files as $file) {
+            if (!str_ends_with($file, '.json')) continue;
+            $json = $disk->get($file);
+            $data = json_decode($json, true);
+            if ($data) {
+                $items[] = [
+                    'id' => basename($file, '.json'),
+                    'nomor' => $data['nomor'] ?? '',
+                    'tanggal' => $data['tanggal'] ?? '',
+                ];
+            }
+        }
+        return $items;
+    }
+
+    private function formatNomor(string $nomor, string $tanggal): string
+    {
+        $inputNomor = trim($nomor);
+        if (preg_match('/^\d+$/', $inputNomor)) {
+            $tanggalObj = \Carbon\Carbon::parse($tanggal);
+            $tahunAnggaran = $tanggalObj->year;
+            $bulanRomawi = $this->formatRomawi($tanggalObj->month);
+            
+            $opd = OpdSetting::where('user_id', Auth::id())->first();
+            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+            
+            $paddedNum = str_pad($inputNomor, 3, '0', STR_PAD_LEFT);
+            return "{$paddedNum}/BASTBI/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
+        }
+        return $inputNomor;
     }
 
     protected function formatRomawi(int $number): string
@@ -69,21 +129,7 @@ class PinjamPakaiController extends Controller
             'berlaku_hingga' => 'nullable|string',
         ]);
         $validated['user_id'] = Auth::id();
-        
-        $tanggalObj = \Carbon\Carbon::parse($validated['tanggal']);
-        $tahunAnggaran = $tanggalObj->year;
-        
-        // Format Nomor Otomatis: [Input]/BASTBI/KOMINFO/[BulanRomawi]/[Tahun]
-        $inputNomor = trim((string)($validated['nomor'] ?? ''));
-        if (preg_match('/^\d+$/', $inputNomor)) {
-            $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-            $opd = OpdSetting::where('user_id', Auth::id())->first();
-            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
-            $nomorFormatted = "{$inputNomor}/BASTBI/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
-        } else {
-            $nomorFormatted = $inputNomor;
-        }
-        $validated['nomor'] = $nomorFormatted;
+        $validated['nomor'] = $this->formatNomor($validated['nomor'], $validated['tanggal']);
 
         session(['pinjam_pakai_current' => $validated]);
         if (!isset($opd)) {
@@ -121,6 +167,7 @@ class PinjamPakaiController extends Controller
                 'berlaku_hingga' => 'nullable|string',
             ]);
             $validated['user_id'] = Auth::id();
+            $validated['nomor'] = $this->formatNomor($validated['nomor'], $validated['tanggal']);
             $data = $validated;
             session(['pinjam_pakai_current' => $data]);
         } else {
@@ -137,7 +184,10 @@ class PinjamPakaiController extends Controller
             $fid = basename($file, '.json');
             if ($fid === $currentId) continue;
             if (($existing['nomor'] ?? null) === ($data['nomor'] ?? null)) {
-                return back()->withInput()->with('error', 'Nomor berita acara sudah ada. Tidak bisa menyimpan.');
+                // Jangan return error jika kita sedang mengedit dokumen yang sama
+                if ($fid !== $currentId) {
+                    return back()->withInput()->with('error', 'Nomor berita acara sudah ada. Tidak bisa menyimpan.');
+                }
             }
         }
         $id = $currentId ?: (string) Str::uuid();

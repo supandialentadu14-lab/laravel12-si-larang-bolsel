@@ -84,7 +84,7 @@
         <div class="space-y-4">
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Berita Acara</label>
-            <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono" placeholder="001/BA-PP/..." required>
+            <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono" placeholder="001/BASTBI/..." required>
           </div>
 
           <div class="grid grid-cols-2 gap-4">

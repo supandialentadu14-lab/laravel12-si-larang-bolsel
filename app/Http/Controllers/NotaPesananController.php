@@ -101,11 +101,25 @@ class NotaPesananController extends Controller
         $categories = \App\Models\Category::orderBy('name')->get();
         $master = $this->loadNotaMaster();
         $suppliers = Supplier::orderBy('name')->get();
-        session()->forget('nota_current');
-        session()->forget('nota_current_id');
+        // Cek nomor terakhir untuk auto-increment
+        $disk = Storage::disk('local');
+        $dir = 'users/'.Auth::id().'/nota-pesanan';
+        $files = $disk->exists($dir) ? $disk->files($dir) : [];
+        $nextNum = 1;
+        foreach ($files as $file) {
+            if (!str_ends_with($file, '.json')) continue;
+            $doc = json_decode($disk->get($file), true) ?: [];
+            if (preg_match('/^(\d+)/', (string)($doc['nomor'] ?? ''), $m)) {
+                $num = (int)$m[1];
+                if ($num >= $nextNum) $nextNum = $num + 1;
+            }
+        }
+        $nextNomorRaw = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+
         $data = [
             'tanggal' => now()->toDateString(),
             'tahun' => now()->year,
+            'nomor' => $nextNomorRaw,
             'items' => [],
         ];
         return view('nota_pesanan.create', compact('data', 'opd', 'options', 'products', 'categories', 'master', 'suppliers'));
@@ -611,6 +625,7 @@ class NotaPesananController extends Controller
             $doc['terbilang'] = ucwords($this->toWordsIdInternal($total)) . ' Rupiah';
 
             $nota = $penerimaanDoc['nota'] ?? [];
+            $doc['rekening'] = $nota['rekening'] ?? '';
             $doc['pembayaran_uraian'] = $this->generateKwitansiUraian(
                 (string)($nota['belanja'] ?? ($nota['pekerjaan'] ?? '')),
                 (string)($nota['sub_kegiatan'] ?? ''),

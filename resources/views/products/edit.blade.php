@@ -23,16 +23,10 @@
         @error('name')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div class="space-y-1.5">
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Kode (SKU)</label>
-          <input type="text" value="{{ $product->sku }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-400 outline-none transition-colors" readonly>
-        </div>
-        <div class="space-y-1.5">
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Stok Minimum</label>
-          <input type="number" name="min_stock" min="0" value="{{ old('min_stock', $product->min_stock) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors">
-          @error('min_stock')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
-        </div>
+      <div class="space-y-1.5">
+        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Stok Minimum</label>
+        <input type="number" name="min_stock" min="0" value="{{ old('min_stock', $product->min_stock) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors">
+        @error('min_stock')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 
       <div class="grid grid-cols-2 gap-4">
@@ -64,16 +58,6 @@
         @error('category_id')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 
-      <div class="space-y-1.5">
-        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Penyedia (Opsional)</label>
-        <select name="supplier_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors">
-          <option value="">Pilih Penyedia</option>
-          @foreach($suppliers as $sup)
-            <option value="{{ $sup->id }}" {{ (string)old('supplier_id', $product->supplier_id) === (string)$sup->id ? 'selected' : '' }}>{{ $sup->name }}</option>
-          @endforeach
-        </select>
-        @error('supplier_id')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
-      </div>
 
       <div class="space-y-1.5">
         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Keterangan (Opsional)</label>

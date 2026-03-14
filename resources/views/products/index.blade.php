@@ -133,7 +133,7 @@
               </a>
               <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline">
                 @csrf @method('DELETE')
-                <button type="submit" @click.prevent="if(confirm('Hapus barang ini?')) $el.form.submit()" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                <button type="submit" @click.prevent="if(confirm('PERHATIAN! Menghapus barang ini akan menghapus SELURUH RIWAYAT TRANSAKSI (Masuk & Keluar) serta mengupdate Berkas/Laporan yang memuat data barang ini secara permanen. Apakah Anda yakin?')) $el.form.submit()" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
                   <i class="fas fa-trash text-[10px]"></i>
                 </button>
               </form>

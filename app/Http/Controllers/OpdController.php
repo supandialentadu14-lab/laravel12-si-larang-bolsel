@@ -48,6 +48,7 @@ class OpdController extends Controller
             'kepala_jabatan' => 'nullable|string|max:255',
             'pengurus_nama' => 'nullable|string|max:255',
             'pengurus_nip' => 'nullable|string|max:50',
+            'pengurus_sk' => 'nullable|string|max:255',
             'pengguna_nama' => 'nullable|string|max:255',
             'pengguna_nip' => 'nullable|string|max:50',
             'tutup_buku_date' => 'nullable|date',
@@ -71,7 +72,7 @@ class OpdController extends Controller
         $setting->update($request->only([
             'nama_opd', 'singkatan_opd', 'alamat_opd', 
             'kepala_nama', 'kepala_nip', 'kepala_pangkat', 'kepala_jabatan',
-            'pengurus_nama', 'pengurus_nip', 'pengurus_pangkat', 'pengurus_jabatan',
+            'pengurus_nama', 'pengurus_nip', 'pengurus_pangkat', 'pengurus_jabatan', 'pengurus_sk',
             'pengguna_nama', 'pengguna_nip', 'pengguna_pangkat', 'pengguna_jabatan',
             'tutup_buku_date'
         ]));

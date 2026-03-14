@@ -177,12 +177,12 @@
               <template x-for="(item, i) in items" :key="item._key">
                 <tr class="hover:bg-slate-50/50 transition">
                   <td class="py-3 px-1">
-                    <input type="text" :name="`items[${i}][name]`" x-model="item.name" list="opt-products" @change="onProductChange(i, $event.target.value)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="Cari barang...">
-                    <datalist id="opt-products">
+                    <select :name="`items[${i}][name]`" x-model="item.name" @change="onProductChange(i, $event.target.value)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20 appearance-none" required>
+                      <option value="">-- Pilih Barang --</option>
                       <template x-for="p in productsByBelanja()" :key="p.id">
-                        <option :value="p.name" x-text="p.name"></option>
+                        <option :value="p.name" x-text="p.name" :selected="item.name === p.name"></option>
                       </template>
-                    </datalist>
+                    </select>
                   </td>
                   <td class="py-3 px-1">
                     <input type="number" :name="`items[${i}][qty]`" x-model="item.qty" @input="recalc(i)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold text-center outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="0">

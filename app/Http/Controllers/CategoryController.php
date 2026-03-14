@@ -78,7 +78,7 @@ class CategoryController extends Controller
         // Cari apakah ada data lama MILIK SENDIRI dengan nama ATAU slug yang sama di sampah
         $newSlug = Str::slug($validated['name']);
         
-        $existing = Category::withTrashed()
+        $existing = Category::query()->withTrashed()
             ->where(function($q) use ($validated, $newSlug) {
                 $q->where('name', $validated['name'])
                   ->orWhere('slug', $newSlug);
@@ -141,7 +141,7 @@ class CategoryController extends Controller
 
         // Cari record lain MILIK SENDIRI (termasuk yang di sampah) yang memiliki nama yang sama
         $newSlug = Str::slug($validated['name']);
-        $existing = Category::withTrashed()
+        $existing = Category::query()->withTrashed()
             ->where(function($q) use ($validated, $newSlug) {
                 $q->where('name', $validated['name'])
                   ->orWhere('slug', $newSlug);

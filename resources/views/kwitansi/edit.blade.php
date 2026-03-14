@@ -50,25 +50,14 @@
         </div>
 
         <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-1.5">
-              <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tahun Anggaran</label>
-              <input type="number" name="tahun" value="{{ old('tahun', $data['tahun'] ?? now()->year) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
-            </div>
-            <div class="space-y-1.5">
-              <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
-              <input type="date" name="tanggal" value="{{ old('tanggal', $data['tanggal'] ?? now()->toDateString()) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
-            </div>
+          <div class="space-y-1.5">
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
+            <input type="date" name="tanggal" value="{{ old('tanggal', $data['tanggal'] ?? now()->toDateString()) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
           </div>
-
+          
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Kwitansi (Angka)</label>
             <input type="text" name="nomor_kwt" value="{{ old('nomor_kwt', preg_replace('/\D+/', '', $data['nomor_kwt'] ?? '')) }}" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/\D/g,'')" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-mono font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001" required>
-          </div>
-
-          <div class="space-y-1.5">
-            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Kode Rekening</label>
-            <input type="text" name="rekening" value="{{ old('rekening', $data['rekening'] ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-mono font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="5.1.02.01...">
           </div>
         </div>
       </div>

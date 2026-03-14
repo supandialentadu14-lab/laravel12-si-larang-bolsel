@@ -83,8 +83,24 @@ class PenerimaanController extends Controller
     {
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $docs = $this->listPemeriksaanDocs();
+        
+        // Cek nomor terakhir untuk auto-increment bap-penerimaan
+        $disk = Storage::disk('local');
+        $pDir = 'users/'.Auth::id().'/bap-penerimaan';
+        $pFiles = $disk->exists($pDir) ? $disk->files($pDir) : [];
+        $nextNum = 1;
+        foreach ($pFiles as $file) {
+            if (!str_ends_with($file, '.json')) continue;
+            $pDoc = json_decode($disk->get($file), true) ?: [];
+            if (preg_match('/^(\d+)/', (string)($pDoc['nomor'] ?? ''), $m)) {
+                $num = (int)$m[1];
+                if ($num >= $nextNum) $nextNum = $num + 1;
+            }
+        }
+        $nextNomorRaw = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+
         $data = [
-            'nomor' => '',
+            'nomor' => $nextNomorRaw,
             'tanggal' => now()->toDateString(),
             'tempat' => $opd->nama_opd ?? '',
             'pemeriksaan_nomor' => '',

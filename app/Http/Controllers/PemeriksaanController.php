@@ -102,10 +102,29 @@ class PemeriksaanController extends Controller
     {
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $notaDocs = $this->listNotaDocs();
+        
+        // Cek nomor terakhir untuk auto-increment
+        $docs = $this->listPemeriksaanDocs();
+        $nextNum = 1;
+        if (!empty($docs)) {
+            // listPemeriksaanDocs sudah diurutkan descending berdasarkan tanggal
+            // Kita coba cari angka terbesar dari nomor-nomor yang ada
+            foreach ($docs as $doc) {
+                // Ambil bagian angka di awal (misal 001/BAPB/... -> 001)
+                if (preg_match('/^(\d+)/', (string)($doc['nomor'] ?? ''), $m)) {
+                    $num = (int)$m[1];
+                    if ($num >= $nextNum) {
+                        $nextNum = $num + 1;
+                    }
+                }
+            }
+        }
+        $nextNomorRaw = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+
         $data = session('bap_current') ?? [
             'tanggal' => now()->toDateString(),
             'tempat' => 'Bolaang Uki',
-            'nomor' => '',
+            'nomor' => $nextNomorRaw,
             'nota_nomor' => '',
         ];
         return view('pemeriksaan.create', compact('data', 'opd', 'notaDocs'));

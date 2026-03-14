@@ -193,10 +193,27 @@ class KwitansiController extends Controller
     {
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $docs = $this->listPenerimaanDocs();
+        
+        // Cek nomor terakhir untuk auto-increment kwitansi
+        $disk = Storage::disk('local');
+        $kDir = 'users/'.Auth::id().'/kwitansi';
+        $kFiles = $disk->exists($kDir) ? $disk->files($kDir) : [];
+        $nextNum = 1;
+        foreach ($kFiles as $file) {
+            if (!str_ends_with($file, '.json')) continue;
+            $kDoc = json_decode($disk->get($file), true) ?: [];
+            // Ambil bagian angka di awal (misal 001/KW/... -> 001)
+            if (preg_match('/^(\d+)/', (string)($kDoc['nomor_kwt'] ?? ''), $m)) {
+                $num = (int)$m[1];
+                if ($num >= $nextNum) $nextNum = $num + 1;
+            }
+        }
+        $nextNomorRaw = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+
         $data = [
             'tahun' => now()->year,
             'rekening' => '',
-            'nomor_kwt' => '',
+            'nomor_kwt' => $nextNomorRaw,
             'tanggal' => now()->toDateString(),
             'penerimaan_nomor' => '',
         ];
@@ -213,7 +230,10 @@ class KwitansiController extends Controller
             if ($this->normalizeNomor($doc['nomor'] ?? '') === $searchRef) { $selected = $doc; break; }
         }
         $total = (int)($selected['total'] ?? 0);
-        $bulanNama = \Carbon\Carbon::parse($payload['tanggal'] ?? now()->toDateString())->locale('id')->translatedFormat('F Y');
+        $tanggalObj = \Carbon\Carbon::parse($payload['tanggal'] ?? now()->toDateString());
+        $bulanNama = $tanggalObj->locale('id')->translatedFormat('F Y');
+        $tahunAnggaran = $tanggalObj->year;
+        
         $notaData = $selected['nota'] ?? [];
         if (!empty($notaData['nomor'])) {
             $freshNota = $this->findFullNota($notaData['nomor'], $notaData['id'] ?? null);
@@ -223,8 +243,8 @@ class KwitansiController extends Controller
         }
 
         $data = [
-            'tahun' => $payload['tahun'] ?? now()->year,
-            'rekening' => $payload['rekening'] ?? '',
+            'tahun' => $tahunAnggaran,
+            'rekening' => $notaData['rekening'] ?? '',
             'nomor_kwt' => $payload['nomor_kwt'] ?? '',
             'tanggal' => $payload['tanggal'] ?? now()->toDateString(),
             'penerimaan_nomor' => $payload['penerimaan_nomor'] ?? '',
@@ -234,7 +254,7 @@ class KwitansiController extends Controller
                 $notaData['belanja'] ?? ($selected['belanja'] ?? ($selected['nota']['belanja'] ?? '')),
                 $notaData['sub_kegiatan'] ?? ($selected['nota']['sub_kegiatan'] ?? ''),
                 $notaData['kegiatan'] ?? ($selected['nota']['kegiatan'] ?? ''),
-                $payload['tahun'] ?? now()->year
+                $tahunAnggaran
             ),
             'lokasi_tanggal' => ($opd->nama_opd ?? 'Bolaang Uki') . ', ' . $bulanNama,
             'pejabat' => [
@@ -332,7 +352,8 @@ class KwitansiController extends Controller
             $kegiatan = $notaData['kegiatan'] ?? ($selected['nota']['kegiatan'] ?? '');
             $subKegiatan = $notaData['sub_kegiatan'] ?? ($selected['nota']['sub_kegiatan'] ?? '');
             $belanjaName = $notaData['belanja'] ?? ($uraianBelanja ?: ($selected['nota']['belanja'] ?? ''));
-            $tahunAnggaran = $payload['tahun'] ?? now()->year;
+            $tahunAnggaran = $tanggalObj->year;
+            $rekening = $notaData['rekening'] ?? '';
             
             $uraianFull = $this->generateUraian($belanjaName, $subKegiatan, $kegiatan, $tahunAnggaran);
             
@@ -349,8 +370,8 @@ class KwitansiController extends Controller
             }
 
             $data = [
-                'tahun' => $payload['tahun'] ?? now()->year,
-                'rekening' => $payload['rekening'] ?? '',
+                'tahun' => $tahunAnggaran,
+                'rekening' => $rekening,
                 'nomor_kwt' => $nomorKwtFormatted,
                 'tanggal' => $payload['tanggal'] ?? now()->toDateString(),
                 'penerimaan_nomor' => $penerimaanNomor,

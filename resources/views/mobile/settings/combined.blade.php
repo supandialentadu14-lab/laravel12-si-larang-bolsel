@@ -247,6 +247,10 @@
               <input type="text" name="pengurus_jabatan" value="{{ old('pengurus_jabatan', $setting->pengurus_jabatan) }}" placeholder="Pengurus Barang" class="w-full px-6 py-4 bg-white/10 border-none rounded-2xl text-[10px] font-bold focus:ring-2 focus:ring-white/20 outline-none text-white placeholder:text-white/30">
             </div>
           </div>
+          <div class="space-y-1.5">
+            <label class="text-[8px] font-black opacity-70 uppercase tracking-widest ml-4 text-white">Nomor SK Pengurus</label>
+            <input type="text" name="pengurus_sk" value="{{ old('pengurus_sk', $setting->pengurus_sk) }}" placeholder="27 Tahun 2026" class="w-full px-6 py-4 bg-white/10 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-white/20 outline-none text-white placeholder:text-white/30">
+          </div>
         </div>
       </div>
 
