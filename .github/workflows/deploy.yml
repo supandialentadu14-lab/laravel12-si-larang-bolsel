@@ -28,7 +28,7 @@ jobs:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 2222
+        port: 22
         script: |
           cd domains/si-larang-bolsel.my.id/public_html
           git pull origin main
