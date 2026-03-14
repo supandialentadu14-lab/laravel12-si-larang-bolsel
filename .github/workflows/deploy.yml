@@ -32,8 +32,10 @@ jobs:
         script: |
           cd /home/moncom/domains/si-larang-bolsel.my.id && \
           git pull origin main && \
-          export PATH=/usr/local/php84/bin:$PATH && \
           php -v && \
-          composer install --no-dev --optimize-autoloader --ignore-platform-reqs && \
+          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+          php composer-setup.php --quiet && \
+          php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs && \
           php artisan migrate --force && \
-          php artisan optimize
+          php artisan optimize && \
+          rm composer-setup.php composer.phar
