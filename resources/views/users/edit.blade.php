@@ -134,10 +134,12 @@
             <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">{{ request()->routeIs('profile.edit') ? 'Simpan Profil' : 'Perbarui User' }}</button>
         </div>
 
-        @if(request()->routeIs('profile.edit'))
+    </form>
+    
+    @if(request()->routeIs('profile.edit'))
         {{-- Logout Section khusus di halaman Profil --}}
         <div class="px-2 pt-4">
-            <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari akun?')">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari akun?')">
                 @csrf
                 <button type="submit" class="w-full py-5 bg-rose-50 text-rose-600 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 border border-rose-100 active:scale-95 transition-all">
                     <i class="fas fa-sign-out-alt"></i>
@@ -145,7 +147,6 @@
                 </button>
             </form>
         </div>
-        @endif
-    </form>
+    @endif
 </div>
 @endsection
