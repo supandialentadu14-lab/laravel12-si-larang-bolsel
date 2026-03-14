@@ -30,8 +30,8 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
-          cd domains/si-larang-bolsel.my.id/public_html
-          git pull origin main
-          composer install --no-dev --optimize-autoloader
-          php artisan migrate --force
+          cd /home/moncom/domains/si-larang-bolsel.my.id/public_html && \
+          git pull origin main && \
+          composer install --no-dev --optimize-autoloader && \
+          php artisan migrate --force && \
           php artisan optimize
