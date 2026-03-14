@@ -28,12 +28,10 @@ jobs:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
+        port: 2222
         script: |
           cd domains/si-larang-bolsel.my.id/public_html
           git pull origin main
           composer install --no-dev --optimize-autoloader
           php artisan migrate --force
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+          php artisan optimize
