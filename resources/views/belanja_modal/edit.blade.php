@@ -87,51 +87,118 @@
                     </div>
                 </div>
 
-                <div class="bg-indigo-50/30 p-4 rounded-xl border border-indigo-100">
-                    <h4 class="text-indigo-900 font-bold mb-4 flex items-center gap-2">
-                        <i class="fas fa-list text-indigo-500"></i> Daftar Rincian Belanja Modal
-                    </h4>
-                    <div class="overflow-x-auto border border-indigo-100 rounded-xl bg-white">
-                        <table class="w-full text-left text-slate-700">
-                            <thead class="bg-indigo-50 text-[10px] uppercase font-bold text-indigo-600 tracking-wider">
-                            <tr>
-                                <th class="px-3 py-3 border-b border-indigo-100">Kegiatan</th>
-                                <th class="px-3 py-3 border-b border-indigo-100">Pekerjaan</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-28">Nilai Kontrak</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-24">Mulai</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-24">Akhir</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-20">UM (Rp)</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-20">T1 (Rp)</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-20">T2 (Rp)</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-20">T3 (Rp)</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-20">T4 (Rp)</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-24 text-right">Total Realisasi</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-24">Status</th>
-                                <th class="px-3 py-3 border-b border-indigo-100 w-10"></th>
-                            </tr>
-                            </thead>
-                            <tbody class="divide-y divide-indigo-50">
-                                <template x-for="(item, i) in items" :key="i">
-                                    <tr class="hover:bg-indigo-50/50 transition">
-                                        <td class="p-2 min-w-[150px]"><input type="text" :name="`items[${i}][nama_kegiatan]`" x-model="item.nama_kegiatan" :x-ref="`row_${i}_kegiatan`" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition"></td>
-                                        <td class="p-2 min-w-[150px]"><input type="text" :name="`items[${i}][pekerjaan]`" x-model="item.pekerjaan" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition"></td>
-                                        <td class="p-2"><input type="number" :name="`items[${i}][nilai_kontrak]`" x-model="item.nilai_kontrak" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition font-mono border-indigo-200"></td>
-                                        <td class="p-2"><input type="date" :name="`items[${i}][tanggal_mulai]`" x-model="item.tanggal_mulai" class="w-full rounded-md border border-slate-300 bg-white text-[10px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition"></td>
-                                        <td class="p-2"><input type="date" :name="`items[${i}][tanggal_akhir]`" x-model="item.tanggal_akhir" class="w-full rounded-md border border-slate-300 bg-white text-[10px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition"></td>
-                                        <td class="p-2"><input type="number" :name="`items[${i}][uang_muka]`" x-model="item.uang_muka" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
-                                        <td class="p-2"><input type="number" :name="`items[${i}][termin1]`" x-model="item.termin1" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
-                                        <td class="p-2"><input type="number" :name="`items[${i}][termin2]`" x-model="item.termin2" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
-                                        <td class="p-2"><input type="number" :name="`items[${i}][termin3]`" x-model="item.termin3" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
-                                        <td class="p-2"><input type="number" :name="`items[${i}][termin4]`" x-model="item.termin4" @input="recalc(i)" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-right py-1.5 transition"></td>
-                                        <td class="p-2 text-right font-mono text-[11px] font-bold text-indigo-700" x-text="new Intl.NumberFormat('id-ID').format(item.total)"></td>
-                                        <td class="p-2 min-w-[100px]"><input type="text" :name="`items[${i}][status]`" x-model="item.status" class="w-full rounded-md border border-slate-300 bg-white text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 py-1.5 transition" placeholder="Status..."></td>
-                                        <td class="p-2 text-center">
-                                            <button type="button" @click="removeItem(i)" class="text-rose-400 hover:text-rose-600 transition p-1"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-2">
+                        <h4 class="text-indigo-900 font-bold flex items-center gap-2 uppercase tracking-widest text-[10px]">
+                            <i class="fas fa-list text-indigo-500"></i> Rincian Belanja Modal
+                        </h4>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Total: <span x-text="items.length"></span> Item
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6">
+                        <template x-for="(item, i) in items" :key="i">
+                            <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
+                                <div class="bg-slate-50 border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-[10px] font-black" x-text="i + 1"></div>
+                                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Item Belanja Modal</span>
+                                    </div>
+                                    <button type="button" @click="removeItem(i)" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center shadow-sm active:scale-90">
+                                        <i class="fas fa-trash-alt text-[10px]"></i>
+                                    </button>
+                                </div>
+
+                                <div class="p-6 space-y-6">
+                                    {{-- Row 1: Kegiatan & Pekerjaan --}}
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Nama Kegiatan <span class="text-rose-500">*</span></label>
+                                            <input type="text" :name="`items[${i}][nama_kegiatan]`" x-model="item.nama_kegiatan" :x-ref="`row_${i}_kegiatan`" 
+                                                class="w-full px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition" 
+                                                placeholder="Contoh: Pembangunan Jalan..." required>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Nama Pekerjaan</label>
+                                            <input type="text" :name="`items[${i}][pekerjaan]`" x-model="item.pekerjaan" 
+                                                class="w-full px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition"
+                                                placeholder="Detail pekerjaan...">
+                                        </div>
+                                    </div>
+
+                                    {{-- Row 2: Nilai & Tanggal --}}
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Nilai Kontrak (Rp)</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                    <span class="text-xs font-bold text-slate-400">Rp</span>
+                                                </div>
+                                                <input type="number" :name="`items[${i}][nilai_kontrak]`" x-model="item.nilai_kontrak" 
+                                                    class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-sm font-mono font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-right">
+                                            </div>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Tanggal Mulai</label>
+                                            <input type="date" :name="`items[${i}][tanggal_mulai]`" x-model="item.tanggal_mulai" 
+                                                class="w-full px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Tanggal Akhir</label>
+                                            <input type="date" :name="`items[${i}][tanggal_akhir]`" x-model="item.tanggal_akhir" 
+                                                class="w-full px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition">
+                                        </div>
+                                    </div>
+
+                                    {{-- Row 3: Termin Payments --}}
+                                    <div class="bg-indigo-50/20 rounded-[2rem] p-6 border border-indigo-100/30">
+                                        <label class="block text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-4 text-center">Realisasi Pembayaran (Termin)</label>
+                                        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                                            <div class="space-y-1">
+                                                <label class="block text-[9px] font-black text-slate-400 uppercase tracking-tighter text-center">Uang Muka</label>
+                                                <input type="number" :name="`items[${i}][uang_muka]`" x-model="item.uang_muka" @input="recalc(i)" 
+                                                    class="w-full px-2 py-2.5 rounded-xl border border-slate-100 bg-white text-xs font-mono font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-center shadow-sm">
+                                            </div>
+                                            <div class="space-y-1">
+                                                <label class="block text-[9px] font-black text-slate-400 uppercase tracking-tighter text-center">Termin I</label>
+                                                <input type="number" :name="`items[${i}][termin1]`" x-model="item.termin1" @input="recalc(i)" 
+                                                    class="w-full px-2 py-2.5 rounded-xl border border-slate-100 bg-white text-xs font-mono font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-center shadow-sm">
+                                            </div>
+                                            <div class="space-y-1">
+                                                <label class="block text-[9px] font-black text-slate-400 uppercase tracking-tighter text-center">Termin II</label>
+                                                <input type="number" :name="`items[${i}][termin2]`" x-model="item.termin2" @input="recalc(i)" 
+                                                    class="w-full px-2 py-2.5 rounded-xl border border-slate-100 bg-white text-xs font-mono font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-center shadow-sm">
+                                            </div>
+                                            <div class="space-y-1">
+                                                <label class="block text-[9px] font-black text-slate-400 uppercase tracking-tighter text-center">Termin III</label>
+                                                <input type="number" :name="`items[${i}][termin3]`" x-model="item.termin3" @input="recalc(i)" 
+                                                    class="w-full px-2 py-2.5 rounded-xl border border-slate-100 bg-white text-xs font-mono font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-center shadow-sm">
+                                            </div>
+                                            <div class="space-y-1 col-span-2 lg:col-span-1">
+                                                <label class="block text-[9px] font-black text-slate-400 uppercase tracking-tighter text-center">Termin IV</label>
+                                                <input type="number" :name="`items[${i}][termin4]`" x-model="item.termin4" @input="recalc(i)" 
+                                                    class="w-full px-2 py-2.5 rounded-xl border border-slate-100 bg-white text-xs font-mono font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition text-center shadow-sm">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Footer: Total & Status --}}
+                                    <div class="flex flex-col md:flex-row items-center justify-between gap-6 pt-2">
+                                        <div class="w-full md:w-auto flex items-center gap-4 bg-indigo-600 px-6 py-4 rounded-3xl text-white shadow-lg shadow-indigo-100">
+                                            <span class="text-[9px] font-black uppercase tracking-widest opacity-80">Total Realisasi</span>
+                                            <span class="text-lg font-mono font-bold" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(item.total)"></span>
+                                        </div>
+                                        <div class="w-full md:flex-1 space-y-2">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Status Pekerjaan</label>
+                                            <input type="text" :name="`items[${i}][status]`" x-model="item.status" 
+                                                class="w-full px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition"
+                                                placeholder="Contoh: Selesai 100% / Dalam Proses...">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
 

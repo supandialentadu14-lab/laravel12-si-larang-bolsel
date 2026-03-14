@@ -33,7 +33,9 @@
         <tr>
             <td style="vertical-align: top;" class="italic">Untuk Pembayaran</td>
             <td style="vertical-align: top;" class="text-center">:</td>
-            <td class="italic">{{ $data['pembayaran_uraian'] ?? '' }}</td>
+            <td class="italic">
+                Belanja {{ $data['belanja'] ?? '' }} Pada Keg. {{ $data['kegiatan'] ?? '' }} Sub Keg. {{ $data['sub_kegiatan'] ?? '' }} Tahun {{ $data['tahun'] ?? '' }}
+            </td>
         </tr>
     </table>
 
@@ -63,8 +65,9 @@
             <div>
                 <div class="italic font-bold">Yang Menerima,</div>
                 <div class="italic font-bold">Pihak Ketiga</div>
-                <div style="height: 60px;"></div>
+                <div style="height: 52px;"></div> <!-- Reduced to align with bendahara total height -->
                 <div class="font-bold underline uppercase">{{ $data['pejabat']['pihak_ketiga'] ?? '' }}</div>
+                <div style="font-size: 10px; visibility: hidden;">placeholder</div> <!-- For symmetry with NIP line -->
             </div>
         </div>
 

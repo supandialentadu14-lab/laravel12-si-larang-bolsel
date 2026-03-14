@@ -5,12 +5,9 @@
 <div class="space-y-6">
 
     {{-- ── Hero Card ──────────────────────────────────────────────────────── --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        {{-- Header --}}
-       
-
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors duration-300">
         {{-- Info banner --}}
-        <div class="px-6 py-3 bg-amber-50 border-b border-amber-100 flex items-center gap-2 text-xs text-amber-700">
+        <div class="px-6 py-3 bg-amber-50 dark:bg-amber-900/10 border-b border-amber-100 dark:border-amber-900/30 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400 transition-colors">
             <i class="fas fa-info-circle text-amber-500"></i>
             <span>Data di bawah ini otomatis diisi pada setiap dokumen yang dicetak. Pastikan data sudah benar sebelum mencetak laporan.</span>
         </div>
@@ -102,7 +99,7 @@
     {{-- ── Bottom Action ─────────────────────────────────────────────────── --}}
     <div class="flex justify-end pb-4">
         <a href="{{ route('settings.nota.master.edit') }}"
-           class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md shadow-indigo-100 transition-all duration-200 hover:-translate-y-0.5">
+           class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md shadow-indigo-100 dark:shadow-none transition-all duration-200 hover:-translate-y-0.5">
             <i class="fas fa-pen-to-square"></i> Ubah Data Master Nota
         </a>
     </div>

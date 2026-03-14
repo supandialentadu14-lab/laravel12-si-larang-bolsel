@@ -63,18 +63,16 @@
         }
         
         body {
+            @apply transition-colors duration-300;
             background-color: #F9FAFB;
             color: #111827;
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: contain;
         }
 
-        .mobile-nav-item.active {
-            color: #4F46E5;
-        }
-
-        .mobile-nav-item.active i {
-            transform: translateY(-2px);
+        .dark body {
+            background-color: #020617; /* slate-950 */
+            color: #F8FAFC; /* slate-50 */
         }
 
         .glass-card {
@@ -82,10 +80,12 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
         }
 
-        .bottom-nav {
-            padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.8) !important; /* slate-900 */
+            border-color: rgba(51, 65, 85, 0.5) !important; /* slate-700 */
         }
 
         nav.bottom-nav.glass-card {
@@ -93,6 +93,11 @@
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             border-color: rgba(229, 231, 235, 0.6);
+        }
+
+        .dark nav.bottom-nav.glass-card {
+            background: rgba(15, 23, 42, 0.9) !important;
+            border-color: rgba(30, 41, 59, 0.8) !important;
         }
 
         /* Minimalist Button System */
@@ -182,8 +187,15 @@
     </style>
 </head>
 
-<body class="antialiased select-none overflow-hidden" style="height: 100vh; height: 100dvh;"
+<body class="antialiased select-none overflow-hidden transition-colors duration-300" 
+    :class="{ 'dark': darkMode }"
+    style="height: 100vh; height: 100dvh;"
     x-data="{ 
+        darkMode: localStorage.getItem('darkMode') === 'true',
+        toggleDarkMode() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('darkMode', this.darkMode);
+        },
         mobileMenuOpen: false, 
         masterMenuOpen: false, 
         flowMenuOpen: false, 
@@ -267,7 +279,7 @@
         x-cloak>
         <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" @click="notifOpen = false"></div>
 
-        <div class="absolute inset-x-0 bottom-0 max-h-[70vh] w-full bg-white rounded-t-[2.5rem] shadow-2xl flex flex-col"
+        <div class="absolute inset-x-0 bottom-0 max-h-[70vh] w-full bg-white dark:bg-slate-900 rounded-t-[2.5rem] shadow-2xl flex flex-col transition-colors duration-300"
             x-transition:enter="transition ease-out duration-350 transform"
             x-transition:enter-start="translate-y-full"
             x-transition:enter-end="translate-y-0"
@@ -276,15 +288,15 @@
             x-transition:leave-end="translate-y-full">
             
             <div class="w-full flex justify-center py-4">
-                <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+                <div class="w-12 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full"></div>
             </div>
 
             <div class="px-6 pb-4 flex items-center justify-between">
                 <div>
-                    <h3 class="font-black text-sm tracking-widest text-gray-900 uppercase">Peringatan Stok Rendah</h3>
-                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Hanya menampilkan item kritis</p>
+                    <h3 class="font-black text-sm tracking-widest text-gray-900 dark:text-white uppercase transition-colors">Peringatan Stok Rendah</h3>
+                    <p class="text-[9px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Hanya menampilkan item kritis</p>
                 </div>
-                <button @click="notifOpen = false" class="btn-icon-mini bg-gray-50 text-gray-400">
+                <button @click="notifOpen = false" class="btn-icon-mini bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-500">
                     <i class="fas fa-times"></i>
                 </button>
             </div>

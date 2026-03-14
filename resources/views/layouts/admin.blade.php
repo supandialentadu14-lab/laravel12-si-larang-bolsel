@@ -650,7 +650,13 @@
     </script>
 </head>
 
-<body class="font-sans antialiased theme-light" x-data="{ sidebarOpen: window.innerWidth >= 1024, theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }" @resize.window="sidebarOpen = window.innerWidth >= 1024;">
+<body class="font-sans antialiased" 
+    :class="{ 'dark theme-dark': theme === 'dark', 'theme-light': theme === 'light' }"
+    x-data="{ 
+        sidebarOpen: window.innerWidth >= 1024, 
+        theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
+    }" 
+    @resize.window="sidebarOpen = window.innerWidth >= 1024;">
     <div id="tw-check" class="hidden"></div>
     <div class="flex h-screen overflow-hidden">
 
@@ -837,53 +843,6 @@
                         </div>
                     </div>
 
-                    <div x-data="{ key: 'kwitansi', open: false }"
-                        @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
-                        x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-                            open = s[key] ?? ({{ request()->routeIs('reports.kwitansi.*') ? 'true' : 'false' }}); })()">
-                        <button
-                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.kwitansi.list') }}')"
-                            class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
-                            style="color: var(--sidebar-text)"
-                            :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-                            <span class="flex items-center gap-2">
-                                <i class="fas fa-receipt"></i>
-                                <span x-show="sidebarOpen" x-cloak>Berkas</span>
-                            </span>
-                            <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
-                                class="w-4 h-4 transform transition-transform duration-300" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <div x-show="sidebarOpen && open" x-cloak
-                            class="mt-2 rounded-lg overflow-hidden submenu-stagger"
-                            :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-                            <a href="{{ route('reports.nota.list') }}"
-                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.nota.list') ? 'bg-indigo-500 text-white' : '' }}"
-                                style="color: var(--sidebar-text)">
-                                Daftar Surat Pesanan
-                            </a>
-                            <a href="{{ route('reports.pemeriksaan.list') }}"
-                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pemeriksaan.list') ? 'bg-indigo-500 text-white' : '' }}"
-                                style="color: var(--sidebar-text)">
-                                Daftar Pemeriksaan
-                            </a>
-                            <a href="{{ route('reports.penerimaan.list') }}"
-                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.penerimaan.list') ? 'bg-indigo-500 text-white' : '' }}"
-                                style="color: var(--sidebar-text)">
-                                Daftar Penerimaan
-                            </a>
-                            <a href="{{ route('reports.kwitansi.list') }}"
-                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kwitansi.list') ? 'bg-indigo-500 text-white' : '' }}"
-                                style="color: var(--sidebar-text)">
-                                Daftar Kwitansi
-                            </a>
-                        </div>
-                    </div>
-
-                    
                         <div x-data="{ key: 'settings', open: false }"
                             @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
                             x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
@@ -932,6 +891,52 @@
                                 @endif
                             </div>
                         </div>
+
+                    <div x-data="{ key: 'kwitansi', open: false }"
+                        @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
+                        x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
+                            open = s[key] ?? ({{ request()->routeIs('reports.kwitansi.*') ? 'true' : 'false' }}); })()">
+                        <button
+                            @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.kwitansi.list') }}')"
+                            class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
+                            style="color: var(--sidebar-text)"
+                            :class="sidebarOpen ? 'justify-between' : 'justify-center'">
+                            <span class="flex items-center gap-2">
+                                <i class="fas fa-receipt"></i>
+                                <span x-show="sidebarOpen" x-cloak>Berkas</span>
+                            </span>
+                            <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
+                                class="w-4 h-4 transform transition-transform duration-300" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="sidebarOpen && open" x-cloak
+                            class="mt-2 rounded-lg overflow-hidden submenu-stagger"
+                            :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
+                            <a href="{{ route('reports.nota.list') }}"
+                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.nota.list') ? 'bg-indigo-500 text-white' : '' }}"
+                                style="color: var(--sidebar-text)">
+                                Daftar Surat Pesanan
+                            </a>
+                            <a href="{{ route('reports.pemeriksaan.list') }}"
+                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pemeriksaan.list') ? 'bg-indigo-500 text-white' : '' }}"
+                                style="color: var(--sidebar-text)">
+                                Daftar Pemeriksaan
+                            </a>
+                            <a href="{{ route('reports.penerimaan.list') }}"
+                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.penerimaan.list') ? 'bg-indigo-500 text-white' : '' }}"
+                                style="color: var(--sidebar-text)">
+                                Daftar Penerimaan
+                            </a>
+                            <a href="{{ route('reports.kwitansi.list') }}"
+                                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kwitansi.list') ? 'bg-indigo-500 text-white' : '' }}"
+                                style="color: var(--sidebar-text)">
+                                Daftar Kwitansi
+                            </a>
+                        </div>
+                    </div>
                     </div>
 
             </nav>
@@ -944,14 +949,14 @@
                     <i class="fas" :class="sidebarOpen ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
                 </button>
                 <div class="mt-3 flex items-center justify-center gap-2" x-show="sidebarOpen" x-cloak>
-                    <button @click="theme = 'light'; localStorage.setItem('theme','light')"
+                    <button @click="theme = 'light'; localStorage.setItem('theme','light'); localStorage.setItem('darkMode', 'false')"
                         class="px-3 py-1 rounded-full text-xs font-semibold cursor-pointer"
                         :style="{ backgroundColor: theme === 'light' ? 'var(--sidebar-active)' : 'transparent',
                             color: 'var(--sidebar-text)', border: '1px solid ' + (theme === 'light' ?
                                 'transparent' : 'var(--sidebar-muted)') }">
                         <i class="fas fa-sun"></i> Light
                     </button>
-                    <button @click="theme = 'dark'; localStorage.setItem('theme','dark')"
+                    <button @click="theme = 'dark'; localStorage.setItem('theme','dark'); localStorage.setItem('darkMode', 'true')"
                         class="px-3 py-1 rounded-full text-xs font-semibold cursor-pointer"
                         :style="{ backgroundColor: theme === 'dark' ? 'var(--sidebar-active)' : 'transparent',
                             color: 'var(--sidebar-text)', border: '1px solid ' + (theme === 'dark' ?
@@ -965,8 +970,9 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden" :style="{ backgroundColor: 'var(--body-bg)' }">
             <!-- Topbar -->
-            <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2"
-                :style="{ backgroundColor: '#ffffff', color: 'var(--body-text)' }">
+            <header class="shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2 transition-colors duration-300"
+                :class="theme === 'dark' ? 'bg-slate-900 border-b border-slate-800' : 'bg-white'"
+                :style="{ color: 'var(--body-text)' }">
                 <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden focus:outline-none"
                     :style="{ color: '#374151' }">
                     <i class="fas fa-bars text-xl"></i>
@@ -999,13 +1005,13 @@
                         </button>
 
                         <div x-show="notifyOpen" x-cloak @click.away="notifyOpen = false"
-                            class="absolute right-[-1rem] md:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
+                            class="absolute right-[-1rem] md:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white dark:bg-slate-900 rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden border dark:border-slate-800"
                             x-transition:enter="transition ease-out duration-100"
                             x-transition:enter-start="transform opacity-0 scale-95"
                             x-transition:enter-end="transform opacity-100 scale-100">
 
                             <div
-                                class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                                class="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 flex justify-between items-center">
                                 <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Notifikasi Sistem</span>
                                 <span
                                     class="bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold">{{ Auth::user()->unreadNotifications->count() }}</span>
@@ -1013,7 +1019,7 @@
 
                             <div class="max-h-80 overflow-y-auto custom-scrollbar">
                                 @forelse (Auth::user()->unreadNotifications as $notification)
-                                    <div class="block px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50 last:border-0 relative group">
+                                    <div class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition border-b border-gray-50 dark:border-slate-800 last:border-0 relative group">
                                         <div class="flex items-center gap-3">
                                             <div class="flex-shrink-0 bg-orange-100 rounded-full h-8 w-8 flex items-center justify-center">
                                                 <i class="fas fa-exclamation-triangle text-orange-600 text-xs"></i>
@@ -1069,7 +1075,7 @@
                                 src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}"
                                 alt="User">
                             <div class="hidden md:block text-left">
-                                <p class="text-sm font-bold leading-tight" style="color:#111827">
+                                <p class="text-sm font-bold leading-tight text-slate-800 dark:text-slate-100">
                                     {{ Auth::user()->name }}</p>
                                 <p class="text-xs" style="color:#6B7280">{{ Auth::user()->email }}</p>
                             </div>
@@ -1077,7 +1083,7 @@
                         </button>
 
                         <div x-show="open" x-cloak @click.away="open = false"
-                            class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
+                            class="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-xl shadow-xl z-50 ring-1 ring-black ring-opacity-5 overflow-hidden border dark:border-slate-800"
                             x-transition:enter="transition ease-out duration-150"
                             x-transition:enter-start="transform opacity-0 scale-95"
                             x-transition:enter-end="transform opacity-100 scale-100">
@@ -1094,17 +1100,15 @@
                             </div>
                             <div class="py-2">
                                 <a href="{{ route('profile.edit') }}"
-                                    class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
-                                    style="color:#374151">
-                                    <i class="fas fa-user-edit text-indigo-600"></i>
+                                    class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                    <i class="fas fa-user-edit text-indigo-600 dark:text-indigo-400"></i>
                                     Edit Profil
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}" class="no-soft">
                                     @csrf
                                     <button type="submit"
-                                        class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
-                                        style="color:#374151">
-                                        <i class="fas fa-sign-out-alt text-red-600"></i>
+                                        class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                        <i class="fas fa-sign-out-alt text-red-600 dark:text-red-400"></i>
                                         Keluar
                                     </button>
                                 </form>
@@ -1115,12 +1119,12 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6" style="color:#111827">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-[#020617] p-4 md:p-6 transition-colors duration-300">
                 <!-- Page Header & Actions -->
                 <div id="page-header" class="mb-6 bg-white md:bg-transparent p-6 md:p-0 rounded-[2.5rem] md:rounded-none shadow-sm md:shadow-none border border-slate-50 md:border-none flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold" style="color:#111827">@yield('header')</h2>
-                        <p class="text-sm mt-1" style="color:#6B7280">@yield('subheader')</p>
+                        <h2 class="text-2xl font-black text-slate-800 dark:text-white transition-colors">@yield('header')</h2>
+                        <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1 transition-colors">@yield('subheader')</p>
                     </div>
                     <div id="page-actions" class="flex items-center gap-3 flex-wrap w-full md:w-auto">
                         @yield('actions')
@@ -1129,28 +1133,28 @@
 
                 @if (session('success'))
                     <div
-                        class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm flex items-center justify-between">
+                        class="mb-6 bg-green-50 dark:bg-emerald-950/20 border-l-4 border-green-500 p-4 rounded shadow-sm flex items-center justify-between transition-colors">
                         <div class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
-                            <span class="text-green-700 font-medium">{{ session('success') }}</span>
+                            <i class="fas fa-check-circle text-green-500 dark:text-emerald-400 text-xl mr-3"></i>
+                            <span class="text-green-700 dark:text-emerald-300 font-medium">{{ session('success') }}</span>
                         </div>
                     </div>
                 @endif
 
                 @if (session('error'))
                     <div
-                        class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm flex items-center justify-between">
+                        class="mb-6 bg-red-50 dark:bg-rose-950/20 border-l-4 border-red-500 p-4 rounded shadow-sm flex items-center justify-between transition-colors">
                         <div class="flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
-                            <span class="text-red-700 font-medium">{{ session('error') }}</span>
+                            <i class="fas fa-exclamation-circle text-red-500 dark:text-rose-400 text-xl mr-3"></i>
+                            <span class="text-red-700 dark:text-rose-300 font-medium">{{ session('error') }}</span>
                         </div>
                     </div>
                 @endif
 
                 @if ($errors->any())
-                    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm">
-                        <p class="font-bold text-red-700">Action Failed</p>
-                        <ul class="list-disc list-inside text-sm text-red-600 mt-1">
+                    <div class="mb-6 bg-red-50 dark:bg-rose-950/20 border-l-4 border-red-500 p-4 rounded shadow-sm transition-colors">
+                        <p class="font-bold text-red-700 dark:text-rose-400">Action Failed</p>
+                        <ul class="list-disc list-inside text-sm text-red-600 dark:text-rose-300 mt-1 uppercase tracking-tight font-bold">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -1160,7 +1164,7 @@
 
                 @yield('content')
             </main>
-            <footer class="no-print bg-white text-gray-600 border-t ring-1 ring-gray-100">
+            <footer class="no-print bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-400 border-t dark:border-slate-800 ring-1 ring-gray-100 dark:ring-transparent transition-colors duration-300">
                 <div class="px-6 py-4 flex items-center justify-between">
                     <p class="text-xs md:text-sm font-medium">
                         Copyright © 2026 Emon Alentadu. Seluruh Hak Cipta Dilindungi.

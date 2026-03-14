@@ -4,13 +4,13 @@
 
 @section('actions')
     <form action="{{ route('dashboard') }}" method="GET" id="dateFilterForm"
-        class="dash-filter-form flex items-center gap-2 px-3 py-1.5 rounded-xl border shadow-sm backdrop-blur-sm">
+        class="dash-filter-form flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 transition-colors">
         <i class="fas fa-calendar-alt text-indigo-500 text-sm"></i>
         <input type="date" id="dateInput" name="date" value="{{ request('date') ?? date('Y-m-d') }}"
-            class="dash-filter-input"
+            class="dash-filter-input bg-transparent border-none text-slate-800 dark:text-slate-100 font-black outline-none"
             onchange="this.form.submit()">
         @if(request('date'))
-            <a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-red-500 transition ml-1" title="Reset">
+            <a href="{{ route('dashboard') }}" class="text-gray-400 dark:text-slate-500 hover:text-red-500 transition ml-1" title="Reset">
                 <i class="fas fa-times text-xs"></i>
             </a>
         @endif
@@ -128,41 +128,41 @@
     {{-- ══════════════════════════════════════════ --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         {{-- Barang Masuk --}}
-        <div class="dash-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+        <div class="dash-card bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-4 hover:shadow-md transition">
             <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style="background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);">
                 <i class="fas fa-arrow-circle-down text-2xl text-green-700"></i>
             </div>
             <div>
-                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Masuk Hari Ini</p>
-                <p class="text-2xl font-extrabold text-gray-800">{{ $inToday }} <span class="text-sm font-normal text-gray-400">item</span></p>
-                <p class="text-xs text-green-600 font-semibold">+ Rp {{ number_format($valueInToday, 0, ',', '.') }}</p>
+                <p class="text-xs text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider">Masuk Hari Ini</p>
+                <p class="text-2xl font-extrabold text-gray-800 dark:text-white transition-colors">{{ $inToday }} <span class="text-sm font-normal text-gray-400">item</span></p>
+                <p class="text-xs text-green-600 dark:text-green-500 font-semibold">+ Rp {{ number_format($valueInToday, 0, ',', '.') }}</p>
             </div>
         </div>
 
         {{-- Barang Keluar --}}
-        <div class="dash-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+        <div class="dash-card bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-4 hover:shadow-md transition">
             <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
                 <i class="fas fa-arrow-circle-up text-2xl text-red-500"></i>
             </div>
             <div>
-                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Keluar Hari Ini</p>
-                <p class="text-2xl font-extrabold text-gray-800">{{ $outToday }} <span class="text-sm font-normal text-gray-400">item</span></p>
-                <p class="text-xs text-red-500 font-semibold">− Rp {{ number_format($valueOutToday, 0, ',', '.') }}</p>
+                <p class="text-xs text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider">Keluar Hari Ini</p>
+                <p class="text-2xl font-extrabold text-gray-800 dark:text-white transition-colors">{{ $outToday }} <span class="text-sm font-normal text-gray-400">item</span></p>
+                <p class="text-xs text-red-500 dark:text-red-400 font-semibold">− Rp {{ number_format($valueOutToday, 0, ',', '.') }}</p>
             </div>
         </div>
 
         {{-- Total Transaksi --}}
-        <div class="dash-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+        <div class="dash-card bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-4 hover:shadow-md transition">
             <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
                 <i class="fas fa-exchange-alt text-2xl text-blue-600"></i>
             </div>
             <div>
-                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Transaksi</p>
-                <p class="text-2xl font-extrabold text-gray-800">{{ $transactionsToday }} <span class="text-sm font-normal text-gray-400">aktivitas</span></p>
-                <p class="text-xs text-blue-500 font-semibold">{{ $pinjamCount }} Dokumen Pinjam Pakai</p>
+                <p class="text-xs text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider">Total Transaksi</p>
+                <p class="text-2xl font-extrabold text-gray-800 dark:text-white transition-colors">{{ $transactionsToday }} <span class="text-sm font-normal text-gray-400">aktivitas</span></p>
+                <p class="text-xs text-blue-500 dark:text-blue-400 font-semibold">{{ $pinjamCount }} Dokumen Pinjam Pakai</p>
             </div>
         </div>
     </div>
@@ -173,11 +173,11 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Stock Movement Chart (2/3) --}}
-        <div class="dash-card lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-50">
+        <div class="dash-card lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-colors">
+            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-50 dark:border-slate-800">
                 <div>
-                    <h2 class="text-base font-extrabold text-gray-800">Pergerakan Stok Hari Ini</h2>
-                    <p class="text-xs text-gray-400 mt-0.5">Berdasarkan jam transaksi</p>
+                    <h2 class="text-base font-extrabold text-gray-800 dark:text-white">Pergerakan Stok Hari Ini</h2>
+                    <p class="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Berdasarkan jam transaksi</p>
                 </div>
                 <div class="flex gap-3 text-xs">
                     <span class="flex items-center gap-1.5 font-semibold text-emerald-600">
@@ -196,25 +196,25 @@
         </div>
 
         {{-- Category Donut Chart (1/3) --}}
-        <div class="dash-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 pt-5 pb-4 border-b border-gray-50">
-                <h2 class="text-base font-extrabold text-gray-800">Distribusi Kategori</h2>
-                <p class="text-xs text-gray-400 mt-0.5">Stok per kategori barang</p>
+        <div class="dash-card bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-colors">
+            <div class="px-6 pt-5 pb-4 border-b border-gray-50 dark:border-slate-800">
+                <h2 class="text-base font-extrabold text-gray-800 dark:text-white">Distribusi Kategori</h2>
+                <p class="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Stok per kategori barang</p>
             </div>
             <div class="p-5">
                 @if($categoryValues->sum() > 0)
                     <div class="relative mx-auto" style="width:180px; height:180px;">
                         <canvas id="categoryChart"></canvas>
                         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span class="text-2xl font-black text-gray-800">{{ $categoryValues->sum() }}</span>
-                            <span class="text-xs text-gray-400">Total</span>
+                            <span class="text-2xl font-black text-gray-800 dark:text-white transition-colors">{{ $categoryValues->sum() }}</span>
+                            <span class="text-xs text-gray-400 dark:text-slate-500 transition-colors">Total</span>
                         </div>
                     </div>
                     <div class="mt-4 space-y-2" id="categoryLegend"></div>
                 @else
-                    <div class="flex flex-col items-center justify-center h-48 text-gray-300">
+                    <div class="flex flex-col items-center justify-center h-48 text-gray-300 dark:text-slate-700 transition-colors">
                         <i class="fas fa-chart-pie text-5xl mb-3"></i>
-                        <p class="text-sm">Belum ada data</p>
+                        <p class="text-sm font-bold uppercase tracking-widest">Belum ada data</p>
                     </div>
                 @endif
             </div>
@@ -231,24 +231,24 @@
     {{-- ══════════════════════════════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Top Products List --}}
-        <div class="dash-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-50 bg-slate-50/50">
-                <h2 class="text-base font-extrabold text-gray-800">5 Barang Terpopuler</h2>
-                <p class="text-[10px] text-gray-400 uppercase tracking-tighter">Berdasarkan frekuensi transaksi</p>
+        <div class="dash-card bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-colors">
+            <div class="px-6 py-4 border-b border-gray-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                <h2 class="text-base font-extrabold text-gray-800 dark:text-white">5 Barang Terpopuler</h2>
+                <p class="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-tighter">Berdasarkan frekuensi transaksi</p>
             </div>
             <div class="p-4 space-y-3">
                 @foreach($topProducts as $idx => $p)
-                <div class="flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-indigo-100 hover:bg-indigo-50/30 transition group">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm shrink-0">
+                <div class="flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/40 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition group">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-sm shrink-0">
                         {{ $idx + 1 }}
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-gray-800 truncate group-hover:text-indigo-700 transition">{{ $p->name }}</p>
-                        <p class="text-[10px] text-gray-400 font-medium uppercase tracking-widest">{{ $p->category->name ?? 'Tanpa Kategori' }}</p>
+                        <p class="text-sm font-bold text-gray-800 dark:text-slate-200 truncate group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition">{{ $p->name }}</p>
+                        <p class="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest">{{ $p->category->name ?? 'Tanpa Kategori' }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs font-black text-indigo-600">{{ $p->transactions_count }}</p>
-                        <p class="text-[9px] text-gray-400 font-bold uppercase">Aksi</p>
+                        <p class="text-xs font-black text-indigo-600 dark:text-indigo-400">{{ $p->transactions_count }}</p>
+                        <p class="text-[9px] text-gray-400 dark:text-slate-500 font-bold uppercase">Aksi</p>
                     </div>
                 </div>
                 @endforeach
@@ -282,11 +282,11 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Monthly Trend Bar Chart --}}
-        <div class="dash-card lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-50">
+        <div class="dash-card lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-colors">
+            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-50 dark:border-slate-800">
                 <div>
-                    <h2 class="text-base font-extrabold text-gray-800">Tren Pengadaan</h2>
-                    <p class="text-xs text-gray-400 mt-0.5">6 Bulan terakhir</p>
+                    <h2 class="text-base font-extrabold text-gray-800 dark:text-white">Tren Pengadaan</h2>
+                    <p class="text-xs text-gray-400 dark:text-slate-500 mt-0.5">6 Bulan terakhir</p>
                 </div>
                 <div class="flex gap-3 text-xs">
                     <span class="flex items-center gap-1.5 font-semibold text-violet-600">
@@ -305,31 +305,31 @@
         </div>
 
         {{-- Recent Activity Feed --}}
-        <div class="dash-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-50">
-                <h2 class="text-base font-extrabold text-gray-800">Aktivitas Terbaru</h2>
+        <div class="dash-card bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-colors flex flex-col">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-50 dark:border-slate-800">
+                <h2 class="text-base font-extrabold text-gray-800 dark:text-white">Aktivitas Terbaru</h2>
                 <a href="{{ route('stock.index') }}"
-                    class="text-xs font-bold text-indigo-500 hover:text-indigo-700 transition">Lihat Semua →</a>
+                    class="text-xs font-black text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition">Lihat Semua →</a>
             </div>
-            <div class="flex-1 overflow-y-auto divide-y divide-gray-50 max-h-[280px] dash-scroll">
+            <div class="flex-1 overflow-y-auto divide-y divide-gray-50 dark:divide-slate-800 max-h-[280px] dash-scroll">
                 @forelse($recentTransactions as $tx)
-                <div class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold
-                        {{ $tx->type == 'in' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
+                <div class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black
+                        {{ $tx->type == 'in' ? 'bg-green-100 dark:bg-green-950/30 text-green-600' : 'bg-red-100 dark:bg-red-950/30 text-red-600' }}">
                         <i class="fas {{ $tx->type == 'in' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-gray-800 truncate">{{ $tx->product?->name ?? '-' }}</p>
-                        <p class="text-xs text-gray-400">{{ $tx->date->format('H:i') }}</p>
+                        <p class="text-sm font-bold text-gray-800 dark:text-slate-200 truncate leading-tight">{{ $tx->product?->name ?? '-' }}</p>
+                        <p class="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase">{{ $tx->date->format('H:i') }}</p>
                     </div>
-                    <span class="text-sm font-bold {{ $tx->type == 'in' ? 'text-green-600' : 'text-red-500' }} whitespace-nowrap">
+                    <span class="text-sm font-black {{ $tx->type == 'in' ? 'text-green-600' : 'text-red-500' }} whitespace-nowrap">
                         {{ $tx->type == 'in' ? '+' : '−' }}{{ $tx->quantity }}
                     </span>
                 </div>
                 @empty
-                <div class="flex flex-col items-center justify-center p-8 text-gray-300">
+                <div class="flex flex-col items-center justify-center p-8 text-gray-300 dark:text-slate-700 transition-colors">
                     <i class="fas fa-inbox text-4xl mb-2"></i>
-                    <p class="text-xs">Belum ada transaksi</p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Belum ada transaksi</p>
                 </div>
                 @endforelse
             </div>
@@ -353,13 +353,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const PALETTE = ['#6366f1','#f59e0b','#10b981','#ef4444','#3b82f6','#a855f7','#ec4899','#14b8a6','#f97316','#84cc16'];
 
     /* ── Theme detection ─────────────────────────── */
-    const isDark    = document.body.classList.contains('theme-dark');
+    const isDark    = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
     const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#f3f4f6';
     const tickColor = isDark ? '#64748b' : '#9ca3af';
+    const chartBg   = isDark ? '#0f172a' : '#ffffff';
+    const chartBorder = isDark ? '#1e293b' : '#ffffff';
 
     /* ── Helper: gradient ───────────────────────── */
     function makeLinearGradient(ctx, top, bottom) {
-        const g = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+        const h = ctx.canvas.height || 300;
+        const g = ctx.createLinearGradient(0, 0, 0, h);
         g.addColorStop(0, top);
         g.addColorStop(1, bottom);
         return g;
@@ -445,7 +448,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     data: catValues,
                     backgroundColor: PALETTE,
-                    borderWidth: 3, borderColor: '#fff',
+                    borderWidth: 3, 
+                    borderColor: isDark ? '#0f172a' : '#ffffff',
                     hoverOffset: 10
                 }]
             },
@@ -466,9 +470,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${PALETTE[i % PALETTE.length]}"></span>
-                            <span class="text-xs text-gray-600 font-medium">${label}</span>
+                            <span class="text-xs text-gray-600 dark:text-slate-400 font-bold">${label}</span>
                         </div>
-                        <span class="text-xs font-bold text-gray-800">${catValues[i]}</span>
+                        <span class="text-xs font-black text-gray-800 dark:text-white transition-colors">${catValues[i]}</span>
                     </div>`;
             });
         }

@@ -288,20 +288,19 @@
             </div>
 
             @if ($current == $lastIndex)
-                <table class="ttd-table signature-block">
+                <table class="ttd-table signature-block" style="line-height: 1.2;">
                     <tr>
-                        
-                        <td align="center">
-                            Dibuat Oleh<br>
-                            Pengurus Barang<br><br><br><br><br>
+                        <td align="center" style="width: 50%;">
+                            <div style="margin-bottom: 0;">Dibuat Oleh</div>
+                            <div style="margin-bottom: 60px;">Pengurus Barang</div>
                             <strong><u>{{ $opd->pengurus_nama ?? '' }}</u></strong><br>
-                            NIP. {{ $opd->pengurus_nip ?? '' }}
+                            <div>NIP. {{ $opd->pengurus_nip ?? '' }}</div>
                         </td>
-                        <td align="center">
-                            Mengetahui<br>
-                            Kepala Dinas<br><br><br><br><br>
+                        <td align="center" style="width: 50%;">
+                            <div style="margin-bottom: 0;">Mengetahui</div>
+                            <div style="margin-bottom: 60px;">Kepala Dinas</div>
                             <strong><u>{{ $opd->kepala_nama ?? '' }}</u></strong><br>
-                            NIP. {{ $opd->kepala_nip ?? '' }}
+                            <div>NIP. {{ $opd->kepala_nip ?? '' }}</div>
                         </td>
                     </tr>
                 </table>

@@ -62,7 +62,7 @@
 
         @media screen {
             #print-area {
-                width: 330mm;
+                width: 297mm;
                 min-height: 210mm;
                 margin: 16px auto;
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
@@ -96,7 +96,7 @@
             }
 
             @page {
-                size: 330mm 210mm;
+                size: 297mm 210mm;
                 margin: 5mm 15mm;
             }
 
