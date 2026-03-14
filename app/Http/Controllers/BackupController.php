@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Log;
-use Ifsnop\Mysqldump as IMysqldump;
+use Ifsnop\Mysqldump\Mysqldump;
 use Exception;
 
 class BackupController extends Controller
@@ -37,7 +37,7 @@ class BackupController extends Controller
             }
 
             $dumpSettings = array(
-                'compress' => IMysqldump\Mysqldump::NONE,
+                'compress' => Mysqldump::NONE,
                 'no-data' => false,
                 'add-drop-table' => false, 
                 'no-create-info' => true,
@@ -55,7 +55,7 @@ class BackupController extends Controller
                 'exclude-tables' => $excludeTables
             );
 
-            $dump = new IMysqldump\Mysqldump(
+            $dump = new Mysqldump(
                 'mysql:host=' . env('DB_HOST', '127.0.0.1') . ';dbname=' . env('DB_DATABASE', 'laravel'),
                 env('DB_USERNAME', 'root'),
                 env('DB_PASSWORD', ''),

@@ -75,9 +75,9 @@
                             <col style="width: 60px;">
                             <col style="width: 112px;">
                             <col style="width: 120px;">
-                            <col style="width: 20px;">
-                            <col style="width: 20px;">
-                            <col style="width: 20px;">
+                            <col style="width: 40px;">
+                            <col style="width: 40px;">
+                            <col style="width: 40px;">
                         </colgroup>
                         <thead>
                             <tr class="text-center font-bold" style="background-color: #f8fafc;">
@@ -90,9 +90,9 @@
                                 <th colspan="3">Kondisi Barang</th>
                             </tr>
                             <tr class="text-center font-bold" style="background-color: #f8fafc;">
-                                <th style="width: 20px;">B</th>
-                                <th style="width: 20px;">RR</th>
-                                <th style="width: 20px;">RB</th>
+                                <th style="width: 40px;">B</th>
+                                <th style="width: 40px;">RR</th>
+                                <th style="width: 40px;">RB</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -181,6 +181,8 @@
                     .uppercase { text-transform: uppercase; }
                     .signature-block { break-inside: avoid; page-break-inside: avoid; }
                     .signature-block * { break-inside: avoid; page-break-inside: avoid; }
+                    .preview-paper-mobile table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    .preview-paper-mobile th, .preview-paper-mobile td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
                     @media print { 
                         body { padding: 0; }
                         @page { size: 210mm 330mm; margin: 10mm; }

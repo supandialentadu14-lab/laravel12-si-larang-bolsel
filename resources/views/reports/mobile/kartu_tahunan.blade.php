@@ -230,6 +230,8 @@
                     .font-bold { font-weight: bold; }
                     .signature-block { break-inside: avoid; page-break-inside: avoid; }
                     .signature-block * { break-inside: avoid; page-break-inside: avoid; }
+                    .info-table-mobile { border: none !important; margin-bottom: 15px; width: auto !important; }
+                    .info-table-mobile td { border: none !important; padding: 2px 5px; font-size: 14px; }
                     @media print { 
                         body { padding: 0; }
                         @page { size: 330mm 210mm; margin: 10mm; }

@@ -133,6 +133,19 @@
             <a href="{{ request()->routeIs('profile.edit') ? route('dashboard') : route('users.index') }}" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
             <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">{{ request()->routeIs('profile.edit') ? 'Simpan Profil' : 'Perbarui User' }}</button>
         </div>
+
+        @if(request()->routeIs('profile.edit'))
+        {{-- Logout Section khusus di halaman Profil --}}
+        <div class="px-2 pt-4">
+            <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari akun?')">
+                @csrf
+                <button type="submit" class="w-full py-5 bg-rose-50 text-rose-600 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 border border-rose-100 active:scale-95 transition-all">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Keluar Akun</span>
+                </button>
+            </form>
+        </div>
+        @endif
     </form>
 </div>
 @endsection

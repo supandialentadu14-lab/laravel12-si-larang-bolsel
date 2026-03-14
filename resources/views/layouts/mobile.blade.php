@@ -188,6 +188,7 @@
         masterMenuOpen: false, 
         flowMenuOpen: false, 
         settingsMenuOpen: false, 
+        profileMenuOpen: false,
         notifOpen: false,
         scrollingDown: false,
         lastScrollTop: 0,
@@ -202,8 +203,7 @@
         }
     }">
     <div class="flex flex-col h-full overflow-hidden">
-        <div :class="scrollingDown ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'" 
-             class="transition-all duration-500 ease-in-out transform sticky top-0 z-[45]">
+        <div class="sticky top-0 z-[45]">
             @include('partials.mobile_header')
         </div>
 

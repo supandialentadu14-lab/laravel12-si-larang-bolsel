@@ -253,8 +253,15 @@
                     .text-right { text-align: right; }
                     .text-left { text-align: left; }
                     .font-bold { font-weight: bold; }
+                    .split-cell { position: relative; display: flex; width: 100%; height: 100%; }
+                    .split-cell .left { flex: 0 0 28px; padding: 4px 0; display: flex; align-items: center; justify-content: center; }
+                    .split-cell .right { flex: 1 1 auto; padding: 4px 8px; text-align: center; }
+                    td.split-col { position: relative; padding: 0 !important; }
+                    td.split-col::after { content: ''; position: absolute; left: 28px; top: -1px; bottom: -1px; width: 1px; background: #000; pointer-events: none; }
                     .signature-block { break-inside: avoid; page-break-inside: avoid; }
                     .signature-block * { break-inside: avoid; page-break-inside: avoid; }
+                    .info-table-mobile { border: none !important; margin-bottom: 15px; width: auto !important; }
+                    .info-table-mobile td { border: none !important; padding: 2px 5px; font-size: 14px; }
                     @media print { 
                         body { padding: 0; }
                         @page { size: 330mm 210mm; margin: 10mm; }
