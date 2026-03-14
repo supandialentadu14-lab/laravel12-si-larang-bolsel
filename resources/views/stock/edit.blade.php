@@ -32,49 +32,74 @@
       @csrf
       @method('PUT')
 
+      @php $isAutomatic = ($transaction->notes === 'Otomatis dari Kwitansi'); @endphp
+      
+      @if($isAutomatic)
+        <div class="mb-4 p-4 bg-amber-50 border border-amber-100 rounded-2xl flex items-start gap-3">
+          <i class="fas fa-info-circle text-amber-500 mt-0.5"></i>
+          <p class="text-[10px] font-bold text-amber-700 leading-relaxed uppercase tracking-widest">
+            Transaksi ini tidak dapat diubah karena dibuat otomatis dari Kwitansi. Silahkan ubah Nota Pesanan, Berita Acara Serah Terima Barang, atau Kwitansi untuk mengubah transaksi ini.
+          </p>
+        </div>
+      @endif
+
       <div class="space-y-1.5">
         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Barang</label>
-        <select name="product_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
-          <option value="">Pilih Barang</option>
-          @foreach ($products as $product)
-            <option value="{{ $product->id }}" {{ (string)old('product_id', $transaction->product_id) === (string)$product->id ? 'selected' : '' }}>{{ $product->name }}</option>
-          @endforeach
-        </select>
+        <div class="relative">
+          <select name="product_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none {{ $isAutomatic ? 'opacity-60 cursor-not-allowed' : '' }}" required @if($isAutomatic) readonly style="pointer-events: none;" @endif>
+            <option value="">Pilih Barang</option>
+            @foreach ($products as $product)
+              <option value="{{ $product->id }}" {{ (string)old('product_id', $transaction->product_id) === (string)$product->id ? 'selected' : '' }}>{{ $product->name }}</option>
+            @endforeach
+          </select>
+          @if($isAutomatic) <input type="hidden" name="product_id" value="{{ $transaction->product_id }}"> @endif
+        </div>
         @error('product_id')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="space-y-1.5">
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Jenis</label>
-          <select name="type" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
-            <option value="in" {{ old('type', $transaction->type) === 'in' ? 'selected' : '' }}>Masuk</option>
-            <option value="out" {{ old('type', $transaction->type) === 'out' ? 'selected' : '' }}>Keluar</option>
-          </select>
+          <div class="relative">
+            <select name="type" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none {{ $isAutomatic ? 'opacity-60 cursor-not-allowed' : '' }}" required @if($isAutomatic) readonly style="pointer-events: none;" @endif>
+              <option value="in" {{ old('type', $transaction->type) === 'in' ? 'selected' : '' }}>Masuk</option>
+              <option value="out" {{ old('type', $transaction->type) === 'out' ? 'selected' : '' }}>Keluar</option>
+            </select>
+            @if($isAutomatic) <input type="hidden" name="type" value="{{ $transaction->type }}"> @endif
+          </div>
           @error('type')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
         <div class="space-y-1.5">
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Jumlah</label>
-          <input type="number" name="quantity" min="1" value="{{ old('quantity', $transaction->quantity) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+          <input type="number" name="quantity" min="1" value="{{ old('quantity', $transaction->quantity) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none {{ $isAutomatic ? 'opacity-60 cursor-not-allowed' : '' }}" required @if($isAutomatic) readonly @endif>
           @error('quantity')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="space-y-1.5">
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
-          <input type="date" name="date" value="{{ old('date', $transaction->date ? $transaction->date->format('Y-m-d') : now()->format('Y-m-d')) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+          <input type="date" name="date" value="{{ old('date', $transaction->date ? $transaction->date->format('Y-m-d') : now()->format('Y-m-d')) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none {{ $isAutomatic ? 'opacity-60 cursor-not-allowed' : '' }}" required @if($isAutomatic) readonly @endif>
           @error('date')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
         <div class="space-y-1.5">
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">No. Surat (Opsional)</label>
-          <input type="text" name="nosur" value="{{ old('nosur', $transaction->nosur) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono">
+          <div class="flex items-center justify-between ml-4">
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">No. Surat {{ $isAutomatic ? '' : '(Opsional)' }}</label>
+            @if($transaction->nosur)
+              <a href="{{ route('reports.penerimaan.list', ['search' => $transaction->nosur]) }}" class="text-[9px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-800 transition-colors flex items-center gap-1.5">
+                <i class="fas fa-external-link-alt text-[7px]"></i>
+                Lihat BASTB
+              </a>
+            @endif
+          </div>
+          <input type="text" name="nosur" value="{{ old('nosur', $transaction->nosur) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono tracking-tight {{ $isAutomatic ? 'opacity-60 cursor-not-allowed' : '' }}" @if($isAutomatic) readonly @endif>
           @error('nosur')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
       </div>
 
       <div class="space-y-1.5">
         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Keterangan (Opsional)</label>
-        <textarea name="notes" rows="3" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">{{ old('notes', $transaction->notes) }}</textarea>
+        <textarea name="notes" rows="3" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none {{ $isAutomatic ? 'opacity-60 cursor-not-allowed' : '' }}" @if($isAutomatic) readonly @endif>{{ old('notes', $transaction->notes) }}</textarea>
         @error('notes')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 

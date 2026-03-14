@@ -104,14 +104,9 @@
 
         @foreach($txs as $transaction)
           @php
-            $productId = $transaction->product_id ?? ($transaction->product?->id ? (string) $transaction->product->id : ('deleted-'.$transaction->id));
             $productName = $transaction->product?->name ?? '(Produk dihapus)';
             $productUnit = $transaction->product?->unit ?? 'Unit';
-            $productStock = $transaction->product?->calculated_stock ?? $transaction->product?->stock;
-            if (!isset($runningStock[$productId])) { $runningStock[$productId] = 0; }
-            if ($transaction->type === 'in') { $runningStock[$productId] += $transaction->quantity; } 
-            else { $runningStock[$productId] -= $transaction->quantity; }
-            $saldoAkhir = $runningStock[$productId];
+            $saldoAkhir = $transaction->running_balance ?? 0;
           @endphp
           <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 relative overflow-hidden group">
             {{-- Decoration --}}
@@ -125,23 +120,26 @@
 
               {{-- Transaction Info --}}
               <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between">
-                  <div>
-                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight truncate leading-tight group-hover:text-indigo-600 transition-colors">{{ $productName }}</h3>
-                    <div class="flex items-center gap-2 mt-1">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-indigo-600 transition-colors">{{ $productName }}</h3>
+                    <div class="flex items-center flex-wrap gap-2 mt-2">
                       <span class="text-[9px] font-black px-2 py-0.5 rounded-lg {{ $transaction->type === 'in' ? 'bg-emerald-100 text-emerald-700 ' : 'bg-rose-100 text-rose-700 ' }} uppercase tracking-widest transition-colors">
                         {{ $transaction->type === 'in' ? 'Masuk' : 'Keluar' }}
                       </span>
                       @if($transaction->nosur)
-                        <span class="text-[9px] font-black text-indigo-400 bg-indigo-50 px-1.5 py-0.5 rounded-md uppercase tracking-widest transition-colors">#{{ $transaction->nosur }}</span>
+                        <a href="{{ route('reports.penerimaan.list', ['search' => $transaction->nosur]) }}" class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg uppercase tracking-widest transition-all hover:bg-indigo-100 flex items-center gap-1.5 border border-indigo-100/50">
+                          <i class="fas fa-link text-[7px] opacity-40"></i>
+                          #{{ $transaction->nosur }}
+                        </a>
                       @endif
                     </div>
                   </div>
-                  <div class="text-right">
-                    <span class="text-lg font-black {{ $transaction->type === 'in' ? 'text-emerald-600' : 'text-rose-600' }}">
+                  <div class="text-right flex-shrink-0 ml-auto pt-0.5">
+                    <span class="text-lg font-black {{ $transaction->type === 'in' ? 'text-emerald-600' : 'text-rose-600' }} block leading-none">
                       {{ $transaction->type === 'in' ? '+' : '-' }}{{ $transaction->quantity }}
                     </span>
-                    <p class="text-[8px] font-black text-slate-300 uppercase tracking-widest transition-colors">{{ $productUnit }}</p>
+                    <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.1em] mt-1">{{ $productUnit }}</p>
                   </div>
                 </div>
 
@@ -150,26 +148,30 @@
                     @if($transaction->notes)
                       <div class="px-3 py-1 rounded-full bg-slate-50 text-slate-500 flex items-center gap-2 transition-colors">
                         <i class="far fa-sticky-note text-[8px] opacity-40"></i>
-                        <span class="text-[8px] font-black tracking-widest truncate max-w-[120px]">{{ $transaction->notes }}</span>
+                        <span class="text-[8px] font-black tracking-widest">{{ $transaction->notes }}</span>
                       </div>
                     @endif
                     <div class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 flex items-center gap-2 transition-colors">
                       <i class="fas fa-box text-[8px] opacity-40"></i>
-                      <span class="text-[8px] font-black tracking-widest uppercase">{{ $productStock ?? '-' }} Stok</span>
+                      <span class="text-[8px] font-black tracking-widest uppercase">{{ $saldoAkhir ?? '-' }} Stok</span>
                     </div>
                   </div>
 
                   {{-- Quick Actions --}}
+                  @php $isAutomatic = $transaction->notes === 'Otomatis dari Kwitansi'; @endphp
                   <div class="flex items-center gap-1.5">
-                    <a href="{{ route('stock.edit', $transaction->id) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                      <i class="far fa-edit text-[10px]"></i>
+                    <a href="{{ route('stock.edit', $transaction->id) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors" title="{{ $isAutomatic ? 'Lihat Detail' : 'Edit' }}">
+                      <i class="{{ $isAutomatic ? 'fas fa-eye' : 'far fa-edit' }} text-[10px]"></i>
                     </a>
-                    <form action="{{ route('stock.destroy', $transaction->id) }}" method="POST" class="inline">
-                      @csrf @method('DELETE')
-                      <button type="submit" @click.prevent="if(confirm('Hapus transaksi ini?')) $el.form.submit()" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
-                        <i class="fas fa-trash text-[10px]"></i>
-                      </button>
-                    </form>
+                    
+                    @if(!$isAutomatic)
+                      <form action="{{ route('stock.destroy', $transaction->id) }}" method="POST" class="inline">
+                        @csrf @method('DELETE')
+                        <button type="submit" @click.prevent="if(confirm('Hapus transaksi ini?')) $el.form.submit()" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors" title="Hapus">
+                          <i class="fas fa-trash text-[10px]"></i>
+                        </button>
+                      </form>
+                    @endif
                   </div>
                 </div>
               </div>

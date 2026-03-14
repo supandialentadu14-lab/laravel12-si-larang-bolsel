@@ -79,6 +79,7 @@ class KwitansiController extends Controller
                 'total' => (int)($data['total'] ?? 0),
                 'nota' => $notaData,
                 'belanja' => $notaData['belanja'] ?? '',
+                'items' => $data['items'] ?? [],
             ];
         }
         usort($items, fn($a, $b) => ($b['tanggal'] ?? '') <=> ($a['tanggal'] ?? ''));
@@ -411,11 +412,17 @@ class KwitansiController extends Controller
                 Storage::disk('local')->makeDirectory($dirPath);
             }
 
-            // Jika update dan ID berubah, hapus file lama
-            if ($oldId && $oldId !== $newId) {
+            // Jika update, hapus transaksi stok lama sebelum menyimpan yang baru
+            if ($oldId) {
                 $oldPath = "{$dirPath}/{$oldId}.json";
                 if (Storage::disk('local')->exists($oldPath)) {
-                    Storage::disk('local')->delete($oldPath);
+                    $oldData = json_decode(Storage::disk('local')->get($oldPath), true);
+                    if ($oldData && !empty($oldData['nomor_kwt'])) {
+                        $this->removeKwitansiStock($oldData['nomor_kwt']);
+                    }
+                    if ($oldId !== $newId) {
+                        Storage::disk('local')->delete($oldPath);
+                    }
                 }
             }
 
@@ -428,6 +435,13 @@ class KwitansiController extends Controller
             if (!Storage::disk('local')->exists($fullPath)) {
                 throw new \Exception("File gagal ditulis ke disk: {$fullPath}");
             }
+
+            // --- TRANSACTION RECORDING START ---
+            // When Kwitansi is SAVED, record items to stock transactions (Type: IN)
+            if ($selected && !empty($selected['items'])) {
+                $this->recordKwitansiToStock($data, $selected['items']);
+            }
+            // --- TRANSACTION RECORDING END ---
 
             session()->forget('kwitansi_current');
             
@@ -448,6 +462,106 @@ class KwitansiController extends Controller
             \Illuminate\Support\Facades\Log::error("Gagal simpan kwitansi: " . $e->getMessage());
             \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
             return back()->withInput()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Record Kwitansi items to Stock Transactions
+     */
+    protected function recordKwitansiToStock(array $kwtData, array $bapItems): void
+    {
+        $userId = Auth::id();
+        $date = $kwtData['tanggal'] ?? now()->toDateString();
+        // Find BAP Penerimaan to get its document number
+        $pNomorInput = $kwtData['penerimaan_nomor'] ?? '';
+        $penerimaan = $this->findPenerimaanByNomor($pNomorInput);
+        $nosur = (!empty($penerimaan['nomor'])) ? $penerimaan['nomor'] : ($kwtData['nomor_kwt'] ?? '');
+        
+        $notaData = $penerimaan['nota'] ?? [];
+
+        foreach ($bapItems as $item) {
+            $name = $item['nama'] ?? '';
+            $qty = (int)($item['kuantitas'] ?? 0);
+            
+            if ($name === '' || $qty <= 0) continue;
+
+            // Find matching product in database
+            // Match by name within the same tenant (user_id)
+            $product = \App\Models\Product::where('user_id', $userId)
+                ->where('name', $name)
+                ->first();
+
+            if ($product) {
+                // Check if already recorded to avoid double recording
+                $exists = \App\Models\StockTransaction::where('user_id', '=', $userId)
+                    ->where('product_id', '=', $product->id)
+                    ->where('nosur', '=', $nosur)
+                    ->where('type', '=', 'in')
+                    ->exists();
+                
+                if (!$exists) {
+                    \Illuminate\Support\Facades\DB::transaction(function() use ($product, $qty, $date, $nosur, $userId) {
+                        \App\Models\StockTransaction::create([
+                            'product_id' => $product->id,
+                            'user_id' => $userId,
+                            'type' => 'in',
+                            'quantity' => $qty,
+                            'date' => $date,
+                            'nosur' => $nosur,
+                            'notes' => 'Otomatis dari Kwitansi',
+                        ]);
+
+                        // Update product stock
+                        $product->increment('stock', $qty);
+                    });
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove Stock Transactions related to a Kwitansi
+     */
+    protected function removeKwitansiStock(string $nomorKwt): void
+    {
+        $userId = Auth::id();
+        
+        // Find the Kwitansi data to get its BAP nomor reference
+        $disk = Storage::disk('local');
+        $nomorSafe = str_replace(['/', '\\'], '-', $nomorKwt);
+        $nomorSafe = preg_replace('/[^a-zA-Z0-9\-\_\.]/', '', $nomorSafe);
+        $path = "users/{$userId}/kwitansi/{$nomorSafe}.json";
+        
+        $bapNomor = null;
+        if ($disk->exists($path)) {
+            $data = json_decode($disk->get($path), true);
+            $pRef = $data['penerimaan_nomor'] ?? null;
+            if ($pRef) {
+                $penerimaan = $this->findPenerimaanByNomor($pRef);
+                $bapNomor = $penerimaan['nomor'] ?? null;
+            }
+        }
+
+        $query = \App\Models\StockTransaction::where('user_id', '=', $userId)
+            ->where('notes', '=', 'Otomatis dari Kwitansi');
+        
+        $query->where(function($q) use ($nomorKwt, $bapNomor) {
+            $q->where('nosur', '=', $nomorKwt);
+            if ($bapNomor) {
+                $q->orWhere('nosur', '=', $bapNomor);
+            }
+        });
+
+        $transactions = $query->get();
+
+        foreach ($transactions as $tx) {
+            \Illuminate\Support\Facades\DB::transaction(function() use ($tx) {
+                $product = \App\Models\Product::find($tx->product_id);
+                if ($product) {
+                    $product->decrement('stock', $tx->quantity);
+                }
+                $tx->delete();
+            });
         }
     }
 
@@ -546,6 +660,10 @@ class KwitansiController extends Controller
         $disk = Storage::disk('local');
         $path = "users/".Auth::id()."/kwitansi/{$id}.json";
         if ($disk->exists($path)) {
+            $oldData = json_decode($disk->get($path), true);
+            if ($oldData && !empty($oldData['nomor_kwt'])) {
+                $this->removeKwitansiStock($oldData['nomor_kwt']);
+            }
             $disk->delete($path);
 
             ActivityLog::create([
@@ -565,9 +683,14 @@ class KwitansiController extends Controller
     {
         $ids = $request->input('ids', []);
         $count = 0;
+        $disk = Storage::disk('local');
         foreach ($ids as $id) {
             $path = "users/".Auth::id()."/kwitansi/{$id}.json";
             if (Storage::disk('local')->exists($path)) {
+                $oldData = json_decode($disk->get($path), true);
+                if ($oldData && !empty($oldData['nomor_kwt'])) {
+                    $this->removeKwitansiStock($oldData['nomor_kwt']);
+                }
                 Storage::disk('local')->delete($path);
                 $count++;
             }

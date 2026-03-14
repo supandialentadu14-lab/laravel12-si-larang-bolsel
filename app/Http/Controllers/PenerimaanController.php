@@ -499,6 +499,27 @@ class PenerimaanController extends Controller
                     $doc = json_decode($disk->get($file), true) ?: [];
                     $docKwtPenerimaanNomor = $doc['penerimaan_nomor'] ?? null;
                     if ($docKwtPenerimaanNomor && trim($docKwtPenerimaanNomor) === trim($nomor)) {
+                        // --- Stock Reversal START ---
+                        $kwtNomor = $doc['nomor_kwt'] ?? null;
+                        if ($kwtNomor) {
+                            $transactions = \App\Models\StockTransaction::where('user_id', $userId)
+                                ->where('notes', 'Otomatis dari Kwitansi')
+                                ->where(function($q) use ($kwtNomor, $docKwtPenerimaanNomor) {
+                                    $q->where('nosur', $kwtNomor);
+                                    if ($docKwtPenerimaanNomor) {
+                                        $q->orWhere('nosur', $docKwtPenerimaanNomor);
+                                    }
+                                })
+                                ->get();
+                            foreach ($transactions as $tx) {
+                                $product = \App\Models\Product::find($tx->product_id);
+                                if ($product) {
+                                    $product->decrement('stock', $tx->quantity);
+                                }
+                                $tx->delete();
+                            }
+                        }
+                        // --- Stock Reversal END ---
                         $disk->delete($file);
                     }
                 }
@@ -530,6 +551,27 @@ class PenerimaanController extends Controller
                         $doc = json_decode($disk->get($file), true) ?: [];
                         $docKwtPenerimaanNomor = $doc['penerimaan_nomor'] ?? null;
                         if ($docKwtPenerimaanNomor && trim($docKwtPenerimaanNomor) === trim($nomor)) {
+                            // --- Stock Reversal START ---
+                            $kwtNomor = $doc['nomor_kwt'] ?? null;
+                            if ($kwtNomor) {
+                                $transactions = \App\Models\StockTransaction::where('user_id', $userId)
+                                    ->where('notes', 'Otomatis dari Kwitansi')
+                                    ->where(function($q) use ($kwtNomor, $docKwtPenerimaanNomor) {
+                                        $q->where('nosur', $kwtNomor);
+                                        if ($docKwtPenerimaanNomor) {
+                                            $q->orWhere('nosur', $docKwtPenerimaanNomor);
+                                        }
+                                    })
+                                    ->get();
+                                foreach ($transactions as $tx) {
+                                    $product = \App\Models\Product::find($tx->product_id);
+                                    if ($product) {
+                                        $product->decrement('stock', $tx->quantity);
+                                    }
+                                    $tx->delete();
+                                }
+                            }
+                            // --- Stock Reversal END ---
                             $disk->delete($file);
                         }
                     }

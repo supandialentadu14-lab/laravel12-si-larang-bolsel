@@ -36,9 +36,22 @@ class StockController extends Controller
                 })->orWhere('nosur', 'like', '%'.$request->search.'%');
             })
             ->orderBy('date', 'desc')
-            ->orderBy('created_at', 'desc')
             ->paginate(20)
             ->withQueryString();
+
+        // Calculate running balance for each transaction in the current result set
+        foreach ($transactions as $tx) {
+            $tx->running_balance = StockTransaction::where('product_id', '=', $tx->product_id)
+                ->where(function($q) use ($tx) {
+                    $q->where('date', '<', $tx->date)
+                      ->orWhere(function($q2) use ($tx) {
+                          $q2->where('date', '=', $tx->date)
+                             ->where('id', '<=', $tx->id);
+                      });
+                })
+                ->selectRaw('SUM(CASE WHEN type = "in" THEN quantity ELSE -quantity END) as total')
+                ->value('total') ?? 0;
+        }
 
         $groupedTransactions = collect($transactions->items())->groupBy(function ($item) {
             return $item->date->format('Y-m-d');
@@ -259,6 +272,11 @@ class StockController extends Controller
                 foreach ($ids as $id) {
                     $transaction = StockTransaction::find($id);
                     if ($transaction) {
+                        // PREVENT DELETION OF AUTOMATIC TRANSACTIONS
+                        if ($transaction->notes === 'Otomatis dari Kwitansi') {
+                            throw new \Exception('Transaksi "' . ($transaction->product->name ?? 'Barang') . '" tidak bisa dihapus manual karena dibuat otomatis dari Kwitansi. Silakan hapus Nota Pesanan terkait untuk menghapus transaksi ini.');
+                        }
+
                         // Lock product for update
                         $product = Product::lockForUpdate()->find($transaction->product_id);
                         if ($product) {
@@ -289,6 +307,12 @@ class StockController extends Controller
         try {
             return DB::transaction(function () use ($id) {
                 $transaction = StockTransaction::findOrFail($id);
+
+                // PREVENT DELETION OF AUTOMATIC TRANSACTIONS
+                if ($transaction->notes === 'Otomatis dari Kwitansi') {
+                    throw new \Exception('Transaksi tidak bisa dihapus manual karena dibuat otomatis dari Kwitansi. Silakan hapus Nota Pesanan terkait untuk menghapus transaksi ini.');
+                }
+
                 $product = Product::withTrashed()->lockForUpdate()->findOrFail($transaction->product_id);
 
                 // Kembalikan stok seperti sebelum transaksi ini ada

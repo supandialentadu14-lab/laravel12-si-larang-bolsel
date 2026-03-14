@@ -83,8 +83,9 @@
       @php 
         $raw = $row['raw_data'] ?? [];
         $totalVal = (int)($row['total'] ?? 0);
+        $cardId = 'card-' . Str::slug($row['nomor']);
       @endphp
-      <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 overflow-hidden">
+      <div id="{{ $cardId }}" class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 overflow-hidden target:ring-2 target:ring-indigo-500 target:ring-offset-2">
         <div class="flex items-start gap-4">
           {{-- Icon --}}
           <div class="w-14 h-14 rounded-[1.5rem] bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-black shadow-inner flex-shrink-0">
@@ -95,7 +96,9 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-start justify-between">
               <div class="pr-2">
-                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-tight break-all leading-tight">{{ $row['nomor'] }}</h3>
+                <a href="{{ route('reports.nota.show', $row['id']) }}" class="block group/link">
+                  <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-tight break-all leading-tight group-hover/link:text-indigo-600 transition-colors">{{ $row['nomor'] }}</h3>
+                </a>
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{{ \Carbon\Carbon::parse($row['tanggal'])->translatedFormat('d F Y') }}</p>
               </div>
               <div class="text-right flex-shrink-0">

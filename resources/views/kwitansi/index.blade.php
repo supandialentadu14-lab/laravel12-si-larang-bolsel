@@ -80,8 +80,11 @@
     </div>
 
     @forelse($items as $row)
-      @php $totalVal = (int)($row['jumlah'] ?? 0); @endphp
-      <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 overflow-hidden">
+      @php 
+        $totalVal = (int)($row['jumlah'] ?? 0); 
+        $cardId = 'card-' . Str::slug($row['nomor_kwt']);
+      @endphp
+      <div id="{{ $cardId }}" class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 overflow-hidden target:ring-2 target:ring-indigo-500 target:ring-offset-2">
         <div class="flex items-start gap-4">
           {{-- Icon --}}
           <div class="w-14 h-14 rounded-[1.5rem] bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-black shadow-inner flex-shrink-0">
@@ -92,7 +95,9 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-start justify-between">
               <div class="pr-2">
-                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-tight break-all leading-tight">{{ $row['nomor_kwt'] }}</h3>
+                <a href="{{ route('reports.kwitansi.show', $row['id']) }}" class="block group/link">
+                  <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-tight break-all leading-tight group-hover/link:text-indigo-600 transition-colors">{{ $row['nomor_kwt'] }}</h3>
+                </a>
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{{ \Carbon\Carbon::parse($row['tanggal'])->translatedFormat('d F Y') }}</p>
               </div>
               <div class="text-right flex-shrink-0">
@@ -110,7 +115,9 @@
               <div class="pt-2 border-t border-slate-50 space-y-2">
                 <div class="flex items-center gap-2 min-w-0">
                   <span class="text-[9px] font-black text-slate-400 uppercase">Ref:</span>
-                  <span class="text-[9px] font-bold text-slate-600 uppercase truncate max-w-[120px]">{{ $row['penerimaan_nomor'] }}</span>
+                  <a href="{{ route('reports.penerimaan.list', ['search' => $row['penerimaan_nomor']]) }}" class="text-[9px] font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                    {{ $row['penerimaan_nomor'] ?: '-' }}
+                  </a>
                 </div>
                 
                 {{-- Actions --}}
