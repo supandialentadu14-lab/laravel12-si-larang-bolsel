@@ -362,7 +362,7 @@ class KwitansiController extends Controller
             // Jika input hanya angka, format ulang
             if (preg_match('/^\d+$/', $inputNomor)) {
                 $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-                $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+                $singkatanOpd = strtoupper($opd->singkatan_opd ?? 'DISKOMINFO');
                 $nomorKwtFormatted = "{$inputNomor}/KW/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
             } else {
                 // Jika sudah ada format atau kosong, gunakan apa adanya

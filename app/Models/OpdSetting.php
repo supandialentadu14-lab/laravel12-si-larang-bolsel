@@ -17,4 +17,9 @@ class OpdSetting extends Model
         'pengurus_nama', 'pengurus_pangkat', 'pengurus_jabatan', 'pengurus_nip', 'pengurus_sk',
         'pengguna_nama', 'pengguna_pangkat', 'pengguna_jabatan', 'pengguna_nip',
     ];
+
+    public function setSingkatanOpdAttribute($value)
+    {
+        $this->attributes['singkatan_opd'] = strtoupper($value);
+    }
 }

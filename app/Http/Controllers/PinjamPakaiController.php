@@ -76,7 +76,7 @@ class PinjamPakaiController extends Controller
             $bulanRomawi = $this->formatRomawi($tanggalObj->month);
             
             $opd = OpdSetting::where('user_id', Auth::id())->first();
-            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+            $singkatanOpd = strtoupper($opd->singkatan_opd ?? 'DISKOMINFO');
             
             $paddedNum = str_pad($inputNomor, 3, '0', STR_PAD_LEFT);
             return "{$paddedNum}/BASTBI/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";

@@ -69,13 +69,17 @@ class OpdController extends Controller
         $oldSingkatan = $setting->singkatan_opd ?? 'DISKOMINFO';
         
         // Update OpdSetting
-        $setting->update($request->only([
+        $opdData = $request->only([
             'nama_opd', 'singkatan_opd', 'alamat_opd', 
             'kepala_nama', 'kepala_nip', 'kepala_pangkat', 'kepala_jabatan',
             'pengurus_nama', 'pengurus_nip', 'pengurus_pangkat', 'pengurus_jabatan', 'pengurus_sk',
             'pengguna_nama', 'pengguna_nip', 'pengguna_pangkat', 'pengguna_jabatan',
             'tutup_buku_date'
-        ]));
+        ]);
+        if (isset($opdData['singkatan_opd'])) {
+            $opdData['singkatan_opd'] = strtoupper($opdData['singkatan_opd']);
+        }
+        $setting->update($opdData);
 
         // Update NotaMaster
         $notaMaster = NotaMaster::where('user_id', Auth::id())->first();

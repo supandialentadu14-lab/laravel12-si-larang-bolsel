@@ -67,7 +67,7 @@ class StockController extends Controller
         });
 
         $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
-        $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
+        $singkatanOpd = strtoupper($opdSetting->singkatan_opd ?? 'DISKOMINFO');
 
         $view = 'stock.index';
 
@@ -90,7 +90,7 @@ class StockController extends Controller
     {
         $products = Product::orderBy('name')->get();
         $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
-        $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
+        $singkatanOpd = strtoupper($opdSetting->singkatan_opd ?? 'DISKOMINFO');
 
         return view('stock.create', compact('products', 'singkatanOpd'));
     }
@@ -161,7 +161,7 @@ class StockController extends Controller
         $transaction = StockTransaction::with('product')->findOrFail($id);
         $products = Product::orderBy('name')->get();
         $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
-        $singkatanOpd = $opdSetting->singkatan_opd ?? 'DISKOMINFO';
+        $singkatanOpd = strtoupper($opdSetting->singkatan_opd ?? 'DISKOMINFO');
 
         return view('stock.edit', compact('transaction', 'products', 'singkatanOpd'));
     }

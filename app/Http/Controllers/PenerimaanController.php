@@ -202,7 +202,7 @@ class PenerimaanController extends Controller
         $inputNomor = trim((string)($payload['nomor'] ?? ''));
         if (preg_match('/^\d+$/', $inputNomor)) {
             $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-            $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+            $singkatanOpd = strtoupper($opd->singkatan_opd ?? 'DISKOMINFO');
             $nomorFormatted = "{$inputNomor}/BASTB/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
         } else {
             $nomorFormatted = $inputNomor;
@@ -297,7 +297,7 @@ class PenerimaanController extends Controller
             $inputNomor = trim((string)($payload['nomor'] ?? ''));
             if (preg_match('/^\d+$/', $inputNomor)) {
                 $bulanRomawi = $this->formatRomawi($tanggalObj->month);
-                $singkatanOpd = $opd->singkatan_opd ?? 'DISKOMINFO';
+                $singkatanOpd = strtoupper($opd->singkatan_opd ?? 'DISKOMINFO');
                 $nomorFormatted = "{$inputNomor}/BASTB/{$singkatanOpd}/{$bulanRomawi}/{$tahunAnggaran}";
             } else {
                 $nomorFormatted = $inputNomor;
