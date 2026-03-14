@@ -98,7 +98,7 @@
                 
                 <!-- Floating Badge -->
                 <div class="absolute bottom-8 right-8 bg-white/80 backdrop-blur-md border border-white p-4 rounded-2xl shadow-xl animate-float z-20">
-                    <div class="flex items-center gap-4">
+                    <!-- <div class="flex items-center gap-4">
                         <div class="p-2 bg-indigo-600 rounded-xl text-white shadow-lg shadow-indigo-100">
                             <i class="fas fa-shield-alt text-xl"></i>
                         </div>
@@ -106,7 +106,7 @@
                             <p class="text-slate-800 font-black text-sm uppercase tracking-tight">Terverifikasi</p>
                             <p class="text-slate-400 text-[9px] uppercase font-bold tracking-widest">Sistem Aman</p>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@
         <div class="absolute bottom-12 left-12 z-30">
             <h2 class="text-4xl font-black text-slate-800 tracking-widest uppercase mb-2">SI-LARANG</h2>
             <div class="h-1 w-12 bg-indigo-600/20 mb-3"></div>
-            <p class="text-slate-500 font-bold text-sm max-w-xs uppercase tracking-tight leading-relaxed">Sistem Informasi Pengelolaan Persediaan Barang Daerah.</p>
+            <p class="text-slate-500 font-bold text-sm max-w-xs uppercase tracking-tight leading-relaxed">Sistem Informasi Pengelolaan Persediaan Barang.</p>
         </div>
     </div>
 
@@ -134,7 +134,7 @@
                 </div>
                 <div class="flex flex-col items-center">
                     <h2 class="text-2xl font-black text-slate-800 tracking-[0.2em] uppercase leading-none">SI-LARANG</h2>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-3">Inventory Management System</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-3">Sistem Informasi Pengelolaan Persediaan Barang</p>
                 </div>
             </div>
 
@@ -149,7 +149,7 @@
             <div class="mt-10 text-center animate__animated animate__fadeIn animate__delay-1s px-6">
                 <p class="text-[9px] text-slate-300 font-black tracking-[0.3em] uppercase leading-loose">
                     &copy; 2026 Emon Alentadu <br>
-                    <span class="text-indigo-200">Sistem Persediaan Terintegrasi</span>
+                    <span class="text-indigo-200">Sistem Informasi Pengelolaan Persediaan Barang</span>
                 </p>
             </div>
         </div>
