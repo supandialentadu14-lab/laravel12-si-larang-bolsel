@@ -4,22 +4,29 @@
 <div x-data="{ showFilters: {{ request('search') || request('category_id') ? 'true' : 'false' }} }" class="space-y-6">
 
     {{-- Page Header --}}
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Daftar Barang</h1>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Kelola Stok & Inventaris</p>
+    <div class="flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Daftar Barang</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Kelola Stok & Inventaris</p>
+            </div>
+            <div class="flex gap-2">
+                <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50' : ''">
+                    <i class="fas fa-filter text-xs"></i>
+                </button>
+                <a href="{{ route('products.create') }}" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
+                    <i class="fas fa-plus text-xs"></i>
+                </a>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50' : ''">
-                <i class="fas fa-filter text-xs"></i>
-            </button>
-            <a href="{{ route('import.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 active:scale-90 transition-transform">
-                <i class="fas fa-file-import text-xs"></i>
-            </a>
-            <a href="{{ route('products.create') }}" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
-                <i class="fas fa-plus text-xs"></i>
-            </a>
-        </div>
+
+        {{-- Import Action Button --}}
+        <a href="{{ route('import.index') }}" class="w-full flex items-center justify-center gap-3 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm text-slate-600 active:scale-[0.98] transition-all group">
+            <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <i class="fas fa-file-import text-[10px]"></i>
+            </div>
+            <span class="text-[10px] font-black uppercase tracking-[0.2em]">Impor Data Barang</span>
+        </a>
     </div>
 
     {{-- Filter Card (App-like style) --}}

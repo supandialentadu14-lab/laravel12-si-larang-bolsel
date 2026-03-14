@@ -39,11 +39,13 @@ class ImportController extends Controller
         try {
             Excel::import(new ProductsImport, $file);
             DB::commit();
-            return redirect()->route('products.index')->with('success', "Berhasil mengimpor data barang dari Excel/CSV.");
+            return redirect()->route('products.index')->with('success', "Berhasil mengimpor data barang.");
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Import error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            return back()->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
+            Log::error('Import error: ' . $e->getMessage());
+            
+            // Simplify error message for better user experience
+            return back()->with('error', 'Format data atau file yang Anda unggah tidak sesuai. Silakan periksa kembali file Anda dan pastikan sudah mengikuti format yang ditentukan.');
         }
     }
 }

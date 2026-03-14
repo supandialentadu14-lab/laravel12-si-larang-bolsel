@@ -213,7 +213,7 @@
                     @csrf
                     <button type="submit" class="w-full flex items-center justify-center gap-3 px-6 py-5 rounded-[1.5rem] bg-rose-50 text-rose-600 text-[10px] font-black uppercase tracking-[0.15em] transition active:scale-95">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>KELUAR AKUN</span>
+                        <span>LOGOUT</span>
                     </button>
                 </form>
             </div>
@@ -513,17 +513,34 @@
 <nav x-init="$nextTick(() => { const activeItem = $el.querySelector('.active-menu'); if (activeItem) activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); })"
     :class="scrollingDown ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100 pointer-events-auto'"
     class="transition-all duration-500 ease-in-out transform fixed bottom-0 left-0 right-0 z-[9999] glass-card border-t border-gray-100/50 bottom-nav shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:hidden">
-    <div class="flex items-center overflow-x-auto no-scrollbar py-4 scroll-smooth snap-x snap-mandatory">
-        <!-- Master Barang -->
+    <div class="flex items-center justify-center min-w-full overflow-x-auto no-scrollbar py-4 scroll-smooth snap-x snap-mandatory">
+        <!-- Master Barang (Left 1) -->
         @if(auth()->user()->hasPermission('master_data'))
-        <a data-master-nav data-skip-transition href="{{ route('products.index') }}" @click.prevent="masterMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 basis-1/5 snap-center {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'active-menu scale-110' : 'text-gray-300' }}">
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-transparent text-gray-300' }}">
+        <a data-master-nav data-skip-transition href="{{ route('products.index') }}" @click.prevent="masterMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'active-menu scale-110' : 'text-slate-400' }}">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-400' }}">
                 <i class="fas fa-layer-group text-lg"></i>
             </div>
-            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'text-indigo-600' : 'text-gray-300' }}">Master</span>
+            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'text-indigo-600' : 'text-slate-500 font-bold' }}">Master</span>
         </a>
         @endif
 
+        <!-- Manajemen (Left 2) -->
+        <a data-settings-nav data-skip-transition href="{{ route('settings.opd.edit') }}" @click.prevent="settingsMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'active-menu scale-110' : 'text-slate-400' }}">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-400' }}">
+                <i class="fas fa-sliders text-lg"></i>
+            </div>
+            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'text-indigo-600' : 'text-slate-500 font-bold' }}">Manajemen</span>
+        </a>
+
+        <!-- Beranda (Always Center) -->
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('dashboard') ? 'active-menu scale-110' : 'text-slate-400' }}">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-400 border border-slate-100' }}">
+                <i class="fas fa-home text-lg"></i>
+            </div>
+            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-slate-500 font-bold' }}">Beranda</span>
+        </a>
+
+        <!-- Berkas (Right 1) -->
         @if(
             auth()->user()->hasPermission('transaksi') ||
             auth()->user()->hasPermission('laporan_belanja') ||
@@ -534,35 +551,20 @@
             auth()->user()->hasPermission('stock_opname') ||
             auth()->user()->hasPermission('pinjam_pakai')
         )
-        <a data-flow-nav data-skip-transition href="{{ route('stock.index') }}" @click.prevent="flowMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 basis-1/5 snap-center {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'active-menu scale-110' : 'text-gray-300' }}">
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-transparent text-gray-300' }}">
+        <a data-flow-nav data-skip-transition href="{{ route('stock.index') }}" @click.prevent="flowMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'active-menu scale-110' : 'text-slate-400' }}">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-400' }}">
                 <i class="fas fa-folder-open text-lg"></i>
             </div>
-            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'text-indigo-600' : 'text-gray-300' }}">Berkas</span>
+            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'text-indigo-600' : 'text-slate-500 font-bold' }}">Berkas</span>
         </a>
         @endif
 
-        <!-- Beranda -->
-        <a href="{{ route('dashboard') }}" class="flex flex-col items-center gap-1 shrink-0 basis-1/5 snap-center {{ request()->routeIs('dashboard') ? 'active-menu scale-110' : 'text-gray-300' }}">
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-transparent text-gray-300' }}">
-                <i class="fas fa-home text-lg"></i>
-            </div>
-            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-gray-300' }}">Beranda</span>
-        </a>
-
-        <a data-settings-nav data-skip-transition href="{{ route('settings.opd.edit') }}" @click.prevent="settingsMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 basis-1/5 snap-center {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'active-menu scale-110' : 'text-gray-300' }}">
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-transparent text-gray-300' }}">
-                <i class="fas fa-sliders text-lg"></i>
-            </div>
-            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'text-indigo-600' : 'text-gray-300' }}">Manajemen</span>
-        </a>
-
-        <!-- Profil -->
-        <a href="{{ route('profile.edit') }}" class="flex flex-col items-center gap-1 shrink-0 basis-1/5 snap-center {{ request()->routeIs('profile.*') ? 'active-menu scale-110' : 'text-gray-300' }}">
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('profile.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-transparent text-gray-300' }}">
+        <!-- Profil (Right 2) -->
+        <a href="{{ route('profile.edit') }}" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('profile.*') ? 'active-menu scale-110' : 'text-slate-400' }}">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('profile.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-400' }}">
                 <i class="fas fa-user-circle text-lg"></i>
             </div>
-            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('profile.*') ? 'text-indigo-600' : 'text-gray-300' }}">Profil</span>
+            <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('profile.*') ? 'text-indigo-600' : 'text-slate-500 font-bold' }}">Profil</span>
         </a>
     </div>
 </nav>

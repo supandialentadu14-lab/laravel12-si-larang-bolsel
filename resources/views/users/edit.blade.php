@@ -117,13 +117,23 @@
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 leading-relaxed">
                     <i class="fas fa-info-circle text-indigo-400 mr-1"></i> Kosongkan jika tidak ingin mengubah password
                 </p>
-                <div class="space-y-1.5">
+                <div class="space-y-1.5" x-data="{ show: false }">
                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Password Baru</label>
-                    <input type="password" name="password" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                    <div class="relative flex items-center">
+                        <input :type="show ? 'text' : 'password'" name="password" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                        <button type="button" @click="show = !show" class="absolute right-5 text-slate-400 hover:text-indigo-600 transition-colors">
+                            <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="space-y-1.5">
+                <div class="space-y-1.5" x-data="{ show: false }">
                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                    <div class="relative flex items-center">
+                        <input :type="show ? 'text' : 'password'" name="password_confirmation" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                        <button type="button" @click="show = !show" class="absolute right-5 text-slate-400 hover:text-indigo-600 transition-colors">
+                            <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -143,7 +153,7 @@
                 @csrf
                 <button type="submit" class="w-full py-5 bg-rose-50 text-rose-600 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 border border-rose-100 active:scale-95 transition-all">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>Keluar Akun</span>
+                    <span>Logout</span>
                 </button>
             </form>
         </div>
