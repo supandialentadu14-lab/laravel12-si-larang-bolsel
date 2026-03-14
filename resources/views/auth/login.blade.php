@@ -34,7 +34,7 @@
                     <i class="far fa-envelope text-sm"></i>
                 </div>
                 <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
-                    class="w-full pl-14 pr-6 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-600/10 focus:bg-white rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-300 transition-all outline-none"
+                    class="w-full pl-14 pr-6 py-4 bg-white border-2 border-slate-100 focus:border-indigo-600 focus:bg-white rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-300 transition-all outline-none"
                     placeholder="nama@email.com">
             </div>
             <x-input-error :messages="$errors->get('email')" class="mt-2 ml-4" />
@@ -57,7 +57,7 @@
                     <i class="fas fa-lock text-sm"></i>
                 </div>
                 <input id="password" :type="show ? 'text' : 'password'" name="password" required
-                    class="w-full pl-14 pr-14 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-600/10 focus:bg-white rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-300 transition-all outline-none"
+                    class="w-full pl-14 pr-14 py-4 bg-white border-2 border-slate-100 focus:border-indigo-600 focus:bg-white rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-300 transition-all outline-none"
                     placeholder="••••••••">
                 <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-6 flex items-center text-slate-300 hover:text-slate-600 transition-colors">
                     <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
