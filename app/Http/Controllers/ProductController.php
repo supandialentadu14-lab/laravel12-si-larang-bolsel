@@ -19,7 +19,7 @@ class ProductController extends Controller
         $suppliers = Supplier::all();
 
         // Ambil barang terakhir berdasarkan id, termasuk yang dihapus soft-delete
-        $lastProduct = Product::withTrashed()->orderBy('id', 'desc')->first();
+        $lastProduct = Product::where('user_id', auth()->id())->withTrashed()->orderBy('id', 'desc')->first();
 
         if ($lastProduct instanceof Product && preg_match('/BRG-(\d+)/', (string) $lastProduct->sku, $matches)) {
             $lastNumber = (int) $matches[1];
@@ -83,7 +83,8 @@ class ProductController extends Controller
         'min_stock' => 'nullable|integer|min:0',
     ]);
 
-    $lastProduct = Product::withTrashed()->orderBy('id', 'desc')->first();
+    // Ambil barang terakhir milik sendiri berdasarkan id, termasuk yang dihapus soft-delete
+    $lastProduct = Product::where('user_id', auth()->id())->withTrashed()->orderBy('id', 'desc')->first();
 
     if ($lastProduct instanceof Product && preg_match('/BRG-(\d+)/', (string) $lastProduct->sku, $matches)) {
         $lastNumber = (int) $matches[1];
@@ -91,22 +92,27 @@ class ProductController extends Controller
     } else {
         $newNumber = 1;
     }
-$slug = Str::slug($request->name);
+    $slug = Str::slug($request->name);
+    
+    // Cek jika slug sudah dipakai oleh PRODUK LAIN milik user yang sama
+    $count = Product::where('user_id', auth()->id())->where('slug', 'like', $slug.'%')->count();
+    if ($count > 0) {
+        $slug = $slug . '-' . ($count + 1);
+    }
 
     $newSku = 'BRG-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
 
     Product::create([
-    'name' => $request->name,
-    'slug' => $slug, // TAMBAHKAN INI
-    'sku' => $newSku,
-    'price' => $request->price,
-    'unit' => $request->unit,
-    'category_id' => $request->category_id,
-    'supplier_id' => $request->supplier_id,
-    'description' => $request->description,
-    'min_stock' => $request->min_stock ?? 10,
-]);
-
+        'name' => $request->name,
+        'slug' => $slug,
+        'sku' => $newSku,
+        'price' => $request->price,
+        'unit' => $request->unit,
+        'category_id' => $request->category_id,
+        'supplier_id' => $request->supplier_id,
+        'description' => $request->description,
+        'min_stock' => $request->min_stock ?? 10,
+    ]);
 
     return redirect()->route('products.index')->with('success', 'Barang berhasil ditambahkan');
 }

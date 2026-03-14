@@ -138,6 +138,9 @@
       font-style: italic;
     }
 
+    .rules-table { border-collapse: collapse; width: 100%; border: none !important; }
+    .rules-table td { border: none !important; padding: 1px 0; }
+
     .header-table {
       width: 100%;
       border-collapse: collapse;
@@ -379,13 +382,22 @@
       </tbody>
     </table>
 
-    <p class="text-sm mb-2"><span class="bold">Dengan Ketentuan :</span></p>
-    <ol class="text-sm mb-4 rules">
-      <li>1. Pembayaran melalui bendahara pengeluaran
-        {{ \Illuminate\Support\Str::title($opd->nama_opd ?? 'Dinas Komunikasi dan Informatika') }}.</li>
-      <li>2. Pembayaran dilaksanakan apabila barang-bahan tersebut telah diperiksa oleh Panitia Pemeriksa Barang
-        sesuai dengan kualitas dan kuantitas barang yang diperiksa.</li>
-    </ol>
+    <p class="text-sm mb-1"><span class="bold">Dengan Ketentuan :</span></p>
+    <table class="rules-table text-sm mb-4">
+      <tr>
+        <td style="width: 18px; vertical-align: top;">1.</td>
+        <td style="text-align: justify; padding-left: 6px;">
+            Pembayaran melalui bendahara pengeluaran {{ \Illuminate\Support\Str::title($opd->nama_opd ?? 'Instansi Terkait') }}.
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 18px; vertical-align: top;">2.</td>
+        <td style="text-align: justify; padding-left: 6px;">
+            Pembayaran dilaksanakan apabila barang-bahan tersebut telah diperiksa oleh Panitia Pemeriksa Barang
+            sesuai dengan kualitas dan kuantitas barang yang diperiksa.
+        </td>
+      </tr>
+    </table>
 
     <div class="grid grid-cols-2 gap-6 mt-6 signature-block">
       <div class="text-center text-sm">

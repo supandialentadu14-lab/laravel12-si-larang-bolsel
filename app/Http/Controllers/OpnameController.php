@@ -95,7 +95,7 @@ class OpnameController extends Controller
             'pihak_pertama' => [
                 'nama' => $opd->kepala_nama ?? '',
                 'nip' => $opd->kepala_nip ?? '',
-                'jabatan' => $opd->kepala_jabatan ?? 'Mengetahui, Kepala Dinas Komunikasi dan Informatika',
+                'jabatan' => $opd->kepala_jabatan ?? ('Mengetahui, Kepala ' . ($opd->nama_opd ?? 'Dinas Komunikasi dan Informatika')),
             ],
             'pihak_kedua' => [
                 'nama' => $opd->pengurus_nama ?? '',

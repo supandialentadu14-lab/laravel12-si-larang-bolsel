@@ -134,7 +134,7 @@
               </td>
               <td style="border: none; width: 50%; text-align: center;">
                 <p>Mengetahui</p>
-                <p>Kepala Dinas Komunikasi dan Informatika</p>
+                <p>{{ $opd->kepala_jabatan ?? ('Kepala ' . \Illuminate\Support\Str::title($opd->nama_opd ?? 'Dinas Komunikasi dan Informatika')) }}</p>
                 <div style="height: 80px;"></div>
                 <p class="font-bold underline">{{ $opd->kepala_nama ?? ($data['pihak_pertama']['nama'] ?? '') }}</p>
                 <p>NIP. {{ $opd->kepala_nip ?? ($data['pihak_pertama']['nip'] ?? '-') }}</p>

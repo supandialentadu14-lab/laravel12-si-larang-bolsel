@@ -98,7 +98,7 @@
     </div>
 
     <p class="mb-1 text-sm">
-        {{ $data['pembuka'] ?? ('Pada hari ini ' . \Illuminate\Support\Carbon::parse($data['tanggal'])->translatedFormat('l d F Y') . ', bertempat di ' . ucwords(strtolower(($opd->nama_opd ?? null) ?: ($data['tempat'] ?? '-'))) . ' Kabupaten Bolaang Mongondow Selatan, yang bertanda tangan dibawah ini:') }}
+        {{ $data['pembuka'] ?? ('Pada hari ini ' . \Illuminate\Support\Carbon::parse($data['tanggal'])->translatedFormat('l d F Y') . ', bertempat di ' . \Illuminate\Support\Str::title(($opd->nama_opd ?? null) ?: ($data['tempat'] ?? '-')) . ' Kabupaten Bolaang Mongondow Selatan, yang bertanda tangan dibawah ini:') }}
     </p>
 
     <div class="mb-2">
@@ -193,7 +193,7 @@
       $rulesLines = preg_split("/\r\n|\n|\r/", $data['ketentuan'] ?? '');
       $rulesLines = array_values(array_filter($rulesLines, fn($l) => trim($l) !== ''));
       $defaultRules = [
-        'PIHAK PERTAMA selaku Pengguna Barang adalah pejabat pemegang kewenangan penggunaan Barang Milik Daerah, meminjamkan Barang Milik Daerah tersebut di atas kepada PIHAK KEDUA untuk mendukung kegiatan dan kelancaran pelaksanaan tugas pada Dinas Komunikasi dan Informatika.',
+        'PIHAK PERTAMA selaku Pengguna Barang adalah pejabat pemegang kewenangan penggunaan Barang Milik Daerah, meminjamkan Barang Milik Daerah tersebut di atas kepada PIHAK KEDUA untuk mendukung kegiatan dan kelancaran pelaksanaan tugas pada ' . \Illuminate\Support\Str::title($opd->nama_opd ?? 'Instansi Terkait') . '.',
         'PIHAK KEDUA bertanggung jawab dalam hal penggunaan, pemeliharaan dan pengamanan barang tersebut sejak tanggal serah terima ini.',
         'PIHAK KEDUA dilarang memindahtangankan barang tersebut kepada pihak lain tanpa seizin PIHAK PERTAMA;',
         'PIHAK KEDUA sanggup mengganti rugi apabila barang yang dipinjamkan hilang;',

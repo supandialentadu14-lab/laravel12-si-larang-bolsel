@@ -68,11 +68,21 @@
   </tbody>
 </table>
 
-<p style="margin-top: 20px;" class="font-bold">Dengan Ketentuan :</p>
-<div style="padding-left: 20px;">
-  <p>1. Pembayaran melalui bendahara pengeluaran {{ $opd->nama_opd ?? '' }}.</p>
-  <p>2. Pembayaran dilaksanakan apabila barang-bahan tersebut telah diperiksa oleh Panitia Pemeriksa Barang sesuai dengan kualitas dan kuantitas barang yang diperiksa.</p>
-</div>
+<p style="margin-top: 20px; font-size: 14px;" class="font-bold">Dengan Ketentuan :</p>
+<table style="width: 100%; border: none; border-collapse: collapse; margin-bottom: 20px;">
+  <tr>
+    <td style="width: 18px; vertical-align: top; border: none; font-size: 14px;">1.</td>
+    <td style="text-align: justify; padding-left: 6px; border: none; font-size: 14px;">
+      Pembayaran melalui bendahara pengeluaran {{ \Illuminate\Support\Str::title($opd->nama_opd ?? '') }}.
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 18px; vertical-align: top; border: none; font-size: 14px;">2.</td>
+    <td style="text-align: justify; padding-left: 6px; border: none; font-size: 14px;">
+      Pembayaran dilaksanakan apabila barang-bahan tersebut telah diperiksa oleh Panitia Pemeriksa Barang sesuai dengan kualitas dan kuantitas barang yang diperiksa.
+    </td>
+  </tr>
+</table>
 
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 40px; text-align: center; font-size: 12px; line-height: 1.25;" class="signature-block">
   <div>

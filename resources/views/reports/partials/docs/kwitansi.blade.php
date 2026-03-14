@@ -23,7 +23,7 @@
     <tr>
       <td style="width: 200px; vertical-align: top;" class="italic">Sudah Terima Dari</td>
       <td style="width: 20px; vertical-align: top;" class="text-center">:</td>
-      <td class="italic">Bendahara Pengeluaran {{ $data['opd_nama'] ?? ($opd->nama_opd ?? '') }} Kabupaten Bolaang Mongondow Selatan</td>
+      <td class="italic">Bendahara Pengeluaran {{ \Illuminate\Support\Str::title($data['opd_nama'] ?? ($opd->nama_opd ?? '')) }} Kabupaten Bolaang Mongondow Selatan</td>
     </tr>
     <tr>
       <td style="vertical-align: top;" class="italic">Banyaknya Uang</td>

@@ -6,11 +6,11 @@
   .kop-logo { width: 80px; text-align: center; }
   .kop-logo img { width: 75px; height: auto; object-fit: contain; }
   .kop-text { text-align: center; padding-right: 40px; }
-  .kop-text .line1 { font-weight: 800; font-size: 16px; letter-spacing: .4px; text-transform: uppercase; line-height: 1.2; margin: 0; }
-  .kop-text .line2 { font-weight: 800; font-size: 22px; text-transform: uppercase; line-height: 1.2; margin: 2px 0; }
+  .kop-text .line1 { font-weight: 800; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; line-height: 1.2; margin: 0; }
+  .kop-text .line2 { font-weight: 800; font-size: 18px; text-transform: uppercase; line-height: 1.2; margin: 2px 0; }
   .kop-text .line3 { 
     font-style: italic; 
-    font-size: 12px; 
+    font-size: 11px; 
     line-height: 1.3; 
     margin: 0; 
     white-space: normal;

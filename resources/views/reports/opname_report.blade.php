@@ -79,7 +79,7 @@
       </div>
 
       <p class="mb-3 text-sm">
-        {{ $data['pembuka'] ?? 'Pada hari ini ' . \Illuminate\Support\Carbon::parse($data['tanggal'])->locale('id')->translatedFormat('l d F Y') . ', bertempat di ' . ucwords(strtolower($opd->nama_opd ?? $data['tempat'] ?? '-')) . ' Kabupaten Bolaang Mongondow Selatan, yang bertanda tangan dibawah ini:' }}
+        {{ $data['pembuka'] ?? 'Pada hari ini ' . \Illuminate\Support\Carbon::parse($data['tanggal'])->locale('id')->translatedFormat('l d F Y') . ', bertempat di ' . \Illuminate\Support\Str::title(($opd->nama_opd ?? null) ?: ($data['tempat'] ?? '-')) . ' Kabupaten Bolaang Mongondow Selatan, yang bertanda tangan dibawah ini:' }}
       </p>
 
       <div class="mb-4">
@@ -184,7 +184,7 @@
         </div>
         <div class="text-center">
           <p class="mb-1">Mengetahui</p>
-          <p class="mb-1">Kepala Dinas Komunikasi dan Informatika</p>
+          <p class="mb-1">{{ $opd->kepala_jabatan ?? ('Kepala ' . \Illuminate\Support\Str::title($opd->nama_opd ?? 'Dinas Komunikasi dan Informatika')) }}</p>
           <div class="h-24"></div>
           <p class="font-bold underline">{{ $opd->kepala_nama ?? ($data['pihak_pertama']['nama'] ?? '') }}</p>
           <p class="text-sm">NIP. {{ $opd->kepala_nip ?? ($data['pihak_pertama']['nip'] ?? '-') }}</p>

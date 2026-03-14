@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 
 // Digunakan untuk tipe return berupa View (tampilan)
 use Illuminate\View\View;
+use Illuminate\Validation\Rule;
 
 // Controller untuk mengelola data kategori (CRUD)
 class CategoryController extends Controller
@@ -65,7 +66,7 @@ class CategoryController extends Controller
                 'required',
                 'string',
                 'max:255',
-                \Illuminate\Validation\Rule::unique('categories')->where(function ($query) {
+                Rule::unique('categories')->where(function ($query) {
                     return $query->where('user_id', auth()->id())->whereNull('deleted_at');
                 })
             ],
@@ -74,27 +75,19 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        // Cari apakah ada data lama dengan nama ATAU slug yang sama (termasuk di sampah)
+        // Cari apakah ada data lama MILIK SENDIRI dengan nama ATAU slug yang sama di sampah
         $newSlug = Str::slug($validated['name']);
         
-        $existing = Category::withoutGlobalScope('tenant')->withTrashed()
+        $existing = Category::withTrashed()
             ->where(function($q) use ($validated, $newSlug) {
                 $q->where('name', $validated['name'])
                   ->orWhere('slug', $newSlug);
             })
             ->first();
 
-        if ($existing) {
-            if ($existing->trashed()) {
-                // Jika data yang sama ada di sampah, hapus permanen agar tidak bentrok
-                $existing->forceDelete();
-            } else if ($existing->user_id == auth()->id()) {
-                 // Jika data milik kita sendiri tapi aktif (sebenarnya ini tertangkap di validation unique)
-                 return redirect()->route('categories.index')->with('error', 'Jenis belanja ini sudah ada.');
-            } else {
-                // Jika milik user lain (karena DB constraint slug global)
-                return back()->withErrors(['name' => 'Nama/Slug ini sudah digunakan oleh instansi lain (Batas Global).'])->withInput();
-            }
+        if ($existing && $existing->trashed()) {
+            // Jika data yang sama ada di sampah, hapus permanen agar tidak bentrok
+            $existing->forceDelete();
         }
 
         // Membuat slug dari name (contoh: "Makanan Ringan" → "makanan-ringan")
@@ -131,18 +124,24 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): RedirectResponse
     {
-        // Validasi input - abaikan data yang sedang diupdate
-        // dan abaikan data yang sudah dihapus (soft deleted) agar nama bisa dipakai kembali
+        // Validasi input
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id . ',id,deleted_at,NULL',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories')->ignore($category->id)->where(function ($query) {
+                    return $query->where('user_id', auth()->id())->whereNull('deleted_at');
+                })
+            ],
             'description' => 'nullable|string',
         ], [
-            'name.unique' => 'Nama jenis belanja ini sudah digunakan oleh data aktif lain.',
+            'name.unique' => 'Nama jenis belanja ini sudah Anda gunakan.',
         ]);
 
-        // Cari record lain (termasuk yang di sampah) yang memiliki nama yang sama
+        // Cari record lain MILIK SENDIRI (termasuk yang di sampah) yang memiliki nama yang sama
         $newSlug = Str::slug($validated['name']);
-        $existing = Category::withoutGlobalScope('tenant')->withTrashed()
+        $existing = Category::withTrashed()
             ->where(function($q) use ($validated, $newSlug) {
                 $q->where('name', $validated['name'])
                   ->orWhere('slug', $newSlug);
@@ -150,14 +149,9 @@ class CategoryController extends Controller
             ->where('id', '!=', $category->id)
             ->first();
 
-        if ($existing) {
-            if ($existing->trashed()) {
-                // Jika data yang sama ada di sampah, hapus permanen agar tidak bentrok
-                $existing->forceDelete();
-            } else {
-                // Jika data yang sama masih aktif, kembalikan error
-                return back()->withErrors(['name' => 'Nama atau slug jenis belanja ini sudah digunakan.'])->withInput();
-            }
+        if ($existing && $existing->trashed()) {
+            // Jika data yang sama ada di sampah, hapus permanen agar tidak bentrok
+            $existing->forceDelete();
         }
 
         // Jika nama kategori berubah, slug juga diupdate
