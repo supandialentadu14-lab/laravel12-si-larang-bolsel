@@ -79,33 +79,33 @@
     </style>
 </head>
 
-<body class="font-sans antialiased text-gray-900 bg-gray-900 flex min-h-screen overflow-hidden">
-    <!-- Left Side - Image/Illustration -->
-    <div class="hidden lg:flex w-1/2 relative bg-gray-900 overflow-hidden items-center justify-center">
+<body class="font-sans antialiased text-slate-900 bg-slate-50 flex min-h-screen overflow-hidden">
+    <!-- Left Side - Image/Illustration (Desktop Only) -->
+    <div class="hidden lg:flex w-1/2 relative bg-indigo-600 overflow-hidden items-center justify-center">
         <!-- Abstract Background Shapes -->
-        <div class="absolute inset-0 bg-gradient-to-tr from-brand-900/90 via-gray-900/40 to-purple-900/90 z-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-tr from-indigo-700 via-indigo-600 to-purple-600 z-0"></div>
         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-10 mix-blend-overlay"></div>
         
         <!-- Animated Blobs -->
-        <div class="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-brand-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-white/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
         <div class="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-purple-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
-        <div class="absolute -bottom-[10%] left-[20%] w-[45%] h-[45%] bg-pink-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000"></div>
+        <div class="absolute -bottom-[10%] left-[20%] w-[45%] h-[45%] bg-indigo-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000"></div>
 
         <!-- Main Image Container -->
         <div class="relative z-20 w-full h-full p-12 flex items-center justify-center animate__animated animate__fadeIn">
-            <div class="relative w-full max-w-sm aspect-square rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group">
-                <div class="absolute inset-0 bg-brand-500/10 group-hover:bg-transparent transition duration-500 z-10"></div>
+            <div class="relative w-full max-w-sm aspect-square rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-white/20 group">
+                <div class="absolute inset-0 bg-indigo-500/10 group-hover:bg-transparent transition duration-500 z-10"></div>
                 <img src="{{ asset('images/login-bg-new.jpg') }}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-1000 ease-in-out">
                 
                 <!-- Floating Badge -->
-                <div class="absolute bottom-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl shadow-xl animate-float z-20">
-                    <div class="flex items-center gap-3">
-                        <div class="p-1.5 bg-green-500/20 rounded-lg">
-                            <i class="fas fa-shield-alt text-green-400 text-lg"></i>
+                <div class="absolute bottom-8 right-8 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-xl animate-float z-20">
+                    <div class="flex items-center gap-4">
+                        <div class="p-2 bg-indigo-500 rounded-xl text-white">
+                            <i class="fas fa-shield-alt text-xl"></i>
                         </div>
                         <div>
-                            <p class="text-white font-bold text-xs">Secure System</p>
-                            <p class="text-white/60 text-[10px]">Data Encrypted</p>
+                            <p class="text-white font-black text-sm uppercase tracking-tight">Secure System</p>
+                            <p class="text-white/70 text-[10px] uppercase font-bold tracking-widest">Data Encrypted</p>
                         </div>
                     </div>
                 </div>
@@ -113,53 +113,48 @@
         </div>
 
         <!-- Text Overlay -->
-        <div class="absolute bottom-8 left-8 z-30">
-            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-white tracking-tight drop-shadow-sm mb-1">SI-LARANG</h2>
-            <p class="text-blue-100/80 font-medium text-sm max-w-xs">Sistem Informasi Pengelolaan Persediaan Barang Daerah.</p>
+        <div class="absolute bottom-12 left-12 z-30">
+            <h2 class="text-4xl font-black text-white tracking-widest uppercase mb-2">SI-LARANG</h2>
+            <div class="h-1 w-12 bg-white/40 mb-3"></div>
+            <p class="text-indigo-100/90 font-bold text-sm max-w-xs uppercase tracking-tight">Sistem Informasi Pengelolaan Persediaan Barang Daerah.</p>
         </div>
     </div>
 
-    <!-- Right Side - Login Form -->
-    <div class="w-full lg:w-1/2 flex items-start sm:items-center justify-center p-4 sm:p-6 relative bg-gray-900 overflow-y-auto">
-        <!-- Background Image for Mobile Only -->
-        <div class="absolute inset-0 lg:hidden block z-0">
-            <img src="{{ asset('images/login-bg-new.jpg') }}" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gray-900/80 backdrop-blur-sm"></div>
-        </div>
-
-        <!-- Background Pattern -->
-        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 z-0"></div>
-        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-brand-900/20 to-transparent z-0 lg:block hidden"></div>
-        <div class="absolute top-0 right-0 w-full h-full bg-brand-900/40 z-0 lg:hidden block"></div>
+    <!-- Right Side - Auth Form -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 relative bg-slate-50 overflow-y-auto">
+        <!-- Background Pattern (Mobile & Desktop) -->
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] z-0 pointer-events-none"></div>
         
-        <div class="w-full max-w-md relative z-10 animate__animated animate__fadeInRight">
+        <!-- Animated Blobs for Light Theme (Desktop) -->
+        <div class="absolute top-[10%] -right-[10%] w-[40%] h-[40%] bg-indigo-100 rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-blob lg:block hidden"></div>
+        <div class="absolute -bottom-[10%] left-[10%] w-[40%] h-[40%] bg-purple-100 rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-blob animation-delay-2000 lg:block hidden"></div>
+
+        <div class="w-full max-w-[440px] relative z-10 animate__animated animate__fadeIn">
             
-            <!-- Logo Mobile Header -->
-            <div class="text-center lg:hidden mb-2 flex flex-col items-center pt-2">
-                <div class="inline-flex items-center justify-center mb-1 p-1 bg-white/5 backdrop-blur-md rounded-lg border border-white/10">
-                    <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo" class="h-6 w-6 object-contain">
+            <!-- Logo Header (Centering for both Mobile/Desktop) -->
+            <div class="text-center mb-8 flex flex-col items-center">
+                <div class="inline-flex items-center justify-center mb-4 p-3 bg-white rounded-2xl shadow-sm border border-slate-100 transform -rotate-3 transition hover:rotate-0">
+                    <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo" class="h-10 w-10 object-contain">
                 </div>
                 <div class="flex flex-col items-center">
-                    <h2 class="text-xs font-black text-white tracking-[0.3em] uppercase leading-none">SI-LARANG</h2>
-                    <div class="h-[1px] w-6 bg-brand-500 my-1"></div>
-                    <p class="text-[7px] text-white font-bold leading-tight uppercase tracking-tight">Sistem Informasi Pengelolaan Persediaan barang</p>
+                    <h2 class="text-2xl font-black text-slate-800 tracking-[0.2em] uppercase leading-none">SI-LARANG</h2>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Inventory Management System</p>
                 </div>
             </div>
 
-            <!-- Glass Card Form -->
-            <div class="bg-white/5 backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 p-4 sm:p-10 relative overflow-hidden group">
-                <!-- Shine Effect -->
-                <div class="absolute inset-0 -translate-x-full group-hover:animate-[shine_1.5s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent z-0 pointer-events-none"></div>
-                
+            <!-- Premium Card Form -->
+            <div class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_-15px_rgba(79,70,229,0.1)] border border-slate-100 p-8 sm:p-12 relative overflow-hidden">
                 <div class="relative z-10">
                     {{ $slot }}
-
                 </div>
             </div>
 
             <!-- Footer -->
-            <div class="mt-4 sm:mt-6 text-center animate__animated animate__fadeIn animate__delay-1s">
-                <p class="text-[8px] text-white/30 font-medium tracking-widest uppercase">Copyright © 2026 Emon Alentadu</p>
+            <div class="mt-8 text-center animate__animated animate__fadeIn animate__delay-1s">
+                <p class="text-[9px] text-slate-300 font-black tracking-[0.3em] uppercase leading-loose">
+                    &copy; 2026 Emon Alentadu <br>
+                    <span class="text-slate-200">Versi 4.2.0 - Stabil</span>
+                </p>
             </div>
         </div>
     </div>
@@ -174,52 +169,14 @@
         .animate-blob { animation: blob 7s infinite; }
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
-        @keyframes shine { 100% { left: 125%; } }
-
-        /* ══ Guest Layout Responsive ══ */
-
-        /* Mobile: 360px - 640px */
+        
         @media (max-width: 640px) {
-            /* Allow vertical scroll on short mobile devices */
-            body { overflow-y: auto; overflow-x: hidden; align-items: flex-start; }
-
-            /* Right side scrolls on mobile */
-            body > div.w-full.lg\:w-1\/2 {
-                min-height: 100svh;
-                padding: 1rem !important;
-                align-items: flex-start !important;
-                padding-top: 1.5rem !important;
-            }
-
-            /* Form card more compact on mobile */
-            .bg-white\/5.backdrop-blur-xl.rounded-2xl {
-                padding: 1rem !important;
-                border-radius: 1rem !important;
-            }
-
-            /* Social media icons smaller on mobile */
-            .flex.items-center.justify-center.gap-4 a {
-                width: 2.25rem !important;
-                height: 2.25rem !important;
-            }
-
-            /* Text adjustments */
-            h1 { font-size: 1.375rem !important; }
-        }
-
-        /* Tablet: 641px - 1023px */
-        @media (min-width: 641px) and (max-width: 1023px) {
-            body { overflow-y: auto; }
-            body > div.w-full.lg\:w-1\/2 {
-                padding: 2rem;
-                min-height: 100svh;
-            }
-        }
-
-        /* Short viewport fix */
-        @media (max-height: 700px) {
-            body { overflow-y: auto; align-items: flex-start; }
+            body { overflow-y: auto; overflow-x: hidden; align-items: stretch; }
+            body > div.w-full.lg\:w-1\/2 { min-height: 100vh; padding: 1.5rem !important; align-items: center !important; }
+            .bg-white.rounded-\[2\.5rem\] { padding: 1.5rem !important; border-radius: 2rem !important; }
         }
     </style>
 </body>
+</html>
+
 </html>
