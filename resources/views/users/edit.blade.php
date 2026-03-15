@@ -1,7 +1,7 @@
-@extends('layouts.mobile')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
-<div class="space-y-6 pb-24">
+<div class="space-y-6 pb-24 {{ !($isMobile ?? false) ? 'pt-10' : '' }}">
   {{-- Page Header --}}
   <div class="flex items-center justify-between">
     <div>
@@ -163,7 +163,7 @@
   @if(request()->routeIs('profile.edit'))
     {{-- Logout Section khusus di halaman Profil --}}
     <div class="px-2 pt-4">
-      <form id="logout-form" action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari akun?')">
+      <form id="logout-form" action="{{ route('logout') }}" method="POST" class="no-soft" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari akun?')">
         @csrf
         <button type="submit" class="w-full py-5 bg-rose-50 text-rose-600 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 border border-rose-100 active:scale-95 transition-all">
           <i class="fas fa-sign-out-alt"></i>

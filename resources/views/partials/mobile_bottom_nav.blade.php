@@ -92,6 +92,10 @@
               <div class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('categories.*') ? 'bg-indigo-600' : 'bg-gray-200 ' }}"></div>
               Kategori
             </a>
+            <a href="{{ route('suppliers.index') }}" class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest {{ request()->routeIs('suppliers.*') ? 'text-indigo-600 bg-white shadow-sm' : 'text-gray-400 ' }}">
+              <div class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('suppliers.*') ? 'bg-indigo-600' : 'bg-gray-200 ' }}"></div>
+              Penyedia
+            </a>
             <a href="{{ route('products.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest {{ request()->routeIs('products.*') ? 'text-indigo-600 bg-white shadow-sm' : 'text-gray-400 ' }}">
               <div class="flex items-center gap-4">
                 <div class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('products.*') ? 'bg-indigo-600' : 'bg-gray-200 ' }}"></div>
@@ -100,10 +104,6 @@
               @if (isset($lowStockCount) && $lowStockCount > 0)
                 <span class="px-1.5 py-0.5 bg-red-500 text-white text-[8px] rounded-full">{{ $lowStockCount }}</span>
               @endif
-            </a>
-            <a href="{{ route('suppliers.index') }}" class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest {{ request()->routeIs('suppliers.*') ? 'text-indigo-600 bg-white shadow-sm' : 'text-gray-400 ' }}">
-              <div class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('suppliers.*') ? 'bg-indigo-600' : 'bg-gray-200 ' }}"></div>
-              Penyedia
             </a>
           </div>
         </div>
@@ -209,7 +209,7 @@
 
       <!-- Logout Section -->
       <div class="p-8 border-t border-gray-50 transition-colors">
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout') }}" class="no-soft">
           @csrf
           <button type="submit" class="w-full flex items-center justify-center gap-3 px-6 py-5 rounded-[1.5rem] bg-rose-50 text-rose-600 text-[10px] font-black uppercase tracking-[0.15em] transition active:scale-95 border border-transparent ">
             <i class="fas fa-sign-out-alt"></i>

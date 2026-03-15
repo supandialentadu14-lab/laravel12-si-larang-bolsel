@@ -94,9 +94,17 @@
         width: 330mm;
         min-height: 210mm;
         margin: 16px auto;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         background: #ffffff;
+        transform-origin: top center;
       }
+      
+      /* Scale report based on common screen sizes */
+      @media (max-width: 1440px) { #print-area { transform: scale(0.9); margin-top: 0; } }
+      @media (max-width: 1366px) { #print-area { transform: scale(0.85); margin-top: -20px; } }
+      @media (max-width: 1280px) { #print-area { transform: scale(0.78); margin-top: -40px; } }
+      @media (max-width: 1024px) { #print-area { transform: scale(0.65); margin-top: -80px; } }
+
       .report-table { width: 100%; }
     }
     @media print {
@@ -146,8 +154,8 @@
     </form>
   </div>
 
-  <div class="overflow-x-auto print:overflow-visible pb-4 custom-scrollbar">
-    <div id="print-area" class="print-area bg-white shadow-lg border p-4 sm:p-8 rounded-lg mx-auto" style="min-width: 330mm;">
+  <div class="print:hidden pb-10">
+    <div id="print-area" class="print-area bg-white p-4 sm:p-10 rounded-lg mx-auto">
 
     @php
       $grouped = $grouped ?? [];

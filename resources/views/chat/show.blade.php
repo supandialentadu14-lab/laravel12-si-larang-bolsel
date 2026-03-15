@@ -1,12 +1,34 @@
-@extends('layouts.mobile')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
-<div class="flex flex-col h-[calc(100vh-220px)]" x-data="{
+<div class="flex flex-col h-[calc(100vh-220px)] {{ !($isMobile ?? false) ? 'pt-10' : '' }}" x-data="{
     messages: [],
     newMessage: '',
     loading: false,
     isEditing: false,
     editId: null,
+    selectedMessages: [],
+    isSelectionMode: false,
+    
+    toggleSelectionMode() {
+        this.isSelectionMode = !this.isSelectionMode;
+        if (!this.isSelectionMode) this.selectedMessages = [];
+    },
+
+    activeActionId: null,
+
+    toggleMessageActions(id) {
+        if (this.isSelectionMode) return;
+        this.activeActionId = (this.activeActionId === id) ? null : id;
+    },
+
+    toggleMessageSelection(id) {
+        if (this.selectedMessages.includes(id)) {
+            this.selectedMessages = this.selectedMessages.filter(i => i !== id);
+        } else {
+            this.selectedMessages.push(id);
+        }
+    },
     
     scrollToBottom() {
         this.$nextTick(() => {
@@ -72,6 +94,28 @@
             }
         } catch (e) {}
     },
+
+    async bulkDelete() {
+        if (this.selectedMessages.length === 0) return;
+        if (!confirm(`Hapus ${this.selectedMessages.length} pesan terpilih?`)) return;
+        
+        try {
+            const res = await fetch('{{ route('chat.bulk_delete') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ ids: this.selectedMessages })
+            });
+            
+            if (res.ok) {
+                this.selectedMessages = [];
+                this.isSelectionMode = false;
+                await this.refreshMessages();
+            }
+        } catch (e) {}
+    },
     
     async refreshMessages() {
         const res = await fetch(window.location.href, {
@@ -104,7 +148,10 @@
                 </p>
             </div>
         </div>
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5" x-show="!isSelectionMode">
+            <button @click="toggleSelectionMode()" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 hover:text-indigo-500 transition-colors">
+                <i class="fas fa-tasks text-xs"></i>
+            </button>
             <form action="{{ route('chat.clear', $user) }}" method="POST" onsubmit="return confirm('Hapus semua obrolan dengan {{ $user->name }}?')">
                 @csrf
                 <button type="submit" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-rose-500 transition-colors">
@@ -114,6 +161,16 @@
             <a href="{{ route('dashboard') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-colors">
                 <i class="fas fa-times text-xs"></i>
             </a>
+        </div>
+
+        <div class="flex items-center gap-1.5" x-show="isSelectionMode" x-cloak>
+            <button @click="bulkDelete()" :disabled="selectedMessages.length === 0" class="px-4 h-10 rounded-2xl bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-100 flex items-center gap-2 disabled:opacity-50 disabled:shadow-none transition-all">
+                <i class="fas fa-trash-alt"></i>
+                Hapus (<span x-text="selectedMessages.length"></span>)
+            </button>
+            <button @click="toggleSelectionMode()" class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500 font-bold">
+                <i class="fas fa-times text-xs"></i>
+            </button>
         </div>
     </div>
 

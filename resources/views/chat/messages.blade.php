@@ -2,26 +2,41 @@
     @php
         $isOwn = $msg->sender_id === auth()->id();
     @endphp
-    <div class="flex {{ $isOwn ? 'justify-end' : 'justify-start' }}" id="message-{{ $msg->id }}">
-        <div class="max-w-[80%] group">
-            <div class="relative flex items-end gap-2">
-                @if($isOwn)
-                    <div class="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button @click="startEdit({{ $msg->id }}, '{{ addslashes($msg->message) }}')" class="w-6 h-6 rounded-lg bg-slate-50 text-indigo-500 flex items-center justify-center active:scale-90 transition-all">
-                            <i class="fas fa-edit text-[8px]"></i>
-                        </button>
-                    </div>
-                @endif
-                
-                <div class="relative {{ $isOwn ? 'bg-indigo-600 text-white rounded-[1.5rem] rounded-tr-none' : 'bg-white text-slate-800 rounded-[1.5rem] rounded-tl-none border border-slate-50 shadow-sm' }} px-4 py-2.5 shadow-sm">
+    <div class="flex items-center w-full gap-3 {{ $isOwn ? 'justify-end' : 'justify-start' }} group/msg" id="message-{{ $msg->id }}">
+        {{-- Selection Checkbox --}}
+        <div x-show="isSelectionMode" x-transition x-cloak class="flex-none {{ $isOwn ? 'order-2' : 'order-1' }}">
+            <button @click="toggleMessageSelection({{ $msg->id }})" 
+                    class="w-6 h-6 rounded-lg flex items-center justify-center transition-all border-2"
+                    :class="selectedMessages.includes({{ $msg->id }}) ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-200 text-transparent'">
+                <i class="fas fa-check text-[10px]"></i>
+            </button>
+        </div>
+
+        <div class="max-w-[80%] group relative {{ $isOwn ? 'order-1' : 'order-2' }}">
+            <div class="relative flex items-end gap-2 {{ $isOwn ? 'flex-row-reverse' : 'flex-row' }}">
+                <div class="relative {{ $isOwn ? 'bg-white text-slate-800 rounded-[1.5rem] rounded-tr-none border border-slate-50 shadow-sm' : 'bg-indigo-600 text-white rounded-[1.5rem] rounded-tl-none' }} px-4 py-2.5 shadow-sm transition-all cursor-pointer"
+                     :class="selectedMessages.includes({{ $msg->id }}) || activeActionId === {{ $msg->id }} ? 'ring-2 ring-indigo-500/50 scale-[0.98]' : ''"
+                     @click="isSelectionMode ? toggleMessageSelection({{ $msg->id }}) : toggleMessageActions({{ $msg->id }})">
                     <p class="text-[11px] font-bold leading-relaxed">{{ $msg->message }}</p>
                     @if($msg->is_edited)
-                        <span class="text-[7px] opacity-50 block mt-0.5">(diedit)</span>
+                        <span class="text-[7px] opacity-50 block mt-0.5" :class="activeActionId === {{ $msg->id }} ? 'text-slate-400' : '{{ $isOwn ? 'text-slate-400' : 'text-indigo-200' }}'">(diedit)</span>
                     @endif
+                </div>
 
-                    {{-- Delete Button for both --}}
-                    <button @click="deleteMessage({{ $msg->id }})" class="absolute {{ $isOwn ? '-left-8' : '-right-8' }} top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center opacity-0 group-hover:opacity-100 active:scale-90 transition-all shadow-sm">
-                        <i class="fas fa-trash-alt text-[9px]"></i>
+                {{-- Action Buttons (Visible only on Click) - Now BELOW message --}}
+                <div class="mt-2 flex items-center gap-2 transition-all no-print {{ $isOwn ? 'justify-end' : 'justify-start' }}" 
+                     x-show="activeActionId === {{ $msg->id }} && !isSelectionMode" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 translate-y-[-5px]"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-cloak>
+                    @if($isOwn)
+                        <button @click.stop="startEdit({{ $msg->id }}, '{{ addslashes($msg->message) }}')" class="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 text-[8px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                            Edit
+                        </button>
+                    @endif
+                    <button @click.stop="deleteMessage({{ $msg->id }})" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 text-[8px] font-black uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                        Hapus
                     </button>
                 </div>
             </div>

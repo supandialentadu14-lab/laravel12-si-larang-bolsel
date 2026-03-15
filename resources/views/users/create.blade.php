@@ -1,7 +1,7 @@
-@extends('layouts.mobile')
+@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
-<div class="space-y-6 pb-24">
+<div class="space-y-6 pb-24 {{ !($isMobile ?? false) ? 'pt-10' : '' }}">
   {{-- Page Header --}}
   <div class="flex items-center justify-between">
     <div>
@@ -118,7 +118,7 @@
 
     {{-- Actions --}}
     <div class="flex gap-3 px-2">
-      <a href="{{ route('users.index') }}" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
+      <a href="{{ route('users.index') }}" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center transition-colors">Batal</a>
       <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">Simpan User</button>
     </div>
   </form>

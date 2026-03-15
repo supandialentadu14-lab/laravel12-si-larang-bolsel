@@ -65,488 +65,210 @@
 
   <style>
     :root {
-      --body-bg: #F3F4F6;
-      --body-text: #111827;
-      --sidebar-bg: #F8FAFC;
-      --sidebar-text: #111827;
-      --sidebar-muted: #6B7280;
-      --sidebar-hover: #E5E7EB;
-      --sidebar-active: #D1D5DB;
+      --body-bg: #F8FAFC;
+      --body-text: #1E293B;
+      --nav-bg: rgba(255, 255, 255, 0.8);
       --accent: #4F46E5;
-      --marquee-start: #60A5FA;
-      --marquee-end: #A78BFA;
+      --accent-soft: rgba(79, 70, 229, 0.1);
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --body-bg: #0F172A;
-        --body-text: #F8FAFC;
-        --sidebar-bg: #1E293B;
-        --sidebar-text: #F8FAFC;
-        --sidebar-muted: #94A3B8;
-        --sidebar-hover: rgba(255, 255, 255, 0.05);
-        --sidebar-active: rgba(255, 255, 255, 0.1);
-      }
+    .theme-dark {
+      --body-bg: #0F172A;
+      --body-text: #F8FAFC;
+      --nav-bg: rgba(30, 41, 59, 0.8);
+      --accent: #818CF8;
+      --accent-soft: rgba(129, 140, 248, 0.1);
     }
 
-    [x-cloak] {
-      display: none !important;
-    }
+    [x-cloak] { display: none !important; }
 
-    .sidebar-modern {
-      background: radial-gradient(1200px 600px at -10% 10%, rgba(167, 139, 250, 0.25) 0%, rgba(14, 20, 40, 0) 50%),
-        radial-gradient(1200px 600px at 120% 40%, rgba(56, 189, 248, 0.25) 0%, rgba(14, 20, 40, 0) 50%),
-        var(--sidebar-bg);
-      color: var(--sidebar-text);
-      min-height: 100vh;
-      will-change: transform, opacity;
-      backface-visibility: hidden;
-      transform: translateZ(0);
-    }
-
-    .nav-link {
-      display: flex;
-      align-items: center;
-      padding: .9rem 1rem;
-      color: var(--sidebar-text);
-      transition: all .2s;
-      border-left: 3px solid transparent;
-      border-radius: .75rem;
-      cursor: pointer;
-    }
-
-    .nav-link:hover {
-      color: var(--sidebar-text);
-      background-color: var(--sidebar-hover);
-    }
-
-    .nav-link.active {
-      color: var(--sidebar-text);
-      background: linear-gradient(90deg, rgba(125, 211, 252, .25), rgba(192, 132, 252, .25));
-      box-shadow: 0 0 0 1px rgba(125, 211, 252, .25) inset, 0 6px 18px rgba(125, 211, 252, .22);
-      font-weight: 700;
-      border-left: 3px solid var(--accent);
-    }
-
-    .bg-indigo-800 {
-      background: linear-gradient(90deg, rgba(125, 211, 252, .22), rgba(192, 132, 252, .22));
-      box-shadow: 0 0 0 1px rgba(125, 211, 252, .18) inset, 0 6px 18px rgba(192, 132, 252, .18);
-    }
-
-    #page-header h2 {
-      font-size: 1.75rem;
-      font-weight: 800;
-      color: #111827;
-      letter-spacing: .2px;
-    }
-
-    #page-header p {
-      color: #6b7280;
-    }
-
-    .card {
-      border: 1px solid #f3f4f6;
-      border-radius: .75rem;
-      background: #ffffff;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .05), 0 4px 6px -4px rgba(0, 0, 0, .05);
-    }
-
-    .table-clean thead {
-      background: #f3f4f6;
-    }
-
-    .table-clean tbody tr:hover {
-      background: #fff7ed;
-    }
-
-    /* Prevent text wrapping in tables on small screens to enforce horizontal scroll */
-    table th, table td {
-      white-space: nowrap;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="date"],
-    textarea,
-    select {
-      border-color: #e5e7eb;
-      border-radius: 0.5rem;
-      padding: 0.6rem 0.9rem;
-      transition: all .2s;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-      border-color: #6366f1;
-    }
-
-    button {
-      transition: transform .05s ease, box-shadow .2s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    /* GLOBAL CURSOR RULES */
-    a,
-    button,
-    [role="button"],
-    input[type="submit"],
-    input[type="button"],
-    input[type="reset"],
-    select {
-      cursor: pointer !important;
-    }
-
-    /* Cursor for datalist dropdown arrow */
-    input[list]::-webkit-calendar-picker-indicator {
-      cursor: pointer !important;
-    }
-
-    .cursor-pointer {
-      cursor: pointer !important;
-    }
-
-    .submenu-stagger a {
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity .18s ease, transform .18s ease;
-      will-change: opacity, transform;
-    }
-
-    .submenu-open a {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .submenu-open a:nth-child(1) {
-      transition-delay: 30ms;
-    }
-
-    .submenu-open a:nth-child(2) {
-      transition-delay: 60ms;
-    }
-
-    .submenu-open a:nth-child(3) {
-      transition-delay: 90ms;
-    }
-
-    .submenu-open a:nth-child(4) {
-      transition-delay: 120ms;
-    }
-
-    .submenu-open a:nth-child(5) {
-      transition-delay: 150ms;
-    }
-
-    .submenu-open a:nth-child(6) {
-      transition-delay: 180ms;
-    }
-
-    .submenu-open a:nth-child(7) {
-      transition-delay: 210ms;
-    }
-
-    .submenu-open a:nth-child(8) {
-      transition-delay: 240ms;
-    }
-
-    .submenu-open a:nth-child(9) {
-      transition-delay: 270ms;
-    }
-
-    .submenu-open a:nth-child(10) {
-      transition-delay: 300ms;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      padding: .5rem .75rem;
-      border: 1px solid #e5e7eb;
-      border-radius: .5rem;
-      font-weight: 600;
-      line-height: 1.25rem;
-      background: #ffffff;
-      color: #374151;
-      box-shadow: none;
-      transition: background-color .15s ease, border-color .15s ease, color .15s ease;
-      white-space: nowrap !important;
-      flex-shrink: 0;
-    }
-
-    .btn:hover {
-      background: #f9fafb;
-    }
-
-    .btn:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, .25);
-    }
-
-    .btn i {
-      font-size: .9rem;
-    }
-
-    .btn-primary {
-      background: #4F46E5;
-      color: #ffffff;
-      border-color: transparent;
-    }
-
-    .btn-primary:hover {
-      background: #4338CA;
-      color: #ffffff;
-      border-color: transparent;
-    }
-
-    .btn-success {
-      background: #16a34a;
-      color: #ffffff;
-      border-color: transparent;
-    }
-
-    .btn-success:hover {
-      background: #15803d;
-    }
-
-    .btn-warning {
-      background: #f97316;
-      color: #ffffff;
-      border-color: transparent;
-    }
-
-    .btn-warning:hover {
-      background: #ea580c;
-    }
-
-    .btn-neutral {
-      background: #111827;
-      color: #ffffff;
-      border-color: transparent;
-    }
-
-    .btn-neutral:hover {
-      background: #0f172a;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: #374151;
-      border-color: #d1d5db;
-    }
-
-    .btn-outline:hover {
-      background: #f9fafb;
-    }
-
-    /* MARQUEE */
-    .marquee-container {
-      position: relative;
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
-      white-space: nowrap;
-      width: 100%;
-      min-height: 36px;
-      padding: 4px 0;
-      border-radius: 0.5rem;
-      background: linear-gradient(90deg, rgba(99, 102, 241, .12), rgba(124, 58, 237, .12));
-      border: 1px solid rgba(99, 102, 241, .15);
-      display: flex;
-      align-items: center;
-    }
-
-    .marquee-text {
-      font-size: 18px;
-      display: inline-block;
-      padding-left: 100%;
-      font-weight: 800;
-      background: linear-gradient(90deg, var(--marquee-start), var(--marquee-end));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      letter-spacing: .4px;
-      animation: marqueeMove 18s linear infinite;
-      text-shadow: 0 0 1px rgba(255, 255, 255, .2);
-      line-height: normal;
-    }
-
-    .marquee-container:hover .marquee-text {
-      animation-play-state: paused;
-    }
-
-    @keyframes marqueeMove {
-      0% {
-        transform: translateX(0);
-      }
-
-      100% {
-        transform: translateX(-100%);
-      }
-    }
-
-    @media print {
-
-      aside,
-      header,
-      #page-header,
-      .no-print {
-        display: none !important;
-      }
-
-      marquee,
-      .marquee-container,
-      .marquee-text,
-      [data-marquee] {
-        display: none !important;
-      }
-
-      * {
-        animation: none !important;
-        transition: none !important;
-      }
-
-      .h-screen {
-        height: auto !important;
-      }
-
-      .overflow-hidden,
-      .overflow-y-auto,
-      .overflow-x-hidden {
-        overflow: visible !important;
-      }
-
-      main {
-        padding: 0 !important;
-        background: #ffffff !important;
-      }
-
-      body {
-        background: #ffffff !important;
-      }
-
-      * {
-        box-shadow: none !important;
-      }
-    }
-
-    #print-area,
-    #print-area * {
-      animation: none !important;
-      transition: none !important;
-    }
-
-    html,
-    body {
       background-color: var(--body-bg);
       color: var(--body-text);
     }
 
-    body {
-      overscroll-behavior: none;
+    .glass-nav {
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      background-color: var(--nav-bg);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    .no-marquee .marquee-container {
-      display: none !important;
+    .nav-item {
+      position: relative;
+      padding: 0.5rem 1rem;
+      font-weight: 700;
+      font-size: 0.875rem;
+      border-radius: 0.75rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--body-text);
+      opacity: 0.7;
     }
 
-    .no-marquee .marquee-text {
-      animation: none !important;
+    .nav-item:hover, .nav-item.active {
+      opacity: 1;
+      background: var(--accent-soft);
+      color: var(--accent);
     }
 
-    main {
-      content-visibility: auto;
-      contain-intrinsic-size: 800px;
-      animation: none !important;
+    .nav-dropdown-card {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 220px;
+      background: white;
+      border-radius: 1.25rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 0.75rem;
+      z-index: 100;
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(2px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .theme-dark .nav-dropdown-card {
+      background: #1E293B;
+      border-color: rgba(255, 255, 255, 0.05);
     }
 
-    main.fade-out {
-      animation: none !important;
+    .dropdown-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: all 0.2s;
+      color: var(--body-text);
+      opacity: 0.8;
     }
 
-    @keyframes fadeOut {
-      from {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      to {
-        opacity: 0;
-        transform: translateY(2px);
-      }
+    .dropdown-link:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+      opacity: 1;
+      transform: translateX(4px);
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        transition: none !important;
-        animation: none !important;
-      }
+    /* Dashboard Premium Cards */
+    .premium-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+      transition: all 0.3s ease;
     }
 
-    .no-anim * {
-      animation: none !important;
-      transition: none !important;
+    .theme-dark .premium-card {
+      background: #1E293B;
+      border-color: rgba(255, 255, 255, 0.03);
     }
 
-    .no-anim main {
-      animation: none !important;
+    .premium-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
     }
 
-    .no-anim .sidebar-gradient,
-    .no-anim .overflow-y-auto {
-      scroll-behavior: auto;
-    }
-  </style>
-  <style>
-    html {
-      scrollbar-width: thin;
-      scrollbar-color: #6366F1 rgba(99, 102, 241, .12);
-    }
-
-    .sidebar-gradient,
-    .overflow-y-auto {
-      scroll-behavior: smooth;
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #94A3B8;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
     }
 
-    .sidebar-gradient::-webkit-scrollbar,
-    .overflow-y-auto::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+    .sidebar-link i {
+      font-size: 1.1rem;
+      width: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s;
     }
 
-    .sidebar-gradient::-webkit-scrollbar-track,
-    .overflow-y-auto::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, .08);
-      border-radius: 999px;
+    .sidebar-link:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF !important;
+      transform: translateX(4px);
     }
 
-    .sidebar-gradient::-webkit-scrollbar-thumb,
-    .overflow-y-auto::-webkit-scrollbar-thumb {
-      background-image: linear-gradient(180deg, #6366F1 0%, #7C3AED 100%);
-      border-radius: 999px;
-      border: 2px solid rgba(255, 255, 255, .25);
+    .sidebar-link.active {
+      background: #4F46E5;
+      color: #FFFFFF !important;
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
     }
 
-    .sidebar-gradient::-webkit-scrollbar-thumb:hover,
-    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-      background-image: linear-gradient(180deg, #4F46E5 0%, #7C3AED 100%);
+    .sidebar-link.active i {
+      transform: scale(1.1);
+    }
+
+    .sub-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 1rem;
+      padding-left: 3.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94A3B8;
+      border-radius: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .sub-link:hover {
+      color: #6366F1 !important;
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .sub-link.active {
+      color: #818CF8;
+      background: rgba(129, 140, 248, 0.1);
+      border-right: 3px solid #6366F1;
+      border-radius: 0.75rem 0 0 0.75rem;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { 
+      background: #CBD5E1; 
+      border-radius: 10px; 
+    }
+    .theme-dark ::-webkit-scrollbar-thumb { background: #334155; }
+
+    /* Modern Marquee Animation */
+    @keyframes marqueeScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .marquee-container {    
+      ba
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+    .marquee-content {
+      display: inline-flex;
+      animation: marqueeScroll 10s linear infinite;
+    }
+    .marquee-content:hover {
+      animation-play-state: paused;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
     }
   </style>
   <script>
@@ -635,628 +357,352 @@
   </script>
 </head>
 
-<body class="font-sans antialiased" 
+<body class="font-sans antialiased bg-[#F4F7FA] min-h-screen" 
   x-data="{ 
-    sidebarOpen: window.innerWidth >= 1024 
+    unreadChatCount: 0,
+    notifOpen: false,
+    checkNewMessages() {
+      fetch('{{ route('chat.unread') }}')
+        .then(res => res.json())
+        .then(data => { this.unreadChatCount = data.count; })
+        .catch(e => {});
+    }
   }" 
-  @resize.window="sidebarOpen = window.innerWidth >= 1024;">
-  <div id="tw-check" class="hidden"></div>
-  <div class="flex h-screen overflow-hidden">
+  x-init="checkNewMessages(); setInterval(() => checkNewMessages(), 15000)">
 
-    <!-- Mobile Sidebar Backdrop -->
-    <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false" x-cloak></div>
+  <!-- Application Boxed Wrapper -->
+  <div class="{{ Request::is('reports*') ? 'max-w-none xl:max-w-[1440px]' : 'max-w-[1240px]' }} mx-auto bg-white h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
 
-    <!-- Sidebar -->
-    <aside
-      class="sidebar-modern flex-shrink-0 flex flex-col transition-all duration-300 shadow-xl z-30 overflow-x-hidden absolute lg:relative inset-y-0 left-0 h-full"
-      :class="sidebarOpen ? 'w-64 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0'">
-
-      <div class="h-16 flex items-center justify-center border-b border-white/20 relative">
-        <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 group cursor-pointer"
-          style="color: var(--sidebar-text)">
-          <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo SI-LARANG"
-            class="h-8 w-8 rounded-md ring-2 ring-white/40" onerror="this.style.display='none'">
-          <span class="text-xl font-bold tracking-wider" x-show="sidebarOpen" x-cloak>SI-LARANG</span>
+  <div class="flex flex-row flex-1 min-h-0 overflow-hidden">
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar-main" class="w-64 flex flex-col no-print bg-[#0F172A] border-r border-slate-800/50 z-10" style="background-color: #0F172A;">
+      <div class="p-8">
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <img src="{{ asset('images/silarang-logo.png') }}" class="w-7 h-7 object-contain brightness-0 invert" onerror="this.style.display='none'">
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-black tracking-tight text-white leading-none">SI-LARANG</span>
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Bolsel</span>
+          </div>
         </a>
       </div>
 
-      <nav class="flex-1 overflow-y-auto py-4">
+      <nav x-data="{ 
+        activeMenu: '{{ request()->is('products*') || request()->is('categories*') || request()->is('suppliers*') || request()->is('import/products*') ? 'master' : (request()->is('stock*') || request()->is('reports*') ? 'transaksi' : (request()->is('settings*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'manajemen' : 'none')) }}' 
+      }" class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <div class="pb-4">
 
-        <a href="{{ route('dashboard') }}"
-          @click="(() => {
-            const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-            for (let k in s) s[k] = false;
-            localStorage.setItem('sidebarOpenGroups', JSON.stringify(s));
-            $dispatch('sidebar-group-opened', { key: 'none' });
-          })()"
-          class="flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg hover:bg-indigo-500 hover:text-white {{ request()->routeIs('dashboard') ? 'bg-indigo-500 text-white' : '' }}"
-          :class="sidebarOpen ? 'justify-between' : 'justify-center'">
+          <a href="{{ route('dashboard') }}" 
+             @click="activeMenu = 'none'"
+             class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <i class="fas fa-grid-2"></i> Dashboard
+          </a>
+        </div>
 
-          <span class="flex items-center gap-2">
-            <i class="fas fa-tachometer-alt"></i>
-            <span x-show="sidebarOpen" x-cloak>Dashboard</span>
-          </span>
-        </a>
-
-        <div class="w-full space-y-2">
-          <div x-data="{ key: 'master', open: false, popover: false }" class="relative"
-            @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
-            x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-              open = s[key] ?? ({{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'true' : 'false' }}); })()">
-            <button
-              @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (popover = !popover)"
-              class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
-              style="color: var(--sidebar-text)"
-              :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-              <span class="flex items-center gap-2">
-                <i class="fas fa-database"></i>
-                <span x-show="sidebarOpen" x-cloak>Master Data</span>
-              </span>
-              <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
-                class="w-4 h-4 transform transition-transform duration-300" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
-                  d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div x-show="sidebarOpen && open" x-cloak
-              class="mt-2 rounded-lg overflow-hidden submenu-stagger" :class="open ? 'submenu-open' : ''"
-              style="background: var(--sidebar-hover)">
-              <a href="{{ route('products.index') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('products.*') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Barang
-              </a>
-              <a href="{{ route('categories.index') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('categories.*') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Jenis Belanja
-              </a>
-              <a href="{{ route('suppliers.index') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('suppliers.*') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Penyedia
-              </a>
-            </div>
-            <div x-show="!sidebarOpen && popover" x-cloak @click.away="popover=false"
-              class="absolute left-full ml-2 top-0 z-50 w-56 rounded-xl shadow-xl ring-1 ring-black/10 p-2"
-              :style="{ backgroundColor: (theme === 'dark' ? '#1B2230' : '#ffffff'), color: (
-                  theme === 'dark' ? '#E5E7EB' : '#111827') }">
-              <a href="{{ route('products.index') }}"
-                class="block px-3 py-2 rounded hover:bg-gray-700/40">Barang</a>
-              <a href="{{ route('categories.index') }}"
-                class="block px-3 py-2 rounded hover:bg-gray-700/40">Jenis Belanja</a>
-              <a href="{{ route('suppliers.index') }}"
-                class="block px-3 py-2 rounded hover:bg-gray-700/40">Penyedia</a>
-            </div>
+        <div class="pb-4">
+          <button @click="activeMenu = (activeMenu === 'master' ? 'none' : 'master')" 
+                  class="sidebar-link w-full"
+                  :class="activeMenu === 'master' || {{ json_encode(request()->is('products*') || request()->is('categories*') || request()->is('suppliers*') || request()->is('import/products*')) }} ? 'active' : ''">
+            <i class="fas fa-database"></i> 
+            <span class="flex-1 text-left">Master Data</span>
+            <i class="fas fa-chevron-down text-[10px] transition-transform" :class="activeMenu === 'master' ? 'rotate-180' : ''"></i>
+          </button>
+          <div x-show="activeMenu === 'master'" x-transition class="mt-1 space-y-1">
+            <a href="{{ route('categories.index') }}" class="sub-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">Jenis Belanja</a>
+            <a href="{{ route('suppliers.index') }}" class="sub-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">Penyedia</a>
+            <a href="{{ route('products.index') }}" class="sub-link {{ request()->routeIs('products.*') ? 'active' : '' }}">Data Barang</a>
           </div>
+        </div>
 
-          <div x-data="{ key: 'transaksi', open: false, popover: false }" class="relative"
-            @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
-            x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-              open = s[key] ?? ({{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.list') || request()->routeIs('reports.nota.list') || request()->routeIs('reports.belanja.modal.preview_all') ? 'true' : 'false' }}); })()">
-            <button
-              @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (popover = !popover)"
-              class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
-              style="color: var(--sidebar-text)"
-              :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-              <span class="flex items-center gap-2">
-                <i class="fas fa-exchange-alt"></i>
-                <span x-show="sidebarOpen" x-cloak>Transaksi</span>
-              </span>
-              <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
-                class="w-4 h-4 transform transition-transform duration-300" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
-                  d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div x-show="sidebarOpen && open" x-cloak
-              class="mt-2 rounded-lg overflow-hidden submenu-stagger" :class="open ? 'submenu-open' : ''"
-              style="background: var(--sidebar-hover)">
-              <a href="{{ route('stock.index') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('stock.index') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Mutasi Masuk/Keluar
-              </a>
-              <a href="{{ route('reports.belanja.modal.list') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.belanja.modal.list') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Daftar Belanja Modal
-              </a>
-            </div>
-            <div x-show="!sidebarOpen && popover" x-cloak @click.away="popover=false"
-              class="absolute left-full ml-2 top-0 z-50 w-56 rounded-xl shadow-xl ring-1 ring-black/10 p-2"
-              :style="{ backgroundColor: (theme === 'dark' ? '#1B2230' : '#ffffff'), color: (
-                  theme === 'dark' ? '#E5E7EB' : '#111827') }">
-              <a href="{{ route('stock.index') }}"
-                class="block px-3 py-2 rounded hover:bg-gray-700/40">Mutasi Masuk/Keluar</a>
-              <a href="{{ route('reports.belanja.modal.preview_all') }}"
-                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Belanja Modal</a>
-              <a href="{{ route('reports.nota.list') }}"
-                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Surat Pesanan</a>
-              <a href="{{ route('reports.belanja.modal.list') }}"
-                class="block px-3 py-2 rounded hover:bg-gray-700/40">Daftar Belanja</a>
-            </div>
+        <div class="pb-4">
+          <button @click="activeMenu = (activeMenu === 'transaksi' ? 'none' : 'transaksi')" 
+                  class="sidebar-link w-full"
+                  :class="activeMenu === 'transaksi' || {{ json_encode(request()->is('stock*') || request()->is('reports*')) }} ? 'active' : ''">
+            <i class="fas fa-exchange-alt"></i> 
+            <span class="flex-1 text-left">Transaksi</span>
+            <i class="fas fa-chevron-down text-[10px] transition-transform" :class="activeMenu === 'transaksi' ? 'rotate-180' : ''"></i>
+          </button>
+          <div x-show="activeMenu === 'transaksi'" x-transition class="mt-1 space-y-1">
+            <a href="{{ route('stock.index') }}" class="sub-link {{ request()->routeIs('stock.index') ? 'active' : '' }}">Mutasi Masuk/Keluar</a>
+            <a href="{{ route('reports.belanja.modal.list') }}" class="sub-link {{ request()->routeIs('reports.belanja.modal.list') ? 'active' : '' }}">Daftar Belanja</a>
+            <a href="{{ route('reports.nota.list') }}" class="sub-link {{ request()->routeIs('reports.nota.list') ? 'active' : '' }}">Nota Pesanan</a>
+            <a href="{{ route('reports.pemeriksaan.list') }}" class="sub-link {{ request()->routeIs('reports.pemeriksaan.list') ? 'active' : '' }}">Pemeriksaan</a>
+            <a href="{{ route('reports.penerimaan.list') }}" class="sub-link {{ request()->routeIs('reports.penerimaan.list') ? 'active' : '' }}">Penerimaan (BASTB)</a>
+            <a href="{{ route('reports.kwitansi.list') }}" class="sub-link {{ request()->routeIs('reports.kwitansi.list') ? 'active' : '' }}">Kwitansi</a>
+            <a href="{{ route('reports.opname.list') }}" class="sub-link {{ request()->routeIs('reports.opname.list') ? 'active' : '' }}">BA Opname</a>
+            <a href="{{ route('reports.pinjam.list') }}" class="sub-link {{ request()->routeIs('reports.pinjam.list') ? 'active' : '' }}">Pinjam Pakai</a>
           </div>
+        </div>
 
-          <div x-data="{ key: 'laporan', open: false }"
-            @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
-            x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-              open = s[key] ?? ({{ request()->routeIs('reports.index') || request()->routeIs('reports.kartu.tahunan') ? 'true' : 'false' }}); })()">
-            <button
-              @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.index') }}')"
-              class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
-              style="color: var(--sidebar-text)"
-              :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-              <span class="flex items-center gap-2">
-                <i class="fas fa-file-alt"></i>
-                <span x-show="sidebarOpen" x-cloak>Laporan</span>
-              </span>
-              <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
-                class="w-4 h-4 transform transition-transform duration-300" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
-                  d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div x-show="sidebarOpen && open" x-cloak
-              class="mt-2 rounded-lg overflow-hidden submenu-stagger"
-              :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-              <a href="{{ route('reports.index') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.index') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Laporan Persediaan
-              </a>
-              <a href="{{ route('reports.kartu.tahunan') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kartu.tahunan') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Kartu Persediaan Tahunan
-              </a>
-                            <a href="{{ route('reports.opname.list') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.opname.list') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Daftar Stock Opname
-              </a>
-              <a href="{{ route('reports.pinjam.list') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pinjam.list') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Daftar Pinjam Pakai
-              </a>
-            </div>
+        <div class="pb-4">
+          <button @click="activeMenu = (activeMenu === 'manajemen' ? 'none' : 'manajemen')" 
+                  class="sidebar-link w-full"
+                  :class="activeMenu === 'manajemen' || {{ json_encode(request()->is('settings*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*')) }} ? 'active' : ''">
+            <i class="fas fa-sliders-h"></i> 
+            <span class="flex-1 text-left">Manajemen</span>
+            <i class="fas fa-chevron-down text-[10px] transition-transform" :class="activeMenu === 'manajemen' ? 'rotate-180' : ''"></i>
+          </button>
+          <div x-show="activeMenu === 'manajemen'" x-transition class="mt-1 space-y-1">
+            <a href="{{ route('settings.opd.index') }}" class="sub-link {{ request()->routeIs('settings.opd.index') ? 'active' : '' }}">Instansi (OPD)</a>
+            @if(Auth::user()->isAdmin())
+              <a href="{{ route('users.index') }}" class="sub-link {{ request()->routeIs('users.*') ? 'active' : '' }}">Pengguna</a>
+              <a href="{{ route('activity_log.index') }}" class="sub-link {{ request()->routeIs('activity_log.*') ? 'active' : '' }}">Log Aktivitas</a>
+            @endif
           </div>
+        </div>
 
-            <div x-data="{ key: 'settings', open: false }"
-              @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
-              x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-                open = s[key] ?? ({{ request()->routeIs('settings.opd.*') || request()->routeIs('settings.nota.master.*') ? 'true' : 'false' }}); })()">
-              <button
-                @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('settings.opd.index') }}')"
-                class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
-                style="color: var(--sidebar-text)"
-                :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-                <span class="flex items-center gap-2">
-                  <i class="fas fa-gear"></i>
-                  <span x-show="sidebarOpen" x-cloak>Pengaturan</span>
-                </span>
-                <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
-                  class="w-4 h-4 transform transition-transform duration-300" fill="none"
-                  stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
-                    d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div x-show="sidebarOpen && open" x-cloak
-                class="mt-2 rounded-lg overflow-hidden submenu-stagger"
-                :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-                <a href="{{ route('settings.opd.index') }}"
-                  class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.opd.*') ? 'bg-indigo-500 text-white' : '' }}"
-                  style="color: var(--sidebar-text)">
-                  OPD
-                </a>
-                <a href="{{ route('settings.nota.master.list') }}"
-                  class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('settings.nota.master.*') ? 'bg-indigo-500 text-white' : '' }}"
-                  style="color: var(--sidebar-text)">
-                  Penandatangan
-                </a>
-
-                @if (Auth::check() && Auth::user()->isAdmin())
-                  <a href="{{ route('users.index') }}"
-                    class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('users.*') ? 'bg-indigo-500 text-white' : '' }}"
-                    style="color: var(--sidebar-text)">
-                    Pengguna
-                  </a>
-                  <a href="{{ route('activity_log.index') }}"
-                    class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('activity_log.index') ? 'bg-indigo-500 text-white' : '' }}"
-                    style="color: var(--sidebar-text)">
-                    Activity Log
-                  </a>
-                @endif
-              </div>
-            </div>
-
-          <div x-data="{ key: 'kwitansi', open: false }"
-            @sidebar-group-opened.window="if ($event.detail.key !== key) { open = false; const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = false; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); }"
-            x-init="(() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}');
-              open = s[key] ?? ({{ request()->routeIs('reports.kwitansi.*') ? 'true' : 'false' }}); })()">
-            <button
-              @click="sidebarOpen ? (open = !open, open && $dispatch('sidebar-group-opened', { key: key }), (() => { const s = JSON.parse(localStorage.getItem('sidebarOpenGroups') || '{}'); s[key] = open; localStorage.setItem('sidebarOpenGroups', JSON.stringify(s)); })()) : (window.location.href='{{ route('reports.kwitansi.list') }}')"
-              class="w-full flex items-center px-4 py-3 text-sm font-semibold transition rounded-lg cursor-pointer hover:bg-indigo-500 hover:text-white"
-              style="color: var(--sidebar-text)"
-              :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-              <span class="flex items-center gap-2">
-                <i class="fas fa-receipt"></i>
-                <span x-show="sidebarOpen" x-cloak>Berkas</span>
-              </span>
-              <svg x-show="sidebarOpen" x-cloak :class="{ 'rotate-180': open }"
-                class="w-4 h-4 transform transition-transform duration-300" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2"
-                  d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div x-show="sidebarOpen && open" x-cloak
-              class="mt-2 rounded-lg overflow-hidden submenu-stagger"
-              :class="open ? 'submenu-open' : ''" style="background: var(--sidebar-hover)">
-              <a href="{{ route('reports.nota.list') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.nota.list') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Daftar Surat Pesanan
-              </a>
-              <a href="{{ route('reports.pemeriksaan.list') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.pemeriksaan.list') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Daftar Pemeriksaan
-              </a>
-              <a href="{{ route('reports.penerimaan.list') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.penerimaan.list') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Daftar Penerimaan
-              </a>
-              <a href="{{ route('reports.kwitansi.list') }}"
-                class="block pl-10 pr-6 py-2 text-sm font-medium transition hover:bg-indigo-500 hover:text-white {{ request()->routeIs('reports.kwitansi.list') ? 'bg-indigo-500 text-white' : '' }}"
-                style="color: var(--sidebar-text)">
-                Daftar Kwitansi
-              </a>
-            </div>
-          </div>
-          </div>
-
+        <div class="pb-4">
+          <a href="{{ route('profile.edit') }}" 
+             @click="activeMenu = 'none'"
+             class="sidebar-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
+            <i class="fas fa-user-circle"></i> Profil
+          </a>
+        </div>
       </nav>
-
-      <div class="p-4 text-center" style="background: var(--sidebar-hover)">
-        <button @click="sidebarOpen = !sidebarOpen"
-          class="w-8 h-8 rounded-full flex items-center justify-center transition focus:outline-none cursor-pointer bg-slate-200 text-slate-800">
-          <i class="fas" :class="sidebarOpen ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
-        </button>
-      </div>
     </aside>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden" :style="{ backgroundColor: 'var(--body-bg)' }">
-      <!-- Topbar -->
-      <header class="bg-white shadow min-h-[4rem] h-auto flex items-center justify-between px-4 md:px-6 z-20 py-2 transition-colors duration-300"
-        style="color: var(--body-text)">
-        <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden focus:outline-none"
-          :style="{ color: '#374151' }">
-          <i class="fas fa-bars text-xl"></i>
-        </button>
+    <!-- Main Content Wrapper (Header + Content) -->
+    <div class="flex-1 flex flex-col min-w-0 bg-white relative">
+      <!-- Minimal Top Header (Fixed Position) -->
+      <header class="h-20 sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-50 flex items-center justify-between px-8 no-print z-20">
+        <div class="flex-none flex items-center gap-4">
+          <div class="relative max-w-xs w-full lg:block hidden">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+            <input type="text" placeholder="Cari di SI-LARANG..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-bold text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-100 outline-none">
+          </div>
+        </div>
 
-        <!-- Search Bar or Spacer -->
-        <!-- MARQUEE TEXT -->
-        <div class="hidden md:block flex-1 mx-6 min-w-0">
-          <div class="marquee-container group">
-            <div class="marquee-text">
-              <span class="inline-flex items-center">
-                <i class="fas fa-bullhorn mr-2 text-indigo-600 group-hover:text-indigo-700"></i>
-                Sistem Informasi Pengelolaan Persediaan Barang (SI-LARANG) • Dinas Komunikasi dan
-                Informatika • Bolaang Mongondow Selatan
-              </span>
+        <!-- Full Width Marquee Bar -->
+        <div class="hidden lg:flex flex-1 items-center overflow-hidden ml-8 mr-48">
+          <div class="marquee-container w-full group">
+            <div class="marquee-content flex items-center gap-20">
+              @php
+                $opdName = \App\Models\OpdSetting::first()->nama_opd ?? 'OPD';
+                $welcomeText = "Selamat datang di SI-LARANG (Sistem Informasi Pengelolaan Persediaan Barang). " . $opdName . " Kabupaten Bolaang Mongondow Selatan";
+                $marqueeText = $welcomeText;
+              @endphp
+              <div class="flex items-center gap-10">
+                <span class="text-[20px] font-black text-slate-400 uppercase tracking-[0.15em] flex items-center gap-4">
+                  {{ $marqueeText }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
+        <div class="flex items-center gap-6 pl-10 border-l border-slate-50">
+          <!-- Chat -->
+          <a href="{{ route('chat.index') }}" class="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition relative">
+            <i class="fas fa-comment-dots text-lg"></i>
+            <template x-if="unreadChatCount > 0">
+              <span class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white" x-text="unreadChatCount"></span>
+            </template>
+          </a>
 
-        <div class="flex items-center space-x-4 flex-shrink-0">
-          <div class="relative" x-data="{ notifyOpen: false }">
-            <button @click="notifyOpen = !notifyOpen"
-              class="text-gray-400 hover:text-blue-600 transition relative focus:outline-none cursor-pointer">
-              <i class="fas fa-bell text-xl"></i>
-              @if (Auth::user()->unreadNotifications->count() > 0)
-                <span
-                  class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white bg-red-500 transform translate-x-1/2 -translate-y-1/2 animate-pulse"></span>
-              @endif
-            </button>
-
-            <div x-show="notifyOpen" x-cloak @click.away="notifyOpen = false"
-              class="absolute right-[-1rem] md:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden border border-gray-100"
-              x-transition:enter="transition ease-out duration-100"
-              x-transition:enter-start="transform opacity-0 scale-95"
-              x-transition:enter-end="transform opacity-100 scale-100">
-
-              <div
-                class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Notifikasi Sistem</span>
-                <span
-                  class="bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold">{{ Auth::user()->unreadNotifications->count() }}</span>
-              </div>
-
-              <div class="max-h-80 overflow-y-auto custom-scrollbar">
-                @forelse (Auth::user()->unreadNotifications as $notification)
-                  <div class="block px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50 last:border-0 relative group">
-                    <div class="flex items-center gap-3">
-                      <div class="flex-shrink-0 bg-orange-100 rounded-full h-8 w-8 flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-orange-600 text-xs"></i>
-                      </div>
-                      <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-baseline mb-0.5">
-                          <p class="text-[11px] font-bold text-gray-800 truncate">
-                            {{ $notification->data['product_name'] ?? 'Peringatan' }}
-                          </p>
-                          <p class="text-[9px] text-gray-400 whitespace-nowrap ml-2">
-                            {{ $notification->created_at->diffForHumans() }}
-                          </p>
-                        </div>
-                        <p class="text-[10px] text-gray-500 line-clamp-2 leading-tight">
-                          {{ $notification->data['message'] }}
-                        </p>
-                      </div>
-                    </div>
-                    <form action="{{ route('notifications.mark-as-read', $notification->id) }}" method="POST" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition">
-                      @csrf
-                      <button type="submit" class="text-gray-300 hover:text-indigo-500 p-1" title="Tandai sudah dibaca">
-                        <i class="fas fa-check-circle text-[10px]"></i>
-                      </button>
-                    </form>
-                  </div>
-                @empty
-                  <div class="py-12 text-center text-gray-400">
-                    <i class="fas fa-bell-slash text-3xl mb-3 block opacity-20"></i>
-                    <p class="text-xs font-medium">Tidak ada notifikasi baru</p>
-                  </div>
-                @endforelse
-              </div>
-              
-              @if(Auth::user()->unreadNotifications->count() > 0)
-              <div class="p-2 bg-gray-50 border-t border-gray-100 text-center">
-                <form action="{{ route('notifications.mark-all-read') }}" method="POST">
-                  @csrf
-                  <button type="submit" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-tighter">
-                    Tandai Semua Sudah Dibaca
-                  </button>
-                </form>
-              </div>
-              @endif
-            </div>
-          </div>
-
-          <div class="h-6 w-px bg-gray-300 mx-2"></div>
-
-          <div class="relative" x-data="{ open: false }">
-            <button @click="open = !open"
-              class="flex items-center gap-3 focus:outline-none cursor-pointer">
-              <img class="h-9 w-9 rounded-full object-cover ring-2 ring-indigo-200"
-                src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}"
-                alt="User">
-              <div class="hidden md:block text-left">
-                <p class="text-sm font-bold leading-tight text-slate-800">
-                  {{ Auth::user()->name }}</p>
-                <p class="text-xs" style="color:#6B7280">{{ Auth::user()->email }}</p>
-              </div>
-              <i class="fas fa-chevron-down hidden md:block" style="color:#9CA3AF"></i>
-            </button>
-
-            <div x-show="open" x-cloak @click.away="open = false"
-              class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl z-50 ring-1 ring-black ring-opacity-5 overflow-hidden border border-gray-100"
-              x-transition:enter="transition ease-out duration-150"
-              x-transition:enter-start="transform opacity-0 scale-95"
-              x-transition:enter-end="transform opacity-100 scale-100">
-              <div class="p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                <div class="flex items-center gap-3">
-                  <img class="h-10 w-10 rounded-full object-cover ring-2 ring-white"
-                    src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}"
-                    alt="User">
-                  <div>
-                    <p class="font-bold leading-tight">{{ Auth::user()->name }}</p>
-                    <p class="text-xs opacity-80">{{ Auth::user()->email }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="py-2">
-                <a href="{{ route('profile.edit') }}"
-                  class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 text-slate-700">
-                  <i class="fas fa-user-edit text-indigo-600 "></i>
-                  Edit Profil
-                </a>
-                <form method="POST" action="{{ route('logout') }}" class="no-soft">
-                  @csrf
-                  <button type="submit"
-                    class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 text-slate-700">
-                    <i class="fas fa-sign-out-alt text-red-600 "></i>
-                    Keluar
-                  </button>
-                </form>
-              </div>
-            </div>
+          <!-- Notifications -->
+          <button @click="notifOpen = true" class="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition relative">
+            <i class="fas fa-bell text-lg"></i>
+            @if (isset($lowStockCount) && $lowStockCount > 0)
+              <span class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-bounce-subtle">
+                {{ $lowStockCount }}
+              </span>
+            @endif
+          </button>
+ 
+          <!-- Profile Photo Only -->
+          <div class="w-10 h-10 rounded-xl bg-white overflow-hidden border border-slate-100 shadow-sm flex-shrink-0 p-0.5">
+            <img class="w-full h-full rounded-[10px] object-cover" src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}">
           </div>
         </div>
       </header>
 
-      <!-- Page Content -->
-      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6 transition-colors duration-300">
-        <!-- Page Header & Actions -->
-        <div id="page-header" class="mb-6 bg-white md:bg-transparent p-6 md:p-0 rounded-[2.5rem] md:rounded-none shadow-sm md:shadow-none border border-slate-50 md:border-none flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h2 class="text-2xl font-black text-slate-800 transition-colors">@yield('header')</h2>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 transition-colors">@yield('subheader')</p>
+      <div class="flex-1 overflow-y-auto custom-scrollbar px-8 py-10 bg-slate-50/50">
+        <!-- Breadcrumbs/Subheader -->
+        <div class="flex items-center justify-between mb-10 no-print">
+          <div id="page-header">
+            <h1 class="text-[2.2rem] font-black text-slate-800 tracking-tight leading-none transition-all">@yield('header')</h1>
+            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.3em] mt-3">@yield('subheader', 'SI-LARANG . Inventory Management')</p>
           </div>
-          <div id="page-actions" class="flex items-center gap-3 flex-wrap w-full md:w-auto">
+          <div id="page-actions" class="flex items-center gap-3">
             @yield('actions')
           </div>
         </div>
 
+        <!-- Feedback Alerts -->
         @if (session('success'))
-          <div
-            class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm flex items-center justify-between transition-colors">
-            <div class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
-              <span class="text-green-700 font-medium">{{ session('success') }}</span>
+          <div class="mb-8 p-6 bg-emerald-50 border border-emerald-100 rounded-[2rem] flex items-center gap-4 text-emerald-800 animate-fadeIn">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-lg shadow-emerald-200">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-black text-sm">Berhasil!</p>
+              <p class="text-xs opacity-80">{{ session('success') }}</p>
             </div>
           </div>
         @endif
 
-        @if (session('error'))
-          <div
-            class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm flex items-center justify-between transition-colors">
-            <div class="flex items-center">
-              <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
-              <span class="text-red-700 font-medium">{{ session('error') }}</span>
+        @if (session('error') || $errors->any())
+          <div class="mb-8 p-6 bg-rose-50 border border-rose-100 rounded-[2rem] flex items-center gap-4 text-rose-800 animate-fadeIn">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center text-xl shadow-lg shadow-rose-200">
+              <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-black text-sm">Terjadi Kesalahan</p>
+              <p class="text-xs opacity-80">{{ session('error') ?? 'Silakan periksa inputan Anda.' }}</p>
             </div>
           </div>
         @endif
+        
+        <!-- Main Dynamic Content -->
+        <main id="app-content" class="transition-all duration-300">
+          @yield('content')
+        </main>
+      </div>
 
-        @if ($errors->any())
-          <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm transition-colors">
-            <p class="font-bold text-red-700">Action Failed</p>
-            <ul class="list-disc list-inside text-sm text-red-600 mt-1 uppercase tracking-tight font-bold">
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
-
-        @yield('content')
-      </main>
-      <footer class="no-print bg-white text-gray-600 border-t ring-1 ring-gray-100 transition-colors duration-300">
-        <div class="px-6 py-4 flex items-center justify-between">
-          <p class="text-xs md:text-sm font-medium">
-            Copyright © 2026 Emon Alentadu. Seluruh Hak Cipta Dilindungi.
+      <footer class="px-8 py-4 bg-white border-t border-slate-50 no-print z-10 shadow-[0_-5px_20px_-10px_rgba(0,0,0,0.05)]">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6" id="footer-content">
+          <!-- Left: Copyright -->
+          <p class="text-slate-300 font-bold text-[9px] uppercase tracking-widest">
+            Copyright &copy; 2026 Emon Alentadu . SI-LARANG BOLSEL
           </p>
-          <div class="hidden md:flex items-center gap-3 text-xs text-gray-400">
-            <span class="inline-flex items-center gap-1">
-              <i class="fas fa-shield-alt text-indigo-500"></i>
-              Keamanan Data Terjaga
-            </span>
-            <span class="inline-flex items-center gap-1">
-              <i class="fas fa-heart text-pink-500"></i>
-              Terima Kasih Telah Menggunakan SI-LARANG
-            </span>
+
+          <!-- Right: Contact Developer & Socials -->
+          <div class="flex items-center gap-6">
+            <a href="https://wa.me/6282194680004" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-emerald-50 hover:text-emerald-500 transition-all shadow-sm active:scale-90 hover:scale-110">
+              <i class="fab fa-whatsapp text-sm"></i>
+            </a>
+            <a href="https://instagram.com/emon_alentadu" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all shadow-sm active:scale-90 hover:scale-110">
+              <i class="fab fa-instagram text-sm"></i>
+            </a>
+            <a href="https://facebook.com/emon.alentadu" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm active:scale-90 hover:scale-110">
+              <i class="fab fa-facebook-f text-sm"></i>
+            </a>
           </div>
         </div>
       </footer>
     </div>
   </div>
-  {{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
+</div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const main = document.querySelector('main');
-      const sidebar = document.querySelector('aside nav');
+      const main = document.querySelector('#app-content');
+      const nav = document.querySelector('nav');
+      
       const isSameOrigin = (url) => {
         try {
           const u = new URL(url, window.location.origin);
           return u.origin === window.location.origin;
-        } catch {
-          return false;
-        }
+        } catch { return false; }
       };
-      const isActionLink = (a) => {
-        const txt = (a.textContent || '').trim();
-        const href = a.getAttribute('href') || '';
-        return /(edit|lihat|view|show|detail)/i.test(txt) || /(\/edit|\/show|\/view|detail)/i.test(
-        href);
-      };
+
       const shouldSoftLink = (a) => {
         const href = a.getAttribute('href') || '';
         if (!href || href.startsWith('#')) return false;
         if (!isSameOrigin(href)) return false;
         if (a.hasAttribute('download') || a.target === '_blank') return false;
-        if (a.classList.contains('no-soft')) return false;
-        if (/export/i.test(href)) return false;
+        if (a.classList.contains('no-soft') || href.includes('logout')) return false;
         return true;
       };
+
       const setActive = (href) => {
-        const anchors = sidebar.querySelectorAll('a[href]');
-        anchors.forEach(a => a.classList.remove('bg-indigo-800', 'bg-indigo-500', 'text-white'));
-        const target = sidebar.querySelector(`a[href="${href}"]`);
-        if (target) target.classList.add('bg-indigo-500', 'text-white');
+        // Ensure href is a comparable path
+        let path = href;
+        try { path = new URL(href, window.location.origin).pathname; } catch(e) {}
+
+        // Handle single sidebar links
+        const sideLinks = nav.querySelectorAll('.sidebar-link');
+        sideLinks.forEach(link => {
+          link.classList.remove('active');
+          try {
+            const linkPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
+            if (linkPath === path) link.classList.add('active');
+          } catch(e) {}
+        });
+
+        // Handle sub links and their parents
+        const subLinks = nav.querySelectorAll('.sub-link');
+        subLinks.forEach(link => {
+          link.classList.remove('active');
+          try {
+            const linkPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
+            if (linkPath === path) {
+              link.classList.add('active');
+              // Make parent sidebar-link active
+              const parentGroup = link.closest('.pb-4');
+              if (parentGroup) {
+                const parentBtn = parentGroup.querySelector('.sidebar-link');
+                if (parentBtn) parentBtn.classList.add('active');
+              }
+            }
+          } catch(e) {}
+        });
       };
+
       const initScripts = (root) => {
         const scripts = root.querySelectorAll('script');
         scripts.forEach(s => {
           const n = document.createElement('script');
-          if (s.src) {
-            n.src = s.src;
-          } else {
-            n.textContent = s.textContent;
-          }
+          if (s.src) n.src = s.src;
+          else n.textContent = s.textContent;
           if (s.type) n.type = s.type;
           root.appendChild(n);
         });
         if (window.Alpine && Alpine.initTree) Alpine.initTree(root);
       };
+
       const swapMain = async (href, push = true) => {
         try {
-          const res = await fetch(href, {
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
+          const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
           if (!res.ok) throw new Error('Failed');
           const html = await res.text();
           const doc = new DOMParser().parseFromString(html, 'text/html');
-          const newMain = doc.querySelector('main');
-          if (!newMain) {
-            window.location.href = href;
-            return;
-          }
+          const newMain = doc.querySelector('#app-content') || doc.querySelector('main');
+          
+          if (!newMain) { window.location.href = href; return; }
+          
           document.title = doc.title || document.title;
           main.innerHTML = newMain.innerHTML;
+          
+          // Update Page Header & Actions
+          const newHeader = doc.querySelector('#page-header');
+          const newActions = doc.querySelector('#page-actions');
+          if (newHeader) document.querySelector('#page-header').innerHTML = newHeader.innerHTML;
+          if (newActions) document.querySelector('#page-actions').innerHTML = newActions.innerHTML;
+
           setActive(href);
           initScripts(main);
           if (push) history.pushState({}, '', href);
-          main.scrollTop = 0;
-        } catch {
-          window.location.href = href;
-        }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch { window.location.href = href; }
       };
-      sidebar.addEventListener('click', (e) => {
-        const a = e.target.closest('a[href]');
-        if (!a) return;
-        if (!shouldSoftLink(a)) return;
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        e.preventDefault();
-        const href = a.getAttribute('href');
-        swapMain(href, true);
-      });
-      window.addEventListener('popstate', () => swapMain(window.location.href, false));
+
       document.addEventListener('click', (e) => {
         const a = e.target.closest('a[href]');
-        if (!a) return;
-        if (a.closest('aside')) return;
-        if (!shouldSoftLink(a)) return;
+        if (!a || !shouldSoftLink(a)) return;
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        
         e.preventDefault();
-        const href = a.getAttribute('href');
-        swapMain(href, true);
+        swapMain(a.getAttribute('href'), true);
       });
+
+      window.addEventListener('popstate', () => swapMain(window.location.href, false));
+
       document.addEventListener('submit', async (e) => {
         const form = e.target.closest('form');
-        if (!form) return;
-        if (form.classList.contains('no-soft')) return;
         const action = form.getAttribute('action') || window.location.href;
+        if (form.classList.contains('no-soft') || action.includes('logout')) return;
         const method = (form.getAttribute('method') || 'GET').toUpperCase();
         if (!isSameOrigin(action)) return;
+        
         e.preventDefault();
         try {
           const fd = new FormData(form);
           let url = action;
           const options = {
             method,
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
           };
 
           if (method === 'GET') {
@@ -1271,19 +717,22 @@
           const res = await fetch(url, options);
           const html = await res.text();
           const doc = new DOMParser().parseFromString(html, 'text/html');
-          const newMain = doc.querySelector('main');
-          if (!newMain) {
-            window.location.href = url;
-            return;
-          }
+          const newMain = doc.querySelector('#app-content') || doc.querySelector('main');
+          
+          if (!newMain) { window.location.href = url; return; }
+          
           document.title = doc.title || document.title;
           main.innerHTML = newMain.innerHTML;
+          
+          const newHeader = doc.querySelector('#page-header');
+          const newActions = doc.querySelector('#page-actions');
+          if (newHeader) document.querySelector('#page-header').innerHTML = newHeader.innerHTML;
+          if (newActions) document.querySelector('#page-actions').innerHTML = newActions.innerHTML;
+
           initScripts(main);
           history.pushState({}, '', url);
-          main.scrollTop = 0;
-        } catch {
-          window.location.href = action;
-        }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch { window.location.href = action; }
       });
     });
   </script>
@@ -1444,6 +893,90 @@
     }
   </style>
 
-</body>
+    </div>
+  </div>
 
+  <!-- Notification Drawer (Desktop Version - Sleek Top Popover) -->
+  <div x-show="notifOpen" x-cloak class="fixed inset-0 z-[100]">
+    <div @click="notifOpen = false" 
+         x-show="notifOpen"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="absolute inset-0 bg-transparent"></div>
+    
+    <div x-show="notifOpen"
+         x-transition:enter="transition ease-out duration-300 transform"
+         x-transition:enter-start="opacity-0 translate-y-[-10px]"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200 transform"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-[-10px]"
+         class="absolute top-24 right-10 w-full max-w-[320px] bg-rose-500/95 backdrop-blur-md rounded-3xl shadow-[0_20px_60px_-15px_rgba(244,63,94,0.3)] flex flex-col border border-rose-400/50 overflow-hidden">
+      
+      <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between">
+        <div>
+          <h2 class="text-xs font-black text-white tracking-tight uppercase">Notifikasi</h2>
+        </div>
+        <button @click="notifOpen = false" class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all active:scale-95">
+          <i class="fas fa-times text-[10px]"></i>
+        </button>
+      </div>
+
+      <div class="max-h-[350px] p-5 overflow-y-auto custom-scrollbar">
+        @if (isset($lowStockProducts) && $lowStockProducts->count() > 0)
+          <div class="space-y-3">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+              <p class="text-[8px] font-black text-white/90 uppercase tracking-widest">Stok Rendah</p>
+            </div>
+            @foreach ($lowStockProducts as $item)
+              <div class="p-3 bg-white/10 border border-white/10 rounded-2xl hover:bg-white/20 transition-colors">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-white text-rose-500 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-triangle-exclamation text-[10px]"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <h3 class="text-[10px] font-black text-white truncate uppercase">{{ $item->name }}</h3>
+                      <span class="px-1.5 py-0.5 bg-white text-rose-500 text-[8px] font-black rounded-md">{{ $item->stock }}</span>
+                    </div>
+                    <p class="text-[9px] font-bold text-white/70 mt-0.5 lowercase">{{ $item->unit }} tersisa</p>
+                  </div>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        @else
+          <div class="flex flex-col items-center justify-center text-center py-8">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white/50 mb-4">
+              <i class="fas fa-bell-slash text-base"></i>
+            </div>
+            <h3 class="text-[11px] font-black text-white/90 tracking-tight uppercase">Semua Terkendali</h3>
+            <p class="text-[8px] font-bold text-white/60 mt-1">Tidak ada notifikasi aktif</p>
+          </div>
+        @endif
+      </div>
+
+      <div class="px-5 py-3 bg-black/10 border-t border-white/10 flex items-center justify-center">
+        <button @click="notifOpen = false" class="text-[9px] font-black text-white/80 uppercase tracking-widest hover:text-white transition-colors">Tutup Notifikasi</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes bounce-subtle {
+      0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+      50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+    }
+    .animate-bounce-subtle {
+      animation: bounce-subtle 3s infinite;
+    }
+  </style>
+
+  </div> <!-- End of Application Boxed Wrapper -->
+</body>
 </html>

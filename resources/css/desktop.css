@@ -1,13 +1,13 @@
-/* 
-|--------------------------------------------------------------------------
-| Desktop Specific CSS
-|--------------------------------------------------------------------------
-*/
 @import './app.css';
 
+:root {
+  --accent: #4F46E5;
+}
+
 body {
-    background-color: var(--color-app-bg);
-    color: var(--color-app-text);
+    background-color: #F8FAFC;
+    color: #1E293B;
+    overflow-x: hidden;
 }
 
 .glass-effect {
@@ -15,20 +15,50 @@ body {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
-.bg-pattern {
-  background-color: #ffffff;
-  background-image: radial-gradient(#4F46E5 0.5px, transparent 0.5px), radial-gradient(#4F46E5 0.5px, #ffffff 0.5px);
-  background-size: 20px 20px;
-  background-position: 0 0, 10px 10px;
-  opacity: 0.1;
-}
-.form-input:focus {
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-}
-.login-illustration {
-  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+
+/* Navigation Underline Animation */
+.nav-item {
+    position: relative;
 }
 
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transform: translateX(-50%);
+}
+
+.nav-item.active::after, .nav-item:hover::after {
+  width: 20px;
+  bottom: 4px;
+}
+
+/* Premium Card Interactions */
+.premium-card {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+}
+
+/* Chart Container Hover */
+.premium-card canvas {
+  transition: transform 0.3s ease;
+}
+
+.premium-card:hover canvas {
+  transform: scale(1.02);
+}
+
+/* Animations */
 @keyframes blob {
   0% { transform: translate(0px, 0px) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
@@ -36,7 +66,6 @@ body {
   100% { transform: translate(0px, 0px) scale(1); }
 }
 .animate-blob { animation: blob 10s infinite; }
-.animation-delay-2000 { animation-delay: 3s; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -44,9 +73,20 @@ body {
 }
 .animate-float { animation: float 6s ease-in-out infinite; }
 
-@media (max-width: 640px) {
-  body { overflow-y: auto; overflow-x: hidden; }
-  body > div.w-full.lg\:w-1\/2 { min-height: 100vh; padding: 1.5rem !important; }
-  .bg-white.rounded-\[3rem\] { padding: 2rem 1.5rem !important; border-radius: 2.5rem !important; }
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #E2E8F0;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #CBD5E1;
+}

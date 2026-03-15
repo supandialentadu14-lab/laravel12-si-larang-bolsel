@@ -1,8 +1,6 @@
 @extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
-
 @section('content')
 <div x-data="{ showFilters: {{ (request('search') || request('date')) ? 'true' : 'false' }} }" class="space-y-6">
-
   {{-- Page Header --}}
   <div class="flex items-center justify-between">
     <div>
@@ -67,28 +65,26 @@
           Data Kosong
         @endif
       </p>
-      @if(($isMobile ?? false) && auth()->user()->hasPermission('laporan_persediaan'))
-        <div class="mt-5 grid grid-cols-2 gap-3">
-          <a href="{{ route('reports.index') }}" class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/15 text-white shadow-sm active:scale-[0.98] transition flex items-center gap-3">
-            <div class="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
-              <i class="fas fa-chart-pie text-sm"></i>
-            </div>
-            <div class="min-w-0">
-              <div class="text-[10px] font-black uppercase tracking-widest leading-tight">Laporan</div>
-              <div class="text-[9px] font-bold opacity-80 uppercase tracking-widest mt-0.5 truncate">Persediaan</div>
-            </div>
-          </a>
-          <a href="{{ route('reports.kartu.tahunan') }}" class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/15 text-white shadow-sm active:scale-[0.98] transition flex items-center gap-3">
-            <div class="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
-              <i class="fas fa-table-list text-sm"></i>
-            </div>
-            <div class="min-w-0">
-              <div class="text-[10px] font-black uppercase tracking-widest leading-tight">Kartu</div>
-              <div class="text-[9px] font-bold opacity-80 uppercase tracking-widest mt-0.5 truncate">Persediaan</div>
-            </div>
-          </a>
-        </div>
-      @endif
+      <div class="mt-5 grid grid-cols-2 gap-3">
+        <a href="{{ route('reports.index') }}" class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/15 text-white shadow-sm active:scale-[0.98] transition flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
+            <i class="fas fa-chart-pie text-sm"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-[10px] font-black uppercase tracking-widest leading-tight">Laporan</div>
+            <div class="text-[9px] font-bold opacity-80 uppercase tracking-widest mt-0.5 truncate">Persediaan</div>
+          </div>
+        </a>
+        <a href="{{ route('reports.kartu.tahunan') }}" class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/15 text-white shadow-sm active:scale-[0.98] transition flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
+            <i class="fas fa-table-list text-sm"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-[10px] font-black uppercase tracking-widest leading-tight">Kartu</div>
+            <div class="text-[9px] font-bold opacity-80 uppercase tracking-widest mt-0.5 truncate">Persediaan</div>
+          </div>
+        </a>
+      </div>
     </div>
   </div>
 

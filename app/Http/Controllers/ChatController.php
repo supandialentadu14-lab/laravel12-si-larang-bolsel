@@ -102,13 +102,29 @@ class ChatController extends Controller
 
     public function destroy(\App\Models\ChatMessage $message)
     {
-        // As requested: user can delete other people's messages too
-        // In a real app, we might check if they are part of the conversation
         if ($message->sender_id !== auth()->id() && $message->receiver_id !== auth()->id()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
         $message->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:chat_messages,id'
+        ]);
+
+        $messages = \App\Models\ChatMessage::whereIn('id', $request->ids)->get();
+
+        foreach ($messages as $message) {
+            if ($message->sender_id === auth()->id() || $message->receiver_id === auth()->id()) {
+                $message->delete();
+            }
+        }
 
         return response()->json(['success' => true]);
     }

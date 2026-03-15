@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/chat', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
     Route::put('/chat/message/{message}', [\App\Http\Controllers\ChatController::class, 'update'])->name('chat.update');
     Route::delete('/chat/message/{message}', [\App\Http\Controllers\ChatController::class, 'destroy'])->name('chat.destroy');
+    Route::post('/chat/bulk-delete', [\App\Http\Controllers\ChatController::class, 'bulkDelete'])->name('chat.bulk_delete');
     Route::post('/chat/clear/{user}', [\App\Http\Controllers\ChatController::class, 'clearConversation'])->name('chat.clear');
 
     // Notifications
