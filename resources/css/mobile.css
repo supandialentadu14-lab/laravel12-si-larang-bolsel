@@ -3,6 +3,7 @@
 | Mobile Specific CSS
 |--------------------------------------------------------------------------
 */
+@import "tailwindcss";
 @import './app.css';
 
 @theme {
