@@ -10,7 +10,7 @@
   <!-- PWA Setup -->
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#4f46e5">
-  <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" href="/images/silarang-logo.png">
 
   <title>{{ config('app.name', 'Inventory Mobile') }}</title>
   <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
