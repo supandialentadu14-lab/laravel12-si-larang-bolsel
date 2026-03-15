@@ -8,6 +8,7 @@
   <title>{{ config('app.name', 'Inventory') }}</title>
   <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
 
+  <script src="https://cdn.tailwindcss.com"></script>
   @vite(['resources/css/desktop.css', 'resources/js/app.js'])
   
   <!-- Alpine.js -->
