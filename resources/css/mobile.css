@@ -42,17 +42,21 @@ body {
 
 nav.bottom-nav.glass-card {
   background: #ffffff !important;
-  background: rgba(255, 255, 255, 0.98) !important;
-  backdrop-filter: blur(8px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(8px) saturate(150%) !important;
-  border-top: 1px solid #f1f5f9;
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.03) !important;
 }
 
-/* Fix for date input overflow on some mobile browsers */
-input[type="date"] {
-  max-width: 100%;
-  box-sizing: border-box;
-  -webkit-appearance: none;
+/* Fix for date input overflow and stretching on mobile */
+input[type="date"], 
+input[type="text"], 
+select {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
 }
 
 /* Minimalist Button System */
