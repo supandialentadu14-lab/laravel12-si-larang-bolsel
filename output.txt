@@ -1,5 +1,0 @@
-Psy Shell v0.12.18 (PHP 8.4.14 — cli) by Justin Hileman
-New PHP manual is available (latest: 3.0.4). Update with `doc --update-manual`
-ID: 2, Name: Supandi Alentadu, Role: admin
-ID: 7, Name: Tester, Role: staff
-
