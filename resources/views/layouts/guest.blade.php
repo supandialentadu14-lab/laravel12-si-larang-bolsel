@@ -18,26 +18,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
 
-  <style>
-    .glass-effect {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .bg-pattern {
-      background-color: #ffffff;
-      background-image: radial-gradient(#4F46E5 0.5px, transparent 0.5px), radial-gradient(#4F46E5 0.5px, #ffffff 0.5px);
-      background-size: 20px 20px;
-      background-position: 0 0, 10px 10px;
-      opacity: 0.1;
-    }
-    .form-input:focus {
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-    }
-    .login-illustration {
-      mask-image: linear-gradient(to right, black 85%, transparent 100%);
-    }
-  </style>
+
 </head>
 
 <body class="font-sans antialiased text-slate-800 bg-white flex min-h-screen overflow-hidden">
@@ -116,28 +97,7 @@
     </div>
   </div>
 
-  <style>
-    @keyframes blob {
-      0% { transform: translate(0px, 0px) scale(1); }
-      33% { transform: translate(30px, -50px) scale(1.1); }
-      66% { transform: translate(-20px, 20px) scale(0.9); }
-      100% { transform: translate(0px, 0px) scale(1); }
-    }
-    .animate-blob { animation: blob 10s infinite; }
-    .animation-delay-2000 { animation-delay: 3s; }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-    }
-    .animate-float { animation: float 6s ease-in-out infinite; }
-    
-    @media (max-width: 640px) {
-      body { overflow-y: auto; overflow-x: hidden; }
-      body > div.w-full.lg\:w-1\/2 { min-height: 100vh; padding: 1.5rem !important; }
-      .bg-white.rounded-\[3rem\] { padding: 2rem 1.5rem !important; border-radius: 2.5rem !important; }
-    }
-  </style>
+
 </body>
 
 </html>
