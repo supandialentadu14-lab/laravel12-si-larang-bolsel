@@ -384,7 +384,7 @@ class PemeriksaanController extends Controller
         if ($currentId) {
             return redirect()->route('reports.pemeriksaan.list')->with('success', 'Berita acara diperbarui');
         }
-        return redirect()->route('reports.pemeriksaan.show', $id)->with('success', 'Berita acara disimpan');
+        return redirect()->route('reports.pemeriksaan.list')->with('success', 'Berita acara disimpan');
     }
 
     public function list(Request $request): View

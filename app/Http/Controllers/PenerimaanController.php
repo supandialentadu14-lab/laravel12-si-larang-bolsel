@@ -337,7 +337,7 @@ class PenerimaanController extends Controller
         if ($currentId) {
             return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan diperbarui');
         }
-        return redirect()->route('reports.penerimaan.show', $id)->with('success', 'BAP Penerimaan disimpan');
+        return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan disimpan');
     }
 
     public function list(Request $request): View

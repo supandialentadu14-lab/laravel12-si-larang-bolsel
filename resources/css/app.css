@@ -76,6 +76,9 @@
 }
 
 /* Theme Utilities */
+@utility bg-app-bg {
+    background-color: var(--bg-default);
+}
 @utility bg-app-surface {
     background-color: var(--bg-surface);
 }
