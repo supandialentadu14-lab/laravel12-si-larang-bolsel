@@ -146,12 +146,18 @@
     </main>
   </div>
 
-  <!-- Low Stock Notification Sheet -->
-  <div x-show="notifOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-full" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-full" class="fixed inset-0 z-[60] flex items-end">
+  <!-- Low Stock Notification Sheet (Top Position) -->
+  <div x-show="notifOpen" 
+    x-transition:enter="transition ease-out duration-300" 
+    x-transition:enter-start="opacity-0 -translate-y-full" 
+    x-transition:enter-end="opacity-100 translate-y-0" 
+    x-transition:leave="transition ease-in duration-200" 
+    x-transition:leave-start="opacity-100 translate-y-0" 
+    x-transition:leave-end="opacity-0 -translate-y-full" 
+    class="fixed inset-0 z-[60] flex items-start">
     <div @click="notifOpen = false" class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
-    <div class="relative w-full bg-white rounded-t-[32px] overflow-hidden shadow-2xl p-6 pb-12 max-h-[85vh] overflow-y-auto">
-      <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8"></div>
-      <div class="flex items-center justify-between mb-8">
+    <div class="relative w-full bg-white rounded-b-[32px] overflow-hidden shadow-2xl p-6 pt-12 pb-6 max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-8 mt-2">
         <div>
           <h2 class="text-xl font-black text-gray-900 tracking-tight">Notifikasi</h2>
           <p class="text-xs font-bold text-gray-500 mt-1 uppercase tracking-widest">Informasi Penting</p>
@@ -185,6 +191,7 @@
           </div>
         @endif
       </div>
+      <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mt-4"></div>
     </div>
   </div>
 

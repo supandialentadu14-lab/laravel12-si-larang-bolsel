@@ -10,37 +10,53 @@
       background: #ffffff; 
       padding: 5mm 15mm;
       line-height: 1.4;
+      font-family: 'Times New Roman', serif;
     }
     @media print {
-      body * {
-        visibility: hidden;
+      body { 
+        margin: 0 !important; 
+        padding: 0 !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
-
-      #print-area,
-      #print-area * {
-        visibility: visible;
-      }
-
-      #print-area {
-        position: static !important;
-        width: auto !important;
-        overflow: visible !important;
-      }
-
+      body * { visibility: hidden; }
+      #print-area, #print-area * { visibility: visible; }
+      
       @page {
         size: 210mm 330mm;
         margin: 5mm 15mm;
       }
-      body { margin: 0; }
-      .preview-paper { 
-        width: 100% !important; 
-        min-height: auto !important; 
-        padding: 0 !important; 
-        margin: 0 !important; 
-        box-sizing: border-box; 
-        background: #ffffff !important; 
-        box-shadow: none !important; 
-        line-height: 1.4;
+
+      #print-area {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+      
+      .preview-paper {
+        width: 100% !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        background: transparent !important;
+      }
+
+      .signature-block {
+        break-inside: avoid !important;
+      }
+      
+      table {
+        border-collapse: collapse !important;
+      }
+      
+      .report-table th, .report-table td {
+        border: 1px solid black !important;
       }
     }
 

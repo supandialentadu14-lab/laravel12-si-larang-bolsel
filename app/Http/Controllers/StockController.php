@@ -27,38 +27,66 @@ class StockController extends Controller
      */
     public function index(Request $request): View
     {
-        // Mengambil transaksi stok beserta relasi product dan user
-        $transactions = StockTransaction::with(['product', 'user'])
-            ->when($request->search, function ($query) use ($request) {
-                $query->whereHas('product', function ($q) use ($request) {
-                    $q->where('name', 'like', '%'.$request->search.'%')
-                        ->orWhere('sku', 'like', '%'.$request->search.'%');
-                })->orWhere('nosur', 'like', '%'.$request->search.'%');
+        $search = $request->search;
+        $dateFilter = $request->date;
+
+        // 1. Get unique dates that have transactions, considering the filters
+        $datePaginator = StockTransaction::query()
+            ->select('date')
+            ->when($search, function ($query) use ($search) {
+                $query->whereHas('product', function ($q) use ($search) {
+                    $q->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('sku', 'like', '%'.$search.'%');
+                })->orWhere('nosur', 'like', '%'.$search.'%');
             })
+            ->when($dateFilter, function ($query) use ($dateFilter) {
+                $query->whereDate('date', $dateFilter);
+            })
+            ->groupBy('date')
             ->orderBy('date', 'desc')
-            ->paginate(20)
+            ->paginate(1) // One day per page
             ->withQueryString();
 
-        // Calculate running balance for each transaction in the current result set
-        foreach ($transactions as $tx) {
-            $tx->running_balance = StockTransaction::where('product_id', '=', $tx->product_id)
-                ->where(function($q) use ($tx) {
-                    $q->where('date', '<', $tx->date)
-                      ->orWhere(function($q2) use ($tx) {
-                          $q2->where('date', '=', $tx->date)
-                             ->where('id', '<=', $tx->id);
-                      });
+        // 2. Fetch transactions for the current date(s) in the paginator
+        $currentDateItems = $datePaginator->items();
+        $transactions = collect();
+        $groupedTransactions = collect();
+
+        if (!empty($currentDateItems)) {
+            $targetDate = $currentDateItems[0]->date;
+            
+            $transactions = StockTransaction::with(['product', 'user'])
+                ->whereDate('date', $targetDate)
+                ->when($search, function ($query) use ($search) {
+                    $query->whereHas('product', function ($q) use ($search) {
+                        $q->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('sku', 'like', '%'.$search.'%');
+                    })->orWhere('nosur', 'like', '%'.$search.'%');
                 })
-                ->selectRaw('SUM(CASE WHEN type = "in" THEN quantity ELSE -quantity END) as total')
-                ->value('total') ?? 0;
+                ->orderBy('id', 'desc')
+                ->get();
+
+            // Calculate running balance for each transaction
+            foreach ($transactions as $tx) {
+                $tx->running_balance = StockTransaction::where('product_id', '=', $tx->product_id)
+                    ->where(function($q) use ($tx) {
+                        $q->where('date', '<', $tx->date)
+                          ->orWhere(function($q2) use ($tx) {
+                              $q2->where('date', '=', $tx->date)
+                                 ->where('id', '<=', $tx->id);
+                          });
+                    })
+                    ->selectRaw('SUM(CASE WHEN type = "in" THEN quantity ELSE -quantity END) as total')
+                    ->value('total') ?? 0;
+            }
+
+            $groupedTransactions = $transactions->groupBy(function ($item) {
+                return $item->date->format('Y-m-d');
+            });
         }
 
-        $groupedTransactions = collect($transactions->items())->groupBy(function ($item) {
-            return $item->date->format('Y-m-d');
-        });
+        // --- Keep the rest of original logic for products and totals ---
         $editTransaction = null;
-
-        // Ambil semua produk beserta total stok masuk dan keluar untuk form modal
         $products = Product::withSum(['transactions as stock_in' => function ($q) {
             $q->where('type', 'in');
         }], 'quantity')
@@ -71,10 +99,7 @@ class StockController extends Controller
             $product->calculated_stock = ($product->stock_in ?? 0) - ($product->stock_out ?? 0);
         }
 
-        // Menghitung total saldo akhir (total stok semua produk)
         $totalSaldoAkhir = $products->sum('calculated_stock');
-
-        // Menghitung total nilai persediaan (stok × harga)
         $grandTotal = $products->sum(function ($product) {
             return ($product->calculated_stock ?? 0) * ($product->price ?? 0);
         });
@@ -82,11 +107,9 @@ class StockController extends Controller
         $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
         $singkatanOpd = strtoupper($opdSetting->singkatan_opd ?? 'DISKOMINFO');
 
-        $view = 'stock.index';
-
-        // Kirim data ke view
-        return view($view, compact(
+        return view('stock.index', compact(
             'transactions',
+            'datePaginator',
             'groupedTransactions',
             'editTransaction',
             'totalSaldoAkhir',

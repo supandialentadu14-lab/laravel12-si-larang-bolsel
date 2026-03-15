@@ -638,6 +638,61 @@ class NotaPesananController extends Controller
             }
 
             $disk->put($file, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+            // Sync Database Stock Transactions
+            $nomorKwt = $doc['nomor_kwt'] ?? '';
+            if ($nomorKwt !== '') {
+                $this->removeKwitansiStockInternal((int)$userId, $nomorKwt, (string)($penerimaanDoc['nomor'] ?? ''));
+                $this->recordKwitansiToStockInternal((int)$userId, $doc, $penerimaanDoc['items'] ?? []);
+            }
+        }
+    }
+
+    private function removeKwitansiStockInternal(int $userId, string $nomorKwt, string $bapNomor = ''): void
+    {
+        $query = \App\Models\StockTransaction::where('user_id', $userId)
+            ->where('notes', 'Otomatis dari Kwitansi');
+
+        $query->where(function($q) use ($nomorKwt, $bapNomor) {
+            $q->where('nosur', $nomorKwt);
+            if ($bapNomor !== '') {
+                $q->orWhere('nosur', $bapNomor);
+            }
+        });
+
+        $transactions = $query->get();
+        foreach ($transactions as $tx) {
+            // Delete will trigger observer to reverse stock
+            $tx->delete();
+        }
+    }
+
+    private function recordKwitansiToStockInternal(int $userId, array $kwtData, array $bapItems): void
+    {
+        $nosur = $kwtData['nomor_kwt'] ?? '';
+        $date = $kwtData['tanggal'] ?? now()->toDateString();
+
+        foreach ($bapItems as $item) {
+            $name = $item['nama'] ?? '';
+            $qty = (int)($item['kuantitas'] ?? 0);
+            
+            if ($name === '' || $qty <= 0) continue;
+
+            $product = \App\Models\Product::where('user_id', $userId)
+                ->where('name', $name)
+                ->first();
+
+            if ($product) {
+                \App\Models\StockTransaction::create([
+                    'product_id' => $product->id,
+                    'user_id' => $userId,
+                    'type' => 'in',
+                    'quantity' => $qty,
+                    'date' => $date,
+                    'nosur' => $nosur,
+                    'notes' => 'Otomatis dari Kwitansi',
+                ]);
+            }
         }
     }
 

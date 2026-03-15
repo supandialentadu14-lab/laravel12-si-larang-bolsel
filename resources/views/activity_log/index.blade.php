@@ -52,8 +52,14 @@
       <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
         <i class="fas fa-history text-lg opacity-60"></i>
       </div>
-      <h2 class="text-3xl font-black tracking-tight">{{ $logs->total() }} Log</h2>
-      <p class="text-[9px] font-bold mt-1 opacity-60 uppercase tracking-widest">Aktivitas Tercatat</p>
+      <h2 class="text-3xl font-black tracking-tight">{{ $logs->count() }} Aktivitas</h2>
+      <p class="text-[9px] font-bold mt-1 opacity-60 uppercase tracking-widest">
+        @if($datePaginator->count() > 0)
+          Pada {{ \Carbon\Carbon::parse($datePaginator->items()[0]->log_date)->translatedFormat('d M Y') }}
+        @else
+          Data Kosong
+        @endif
+      </p>
     </div>
   </div>
 
@@ -124,8 +130,8 @@
       </div>
     @endforelse
 
-    <div class="pt-4 px-4">
-      {{ $logs->links() }}
+    <div class="pt-4 px-4 pb-12">
+      {{ $datePaginator->links() }}
     </div>
   </div>
 </div>

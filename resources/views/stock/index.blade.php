@@ -1,7 +1,7 @@
 @extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
-<div x-data="{ showFilters: {{ request('search') ? 'true' : 'false' }} }" class="space-y-6">
+<div x-data="{ showFilters: {{ (request('search') || request('date')) ? 'true' : 'false' }} }" class="space-y-6">
 
   {{-- Page Header --}}
   <div class="flex items-center justify-between">
@@ -31,6 +31,13 @@
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..." class="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none">
           </div>
         </div>
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Filter Tanggal</label>
+          <div class="relative">
+            <i class="fas fa-calendar-day absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+            <input type="date" name="date" value="{{ request('date') }}" class="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none">
+          </div>
+        </div>
 
         <div class="grid grid-cols-2 gap-3 pt-2">
           <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100 ">
@@ -52,8 +59,14 @@
         <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Total Transaksi</p>
         <i class="fas fa-exchange-alt opacity-20"></i>
       </div>
-      <h2 class="text-3xl font-black mt-2 tracking-tight">{{ $transactions->total() }} Record</h2>
-      <p class="text-[9px] font-bold mt-2 opacity-80 uppercase tracking-widest">Periode Berjalan</p>
+      <h2 class="text-3xl font-black mt-2 tracking-tight">{{ $transactions->count() }} Record</h2>
+      <p class="text-[9px] font-bold mt-2 opacity-80 uppercase tracking-widest">
+        @if($datePaginator->count() > 0)
+          Pada {{ \Carbon\Carbon::parse($datePaginator->items()[0]->date)->translatedFormat('d M Y') }}
+        @else
+          Data Kosong
+        @endif
+      </p>
       @if(($isMobile ?? false) && auth()->user()->hasPermission('laporan_persediaan'))
         <div class="mt-5 grid grid-cols-2 gap-3">
           <a href="{{ route('reports.index') }}" class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/15 text-white shadow-sm active:scale-[0.98] transition flex items-center gap-3">
@@ -83,7 +96,7 @@
   <div class="space-y-6 pb-24">
     <div class="flex items-center justify-between px-2">
       <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Riwayat Transaksi</h3>
-      <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{{ $transactions->total() }} Record</span>
+      <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{{ $transactions->count() }} Record Hari Ini</span>
     </div>
 
     @php 
@@ -192,8 +205,8 @@
       </div>
     @endforelse
 
-    <div class="pt-4">
-      {{ $transactions->links() }}
+    <div class="pt-4 pb-12">
+      {{ $datePaginator->links() }}
     </div>
   </div>
 </div>
