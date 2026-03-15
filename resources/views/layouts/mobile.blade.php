@@ -26,6 +26,16 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'app-main': 'var(--text-main)',
+            'app-muted': 'var(--text-muted)',
+            'app-bg': 'var(--bg-default)',
+            'app-surface': 'var(--bg-surface)',
+          }
+        }
+      }
     }
   </script>
   @vite(['resources/css/mobile.css', 'resources/js/mobile.js'])
