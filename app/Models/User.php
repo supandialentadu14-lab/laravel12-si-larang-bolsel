@@ -19,7 +19,7 @@ class User extends Authenticatable
      * - HasFactory → untuk seeding & testing
      * - Notifiable → agar user bisa menerima notifikasi
      */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, \App\Traits\LogsActivity;
 
     /**
      * Field yang boleh diisi menggunakan mass assignment

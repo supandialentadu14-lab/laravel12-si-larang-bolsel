@@ -194,6 +194,14 @@
         </div>
         <span class="text-[10px] font-bold text-gray-600 uppercase">Cetak</span>
       </a>
+      @if(auth()->user()->isAdmin())
+      <a href="{{ route('activity_log.index') }}" class="flex-shrink-0 w-24 flex flex-col items-center gap-2">
+        <div class="btn-icon-mini bg-white shadow-sm border border-gray-50 text-slate-500 text-xl">
+          <i class="fas fa-history"></i>
+        </div>
+        <span class="text-[10px] font-bold text-gray-600 uppercase">Audit Log</span>
+      </a>
+      @endif
     </div>
   </div>
 

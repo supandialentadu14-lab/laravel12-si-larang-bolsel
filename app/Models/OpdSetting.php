@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OpdSetting extends Model
 {
-    use HasFactory, \App\Traits\Tenantable;
+    use HasFactory, \App\Traits\Tenantable, \App\Traits\LogsActivity;
 
     protected $fillable = [
         'user_id',

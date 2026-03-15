@@ -1,34 +1,36 @@
 @include('partials.kop', ['opd' => $opd])
 
-<div class="text-right mb-4">
-  <p>Bolaang Uki, {{ \Carbon\Carbon::parse($data['tanggal'])->translatedFormat('d F Y') }}</p>
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px; line-height: 1.3;">
+  <div style="flex: 1;">
+    <table style="border: none; border-collapse: collapse; width: 100%;">
+      <tr style="border: none;">
+        <td style="border: none; width: 80px; padding: 2px 0; font-size: 14px;">Nomor</td>
+        <td style="border: none; width: 15px; padding: 2px 0; font-size: 14px;">:</td>
+        <td style="border: none; padding: 2px 0; font-size: 14px;" class="font-bold">{{ $data['nomor'] }}</td>
+      </tr>
+      <tr style="border: none;">
+        <td style="border: none; padding: 2px 0; font-size: 14px;">Lampiran</td>
+        <td style="border: none; padding: 2px 0; font-size: 14px;">:</td>
+        <td style="border: none; padding: 2px 0; font-size: 14px;">-</td>
+      </tr>
+      <tr style="border: none;">
+        <td style="border: none; vertical-align: top; padding: 2px 0; font-size: 14px;">Perihal</td>
+        <td style="border: none; vertical-align: top; padding: 2px 0; font-size: 14px;">:</td>
+        <td style="border: none; vertical-align: top; padding: 2px 0; font-size: 14px;" class="font-bold">
+          Belanja {{ $data['belanja'] }} Pada Keg. {{ $data['kegiatan'] }} <br>
+          Sub Keg. {{ $data['sub_kegiatan'] }} Tahun {{ $data['tahun'] }}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div style="width: 320px; padding-left: 20px; font-size: 14px;">
+    <p style="margin: 0 0 16px 0;">Bolaang Uki, {{ \Carbon\Carbon::parse($data['tanggal'])->translatedFormat('d F Y') }}</p>
+    <p style="margin: 0;">Kepada Yth.</p>
+    <p style="margin: 0;" class="font-bold">{{ $data['penyedia']['toko'] ?? '' }}</p>
+    <p style="margin: 0;">di-</p>
+    <p style="margin: 0; padding-left: 30px;">Tempat</p>
+  </div>
 </div>
-
-<table style="border: none; width: 100%; margin-bottom: 16px; line-height: 1.25;">
-  <tr style="border: none;">
-    <td style="border: none; width: 100px; padding: 2px 0;">Nomor</td>
-    <td style="border: none; width: 15px; padding: 2px 0;">:</td>
-    <td style="border: none; padding: 2px 0;" class="font-bold">{{ $data['nomor'] }}</td>
-    <td style="border: none; width: 50px; padding: 2px 0;"></td>
-    <td style="border: none; padding: 2px 0;">Kepada Yth.</td>
-  </tr>
-  <tr style="border: none;">
-    <td style="border: none; padding: 2px 0;">Lampiran</td>
-    <td style="border: none; padding: 2px 0;">:</td>
-    <td style="border: none; padding: 2px 0;">-</td>
-    <td style="border: none; padding: 2px 0;"></td>
-    <td style="border: none; padding: 2px 0;" class="font-bold">{{ $data['penyedia']['toko'] ?? '' }}</td>
-  </tr>
-  <tr style="border: none;">
-    <td style="border: none; vertical-align: top; padding: 2px 0;">Perihal</td>
-    <td style="border: none; vertical-align: top; padding: 2px 0;">:</td>
-    <td style="border: none; vertical-align: top; padding: 2px 0;" class="font-bold">
-      Belanja {{ $data['belanja'] }} Pada Keg. {{ $data['kegiatan'] }} Sub Keg. {{ $data['sub_kegiatan'] }} Tahun {{ $data['tahun'] }}
-    </td>
-    <td style="border: none; padding: 2px 0;"></td>
-    <td style="border: none; vertical-align: top; padding: 2px 0;">di-<br><span style="padding-left: 20px;">Tempat</span></td>
-  </tr>
-</table>
 
 <div class="text-center mb-6">
   <h2 class="font-bold uppercase" style="font-size: 18px;">NOTA PESANAN BARANG / BAHAN</h2>

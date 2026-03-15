@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name', 'Inventory') }}</title>
-  <link rel="icon" type="image/png" href="{{ asset('images/silarang-logo.png') }}">
+  <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,49 +14,7 @@
   <!-- Animate.css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Alpine.js -->
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-          colors: {
-            brand: {
-              50: '#EEF2FF', 100: '#E0E7FF', 200: '#C7D2FE', 300: '#A5B4FC',
-              400: '#818CF8', 500: '#6366F1', 600: '#4F46E5', 700: '#4338CA',
-              800: '#3730A3', 900: '#312E81',
-            }
-          },
-          animation: {
-            'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-            'fade-in': 'fadeIn 1s ease-out forwards',
-            'slide-in-right': 'slideInRight 0.8s ease-out forwards',
-            'float': 'float 6s ease-in-out infinite',
-          },
-          keyframes: {
-            fadeInUp: {
-              '0%': { opacity: '0', transform: 'translateY(20px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
-            },
-            fadeIn: {
-              '0%': { opacity: '0' },
-              '100%': { opacity: '1' },
-            },
-            slideInRight: {
-              '0%': { opacity: '0', transform: 'translateX(20px)' },
-              '100%': { opacity: '1', transform: 'translateX(0)' },
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-10px)' },
-            }
-          }
-        }
-      }
-    }
-  </script>
+
   <style>
     .glass-effect {
       background: rgba(255, 255, 255, 0.95);
@@ -94,7 +52,7 @@
     <div class="relative z-20 w-full h-full p-16 flex items-center justify-center animate__animated animate__fadeIn">
       <div class="relative w-full max-w-sm aspect-square rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(79,70,229,0.15)] border border-white/80 group bg-white">
         <div class="absolute inset-0 bg-indigo-50/20 group-hover:bg-transparent transition duration-500 z-10"></div>
-        <img src="{{ asset('images/login-bg-new.jpg') }}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-1000 ease-in-out opacity-90 group-hover:opacity-100">
+        <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-1000 ease-in-out opacity-90 group-hover:opacity-100">
         
         <!-- Floating Badge -->
         <div class="absolute bottom-8 right-8 bg-white/80 backdrop-blur-md border border-white p-4 rounded-2xl shadow-xl animate-float z-20">
@@ -130,7 +88,7 @@
       <!-- Logo Header -->
       <div class="text-center mb-10 flex flex-col items-center">
         <div class="inline-flex items-center justify-center mb-5 p-4 bg-white rounded-3xl shadow-[0_10px_30px_-5px_rgba(79,70,229,0.1)] border border-slate-50 transform -rotate-3 transition hover:rotate-0">
-          <img src="{{ asset('images/silarang-logo.png') }}" alt="Logo" class="h-12 w-12 object-contain">
+          <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-12 w-12 object-contain">
         </div>
         <div class="flex flex-col items-center">
           <h2 class="text-2xl font-black text-slate-800 tracking-[0.2em] uppercase leading-none">SI-LARANG</h2>

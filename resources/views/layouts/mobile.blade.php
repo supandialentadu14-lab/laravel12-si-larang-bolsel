@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
 
   <title>{{ config('app.name', 'Inventory Mobile') }}</title>
-  <link rel="icon" type="image/png" href="{{ asset('images/silarang-logo.png') }}">
+  <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,18 +24,7 @@
 
   @vite(['resources/css/mobile.css', 'resources/js/mobile.js'])
   
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-          },
-        },
-      },
-    }
-  </script>
+
   <script>
     (() => {
       const dir = sessionStorage.getItem('navDir');

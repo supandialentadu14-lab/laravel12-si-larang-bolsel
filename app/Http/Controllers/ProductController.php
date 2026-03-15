@@ -320,7 +320,7 @@ class ProductController extends Controller
 
                 // Update Database Nota & Items
                 if (Schema::hasTable('nota_pesanans')) {
-                    $dbNota = NotaPesanan::where('user_id', '=', $userId)->where('nomor', '=', $data['nomor'] ?? '')->first();
+                    $dbNota = NotaPesanan::where('user_id', '=', $userId, 'and')->where('nomor', '=', $data['nomor'] ?? '', 'and')->first();
                     if ($dbNota) {
                         $dbNota->update([
                             'total' => $newTotal,
@@ -372,7 +372,7 @@ class ProductController extends Controller
                     $disk->put($file, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
                     if (Schema::hasTable('bap_pemeriksaans')) {
-                        $bap = BapPemeriksaan::where('user_id', '=', $userId)->where('nomor', '=', $doc['nomor'] ?? '')->first();
+                        $bap = BapPemeriksaan::where('user_id', '=', $userId, 'and')->where('nomor', '=', $doc['nomor'] ?? '', 'and')->first();
                         if ($bap) {
                             $bap->update(['total' => $bapTotal, 'terbilang' => $bapTerbilang]);
                             $bap->items()->delete();

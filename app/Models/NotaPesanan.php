@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class NotaPesanan extends Model
 {
-    use HasFactory, \App\Traits\Tenantable;
+    use HasFactory, \App\Traits\Tenantable, \App\Traits\LogsActivity;
 
     protected $fillable = [
         'user_id',

@@ -37,28 +37,26 @@ class DashboardController extends Controller
         // STATISTIK UTAMA (HARI INI)
         // ============================
 
-        $totalProducts = Product::count();
-        $totalCategories = Category::count();
+        $totalProducts = Product::where('user_id', Auth::id())->count();
+        $totalCategories = Category::where('user_id', Auth::id())->count();
         $selectedDate = request('date') ? Carbon::parse(request('date')) : Carbon::today();
-        $agg = DB::table('stock_transactions')
-            ->select('product_id', DB::raw('SUM(CASE WHEN type = "in" THEN quantity ELSE -quantity END) as net'))
-            ->where('user_id', Auth::id())
+        $agg = StockTransaction::select('product_id', DB::raw('SUM(CASE WHEN type = "in" THEN quantity ELSE -quantity END) as net'))
             ->whereDate('date', '<=', $selectedDate)
             ->groupBy('product_id')
             ->get()
             ->keyBy('product_id');
-        $productsBase = Product::select('id', 'name', 'min_stock', 'price')->get();
+        $productsBase = Product::where('user_id', Auth::id())->select('id', 'name', 'min_stock', 'price')->get();
         $productsWithNet = $productsBase->map(function ($p) use ($agg) {
             $p->stock_on_date = (int)($agg[$p->id]->net ?? 0);
             return $p;
         });
-        $criticalProducts = $productsWithNet->filter(fn ($p) => $p->stock_on_date <= 1)->values();
+        $criticalProducts = $productsWithNet->filter(fn ($p) => $p->stock_on_date <= $p->min_stock)->values();
         $lowStockCount = $criticalProducts->count();
         $totalStock = $productsWithNet->sum('stock_on_date');
         $totalInventoryValue = $productsWithNet->sum(function ($p) {
             return (int)($p->stock_on_date ?? 0) * (float)($p->price ?? 0);
         });
-        $supplierCount = Supplier::count();
+        $supplierCount = Supplier::where('user_id', Auth::id())->count();
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $disk = Storage::disk('local');
         $uid = Auth::id();
@@ -81,8 +79,8 @@ class DashboardController extends Controller
         $opnameCount = collect($opnameFiles)->filter(fn($f) => str_ends_with($f, '.json'))->count();
         $today = $selectedDate;
         $yesterday = (clone $selectedDate)->subDay();
-        $inToday = StockTransaction::where('type', 'in')->whereDate('date', $today)->sum('quantity');
-        $outToday = StockTransaction::where('type', 'out')->whereDate('date', $today)->sum('quantity');
+        $inToday = StockTransaction::where('user_id', Auth::id())->where('type', 'in')->whereDate('date', $today)->sum('quantity');
+        $outToday = StockTransaction::where('user_id', Auth::id())->where('type', 'out')->whereDate('date', $today)->sum('quantity');
         $valueInToday = StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
             ->where('stock_transactions.type', 'in')
             ->where('stock_transactions.user_id', Auth::id())
@@ -93,10 +91,11 @@ class DashboardController extends Controller
             ->where('stock_transactions.user_id', Auth::id())
             ->whereDate('stock_transactions.date', $today)
             ->sum(DB::raw('stock_transactions.quantity * products.price'));
-        $transactionsToday = StockTransaction::whereDate('date', $today)->count();
-        $inYesterday = StockTransaction::where('type', 'in')->whereDate('date', $yesterday)->sum('quantity');
+        $transactionsToday = StockTransaction::where('user_id', Auth::id())->whereDate('date', $today)->count();
+        $inYesterday = StockTransaction::where('user_id', Auth::id())->where('type', 'in')->whereDate('date', $yesterday)->sum('quantity');
         $percentageChange = $inYesterday > 0 ? (($inToday - $inYesterday) / $inYesterday) * 100 : 0;
         $recentTransactions = StockTransaction::with(['product', 'user'])
+            ->where('user_id', Auth::id())
             ->whereDate('date', $today)
             ->latest()
             ->take(10)
@@ -111,6 +110,7 @@ class DashboardController extends Controller
                 DB::raw('SUM(CASE WHEN type = "in" THEN quantity ELSE 0 END) as total_in'),
                 DB::raw('SUM(CASE WHEN type = "out" THEN quantity ELSE 0 END) as total_out')
             )
+            ->where('user_id', Auth::id())
             ->whereDate('date', $today)
             ->groupBy('hour')
             ->orderBy('hour', 'asc')
@@ -139,13 +139,15 @@ class DashboardController extends Controller
             $month = Carbon::today()->subMonths($i);
             $monthlyLabels->push($month->translatedFormat('M Y'));
             $monthlyIn->push(
-                StockTransaction::where('type', 'in')
+                StockTransaction::where('user_id', Auth::id())
+                    ->where('type', 'in')
                     ->whereYear('date', $month->year)
                     ->whereMonth('date', $month->month)
                     ->sum('quantity')
             );
             $monthlyOut->push(
-                StockTransaction::where('type', 'out')
+                StockTransaction::where('user_id', Auth::id())
+                    ->where('type', 'out')
                     ->whereYear('date', $month->year)
                     ->whereMonth('date', $month->month)
                     ->sum('quantity')
@@ -181,7 +183,8 @@ class DashboardController extends Controller
         // ============================
         // TOP 5 PRODUK PALING AKTIF
         // ============================
-        $topProducts = Product::withCount(['transactions' => function($q) {
+        $topProducts = Product::where('user_id', Auth::id())
+            ->withCount(['transactions' => function($q) {
                 $q->where('user_id', Auth::id());
             }])
             ->orderBy('transactions_count', 'desc')
@@ -191,9 +194,10 @@ class DashboardController extends Controller
         // ============================
         // DISTRIBUSI STOK PER KATEGORI
         // ============================
-        $categoryDistribution = Category::withCount(['products as total_stock' => function ($query) {
-            $query->select(DB::raw('COALESCE(SUM(stock), 0)'));
-        }])->get()->filter(fn($c) => $c->total_stock > 0);
+        $categoryDistribution = Category::where('user_id', Auth::id())
+            ->withCount(['products as total_stock' => function ($query) {
+                $query->select(DB::raw('COALESCE(SUM(stock), 0)'));
+            }])->get()->filter(fn($c) => $c->total_stock > 0);
 
         $categoryLabels = $categoryDistribution->pluck('name');
         $categoryValues = $categoryDistribution->pluck('total_stock');

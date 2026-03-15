@@ -159,11 +159,16 @@
         style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
         <i class="fas fa-exchange-alt text-2xl text-blue-600"></i>
       </div>
-      <div>
+      <div class="flex-1">
         <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Transaksi</p>
         <p class="text-2xl font-extrabold text-gray-800 transition-colors">{{ $transactionsToday }} <span class="text-sm font-normal text-gray-400">aktivitas</span></p>
         <p class="text-xs text-blue-500 font-semibold">{{ $pinjamCount }} Dokumen Pinjam Pakai</p>
       </div>
+      @if(auth()->user()->isAdmin())
+      <a href="{{ route('activity_log.index') }}" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition shadow-sm border border-slate-100" title="Buka Log Aktivitas">
+        <i class="fas fa-history text-xs"></i>
+      </a>
+      @endif
     </div>
   </div>
 
