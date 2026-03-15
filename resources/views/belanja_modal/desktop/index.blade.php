@@ -1,6 +1,5 @@
 @extends('layouts.admin')
 
-@section('header', 'Daftar Kontrak Belanja Modal')
 @section('content')
 <div class="space-y-6">
   <div class="flex items-center justify-between">

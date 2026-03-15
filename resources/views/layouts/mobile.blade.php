@@ -228,7 +228,7 @@
     x-transition:leave-start="opacity-100 translate-y-0" 
     x-transition:leave-end="opacity-0 -translate-y-full" 
     class="fixed top-4 left-4 right-4 z-[70]">
-    <a href="{{ route('chat.index') }}" class="block bg-indigo-600 rounded-3xl p-5 shadow-2xl shadow-indigo-200 border border-indigo-500/30 backdrop-blur-md">
+    <a :href="latestChatMessage ? '{{ url('chat') }}/' + latestChatMessage.sender_id : '{{ route('chat.index') }}'" class="block bg-indigo-600 rounded-3xl p-5 shadow-2xl shadow-indigo-200 border border-indigo-500/30 backdrop-blur-md">
       <div class="flex items-start gap-4">
         <div class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
           <i class="fas fa-comment-dots text-white text-xs"></i>

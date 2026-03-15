@@ -519,10 +519,10 @@
 
       <div class="flex-1 overflow-y-auto custom-scrollbar px-8 py-10 bg-slate-50/50">
         <!-- Breadcrumbs/Subheader -->
-        <div class="flex items-center justify-between mb-10 no-print">
+        <div class="flex items-center justify-between mb-2 no-print">
           <div id="page-header">
             <h1 class="text-[2.2rem] font-black text-slate-800 tracking-tight leading-none transition-all">@yield('header')</h1>
-            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.3em] mt-3">@yield('subheader', 'SI-LARANG . Inventory Management')</p>
+            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.3em] mt-3">@yield('subheader')</p>
           </div>
           <div id="page-actions" class="flex items-center gap-3">
             @yield('actions')

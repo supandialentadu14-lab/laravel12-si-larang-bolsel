@@ -5,17 +5,17 @@
       <h1 class="text-xs font-black tracking-tight text-app-main uppercase tracking-widest transition-colors">SI-LARANG</h1>
     </div>
   </div>
-  <div class="flex items-center gap-2">
+  <div class="flex items-center gap-5">
     @if(auth()->check() && (auth()->user()->chat_enabled || auth()->user()->isAdmin()))
     <!-- Chat Trigger -->
-    <a href="{{ route('chat.index') }}" class="btn-icon-mini bg-gray-50 text-gray-400 relative transition-colors">
+    <a href="{{ route('chat.index') }}" class="btn-icon-mini text-gray-400 relative transition-colors">
       <i class="fas fa-comment-dots text-xs"></i>
       <span x-show="unreadChatCount > 0" class="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-white"></span>
     </a>
     @endif
 
     <!-- Notification Trigger Mobile -->
-    <button @click="notifOpen = true" class="btn-icon-mini bg-gray-50 text-gray-400 relative transition-colors">
+    <button @click="notifOpen = true" class="btn-icon-mini text-gray-400 relative transition-colors">
       <i class="fas fa-bell text-xs"></i>
       @if (isset($lowStockCount) && $lowStockCount > 0)
         <span class="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>

@@ -13,10 +13,18 @@ class ChatController extends Controller
             return redirect()->route('dashboard')->with('error', 'Fitur chat belum diaktifkan oleh admin untuk akun Anda.');
         }
 
-        $users = \App\Models\User::where('id', '<>', auth()->id(), 'and')
-            ->where('is_active', true)
-            ->where('chat_enabled', true)
-            ->get()
+        $query = \App\Models\User::where('id', '<>', auth()->id(), 'and')
+            ->where('is_active', true);
+
+        // Jika bukan admin, hanya bisa lihat admin dan user yang chat-enabled
+        if (!auth()->user()->isAdmin()) {
+            $query->where(function($q) {
+                $q->where('chat_enabled', true)
+                  ->orWhere('role', 'admin');
+            });
+        }
+
+        $users = $query->get()
             ->map(function($user) {
                 $user->unread_count = \App\Models\ChatMessage::where('sender_id', $user->id)
                     ->where('receiver_id', auth()->id())
@@ -34,8 +42,8 @@ class ChatController extends Controller
             return redirect()->route('dashboard')->with('error', 'Fitur chat belum diaktifkan oleh admin untuk akun Anda.');
         }
 
-        if (!$user->chat_enabled && !auth()->user()->isAdmin()) {
-            return redirect()->route('chat.index')->with('error', 'User ini belum mengaktifkan fitur chat.');
+        if (!$user->chat_enabled && !$user->isAdmin() && !auth()->user()->isAdmin()) {
+            return redirect()->route('chat.index')->with('error', 'User ini belum tersedia untuk chat.');
         }
         $messages = \App\Models\ChatMessage::where(function($q) use ($user) {
                 $q->where('sender_id', auth()->id())->where('receiver_id', $user->id);
@@ -67,6 +75,10 @@ class ChatController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'message' => 'required|string',
         ]);
+        $targetUser = \App\Models\User::findOrFail($request->receiver_id);
+        if (!$targetUser->chat_enabled && !$targetUser->isAdmin() && !auth()->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Chat disabled for target user'], 403);
+        }
 
         $message = \App\Models\ChatMessage::create([
             'sender_id' => auth()->id(),
@@ -153,6 +165,7 @@ class ChatController extends Controller
             'messages' => $messages->map(function($m) {
                 return [
                     'id' => $m->id,
+                    'sender_id' => $m->sender_id,
                     'sender_name' => $m->sender->name,
                     'message' => \Illuminate\Support\Str::limit($m->message, 50),
                     'time' => $m->created_at->diffForHumans(),
