@@ -39,6 +39,13 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+  </script>
 </head>
 
 <body class="antialiased select-none overflow-hidden transition-colors duration-300" 
@@ -52,6 +59,16 @@
     notifOpen: false,
     scrollingDown: false,
     lastScrollTop: 0,
+    darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
+    toggleTheme() {
+      this.darkMode = !this.darkMode;
+      localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
+      if (this.darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    },
     handleScroll(e) {
       let st = e.target.scrollTop;
       if (st > this.lastScrollTop && st > 50) {

@@ -54,6 +54,9 @@
     --color-app-text: var(--text-main);
     --color-app-text-muted: var(--text-muted);
     --color-app-border: var(--border-color);
+
+    /* Enable .dark class for dark mode */
+    --variant-dark: .dark &;
 }
 
 :root {
@@ -64,14 +67,12 @@
     --border-color: #E5E7EB;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-default: #0F172A;
-        --bg-surface: #1E293B;
-        --text-main: #F8FAFC;
-        --text-muted: #94A3B8;
-        --border-color: #334155;
-    }
+.dark {
+    --bg-default: #0F172A;
+    --bg-surface: #1E293B;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --border-color: #334155;
 }
 
 /* Theme Utilities */

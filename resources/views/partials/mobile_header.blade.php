@@ -6,11 +6,16 @@
     </div>
   </div>
   <div class="flex items-center gap-2">
+    <!-- Theme Toggle -->
+    <button @click="toggleTheme()" class="btn-icon-mini bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 transition-all active:scale-90">
+      <i class="fas" :class="darkMode ? 'fa-sun text-amber-400' : 'fa-moon'"></i>
+    </button>
+
     <!-- Notification Trigger Mobile -->
-    <button @click="notifOpen = true" class="btn-icon-mini bg-gray-50 text-gray-400 relative transition-colors">
+    <button @click="notifOpen = true" class="btn-icon-mini bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 relative transition-colors">
       <i class="fas fa-bell text-xs"></i>
       @if (isset($lowStockCount) && $lowStockCount > 0)
-        <span class="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+        <span class="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-800"></span>
       @endif
     </button>
 
