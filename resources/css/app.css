@@ -56,7 +56,7 @@
     --color-app-border: var(--border-color);
 
     /* Enable .dark class for dark mode */
-    --variant-dark: .dark &;
+    --variant-dark: html.dark &;
 }
 
 :root {
@@ -67,7 +67,7 @@
     --border-color: #E5E7EB;
 }
 
-.dark {
+html.dark {
     --bg-default: #0F172A;
     --bg-surface: #1E293B;
     --text-main: #F8FAFC;
