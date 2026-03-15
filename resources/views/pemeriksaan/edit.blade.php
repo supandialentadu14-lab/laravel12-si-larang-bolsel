@@ -56,7 +56,7 @@
             <input type="text" name="nomor" value="{{ old('nomor', preg_replace('/\D+/', '', $data['nomor'] ?? '')) }}" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/\D/g,'')" class="w-full px-6 py-4 bg-app-bg border-none rounded-2xl text-xs font-mono font-bold text-app-main focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001" required>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-4">
             <div class="space-y-1.5">
               <label class="text-[9px] font-black text-app-muted uppercase tracking-widest ml-4">Tanggal</label>
               <input type="date" name="tanggal" value="{{ old('tanggal', $data['tanggal'] ?? now()->toDateString()) }}" class="w-full px-6 py-4 bg-app-bg border-none rounded-2xl text-xs font-bold text-app-main focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
