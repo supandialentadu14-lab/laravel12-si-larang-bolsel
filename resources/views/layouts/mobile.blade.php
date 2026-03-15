@@ -37,6 +37,38 @@
   <!-- Alpine.js -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
+  <style>
+    /* FORCE STYLE FOR PRODUCTION - Bypassing Cache */
+    nav.bottom-nav {
+      background-color: #ffffff !important;
+      background: rgba(255, 255, 255, 0.98) !important;
+      backdrop-filter: blur(25px) saturate(200%) !important;
+      -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
+      border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    /* Fix for date input and general input stretching */
+    input[type="date"], 
+    input[type="text"], 
+    input[type="number"],
+    select, 
+    textarea {
+      max-width: 100% !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      display: block !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+    }
+
+    /* Ensure specific cards don't overflow */
+    .bg-app-surface {
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+    }
+  </style>
 </head>
 
 <body class="antialiased select-none overflow-hidden" 
