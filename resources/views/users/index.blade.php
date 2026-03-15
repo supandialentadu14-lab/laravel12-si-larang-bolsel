@@ -94,22 +94,21 @@
               </div>
             </div>
 
-            <div class="mt-4 flex items-center justify-between pt-2 border-t border-slate-50 transition-colors">
-              <div class="flex items-center gap-2">
-                @if($isOnline)
-                  <span class="text-[8px] font-black text-emerald-600 uppercase tracking-widest transition-colors">ACTIVE NOW</span>
-                @else
-                  <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest transition-colors">
-                    {{ $user->last_seen_at ? $user->last_seen_at->diffForHumans() : 'OFFLINE' }}
+            <div class="mt-4 pt-3 border-t border-slate-50">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-1.5 h-1.5 rounded-full {{ $isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-slate-300' }}"></div>
+                  <span class="text-[8px] font-black {{ $isOnline ? 'text-emerald-600' : 'text-slate-400' }} uppercase tracking-widest">
+                    {{ $isOnline ? 'ACTIVE NOW' : ($user->last_seen_at ? $user->last_seen_at->diffForHumans() : 'OFFLINE') }}
                   </span>
-                @endif
+                </div>
               </div>
 
               {{-- Actions --}}
-              <div class="flex items-center gap-1.5">
+              <div class="flex items-center gap-1.5 flex-wrap">
                 @if(auth()->user()->isAdmin())
                   {{-- Backup --}}
-                  <a href="{{ route('users.backup', $user) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-blue-500 flex items-center justify-center hover:bg-blue-50 transition-colors" title="Backup Data User" onclick="return confirm('Download backup data milik {{ $user->name }}?')">
+                  <a href="{{ route('users.backup', $user) }}" class="w-8 h-8 rounded-xl bg-blue-50/50 text-blue-500 flex items-center justify-center hover:bg-blue-50 transition-colors" title="Backup" onclick="return confirm('Download backup data milik {{ $user->name }}?')">
                     <i class="fas fa-download text-[10px]"></i>
                   </a>
 
@@ -117,10 +116,16 @@
                   <form action="{{ route('users.restore', $user) }}" method="POST" enctype="multipart/form-data" class="inline" id="form-restore-{{ $user->id }}">
                     @csrf
                     <input type="file" name="backup_file" id="backup-file-{{ $user->id }}" class="hidden" accept=".sql" onchange="if(confirm('Pulihkan data {{ $user->name }}? Data lama akan tertimpa.')) document.getElementById('form-restore-{{ $user->id }}').submit();">
-                    <button type="button" class="w-8 h-8 rounded-xl bg-slate-50 text-emerald-500 flex items-center justify-center hover:bg-emerald-50 transition-colors" title="Restore Data User" onclick="document.getElementById('backup-file-{{ $user->id }}').click();">
+                    <button type="button" class="w-8 h-8 rounded-xl bg-emerald-50/50 text-emerald-500 flex items-center justify-center hover:bg-emerald-50 transition-colors" title="Restore" onclick="document.getElementById('backup-file-{{ $user->id }}').click();">
                       <i class="fas fa-upload text-[10px]"></i>
                     </button>
                   </form>
+                @endif
+
+                @if($user->id !== auth()->id() && (auth()->user()->chat_enabled || auth()->user()->isAdmin()))
+                  <a href="{{ route('chat.show', $user) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-colors" title="Chat">
+                    <i class="fas fa-comment-dots text-[10px]"></i>
+                  </a>
                 @endif
 
                 <a href="{{ route('users.edit', $user) }}" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
@@ -128,18 +133,21 @@
                 </a>
                 
                 @if(auth()->user()->isAdmin() && $user->id !== auth()->id())
+                  {{-- Toggle Chat Permission moved to Edit/Create --}}
+
                   @if($user->role !== 'admin')
                     <form action="{{ route('users.toggle-active', $user) }}" method="POST" class="inline">
                       @csrf
-                      <button type="submit" class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors {{ $isActive ? 'bg-slate-50 text-orange-400 hover:bg-orange-50 hover:text-orange-600 ' : 'bg-emerald-50 text-emerald-600 ' }}"
+                      <button type="submit" class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors {{ $isActive ? 'bg-orange-50/50 text-orange-400 hover:bg-orange-50' : 'bg-emerald-50 text-emerald-600' }}"
                           onclick="return confirm('{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} akun {{ $user->name }}?')">
                         <i class="fas {{ $isActive ? 'fa-ban' : 'fa-check-circle' }} text-[10px]"></i>
                       </button>
                     </form>
                   @endif
+
                   <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Hapus pengguna?')">
                     @csrf @method('DELETE')
-                    <button type="submit" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                    <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50/50 text-rose-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
                       <i class="fas fa-trash text-[10px]"></i>
                     </button>
                   </form>
@@ -170,7 +178,7 @@
     const indexUrl = '{{ route("users.index") }}';
     let timer = setTimeout(function() {
       if (window.location.pathname === new URL(indexUrl).pathname) {
-        window.location.href = indexUrl;
+        window.location.reload();
       }
     }, 30000);
   })();

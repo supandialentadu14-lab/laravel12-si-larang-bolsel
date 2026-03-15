@@ -28,13 +28,20 @@ class UserController extends Controller
     /**
      * Menampilkan daftar user
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Mengambil data user terbaru
-        // paginate(10) → tampilkan 10 data per halaman
-        $users = User::latest()->paginate(10);
+        $search = $request->input('search');
 
-        // Kirim data ke view
+        $users = User::latest()
+            ->when($search, function ($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->paginate(10)
+            ->withQueryString();
+
         return view('users.index', compact('users'));
     }
 
@@ -71,6 +78,7 @@ class UserController extends Controller
                 'email'    => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'role'     => $validated['role'],
+                'chat_enabled' => $request->role === 'admin' ? true : $request->has('chat_enabled'),
                 'permissions' => $request->role === 'admin' ? [] : $request->input('permissions', []),
             ]);
 
@@ -139,6 +147,7 @@ class UserController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'role' => $validated['role'],
+            'chat_enabled' => $request->role === 'admin' ? true : $request->has('chat_enabled'),
             'permissions' => $request->role === 'admin' ? [] : $request->input('permissions', []),
         ];
 
@@ -233,6 +242,18 @@ class UserController extends Controller
 
         $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', "Akun {$user->name} berhasil {$status}.");
+    }
+
+    public function toggleChat(User $user): RedirectResponse
+    {
+        if (!Auth::user()->isAdmin()) {
+            return back()->with('error', 'Hanya admin yang dapat mengubah akses chat.');
+        }
+
+        $user->update(['chat_enabled' => !$user->chat_enabled]);
+
+        $status = $user->chat_enabled ? 'diaktifkan' : 'dinonaktifkan';
+        return back()->with('success', "Akses chat {$user->name} berhasil {$status}.");
     }
 
     /**

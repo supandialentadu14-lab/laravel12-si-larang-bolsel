@@ -33,6 +33,7 @@ class User extends Authenticatable
         'role',
         'last_seen_at',
         'is_active',
+        'chat_enabled',
         'permissions',
     ];
 
@@ -91,6 +92,7 @@ class User extends Authenticatable
             'password'          => 'hashed',
             'last_seen_at'      => 'datetime',
             'is_active'         => 'boolean',
+            'chat_enabled'      => 'boolean',
             'permissions'       => 'array',
         ];
     }

@@ -82,9 +82,23 @@
         </div>
 
         {{-- Permission Checkboxes --}}
-        <div x-show="role === 'staff'" x-transition class="space-y-3 pt-2">
-          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Izin Akses Menu</label>
+        <div x-show="role === 'staff'" x-transition class="space-y-3 pt-2 transition-colors">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Izin Akses Menu & Fitur</label>
           <div class="grid grid-cols-1 gap-2">
+            {{-- Fitur Chat --}}
+            <label class="flex items-center justify-between p-4 bg-indigo-50/30 rounded-2xl border border-indigo-100/50 hover:border-indigo-200 transition-all cursor-pointer group">
+              <div class="flex items-center gap-3 transition-colors">
+                <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center transition-colors">
+                  <i class="fas fa-comment-dots text-[10px]"></i>
+                </div>
+                <span class="text-[10px] font-black text-slate-700 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">Akses Fitur Chat (Internal)</span>
+              </div>
+              <div class="relative inline-flex items-center cursor-pointer transition-colors">
+                <input type="checkbox" name="chat_enabled" value="1" {{ old('chat_enabled', $user->chat_enabled) ? 'checked' : '' }} class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 transition-all"></div>
+              </div>
+            </label>
+
             @foreach(config('permissions', []) as $key => $label)
               @php
                 $userPermissions = old('permissions', $user->permissions ?? []);

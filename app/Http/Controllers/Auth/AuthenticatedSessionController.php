@@ -60,9 +60,14 @@ class AuthenticatedSessionController extends Controller
                 'kwitansi_current',
             ]);
         }
-        // Admin mengikuti 'intended' (jika sebelumnya akses halaman admin)
-        // Staff selalu diarahkan ke dashboard agar tidak terjebak ke halaman admin-only
         if (auth()->user() && method_exists(auth()->user(), 'isAdmin') && auth()->user()->isAdmin()) {
+            // Mencegah redirect ke URL intended yang merupakan endpoint AJAX/JSON (misal: polling chat/notif)
+            $intended = session()->get('url.intended');
+            if ($intended && (str_contains($intended, '/chat/unread') || str_contains($intended, '/notifications/unread'))) {
+                session()->forget('url.intended');
+                return redirect()->route('dashboard');
+            }
+            
             return redirect()->intended(route('dashboard', absolute: false));
         }
         return redirect()->route('dashboard');

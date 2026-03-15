@@ -29,6 +29,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/backup/run', [\App\Http\Controllers\BackupController::class, 'run'])->name('backup.run');
 
+    // Chat System
+    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/unread', [\App\Http\Controllers\ChatController::class, 'getUnreadMessages'])->name('chat.unread');
+    Route::get('/chat/{user}', [\App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
+    Route::put('/chat/message/{message}', [\App\Http\Controllers\ChatController::class, 'update'])->name('chat.update');
+    Route::delete('/chat/message/{message}', [\App\Http\Controllers\ChatController::class, 'destroy'])->name('chat.destroy');
+    Route::post('/chat/clear/{user}', [\App\Http\Controllers\ChatController::class, 'clearConversation'])->name('chat.clear');
+
     // Notifications
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
@@ -193,6 +202,7 @@ Route::middleware(['auth'])->group(function () {
         // GET fallback: redirect ke index jika akses langsung via URL
         Route::get('users/{user}/toggle-active', fn () => redirect()->route('users.index'));
         Route::post('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
+        Route::post('users/{user}/toggle-chat', [UserController::class, 'toggleChat'])->name('users.toggle-chat');
         Route::get('users/{user}/backup', [\App\Http\Controllers\BackupController::class, 'downloadUser'])->name('users.backup');
         Route::post('users/{user}/restore', [\App\Http\Controllers\UserRestoreController::class, 'restore'])->name('users.restore');
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity_log.index');

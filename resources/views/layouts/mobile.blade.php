@@ -71,7 +71,7 @@
   </style>
 </head>
 
-<body class="antialiased select-none overflow-hidden" 
+  <body class="antialiased select-none overflow-hidden" 
   style="height: 100vh; height: 100dvh;"
   x-data="{ 
     mobileMenuOpen: false, 
@@ -80,8 +80,31 @@
     settingsMenuOpen: false, 
     profileMenuOpen: false,
     notifOpen: false,
+    unreadChatCount: 0,
+    chatNotifOpen: false,
+    latestChatMessage: null,
     scrollingDown: false,
     lastScrollTop: 0,
+    
+    async checkNewMessages() {
+      @if(auth()->check() && (auth()->user()->chat_enabled || auth()->user()->isAdmin()))
+      try {
+        const res = await fetch('{{ route('chat.unread') }}');
+        const data = await res.json();
+        
+        if (data.count > this.unreadChatCount) {
+          this.latestChatMessage = data.messages[0];
+          // Only show top sheet if we are NOT on the chat page of that user
+          if (!window.location.pathname.includes('/chat/')) {
+            this.chatNotifOpen = true;
+            setTimeout(() => { this.chatNotifOpen = false; }, 5000);
+          }
+        }
+        this.unreadChatCount = data.count;
+      } catch (e) {}
+      @endif
+    },
+
     handleScroll(e) {
       let st = e.target.scrollTop;
       if (st > this.lastScrollTop && st > 50) {
@@ -91,7 +114,8 @@
       }
       this.lastScrollTop = st <= 0 ? 0 : st;
     }
-  }">
+  }"
+  x-init="checkNewMessages(); setInterval(() => checkNewMessages(), 10000)">
   <div class="flex flex-col h-full overflow-hidden">
     <div class="sticky top-0 z-[45]">
       @include('partials.mobile_header')
@@ -193,6 +217,32 @@
       </div>
       <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mt-4"></div>
     </div>
+  </div>
+
+  <!-- Chat Notification Sheet (Top Position) -->
+  <div x-show="chatNotifOpen" 
+    x-transition:enter="transition ease-out duration-300" 
+    x-transition:enter-start="opacity-0 -translate-y-full" 
+    x-transition:enter-end="opacity-100 translate-y-0" 
+    x-transition:leave="transition ease-in duration-200" 
+    x-transition:leave-start="opacity-100 translate-y-0" 
+    x-transition:leave-end="opacity-0 -translate-y-full" 
+    class="fixed top-4 left-4 right-4 z-[70]">
+    <a href="{{ route('chat.index') }}" class="block bg-indigo-600 rounded-3xl p-5 shadow-2xl shadow-indigo-200 border border-indigo-500/30 backdrop-blur-md">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-comment-dots text-white text-xs"></i>
+        </div>
+        <div class="min-w-0 pr-4">
+          <div class="text-[9px] font-black text-indigo-100 uppercase tracking-widest">Pesan Baru</div>
+          <h3 class="text-xs font-black text-white tracking-tight mt-0.5" x-text="latestChatMessage ? latestChatMessage.sender_name : ''"></h3>
+          <p class="text-[11px] font-bold text-indigo-50 mt-1 leading-snug truncate" x-text="latestChatMessage ? latestChatMessage.message : ''"></p>
+        </div>
+        <button @click.prevent="chatNotifOpen = false" class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
+          <i class="fas fa-times text-[10px]"></i>
+        </button>
+      </div>
+    </a>
   </div>
 
   @include('partials.mobile_bottom_nav')
