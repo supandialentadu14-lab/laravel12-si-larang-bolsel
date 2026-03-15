@@ -130,16 +130,16 @@
       </div>
 
       <div class="space-y-4 mb-4">
-        @if (isset($lowStockCount) && $lowStockCount > 0)
-          @foreach ($lowStockItems as $item)
+        @if (isset($lowStockProducts) && $lowStockProducts->count() > 0)
+          @foreach ($lowStockProducts as $item)
             <div class="p-5 bg-rose-50 border border-rose-100 rounded-[24px]">
               <div class="flex items-start gap-4">
                 <div class="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-rose-200">
                   <i class="fas fa-triangle-exclamation text-xs"></i>
                 </div>
                 <div>
-                  <h3 class="text-xs font-black text-rose-900 tracking-tight">{{ $item->barang_nama }}</h3>
-                  <p class="text-[11px] font-bold text-rose-700 mt-1 leading-snug">Stok tersisa tinggal {{ $item->barang_stok }} {{ $item->barang_satuan }}. Segera lakukan pengadaan baru.</p>
+                  <h3 class="text-xs font-black text-rose-900 tracking-tight">{{ $item->name }}</h3>
+                  <p class="text-[11px] font-bold text-rose-700 mt-1 leading-snug">Stok tersisa tinggal {{ $item->stock }} {{ $item->unit }}. Segera lakukan pengadaan baru.</p>
                 </div>
               </div>
             </div>
