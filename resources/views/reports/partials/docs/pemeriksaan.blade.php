@@ -70,7 +70,7 @@
     @endforeach
     <tr style="background-color: #f8fafc;">
       <td colspan="5" class="text-right font-bold">Jumlah Total</td>
-      <td class="text-right font-bold" style="font-size: 14px; color: #1e293b;">Rp {{ number_format($total, 0, ',', '.') }}</td>
+      <td class="text-right font-bold">Rp {{ number_format($total, 0, ',', '.') }}</td>
       <td></td>
     </tr>
     <tr>

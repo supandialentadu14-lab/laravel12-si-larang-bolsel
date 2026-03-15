@@ -37,7 +37,7 @@ for root, dirs, files in os.walk(routes_dir):
 
 # Pre-read all search target contents
 target_contents = {}
-for target in search_targets:
+for target in search_targets: 
     try:
         with open(target, 'r', encoding='utf-8', errors='ignore') as f:
             target_contents[target] = f.read()

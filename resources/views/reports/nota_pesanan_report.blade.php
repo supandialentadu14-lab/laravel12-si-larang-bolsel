@@ -373,8 +373,8 @@
           </tr>
         @endforeach
         <tr>
-          <td colspan="5" align="right" class="bold">Jumlah</td>
-          <td align="right" class="bold">{{ number_format($grand, 0, ',', '.') }}</td>
+          <td colspan="5" align="right">Jumlah</td>
+          <td align="right">{{ number_format($grand, 0, ',', '.') }}</td>
         </tr>
         <tr>
           <td colspan="6" align="center" class="bold">{{ ucwords(toWordsId((int) $grand)) }} Rupiah</td>

@@ -148,7 +148,7 @@
             <td class="px-2 py-1 text-right font-bold">{{ number_format($total, 0, ',', '.') }}</td>
           </tr>
           <tr>
-            <td colspan="7" class="mb-3 text-sm text-center font-extrabold">Terbilang {{ \Illuminate\Support\Str::upper($data['terbilang'] ?? '') }} rupiah</td>
+            <td colspan="7" class="mb-3 text-xs text-center font-extrabold">Terbilang {{ \Illuminate\Support\Str::upper($data['terbilang'] ?? '') }} rupiah</td>
 
           </tr>
         </tbody>
