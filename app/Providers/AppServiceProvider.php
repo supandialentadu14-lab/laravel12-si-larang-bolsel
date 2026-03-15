@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Gate;
 // Class dasar ServiceProvider
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+
         // Set locale Carbon ke Bahasa Indonesia
         \Carbon\Carbon::setLocale('id');
 
