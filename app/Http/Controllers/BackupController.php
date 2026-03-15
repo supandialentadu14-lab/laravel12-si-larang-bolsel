@@ -13,6 +13,11 @@ class BackupController extends Controller
 {
 
 
+    public function run()
+    {
+        return $this->downloadUser(auth()->id());
+    }
+
     public function downloadUser($userId)
     {
         try {

@@ -27,6 +27,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/backup/run', [\App\Http\Controllers\BackupController::class, 'run'])->name('backup.run');
 
     // Notifications
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');

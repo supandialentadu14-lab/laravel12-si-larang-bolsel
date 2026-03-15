@@ -1,8 +1,12 @@
-const CACHE_NAME = 'silarang-cache-v1';
+const CACHE_NAME = 'silarang-cache-v2';
+const OFFLINE_URL = '/offline.html';
+
 const urlsToCache = [
   '/',
-  '/offline.html',
-  // you can add more static CSS/JS if you want
+  OFFLINE_URL,
+  '/manifest.json',
+  '/images/silarang-logo.webp',
+  '/images/icons/icon-192x192.png'
 ];
 
 self.addEventListener('install', event => {
@@ -12,36 +16,53 @@ self.addEventListener('install', event => {
             return cache.addAll(urlsToCache);
         })
     );
-});
-
-self.addEventListener('fetch', event => {
-    // Basic network-first strategy for dynamic content.
-    event.respondWith(
-        fetch(event.request)
-        .catch(() => {
-            return caches.match(event.request).then(response => {
-                if (response) {
-                    return response;
-                } else if (event.request.mode === 'navigate') {
-                    // fall back to offline page if available
-                    return caches.match('/offline.html');
-                }
-            });
-        })
-    );
+    self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-    const cacheWhiteList = [CACHE_NAME];
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (!cacheWhiteList.includes(cacheName)) {
+                    if (cacheName !== CACHE_NAME) {
                         return caches.delete(cacheName);
                     }
                 })
             );
+        })
+    );
+    self.clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+    // Only handle GET requests
+    if (event.request.method !== 'GET') return;
+
+    event.respondWith(
+        fetch(event.request)
+        .then(response => {
+            // If valid response, clone and cache it for static assets
+            if (response && response.status === 200 && response.type === 'basic') {
+                const url = new URL(event.request.url);
+                if (url.pathname.match(/\.(js|css|webp|png|jpg|woff2)$/)) {
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseToCache);
+                    });
+                }
+            }
+            return response;
+        })
+        .catch(() => {
+            // Fallback to cache
+            return caches.match(event.request).then(response => {
+                if (response) return response;
+                
+                // If navigation request fails, show offline page
+                if (event.request.mode === 'navigate') {
+                    return caches.match(OFFLINE_URL);
+                }
+            });
         })
     );
 });

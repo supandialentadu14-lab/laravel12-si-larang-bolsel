@@ -26,25 +26,39 @@
 
 body {
   @apply transition-colors duration-300;
-  background-color: #F9FAFB;
-  color: #111827;
+  background-color: var(--color-app-bg);
+  color: var(--color-app-text);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   transition: all 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-card {
+    background: rgba(30, 41, 59, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
 }
 
 nav.bottom-nav.glass-card {
   background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(4px) saturate(100%);
-  -webkit-backdrop-filter: blur(4px) saturate(100%);
-  border-top: 1px solid rgba(229, 231, 235, 0.6);
+  backdrop-filter: blur(25px) saturate(200%);
+  -webkit-backdrop-filter: blur(25px) saturate(200%);
+  border-top: 1px solid var(--color-app-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  nav.bottom-nav.glass-card {
+    background: rgba(15, 23, 42, 0.88);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
 }
 
 /* Minimalist Button System */

@@ -209,6 +209,13 @@
       const applyEnter = () => {
         const dir = sessionStorage.getItem('navDir');
         if (!dir || prefersReduced) return;
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SI-LARANG PWA: Service Worker Aktif', reg.scope))
+            .catch(err => console.error('SI-LARANG PWA: Gagal Register', err));
+        });
+      }
         if (supportsViewTransition) {
           requestAnimationFrame(() => {
             sessionStorage.removeItem('navDir');

@@ -592,14 +592,14 @@ document.addEventListener('DOMContentLoaded', function () {
 <style>
   /* ───── Dash Filter Form ───── */
   .dash-filter-form {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--card-border) !important;
+    background: var(--body-bg) !important;
+    border: 1px solid var(--sidebar-hover) !important;
     display: inline-flex !important;
     align-items: center;
     padding: 0.5rem 1rem !important;
     border-radius: 1rem !important;
     transition: all 0.3s ease;
-    box-shadow: var(--card-shadow) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   
   .dash-filter-form .dash-filter-input, 

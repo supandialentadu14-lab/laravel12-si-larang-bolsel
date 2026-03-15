@@ -2,7 +2,7 @@
   <div class="flex items-center gap-3">
     <div class="flex items-center gap-2">
       <img src="{{ asset('images/silarang-logo.png') }}" class="h-6 w-6 rounded-md" alt="Logo">
-      <h1 class="text-xs font-black tracking-tight text-gray-800 uppercase tracking-widest transition-colors">SI-LARANG</h1>
+      <h1 class="text-xs font-black tracking-tight text-app-main uppercase tracking-widest transition-colors">SI-LARANG</h1>
     </div>
   </div>
   <div class="flex items-center gap-2">

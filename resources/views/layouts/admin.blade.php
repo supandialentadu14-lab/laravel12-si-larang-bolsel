@@ -77,6 +77,18 @@
       --marquee-end: #A78BFA;
     }
 
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --body-bg: #0F172A;
+        --body-text: #F8FAFC;
+        --sidebar-bg: #1E293B;
+        --sidebar-text: #F8FAFC;
+        --sidebar-muted: #94A3B8;
+        --sidebar-hover: rgba(255, 255, 255, 0.05);
+        --sidebar-active: rgba(255, 255, 255, 0.1);
+      }
+    }
+
     [x-cloak] {
       display: none !important;
     }

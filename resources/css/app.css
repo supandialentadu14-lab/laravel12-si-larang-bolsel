@@ -44,16 +44,57 @@
 |
 */
 @theme {
-    /*
-    |--------------------------------------------------------------------------
-    | Default Sans Font
-    |--------------------------------------------------------------------------
-    |
-    | Mengganti font default Tailwind menjadi "Instrument Sans".
-    | Akan digunakan ketika memakai class `font-sans`.
-    |
-    */
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 
         'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Custom Design Tokens */
+    --color-app-bg: var(--bg-default);
+    --color-app-surface: var(--bg-surface);
+    --color-app-text: var(--text-main);
+    --color-app-text-muted: var(--text-muted);
+    --color-app-border: var(--border-color);
+}
+
+:root {
+    --bg-default: #F9FAFB;
+    --bg-surface: #FFFFFF;
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --border-color: #E5E7EB;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-default: #0F172A;
+        --bg-surface: #1E293B;
+        --text-main: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border-color: #334155;
+    }
+}
+
+/* Theme Utilities */
+@utility bg-app-surface {
+    background-color: var(--bg-surface);
+}
+@utility text-app-main {
+    color: var(--text-main);
+}
+@utility text-app-muted {
+    color: var(--text-muted);
+}
+@utility border-app-main {
+    border-color: var(--border-color);
+}
+
+/* Professional Print Styles */
+@media print {
+    body { background: white !important; color: black !important; }
+    nav, .bottom-nav, header, button, .no-print { display: none !important; }
+    #page-content { padding: 0 !important; margin: 0 !important; width: 100% !important; overflow: visible !important; }
+    .glass-card { background: transparent !important; border: 1px solid #eee !important; box-shadow: none !important; backdrop-filter: none !important; }
+    table { width: 100% !important; border-collapse: collapse !important; }
+    th, td { border: 1px solid #333 !important; padding: 8px !important; font-size: 10pt !important; }
+    h1, h2, h3 { color: black !important; text-transform: uppercase !important; }
 }

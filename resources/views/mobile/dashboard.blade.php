@@ -5,8 +5,8 @@
   <!-- Welcome Header -->
   <div class="flex items-center justify-between">
     <div>
-      <h2 class="text-xl font-extrabold text-gray-900 tracking-tight">Halo, {{ Auth::user()->name }}!</h2>
-      <p class="text-xs text-gray-500 font-medium tracking-wide">{{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</p>
+      <h2 class="text-xl font-extrabold text-app-main tracking-tight">Halo, {{ Auth::user()->name }}!</h2>
+      <p class="text-xs text-app-muted font-medium tracking-wide">{{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</p>
     </div>
     <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-500 text-white shadow-lg shadow-indigo-100 relative overflow-hidden flex items-center justify-center">
       <div class="absolute -top-3 -right-3 w-12 h-12 bg-white/20 rounded-full blur-xl"></div>
@@ -49,8 +49,8 @@
         <i class="fas fa-wallet"></i>
       </div>
       <div>
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nilai Persediaan</p>
-        <p class="text-lg font-black text-gray-900">Rp {{ number_format($totalInventoryValue, 0, ',', '.') }}</p>
+        <p class="text-[10px] font-bold text-app-muted uppercase tracking-widest">Nilai Persediaan</p>
+        <p class="text-lg font-black text-app-main">Rp {{ number_format($totalInventoryValue, 0, ',', '.') }}</p>
       </div>
     </div>
     <i class="fas fa-chevron-right text-gray-300"></i>
@@ -58,13 +58,13 @@
 
   <!-- Ringkasan Data -->
   <div class="grid grid-cols-2 gap-4">
-    <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-      <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+    <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+      <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
         <i class="fas fa-boxes"></i>
       </div>
       <div>
-        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Barang</p>
-        <p class="text-xl font-black text-gray-900">{{ number_format($totalProducts) }}</p>
+        <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Barang</p>
+        <p class="text-xl font-black text-app-main">{{ number_format($totalProducts) }}</p>
       </div>
     </div>
     <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
@@ -98,71 +98,118 @@
 
   <!-- Ringkasan Dokumen -->
   <div>
-    <h3 class="text-sm font-extrabold text-gray-900 mb-4 px-1 uppercase tracking-widest">Ringkasan Dokumen</h3>
+    <h3 class="text-sm font-extrabold text-app-main mb-4 px-1 uppercase tracking-widest">Ringkasan Dokumen</h3>
     <div class="grid grid-cols-2 gap-4">
-      <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center">
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+        <div class="w-10 h-10 rounded-2xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 flex items-center justify-center">
           <i class="fas fa-file-contract"></i>
         </div>
         <div>
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Belanja Modal</p>
-          <p class="text-xl font-black text-gray-900">{{ number_format($belanjaModalCount ?? 0) }}</p>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Belanja Modal</p>
+          <p class="text-xl font-black text-app-main">{{ number_format($belanjaModalCount ?? 0) }}</p>
         </div>
       </div>
-      <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 rounded-2xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center">
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+        <div class="w-10 h-10 rounded-2xl bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-600 dark:text-fuchsia-400 flex items-center justify-center">
           <i class="fas fa-file-invoice"></i>
         </div>
         <div>
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Nota Pesanan</p>
-          <p class="text-xl font-black text-gray-900">{{ number_format($notaCount ?? 0) }}</p>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Nota Pesanan</p>
+          <p class="text-xl font-black text-app-main">{{ number_format($notaCount ?? 0) }}</p>
         </div>
       </div>
-      <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center">
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+        <div class="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 flex items-center justify-center">
           <i class="fas fa-check-double"></i>
         </div>
         <div>
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Pemeriksaan</p>
-          <p class="text-xl font-black text-gray-900">{{ number_format($pemeriksaanCount ?? 0) }}</p>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Pemeriksaan</p>
+          <p class="text-xl font-black text-app-main">{{ number_format($pemeriksaanCount ?? 0) }}</p>
         </div>
       </div>
-      <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
           <i class="fas fa-file-download"></i>
         </div>
         <div>
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Penerimaan</p>
-          <p class="text-xl font-black text-gray-900">{{ number_format($penerimaanCount ?? 0) }}</p>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Penerimaan</p>
+          <p class="text-xl font-black text-app-main">{{ number_format($penerimaanCount ?? 0) }}</p>
         </div>
       </div>
-      <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+        <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
           <i class="fas fa-receipt"></i>
         </div>
         <div>
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Kwitansi</p>
-          <p class="text-xl font-black text-gray-900">{{ number_format($kwitansiCount ?? 0) }}</p>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Kwitansi</p>
+          <p class="text-xl font-black text-app-main">{{ number_format($kwitansiCount ?? 0) }}</p>
         </div>
       </div>
-      <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+        <div class="w-10 h-10 rounded-2xl bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
           <i class="fas fa-clipboard-check"></i>
         </div>
         <div>
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">BA Opname</p>
-          <p class="text-xl font-black text-gray-900">{{ number_format($opnameCount ?? 0) }}</p>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">BA Opname</p>
+          <p class="text-xl font-black text-app-main">{{ number_format($opnameCount ?? 0) }}</p>
         </div>
       </div>
-      <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 rounded-2xl bg-slate-50 text-slate-600 flex items-center justify-center">
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+        <div class="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-slate-900/20 text-slate-600 dark:text-slate-400 flex items-center justify-center">
           <i class="fas fa-people-carry-box"></i>
         </div>
         <div>
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Pinjam Pakai</p>
-          <p class="text-xl font-black text-gray-900">{{ number_format($pinjamCount ?? 0) }}</p>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Pinjam Pakai</p>
+          <p class="text-xl font-black text-app-main">{{ number_format($pinjamCount ?? 0) }}</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Performance Analytics -->
+  <div>
+    <h3 class="text-sm font-extrabold text-app-main mb-4 px-1 uppercase tracking-widest">Analisis Performa</h3>
+    <div class="p-6 rounded-[2.5rem] bg-app-surface border border-app-main shadow-sm">
+      <div class="flex items-center justify-between mb-6">
+        <p class="text-[10px] font-black text-app-muted uppercase tracking-widest">Tren 6 Bulan</p>
+        <span class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[9px] font-black rounded-full uppercase">Update Realtime</span>
+      </div>
+      <div class="space-y-4">
+        @foreach($monthlyLabels->take(-3) as $idx => $lbl)
+        <div class="space-y-2">
+            <div class="flex justify-between text-[10px] font-bold uppercase tracking-tight">
+                <span class="text-app-main">{{ $lbl }}</span>
+                <span class="text-indigo-600">{{ number_format($monthlyIn[$idx]) }} In / {{ number_format($monthlyOut[$idx]) }} Out</span>
+            </div>
+            <div class="h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+                @php
+                    $total = $monthlyIn[$idx] + $monthlyOut[$idx];
+                    $pIn = $total > 0 ? ($monthlyIn[$idx] / $total) * 100 : 0;
+                    $pOut = $total > 0 ? ($monthlyOut[$idx] / $total) * 100 : 0;
+                @endphp
+                <div class="h-full bg-indigo-500" style="width: {{ $pIn }}%"></div>
+                <div class="h-full bg-rose-400" style="width: {{ $pOut }}%"></div>
+            </div>
+        </div>
+        @endforeach
+      </div>
+    </div>
+  </div>
+
+  <!-- System Control -->
+  <div class="pb-10">
+    <h3 class="text-sm font-extrabold text-app-main mb-4 px-1 uppercase tracking-widest">Kontrol Sistem</h3>
+    <div class="p-6 rounded-[2.5rem] bg-indigo-600 shadow-xl shadow-indigo-100 dark:shadow-none text-white overflow-hidden relative">
+        <div class="absolute -right-4 -bottom-4 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="relative flex items-center justify-between">
+            <div class="space-y-1">
+                <p class="text-xs font-black uppercase tracking-widest">Keamanan Data</p>
+                <p class="text-[9px] font-medium opacity-80 uppercase leading-relaxed">Backup database secara rutin untuk <br>menghindari kehilangan data.</p>
+            </div>
+            <a href="{{ route('backup.run') }}" class="px-6 py-3 bg-white text-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all">
+                <i class="fas fa-cloud-upload-alt mr-2"></i> Backup
+            </a>
+        </div>
     </div>
   </div>
 
