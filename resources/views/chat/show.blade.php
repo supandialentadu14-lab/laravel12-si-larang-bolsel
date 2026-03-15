@@ -1,7 +1,7 @@
 @extends('layouts.mobile')
 
 @section('content')
-<div class="flex flex-col h-[calc(100vh-140px)]" x-data="{
+<div class="flex flex-col h-[calc(100vh-220px)]" x-data="{
     messages: [],
     newMessage: '',
     loading: false,

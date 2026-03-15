@@ -122,7 +122,7 @@
     </div>
 
     <!-- Main Content -->
-    <main id="page-content" class="flex-1 px-5 pt-4 overflow-y-auto" @scroll="handleScroll">
+    <main id="page-content" class="flex-1 px-5 pt-4 pb-32 overflow-y-auto" @scroll="handleScroll">
       @if (session('success'))
         <div class="mb-5 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-4 shadow-sm flex items-start gap-3">
           <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
