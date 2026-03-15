@@ -1,6 +1,6 @@
 {
   "resources/css/desktop.css": {
-    "file": "assets/desktop-BOYTeXz8.css",
+    "file": "assets/desktop-CEY6wtg3.css",
     "src": "resources/css/desktop.css",
     "isEntry": true,
     "name": "desktop",
@@ -9,7 +9,7 @@
     ]
   },
   "resources/css/mobile.css": {
-    "file": "assets/mobile-CLyhyRlv.css",
+    "file": "assets/mobile-VsmLrZNP.css",
     "src": "resources/css/mobile.css",
     "isEntry": true,
     "name": "mobile",

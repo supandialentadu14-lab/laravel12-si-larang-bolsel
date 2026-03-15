@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="view-transitiblurn" content="same-origin">
+  <meta name="view-transition" content="same-origin">
   
   <!-- PWA Setup -->
   <link rel="manifest" href="/manifest.json">
@@ -23,21 +23,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            'app-main': 'var(--text-main)',
-            'app-muted': 'var(--text-muted)',
-            'app-bg': 'var(--bg-default)',
-            'app-surface': 'var(--bg-surface)',
-          }
-        }
-      }
-    }
-  </script>
   @vite(['resources/css/mobile.css', 'resources/js/mobile.js'])
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -52,17 +37,9 @@
   <!-- Alpine.js -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
-
-  <script>
-    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-  </script>
 </head>
 
-<body class="antialiased select-none overflow-hidden transition-colors duration-300" 
+<body class="antialiased select-none overflow-hidden" 
   style="height: 100vh; height: 100dvh;"
   x-data="{ 
     mobileMenuOpen: false, 
@@ -73,16 +50,6 @@
     notifOpen: false,
     scrollingDown: false,
     lastScrollTop: 0,
-    darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
-    toggleTheme() {
-      this.darkMode = !this.darkMode;
-      localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
-      if (this.darkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    },
     handleScroll(e) {
       let st = e.target.scrollTop;
       if (st > this.lastScrollTop && st > 50) {
@@ -148,55 +115,41 @@
   </div>
 
   <!-- Low Stock Notification Sheet -->
-  <div x-show="notifOpen" data-mobile-sheet class="fixed inset-0 z-[10001] overflow-hidden lg:hidden" 
-    x-transition:enter="transition ease-in-out duration-250"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in-out duration-200"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    x-cloak>
-    <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" @click="notifOpen = false"></div>
-
-    <div class="absolute inset-x-0 bottom-0 max-h-[70vh] w-full bg-white rounded-t-[2.5rem] shadow-2xl flex flex-col transition-colors duration-300"
-      x-transition:enter="transition ease-out duration-350 transform"
-      x-transition:enter-start="translate-y-full"
-      x-transition:enter-end="translate-y-0"
-      x-transition:leave="transition ease-in duration-250 transform"
-      x-transition:leave-start="translate-y-0"
-      x-transition:leave-end="translate-y-full">
-      
-      <div class="w-full flex justify-center py-4">
-        <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
-      </div>
-
-      <div class="px-6 pb-4 flex items-center justify-between">
+  <div x-show="notifOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-full" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-full" class="fixed inset-0 z-[60] flex items-end">
+    <div @click="notifOpen = false" class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+    <div class="relative w-full bg-white rounded-t-[32px] overflow-hidden shadow-2xl p-6 pb-12 max-h-[85vh] overflow-y-auto">
+      <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8"></div>
+      <div class="flex items-center justify-between mb-8">
         <div>
-          <h3 class="font-black text-sm tracking-widest text-gray-900 uppercase transition-colors">Peringatan Stok Rendah</h3>
-          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Hanya menampilkan item kritis</p>
+          <h2 class="text-xl font-black text-gray-900 tracking-tight">Notifikasi</h2>
+          <p class="text-xs font-bold text-gray-500 mt-1 uppercase tracking-widest">Informasi Penting</p>
         </div>
-        <button @click="notifOpen = false" class="btn-icon-mini bg-gray-50 text-gray-400">
+        <button @click="notifOpen = false" class="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400">
           <i class="fas fa-times"></i>
         </button>
       </div>
 
-      <div class="flex-1 overflow-y-auto px-6 pb-8 space-y-2 no-scrollbar">
-        @if (isset($lowStockCount) && $lowStockCount > 0 && isset($lowStockProducts))
-          @foreach ($lowStockProducts as $lp)
-          <div class="flex items-center gap-4 px-4 py-4 rounded-2xl bg-red-50/50 border border-red-100/50 transition">
-            <div class="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-red-100">
-              <i class="fas fa-exclamation-triangle text-xs"></i>
+      <div class="space-y-4 mb-4">
+        @if (isset($lowStockCount) && $lowStockCount > 0)
+          @foreach ($lowStockItems as $item)
+            <div class="p-5 bg-rose-50 border border-rose-100 rounded-[24px]">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-rose-200">
+                  <i class="fas fa-triangle-exclamation text-xs"></i>
+                </div>
+                <div>
+                  <h3 class="text-xs font-black text-rose-900 tracking-tight">{{ $item->barang_nama }}</h3>
+                  <p class="text-[11px] font-bold text-rose-700 mt-1 leading-snug">Stok tersisa tinggal {{ $item->barang_stok }} {{ $item->barang_satuan }}. Segera lakukan pengadaan baru.</p>
+                </div>
+              </div>
             </div>
-            <div class="min-w-0">
-              <p class="text-[11px] font-black text-red-900 truncate uppercase tracking-tight">{{ $lp->name }}</p>
-              <p class="text-[9px] font-bold text-red-600 mt-1 uppercase tracking-widest">Tersisa: {{ $lp->stock }} {{ $lp->unit }}</p>
-            </div>
-          </div>
           @endforeach
         @else
-          <div class="p-8 text-center text-gray-300">
-            <i class="fas fa-inbox text-3xl mb-2"></i>
-            <p class="text-[10px] font-bold uppercase tracking-widest">Tidak ada stok kritis</p>
+          <div class="py-12 text-center">
+            <div class="w-16 h-16 rounded-3xl bg-gray-50 flex items-center justify-center text-gray-300 mx-auto mb-4">
+              <i class="fas fa-bell-slash text-xl"></i>
+            </div>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Tidak ada notifikasi baru</p>
           </div>
         @endif
       </div>
@@ -204,92 +157,41 @@
   </div>
 
   @include('partials.mobile_bottom_nav')
-  @stack('scripts')
 
   <script>
     (() => {
-      const setBottomNavHeight = () => {
-        const nav = document.querySelector('nav.bottom-nav');
-        if (!nav) return;
-        const h = Math.ceil(nav.getBoundingClientRect().height || 0);
-        if (h > 0) document.documentElement.style.setProperty('--bottom-nav-height', `${h}px`);
-      };
-      window.addEventListener('load', setBottomNavHeight, { passive: true });
-      window.addEventListener('resize', setBottomNavHeight, { passive: true });
-      window.addEventListener('orientationchange', setBottomNavHeight, { passive: true });
-      document.addEventListener('DOMContentLoaded', setBottomNavHeight);
-      setTimeout(setBottomNavHeight, 0);
-    })();
-  </script>
-
-  <script>
-    (() => {
-      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const supportsViewTransition = 'startViewTransition' in document;
-      const getNavIndex = (link, scope) => {
-        const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript:')) return null;
-        const links = Array.from(scope.querySelectorAll('a[href]'))
-          .filter(a => {
-            const h = a.getAttribute('href') || '';
-            return h && !h.startsWith('#') && !h.startsWith('javascript:');
-          });
-        return links.indexOf(link);
-      };
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const content = document.getElementById('page-content');
+      const bottomNav = document.querySelector('nav.bottom-nav');
+      const sheets = document.querySelectorAll('[x-show$="Open"]');
 
       const applyEnter = () => {
-        const dir = sessionStorage.getItem('navDir');
-        if (!dir || prefersReduced) return;
-        if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('SI-LARANG PWA: Service Worker Aktif', reg.scope))
-            .catch(err => console.error('SI-LARANG PWA: Gagal Register', err));
-        });
-      }
-        if (supportsViewTransition) {
-          requestAnimationFrame(() => {
-            sessionStorage.removeItem('navDir');
-          });
-          return;
-        }
-        const content = document.getElementById('page-content');
-        const bottomNav = document.querySelector('nav.bottom-nav');
-        requestAnimationFrame(() => {
-          if (content) content.classList.add(dir === 'right' ? 'page-enter-right' : 'page-enter-left');
-          if (bottomNav) bottomNav.classList.add(dir === 'right' ? 'nav-enter-right' : 'nav-enter-left');
-          sessionStorage.removeItem('navDir');
-        });
+        const dir = sessionStorage.getItem('navDir') || 'right';
+        if (content) content.classList.add(dir === 'right' ? 'page-enter-right' : 'page-enter-left');
+        if (bottomNav) bottomNav.classList.add(dir === 'right' ? 'nav-enter-right' : 'nav-enter-left');
+        sessionStorage.removeItem('navDir');
       };
 
       const registerTransitionLinks = () => {
-        const content = document.getElementById('page-content');
-        const bottomNav = document.querySelector('nav.bottom-nav');
-        const sheets = Array.from(document.querySelectorAll('[data-mobile-sheet]'));
-        const normalizePath = (href) => {
-          try {
-            return new URL(href, window.location.origin).pathname;
-          } catch {
-            return href;
-          }
+        const normalizePath = (p) => {
+          if (!p) return '';
+          let path = p.split('?')[0].split('#')[0];
+          if (path.startsWith(window.location.origin)) path = path.slice(window.location.origin.length);
+          return path.replace(/\/$/, '') || '/';
         };
+
+        const getNavIndex = (el, scope) => {
+          const links = Array.from(scope.querySelectorAll('a[href]'));
+          const idx = links.indexOf(el);
+          return idx === -1 ? null : idx;
+        };
+
         const globalIndex = new Map();
-        let masterIndex = null;
-        let flowIndex = null;
-        let settingsIndex = null;
-        if (bottomNav) {
-          const bottomLinks = Array.from(bottomNav.querySelectorAll('a[href]')).filter(a => {
-            const h = a.getAttribute('href') || '';
-            return h && !h.startsWith('#') && !h.startsWith('javascript:');
-          });
-          bottomLinks.forEach((a, idx) => globalIndex.set(normalizePath(a.getAttribute('href')), idx));
-          const masterAnchor = bottomNav.querySelector('a[data-master-nav]');
-          if (masterAnchor) masterIndex = getNavIndex(masterAnchor, bottomNav);
-          const flowAnchor = bottomNav.querySelector('a[data-flow-nav]');
-          if (flowAnchor) flowIndex = getNavIndex(flowAnchor, bottomNav);
-          const settingsAnchor = bottomNav.querySelector('a[data-settings-nav]');
-          if (settingsAnchor) settingsIndex = getNavIndex(settingsAnchor, bottomNav);
-        }
+        const masterIndex = 0;
+        const flowIndex = 1;
+        const settingsIndex = 3;
+
         if (masterIndex !== null) {
           document.querySelectorAll('a[data-master-target][href]').forEach((a) => {
             const href = a.getAttribute('href');

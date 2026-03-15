@@ -1,25 +1,4 @@
-/* 
-|--------------------------------------------------------------------------
-| Import Tailwind CSS
-|--------------------------------------------------------------------------
-|
-| Mengimpor seluruh utility class Tailwind (flex, grid, bg-*, text-*,
-| spacing, dll). Di Tailwind v4 cukup menggunakan @import ini saja.
-|
-*/
 @import 'tailwindcss';
-
-
-/* 
-|--------------------------------------------------------------------------
-| Source Scanning (Purge Detection)
-|--------------------------------------------------------------------------
-|
-| @source digunakan agar Tailwind melakukan scanning ke file-file berikut
-| untuk mendeteksi class yang digunakan. Jika tidak ditambahkan,
-| class bisa terhapus saat proses build (tree-shaking).
-|
-*/
 
 /* Scan file pagination bawaan Laravel */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -33,63 +12,27 @@
 /* Scan semua file JavaScript di folder resources */
 @source '../**/*.js';
 
-
-/* 
-|--------------------------------------------------------------------------
-| Custom Theme Configuration
-|--------------------------------------------------------------------------
-|
-| @theme digunakan untuk mengoverride atau menambahkan variable desain.
-| Di sini kita mengatur font default (font-sans).
-|
-*/
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 
         'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
-
-    /* Custom Design Tokens */
-    --color-app-bg: var(--bg-default);
-    --color-app-surface: var(--bg-surface);
-    --color-app-text: var(--text-main);
-    --color-app-text-muted: var(--text-muted);
-    --color-app-border: var(--border-color);
-
-    /* Enable .dark class for dark mode */
-    --variant-dark: html.dark &;
 }
 
-:root {
-    --bg-default: #F9FAFB;
-    --bg-surface: #FFFFFF;
-    --text-main: #111827;
-    --text-muted: #6B7280;
-    --border-color: #E5E7EB;
-}
-
-html.dark {
-    --bg-default: #0F172A;
-    --bg-surface: #1E293B;
-    --text-main: #F8FAFC;
-    --text-muted: #94A3B8;
-    --border-color: #334155;
-}
-
-/* Theme Utilities */
+/* Theme Utilities (Fallback to Light for compatibility) */
 @utility bg-app-bg {
-    background-color: var(--bg-default);
+    background-color: #F9FAFB;
 }
 @utility bg-app-surface {
-    background-color: var(--bg-surface);
+    background-color: #FFFFFF;
 }
 @utility text-app-main {
-    color: var(--text-main);
+    color: #111827;
 }
 @utility text-app-muted {
-    color: var(--text-muted);
+    color: #6B7280;
 }
 @utility border-app-main {
-    border-color: var(--border-color);
+    border-color: #E5E7EB;
 }
 
 /* Professional Print Styles */

@@ -20,7 +20,7 @@
       {{-- Hubungkan Dokumen --}}
       <div class="bg-app-surface rounded-[2.5rem] p-6 border border-app-main shadow-sm space-y-6">
         <div class="flex items-center gap-3 border-b border-app-main pb-4">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <i class="fas fa-edit text-xs"></i>
           </div>
           <h3 class="text-[11px] font-black text-app-main uppercase tracking-widest">Hubungkan Dokumen</h3>
@@ -44,7 +44,7 @@
       {{-- Detail Pemeriksaan --}}
       <div class="bg-app-surface rounded-[2.5rem] p-6 border border-app-main shadow-sm space-y-6">
         <div class="flex items-center gap-3 border-b border-app-main pb-4">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
             <i class="fas fa-file-signature text-xs"></i>
           </div>
           <h3 class="text-[11px] font-black text-app-main uppercase tracking-widest">Detail Pemeriksaan</h3>
@@ -72,7 +72,7 @@
       {{-- Actions --}}
       <div class="flex gap-3 px-2">
         <a href="{{ route('reports.pemeriksaan.list') }}" class="flex-1 py-5 bg-app-surface text-app-muted border border-app-main rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
-        <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 dark:shadow-none active:scale-95 transition-all">Perbarui BAP</button>
+        <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">Perbarui BAP</button>
       </div>
     </form>
   </div>
