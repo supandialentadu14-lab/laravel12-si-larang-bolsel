@@ -38,67 +38,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-    [x-cloak] { display: none !important; }
-
-    @keyframes pageSlideInRight { from { transform: translate3d(34px, 0, 0); opacity: 0.12; } to { transform: translate3d(0, 0, 0); opacity: 1; } }
-    @keyframes pageSlideInLeft { from { transform: translate3d(-34px, 0, 0); opacity: 0.12; } to { transform: translate3d(0, 0, 0); opacity: 1; } }
-    @keyframes pageSlideOutRight { from { transform: translate3d(0, 0, 0); opacity: 1; } to { transform: translate3d(34px, 0, 0); opacity: 0.12; } }
-    @keyframes pageSlideOutLeft { from { transform: translate3d(0, 0, 0); opacity: 1; } to { transform: translate3d(-34px, 0, 0); opacity: 0.12; } }
-
-    @keyframes navSlideInRight { from { transform: translate3d(12px, 0, 0) scale(0.985); opacity: 0.7; } to { transform: translate3d(0, 0, 0) scale(1); opacity: 1; } }
-    @keyframes navSlideInLeft { from { transform: translate3d(-12px, 0, 0) scale(0.985); opacity: 0.7; } to { transform: translate3d(0, 0, 0) scale(1); opacity: 1; } }
-    @keyframes navSlideOutRight { from { transform: translate3d(0, 0, 0) scale(1); opacity: 1; } to { transform: translate3d(12px, 0, 0) scale(0.985); opacity: 0.7; } }
-    @keyframes navSlideOutLeft { from { transform: translate3d(0, 0, 0) scale(1); opacity: 1; } to { transform: translate3d(-12px, 0, 0) scale(0.985); opacity: 0.7; } }
-
-    .page-enter-right { animation: pageSlideInRight 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .page-enter-left { animation: pageSlideInLeft 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .page-exit-right { animation: pageSlideOutRight 240ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .page-exit-left { animation: pageSlideOutLeft 240ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-    .nav-enter-right { animation: navSlideInRight 180ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .nav-enter-left { animation: navSlideInLeft 180ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .nav-exit-right { animation: navSlideOutRight 140ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .nav-exit-left { animation: navSlideOutLeft 140ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-    #page-content, nav.bottom-nav { will-change: transform, opacity; backface-visibility: hidden; transform: translateZ(0); }
-
-    @supports (view-transition-name: page) {
-      #page-content { view-transition-name: page; }
-      nav.bottom-nav { view-transition-name: bottom-nav; }
-
-      @keyframes vtPageNewRight { from { transform: translate3d(22px, 0, 0); opacity: 0.6; } to { transform: translate3d(0, 0, 0); opacity: 1; } }
-      @keyframes vtPageNewLeft { from { transform: translate3d(-22px, 0, 0); opacity: 0.6; } to { transform: translate3d(0, 0, 0); opacity: 1; } }
-      @keyframes vtPageOldRight { from { transform: translate3d(0, 0, 0); opacity: 1; } to { transform: translate3d(22px, 0, 0); opacity: 0.6; } }
-      @keyframes vtPageOldLeft { from { transform: translate3d(0, 0, 0); opacity: 1; } to { transform: translate3d(-22px, 0, 0); opacity: 0.6; } }
-
-      @keyframes vtNavNewRight { from { transform: translate3d(10px, 0, 0) scale(0.99); opacity: 0.85; } to { transform: translate3d(0, 0, 0) scale(1); opacity: 1; } }
-      @keyframes vtNavNewLeft { from { transform: translate3d(-10px, 0, 0) scale(0.99); opacity: 0.85; } to { transform: translate3d(0, 0, 0) scale(1); opacity: 1; } }
-      @keyframes vtNavOldRight { from { transform: translate3d(0, 0, 0) scale(1); opacity: 1; } to { transform: translate3d(10px, 0, 0) scale(0.99); opacity: 0.85; } }
-      @keyframes vtNavOldLeft { from { transform: translate3d(0, 0, 0) scale(1); opacity: 1; } to { transform: translate3d(-10px, 0, 0) scale(0.99); opacity: 0.85; } }
-
-      html[data-nav-dir="right"]::view-transition-new(page) { animation: vtPageNewRight 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-      html[data-nav-dir="right"]::view-transition-old(page) { animation: vtPageOldRight 240ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-      html[data-nav-dir="left"]::view-transition-new(page) { animation: vtPageNewLeft 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-      html[data-nav-dir="left"]::view-transition-old(page) { animation: vtPageOldLeft 240ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-      html[data-nav-dir="right"]::view-transition-new(bottom-nav) { animation: vtNavNewRight 180ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-      html[data-nav-dir="right"]::view-transition-old(bottom-nav) { animation: vtNavOldRight 140ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-      html[data-nav-dir="left"]::view-transition-new(bottom-nav) { animation: vtNavNewLeft 180ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-      html[data-nav-dir="left"]::view-transition-old(bottom-nav) { animation: vtNavOldLeft 140ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-      ::view-transition-old(page), ::view-transition-new(page),
-      ::view-transition-old(bottom-nav), ::view-transition-new(bottom-nav) {
-        mix-blend-mode: normal;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .page-enter-right, .page-enter-left, .page-exit-right, .page-exit-left,
-      .nav-enter-right, .nav-enter-left, .nav-exit-right, .nav-exit-left {
-        animation: none !important;
-      }
-    }
-  </style>
 </head>
 
 <body class="antialiased select-none overflow-hidden transition-colors duration-300" 
