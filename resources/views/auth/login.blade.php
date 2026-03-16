@@ -9,7 +9,7 @@
     </div>
   @endif
 
-  <form method="POST" action="{{ route('login') }}" class="space-y-4 sm:space-y-4">
+  <form method="POST" action="{{ route('login', absolute: false) }}" class="space-y-4 sm:space-y-4">
     @csrf
 
     {{-- Email --}}

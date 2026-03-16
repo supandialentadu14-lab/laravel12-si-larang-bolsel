@@ -12,6 +12,10 @@
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
+  {{-- Preload Critical Assets --}}
+  <link rel="preload" href="{{ asset('images/silarang-logo.webp') }}" as="image" type="image/webp">
+  <link rel="preload" href="{{ asset('images/login-bg-neww.webp') }}" as="image" type="image/webp">
+  
   @vite(['resources/css/desktop.css', 'resources/js/desktop.js'])
 
   <style>
@@ -26,6 +30,7 @@
     }
     .animate-blob {
       animation: blob 7s infinite;
+      will-change: transform;
     }
     @keyframes blob {
       0% { transform: translate(0px, 0px) scale(1); }
@@ -35,6 +40,10 @@
     }
     .animation-delay-2000 { animation-delay: 2s; }
     .animation-delay-4000 { animation-delay: 4s; }
+    
+    section {
+      contain: paint;
+    }
   </style>
 </head>
 
@@ -46,7 +55,7 @@
     @scroll.window="window.pageYOffset > 20 ? $el.classList.add('glass', 'py-3', 'shadow-sm') : $el.classList.remove('glass', 'py-3', 'shadow-sm'); $el.classList.contains('glass') ? '' : $el.classList.add('py-6')">
     <div class="container mx-auto px-6 flex justify-between items-center">
       <div class="flex items-center gap-3">
-        <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-10 w-10 object-contain">
+        <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-10 w-10 object-contain" width="40" height="40" decoding="async">
         <span class="text-xl font-black tracking-tighter text-indigo-900">SI-LARANG</span>
       </div>
 
@@ -91,7 +100,7 @@
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Lebih Cerdas & Cepat.</span>
         </h1>
         <div class="flex items-center gap-6 mb-6">
-          <img src="{{ asset('images/bolsel.webp') }}" alt="Bolsel" class="h-16 w-auto contrast-125 opacity-70">
+          <img src="{{ asset('images/bolsel.webp') }}" alt="Bolsel" class="h-16 w-auto contrast-125 opacity-70" width="150" height="64" loading="lazy" decoding="async">
           <div class="h-10 w-px bg-slate-200"></div>
           <div>
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">Pemerintah Kabupaten</p>
@@ -116,7 +125,7 @@
           <div class="absolute inset-0 bg-indigo-600/5 rounded-[1.5rem] md:rounded-[4rem] rotate-3 md:rotate-6 scale-95"></div>
           <div class="absolute inset-0 bg-indigo-600/10 rounded-[1.5rem] md:rounded-[4rem] -rotate-2 md:-rotate-3 scale-95"></div>
           <div class="relative bg-white rounded-[1.5rem] md:rounded-[4rem] shadow-2xl border border-slate-50 overflow-hidden">
-             <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto block" fetchpriority="high">
+             <img src="{{ asset('images/login-bg-neww.webp') }}" class="w-full h-auto block" fetchpriority="high" width="800" height="600" decoding="async">
           </div>
         </div>
       </div>
@@ -177,7 +186,7 @@
       <div class="order-2 md:order-1 relative w-full">
         <div class="absolute inset-0 bg-indigo-600/10 rounded-[1.5rem] md:rounded-[4rem] rotate-3"></div>
         <div class="relative bg-white rounded-[1.5rem] md:rounded-[4rem] shadow-xl border border-slate-100 overflow-hidden group">
-          <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto block transform group-hover:scale-110 transition duration-700" loading="lazy">
+          <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto block transform group-hover:scale-110 transition duration-700" loading="lazy" width="800" height="600" decoding="async">
         </div>
       </div>
       <div class="order-1 md:order-2">
@@ -260,7 +269,7 @@
   <footer class="py-12 bg-slate-900 text-white">
     <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
       <div class="flex items-center gap-3">
-        <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-8 w-8 object-contain">
+        <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-8 w-8 object-contain" loading="lazy" width="32" height="32" decoding="async">
         <span class="text-xl font-black tracking-tighter">SI-LARANG</span>
       </div>
       
