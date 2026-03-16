@@ -58,6 +58,7 @@ return [
             'port' => env('MAIL_PORT', 2525), // port SMTP
             'username' => env('MAIL_USERNAME'), // username email
             'password' => env('MAIL_PASSWORD'), // password email
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'timeout' => null,
             'local_domain' => env(
                 'MAIL_EHLO_DOMAIN',

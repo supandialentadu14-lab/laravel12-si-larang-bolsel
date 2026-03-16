@@ -382,9 +382,9 @@ class PemeriksaanController extends Controller
             }
         }
         if ($currentId) {
-            return redirect()->route('reports.pemeriksaan.list')->with('success', 'Berita acara diperbarui');
+            return redirect()->route('reports.pemeriksaan.list')->with('success', 'Berita acara "' . $data['nomor'] . '" berhasil diperbarui');
         }
-        return redirect()->route('reports.pemeriksaan.list')->with('success', 'Berita acara disimpan');
+        return redirect()->route('reports.pemeriksaan.list')->with('success', 'Berita acara "' . $data['nomor'] . '" berhasil disimpan');
     }
 
     public function list(Request $request): View
@@ -578,7 +578,8 @@ class PemeriksaanController extends Controller
                 }
             }
         }
-        return redirect()->route('reports.pemeriksaan.list')->with('status', 'Berita acara pemeriksaan dan dokumen terkait dihapus');
+        $bapNomor = $nomor ?? 'Berita Acara';
+        return redirect()->route('reports.pemeriksaan.list')->with('success', 'Berita acara "' . $bapNomor . '" dan dokumen terkait berhasil dihapus');
     }
 
     public function bulkDelete(Request $request): RedirectResponse
@@ -649,6 +650,6 @@ class PemeriksaanController extends Controller
                 $count++;
             }
         }
-        return redirect()->route('reports.pemeriksaan.list')->with('status', "{$count} Berita acara pemeriksaan dan dokumen terkait dihapus");
+        return redirect()->route('reports.pemeriksaan.list')->with('success', "{$count} Berita acara pemeriksaan dan dokumen terkait berhasil dihapus");
     }
 }

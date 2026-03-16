@@ -38,6 +38,9 @@ class User extends Authenticatable
         'tanggal_lahir',
         'jenis_kelamin',
         'nama_opd',
+        'first_login',
+        'password_updated_at',
+        'avatar_updated_at',
     ];
 
     /**
@@ -98,6 +101,9 @@ class User extends Authenticatable
             'chat_enabled'      => 'boolean',
             'permissions'       => 'array',
             'tanggal_lahir'     => 'date',
+            'first_login'       => 'boolean',
+            'password_updated_at' => 'datetime',
+            'avatar_updated_at' => 'datetime',
         ];
     }
 }

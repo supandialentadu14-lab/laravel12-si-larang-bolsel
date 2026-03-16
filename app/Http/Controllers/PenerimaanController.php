@@ -335,9 +335,9 @@ class PenerimaanController extends Controller
         Storage::disk('local')->put("users/".Auth::id()."/bap-penerimaan/{$id}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         session()->forget('penerimaan_current_id');
         if ($currentId) {
-            return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan diperbarui');
+            return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan "' . $data['nomor'] . '" berhasil diperbarui');
         }
-        return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan disimpan');
+        return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan "' . $data['nomor'] . '" berhasil disimpan');
     }
 
     public function list(Request $request): View
@@ -525,7 +525,8 @@ class PenerimaanController extends Controller
                 }
             }
         }
-        return redirect()->route('reports.penerimaan.list')->with('status', 'BAP Penerimaan dan Kwitansi terkait dihapus');
+        $penerimaanNomor = $nomor ?? 'BAP Penerimaan';
+        return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan "' . $penerimaanNomor . '" dan Kwitansi terkait berhasil dihapus');
     }
 
     public function bulkDelete(Request $request): RedirectResponse
@@ -579,6 +580,6 @@ class PenerimaanController extends Controller
                 $count++;
             }
         }
-        return redirect()->route('reports.penerimaan.list')->with('status', "{$count} BAP Penerimaan dan Kwitansi terkait dihapus");
+        return redirect()->route('reports.penerimaan.list')->with('success', "{$count} BAP Penerimaan dan Kwitansi terkait berhasil dihapus");
     }
 }

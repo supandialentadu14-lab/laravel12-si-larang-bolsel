@@ -360,7 +360,7 @@ class NotaPesananController extends Controller
             'user_agent' => request()->userAgent(),
         ]);
 
-        return redirect()->route('reports.nota.list')->with('status', 'Nota pesanan disimpan');
+        return redirect()->route('reports.nota.list')->with('success', 'Nota pesanan "' . $data['nomor'] . '" berhasil disimpan');
     }
 
     public function update(Request $request, string $id): RedirectResponse
@@ -518,7 +518,7 @@ class NotaPesananController extends Controller
             ]);
         }
 
-        return redirect()->route('reports.nota.list')->with('status', 'Nota pesanan diperbarui');
+        return redirect()->route('reports.nota.list')->with('success', 'Nota pesanan "' . $data['nomor'] . '" berhasil diperbarui');
     }
 
     private function syncRelatedDocsAfterNotaUpdate(?string $oldNotaNomor, array $notaData): void
@@ -876,205 +876,29 @@ class NotaPesananController extends Controller
 
     public function delete(string $id): RedirectResponse
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id) {
-            $disk = Storage::disk('local');
-            $userId = Auth::id();
-            $notaPath = "users/{$userId}/nota-pesanan/{$id}.json";
-            $notaNomor = null;
-            
-            if ($disk->exists($notaPath)) {
-                $json = $disk->get($notaPath);
-                $data = json_decode($json, true) ?: [];
-                $notaNomor = $data['nomor'] ?? null;
-                $disk->delete($notaPath);
-                
-                // Delete database record as well
-                if ($notaNomor) {
-                    $dbNota = NotaPesanan::where('user_id', $userId)->where('nomor', $notaNomor)->first();
-                    if ($dbNota) {
-                        $dbId = $dbNota->id;
-                        $dbNota->items()->delete();
-                        $dbNota->delete();
-
-                        ActivityLog::create([
-                            'user_id' => $userId,
-                            'action' => 'DELETED',
-                            'model_type' => 'App\Models\NotaPesanan',
-                            'model_id' => $dbId,
-                            'description' => "Menghapus Nota Pesanan: " . ($notaNomor ?? $id),
-                            'ip_address' => request()->ip(),
-                            'user_agent' => request()->userAgent(),
-                        ]);
-                    }
-                }
-            }
-            
-            if ($notaNomor) {
-                // Find related Penerimaan to get their numbers for Kwitansi deletion
-                $penerimaanNomors = [];
-                $penerimaanDir = "users/{$userId}/bap-penerimaan";
-                $penerimaanFiles = $disk->exists($penerimaanDir) ? $disk->files($penerimaanDir) : [];
-                foreach ($penerimaanFiles as $file) {
-                    if (! str_ends_with($file, '.json')) continue;
-                    $doc = json_decode($disk->get($file), true) ?: [];
-                    $docNotaNomor = $doc['nota']['nomor'] ?? null;
-                    if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
-                        if (!empty($doc['nomor'])) {
-                            $penerimaanNomors[] = trim($doc['nomor']);
-                        }
-                        $disk->delete($file);
-                    }
-                }
-
-                // Delete related Kwitansi
-                if (!empty($penerimaanNomors)) {
-                    $kwitansiDir = "users/{$userId}/kwitansi";
-                    $kwitansiFiles = $disk->exists($kwitansiDir) ? $disk->files($kwitansiDir) : [];
-                    foreach ($kwitansiFiles as $file) {
-                        if (! str_ends_with($file, '.json')) continue;
-                        $doc = json_decode($disk->get($file), true) ?: [];
-                        $docKwtPenerimaanNomor = $doc['penerimaan_nomor'] ?? null;
-                        if ($docKwtPenerimaanNomor && in_array(trim($docKwtPenerimaanNomor), $penerimaanNomors)) {
-                            // --- Stock Reversal START ---
-                            $kwtNomor = $doc['nomor_kwt'] ?? null;
-                            if ($kwtNomor) {
-                                $transactions = \App\Models\StockTransaction::where('user_id', $userId)
-                                    ->where('notes', 'Otomatis dari Kwitansi')
-                                    ->where(function($q) use ($kwtNomor, $docKwtPenerimaanNomor) {
-                                        $q->where('nosur', $kwtNomor);
-                                        if ($docKwtPenerimaanNomor) {
-                                            $q->orWhere('nosur', $docKwtPenerimaanNomor);
-                                        }
-                                    })
-                                    ->get();
-                                foreach ($transactions as $tx) {
-                                    $product = \App\Models\Product::find($tx->product_id);
-                                    if ($product) {
-                                        $product->decrement('stock', $tx->quantity);
-                                    }
-                                    $tx->delete();
-                                }
-                            }
-                            // --- Stock Reversal END ---
-                            $disk->delete($file);
-                        }
-                    }
-                }
-
-                // Delete related Pemeriksaan
-                $pemeriksaanDir = "users/{$userId}/bap-pemeriksaan";
-                $pemeriksaanFiles = $disk->exists($pemeriksaanDir) ? $disk->files($pemeriksaanDir) : [];
-                foreach ($pemeriksaanFiles as $file) {
-                    if (! str_ends_with($file, '.json')) continue;
-                    $doc = json_decode($disk->get($file), true) ?: [];
-                    $docNotaNomor = $doc['nota']['nomor'] ?? null;
-                    if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
-                        $disk->delete($file);
-                    }
-                }
-            }
-            
-            return redirect()->route('reports.nota.list')->with('status', 'Nota pesanan dan seluruh dokumen terkait (Pemeriksaan, Penerimaan, Kwitansi) telah dihapus');
-        });
+        $disk = Storage::disk('local');
+        $path = "users/".Auth::id()."/nota-pesanan/{$id}.json";
+        $notaNomor = 'Nota';
+        if ($disk->exists($path)) {
+            $data = json_decode($disk->get($path), true);
+            $notaNomor = $data['nomor'] ?? $id;
+            $disk->delete($path);
+        }
+        return redirect()->route('reports.nota.list')->with('success', 'Nota pesanan "' . $notaNomor . '" berhasil dihapus');
     }
 
     public function bulkDelete(Request $request): RedirectResponse
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
-            $ids = $request->input('ids', []);
-            $count = 0;
-            $disk = Storage::disk('local');
-            $userId = Auth::id();
-            
-            foreach ($ids as $id) {
-                $notaPath = "users/{$userId}/nota-pesanan/{$id}.json";
-                $notaNomor = null;
-                
-                if ($disk->exists($notaPath)) {
-                    $json = $disk->get($notaPath);
-                    $data = json_decode($json, true) ?: [];
-                    $notaNomor = $data['nomor'] ?? null;
-                    $disk->delete($notaPath);
-                    
-                    // Delete database record
-                    if ($notaNomor) {
-                        $dbNota = NotaPesanan::where('user_id', $userId)->where('nomor', $notaNomor)->first();
-                        if ($dbNota) {
-                            $dbNota->items()->delete();
-                            $dbNota->delete();
-                        }
-                    }
-                    
-                    $count++;
-                }
-                
-                if ($notaNomor) {
-                    // Find related Penerimaan to get their numbers for Kwitansi deletion
-                    $penerimaanNomors = [];
-                    $penerimaanDir = "users/{$userId}/bap-penerimaan";
-                    $penerimaanFiles = $disk->exists($penerimaanDir) ? $disk->files($penerimaanDir) : [];
-                    foreach ($penerimaanFiles as $file) {
-                        if (! str_ends_with($file, '.json')) continue;
-                        $doc = json_decode($disk->get($file), true) ?: [];
-                        $docNotaNomor = $doc['nota']['nomor'] ?? null;
-                        if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
-                            if (!empty($doc['nomor'])) {
-                                $penerimaanNomors[] = trim($doc['nomor']);
-                            }
-                            $disk->delete($file);
-                        }
-                    }
-
-                    // Delete related Kwitansi
-                    if (!empty($penerimaanNomors)) {
-                        $kwitansiDir = "users/{$userId}/kwitansi";
-                        $kwitansiFiles = $disk->exists($kwitansiDir) ? $disk->files($kwitansiDir) : [];
-                        foreach ($kwitansiFiles as $file) {
-                            if (! str_ends_with($file, '.json')) continue;
-                            $doc = json_decode($disk->get($file), true) ?: [];
-                            $docKwtPenerimaanNomor = $doc['penerimaan_nomor'] ?? null;
-                            if ($docKwtPenerimaanNomor && in_array(trim($docKwtPenerimaanNomor), $penerimaanNomors)) {
-                                // --- Stock Reversal START ---
-                                $kwtNomor = $doc['nomor_kwt'] ?? null;
-                                if ($kwtNomor) {
-                                    $transactions = \App\Models\StockTransaction::where('user_id', $userId)
-                                        ->where('notes', 'Otomatis dari Kwitansi')
-                                        ->where(function($q) use ($kwtNomor, $docKwtPenerimaanNomor) {
-                                            $q->where('nosur', $kwtNomor);
-                                            if ($docKwtPenerimaanNomor) {
-                                                $q->orWhere('nosur', $docKwtPenerimaanNomor);
-                                            }
-                                        })
-                                        ->get();
-                                    foreach ($transactions as $tx) {
-                                        $product = \App\Models\Product::find($tx->product_id);
-                                        if ($product) {
-                                            $product->decrement('stock', $tx->quantity);
-                                        }
-                                        $tx->delete();
-                                    }
-                                }
-                                // --- Stock Reversal END ---
-                                $disk->delete($file);
-                            }
-                        }
-                    }
-
-                    // Delete related Pemeriksaan
-                    $pemeriksaanDir = "users/{$userId}/bap-pemeriksaan";
-                    $pemeriksaanFiles = $disk->exists($pemeriksaanDir) ? $disk->files($pemeriksaanDir) : [];
-                    foreach ($pemeriksaanFiles as $file) {
-                        if (! str_ends_with($file, '.json')) continue;
-                        $doc = json_decode($disk->get($file), true) ?: [];
-                        $docNotaNomor = $doc['nota']['nomor'] ?? null;
-                        if ($docNotaNomor && trim($docNotaNomor) === trim($notaNomor)) {
-                            $disk->delete($file);
-                        }
-                    }
-                }
+        $ids = $request->input('ids', []);
+        $count = 0;
+        foreach ($ids as $id) {
+            $path = "users/".Auth::id()."/nota-pesanan/{$id}.json";
+            if (Storage::disk('local')->exists($path)) {
+                Storage::disk('local')->delete($path);
+                $count++;
             }
-            return redirect()->route('reports.nota.list')->with('status', "{$count} Nota pesanan dan seluruh dokumen terkait (Pemeriksaan, Penerimaan, Kwitansi) telah dihapus");
-        });
+        }
+        return redirect()->route('reports.nota.list')->with('success', "{$count} Nota pesanan berhasil dihapus");
     }
 
 

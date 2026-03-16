@@ -24,7 +24,10 @@
       <div class="space-y-1.5">
         <label class="text-[10px] font-bold uppercase opacity-60 ml-1 tracking-widest">Pilih Barang</label>
         <div class="relative group">
-          <select name="product_id" required class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border-none text-sm font-bold text-white focus:ring-2 focus:ring-white/30 appearance-none transition-all">
+          <select name="product_id" required 
+            oninvalid="this.setCustomValidity('Barang harus dipilih')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border-none text-sm font-bold text-white focus:ring-2 focus:ring-white/30 appearance-none transition-all">
             <option value="" class="text-gray-900">Pilih Barang</option>
             @foreach($products as $p)
               <option value="{{ $p->id }}" class="text-gray-900">{{ $p->name }} (Stok: {{ $p->calculated_stock }})</option>
@@ -66,6 +69,8 @@
           <label class="text-[10px] font-bold uppercase opacity-60 ml-1 tracking-widest">Jumlah Mutasi</label>
           <div class="relative">
             <input type="number" name="quantity" required min="1" placeholder="0"
+              oninvalid="this.setCustomValidity('Jumlah harus diisi')" 
+              oninput="this.setCustomValidity('')"
               class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border-none text-sm font-bold text-white focus:ring-2 focus:ring-white/30 transition-all placeholder:text-white/20">
             <div class="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
               <i class="fas fa-hashtag text-sm"></i>
@@ -78,6 +83,8 @@
         <label class="text-[10px] font-bold uppercase opacity-60 ml-1 tracking-widest">Tanggal</label>
         <div class="relative">
           <input type="date" name="date" value="{{ date('Y-m-d') }}" required
+            oninvalid="this.setCustomValidity('Tanggal harus diisi')" 
+            oninput="this.setCustomValidity('')"
             class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border-none text-sm font-bold text-white focus:ring-2 focus:ring-white/30 transition-all">
           <div class="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
             <i class="fas fa-calendar-alt text-sm"></i>

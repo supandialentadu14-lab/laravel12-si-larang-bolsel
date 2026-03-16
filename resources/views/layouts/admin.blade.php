@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 
 <head>
   <meta charset="utf-8">
@@ -365,7 +365,7 @@
   x-init="checkNewMessages(); setInterval(() => checkNewMessages(), 15000)">
 
   <!-- Application Boxed Wrapper -->
-  <div class="{{ Request::is('reports*') ? 'max-w-none xl:max-w-[1440px]' : 'max-w-[1240px]' }} mx-auto bg-white h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
+  <div class="max-w-none mx-auto bg-white h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
 
   <div class="flex flex-row flex-1 min-h-0 overflow-hidden">
     <!-- Sidebar Navigation -->
@@ -593,17 +593,28 @@
       const setProgress = (w) => {
         progressBar.style.width = w + '%';
         if (w >= 100) {
-          setTimeout(() => { progressBar.style.width = '0%'; }, 400);
+          setTimeout(() => { 
+            progressBar.style.opacity = '0';
+            setTimeout(() => {
+              progressBar.style.width = '0%';
+              progressBar.style.opacity = '1';
+            }, 300);
+          }, 500);
         }
       };
 
       const startProgress = () => {
+        progressBar.style.opacity = '1';
         let w = 5;
         setProgress(w);
         const inv = setInterval(() => {
-          w += (100 - w) * 0.1;
+          if (w < 90) {
+            w += (90 - w) * 0.15;
+          } else if (w < 98) {
+            w += 0.2;
+          }
           setProgress(w);
-          if (w > 95) clearInterval(inv);
+          if (w >= 98) clearInterval(inv);
         }, 150);
         return inv;
       };
@@ -619,14 +630,12 @@
         let path = href;
         try { path = new URL(href, window.location.origin).pathname; } catch(e) {}
         
-        // Update regular links
         document.querySelectorAll('.sidebar-link, .sub-link').forEach(link => {
           link.classList.remove('active');
           try {
             const linkPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
             if (linkPath === path) {
               link.classList.add('active');
-              // Highlight parent if it's a sub-link
               if (link.classList.contains('sub-link')) {
                 const parentGroup = link.closest('.pb-4');
                 const parentBtn = parentGroup ? parentGroup.querySelector('.sidebar-link') : null;
@@ -652,12 +661,15 @@
         const doc = new DOMParser().parseFromString(html, 'text/html');
         const newMain = doc.querySelector('#app-content') || doc.querySelector('main');
         
-        if (!newMain) { window.location.href = url; return; }
+        if (!newMain) {
+            setProgress(100);
+            window.location.href = url;
+            return;
+        }
         
         document.title = doc.title || document.title;
         main.innerHTML = newMain.innerHTML;
         
-        // Update Header & Actions
         ['#page-header', '#page-actions'].forEach(selector => {
             const el = doc.querySelector(selector);
             const target = document.querySelector(selector);
@@ -686,9 +698,10 @@
           const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
           const html = await res.text();
           clearInterval(pid);
-          updateContent(html, href);
+          updateContent(html, res.url);
         } catch {
           clearInterval(pid);
+          setProgress(100);
           window.location.href = href;
         }
       });
@@ -715,6 +728,7 @@
           updateContent(html, res.url);
         } catch {
           clearInterval(pid);
+          setProgress(100);
           form.submit();
         }
       });
@@ -724,9 +738,43 @@
           fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(r => r.text())
             .then(html => { clearInterval(pid); updateContent(html, window.location.href, false); })
-            .catch(() => { clearInterval(pid); window.location.reload(); });
+            .catch(() => { clearInterval(pid); setProgress(100); window.location.reload(); });
       });
     });
+    
+    // Native validation message customization
+    document.addEventListener('invalid', (function() {
+      return function(e) {
+        const input = e.target;
+        let label = '';
+        
+        const labelEl = input.closest('.space-y-1.5')?.querySelector('label') 
+                      || input.parentElement?.querySelector('label')
+                      || document.querySelector(`label[for="${input.id || ''}"]`);
+                      
+        if (labelEl) {
+          label = labelEl.textContent.trim().split('(')[0].trim().replace(':', '');
+        } else if (input.placeholder) {
+          label = input.placeholder.split('...')[0].trim().replace('Masukkan ', '').replace('Input ', '').replace('Contoh: ', '');
+        }
+        
+        if (!label || label.length > 30) {
+          label = input.getAttribute('name') ? input.getAttribute('name').replace('_', ' ') : 'ini';
+        }
+        
+        if (label === label.toLowerCase()) {
+          label = label.charAt(0).toUpperCase() + label.slice(1);
+        }
+        input.setCustomValidity('Kolom ' + label + ' harus diisi');
+      };
+    })(), true);
+
+    // Listener to clear native validation message when user starts typing
+    document.addEventListener('input', function(e) {
+      if (e.target.willValidate) {
+        e.target.setCustomValidity('');
+      }
+    }, true);
   </script>
 
   <script>

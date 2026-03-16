@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends($isMobile ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
   <div class="space-y-6 pb-24">
@@ -28,7 +28,10 @@
         <div class="space-y-4">
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">BAP Penerimaan Referensi</label>
-            <select name="penerimaan_nomor" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+            <select name="penerimaan_nomor" 
+              oninvalid="this.setCustomValidity('BAP Penerimaan harus dipilih')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
               <option value="">-- Pilih BAP Penerimaan --</option>
               @foreach ($docs as $n)
                 <option value="{{ $n['nomor'] }}" {{ (old('penerimaan_nomor', $data['penerimaan_nomor'] ?? '') === ($n['nomor'] ?? '')) ? 'selected' : '' }}>
@@ -36,6 +39,7 @@
                 </option>
               @endforeach
             </select>
+            @error('penerimaan_nomor')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
           </div>
         </div>
       </div>
@@ -52,12 +56,20 @@
         <div class="space-y-4">
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
-            <input type="date" name="tanggal" value="{{ old('tanggal', $data['tanggal'] ?? now()->toDateString()) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+            <input type="date" name="tanggal" value="{{ old('tanggal', $data['tanggal'] ?? now()->toDateString()) }}" 
+              oninvalid="this.setCustomValidity('Tanggal harus diisi')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+            @error('tanggal')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
           </div>
           
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Kwitansi (Angka)</label>
-            <input type="text" name="nomor_kwt" value="{{ old('nomor_kwt', preg_replace('/\D+/', '', $data['nomor_kwt'] ?? '')) }}" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/\D/g,'')" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-mono font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001" required>
+            <input type="text" name="nomor_kwt" value="{{ old('nomor_kwt', preg_replace('/\D+/', '', $data['nomor_kwt'] ?? '')) }}" inputmode="numeric" pattern="[0-9]*" 
+              oninvalid="this.setCustomValidity('Nomor Kwitansi harus diisi')" 
+              oninput="this.value=this.value.replace(/\D/g,''); this.setCustomValidity('');"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-mono font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001" required>
+            @error('nomor_kwt')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
           </div>
         </div>
       </div>

@@ -32,7 +32,7 @@ class UserController extends Controller
     {
         $search = $request->input('search');
 
-        $users = User::latest()
+        $users = User::latest('created_at')
             ->when($search, function ($query) use ($search) {
                 $query->where(function($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -64,11 +64,32 @@ class UserController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'name'     => 'required|string|max:255',
+                'tanggal_lahir' => 'required|date',
+                'jenis_kelamin' => 'required|in:L,P',
+                'nama_opd' => 'required|string|max:255',
                 'email'    => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
                 'role'     => 'required|in:admin,staff',
                 'permissions' => 'nullable|array',
             ]);
+
+            // Generate password kompleks (minimal 8 karakter dengan huruf besar, kecil, angka, dan simbol)
+            $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $lower = 'abcdefghijklmnopqrstuvwxyz';
+            $nums = '0123456789';
+            $syms = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            $passChars = [];
+            $passChars[] = $upper[rand(0, strlen($upper) - 1)];
+            $passChars[] = $lower[rand(0, strlen($lower) - 1)];
+            $passChars[] = $nums[rand(0, strlen($nums) - 1)];
+            $passChars[] = $syms[rand(0, strlen($syms) - 1)];
+            
+            $allChars = $upper . $lower . $nums . $syms;
+            for ($i = 0; $i < 6; $i++) {
+                $passChars[] = $allChars[rand(0, strlen($allChars) - 1)];
+            }
+            shuffle($passChars);
+            $randomPassword = implode('', $passChars);
 
             \Illuminate\Support\Facades\Log::debug('UserController@store: Validation passed');
 
@@ -76,7 +97,10 @@ class UserController extends Controller
             $newUser = User::create([
                 'name'     => $validated['name'],
                 'email'    => $validated['email'],
-                'password' => Hash::make($validated['password']),
+                'tanggal_lahir' => $validated['tanggal_lahir'],
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'nama_opd' => $validated['nama_opd'],
+                'password' => Hash::make($randomPassword),
                 'role'     => $validated['role'],
                 'chat_enabled' => $request->role === 'admin' ? true : $request->has('chat_enabled'),
                 'permissions' => $request->role === 'admin' ? [] : $request->input('permissions', []),
@@ -84,7 +108,7 @@ class UserController extends Controller
 
             // Kirim Email Credentials
             try {
-                \Illuminate\Support\Facades\Mail::to($newUser->email)->send(new \App\Mail\UserCredentialsMail($newUser, $validated['password']));
+                \Illuminate\Support\Facades\Mail::to($newUser->email)->send(new \App\Mail\UserCredentialsMail($newUser, $randomPassword));
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Gagal mengirim email kredensial: ' . $e->getMessage());
             }
@@ -92,7 +116,7 @@ class UserController extends Controller
             \Illuminate\Support\Facades\Log::debug('UserController@store: User created with ID=' . $newUser->id);
 
             return redirect()->route('users.index')
-                ->with('success', 'Pengguna berhasil ditambahkan.');
+                ->with('success', 'Pengguna "' . $newUser->name . '" berhasil ditambahkan.');
 
         } catch (\Illuminate\Validation\ValidationException $ve) {
             \Illuminate\Support\Facades\Log::debug('UserController@store: Validation FAILED', $ve->errors());
@@ -131,6 +155,9 @@ class UserController extends Controller
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|in:L,P',
+            'nama_opd' => 'required|string|max:255',
 
             // Email harus unik kecuali untuk user ini sendiri
             'email' => [
@@ -145,14 +172,26 @@ class UserController extends Controller
             'permissions' => 'nullable|array',
 
             // Password boleh kosong (nullable)
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => [
+                'nullable', 
+                'string', 
+                'min:8', 
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+-=\[\]{}|;:,.<>?]).{8,}$/'
+            ],
             'avatar' => 'nullable|image|max:2048',
+        ], [
+            'password.regex' => 'Password harus mengandung kombinasi huruf besar, huruf kecil, angka, dan karakter khusus dengan panjang minimal 8 karakter.',
+            'password.min' => 'Password minimal harus 8 karakter.',
         ]);
 
         // Data dasar yang akan diupdate
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'tanggal_lahir' => $validated['tanggal_lahir'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'nama_opd' => $validated['nama_opd'],
             'role' => $validated['role'],
             'chat_enabled' => $request->role === 'admin' ? true : $request->has('chat_enabled'),
             'permissions' => $request->role === 'admin' ? [] : $request->input('permissions', []),
@@ -172,8 +211,12 @@ class UserController extends Controller
         $user->update($data);
 
         // Redirect dengan pesan sukses
+        $message = 'Data pengguna "' . $user->name . '" berhasil diperbarui.';
+        if ($request->filled('password')) $message .= ' Password telah diubah.';
+        if ($request->hasFile('avatar')) $message .= ' Foto profil telah diperbarui.';
+
         return redirect()->route('users.index')
-            ->with('success', 'User updated successfully.');
+            ->with('success', $message);
     }
 
     public function editSelf(): View
@@ -192,6 +235,9 @@ class UserController extends Controller
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|in:L,P',
+            'nama_opd' => 'required|string|max:255',
             'email' => [
                 'required',
                 'string',
@@ -199,30 +245,54 @@ class UserController extends Controller
                 'max:255',
                 Rule::unique('users')->ignore($user->id)
             ],
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => [
+                'nullable', 
+                'string', 
+                'min:8', 
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+-=\[\]{}|;:,.<>?]).{8,}$/'
+            ],
             'avatar' => 'nullable|image|max:2048',
+        ], [
+            'password.regex' => 'Password harus mengandung kombinasi huruf besar, huruf kecil, angka, dan karakter khusus dengan panjang minimal 8 karakter.',
+            'password.min' => 'Password minimal harus 8 karakter.',
         ]);
 
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'tanggal_lahir' => $validated['tanggal_lahir'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'nama_opd' => $validated['nama_opd'],
         ];
 
         // Jika password diisi, maka update password
         if ($request->filled('password')) {
             $data['password'] = Hash::make($validated['password']);
+            $data['password_updated_at'] = now();
         }
 
         if ($request->hasFile('avatar')) {
             $path = $request->file('avatar')->store('avatars', 'public');
             $data['avatar'] = $path;
+            $data['avatar_updated_at'] = now();
         }
 
         // Update user
         $user->update($data);
 
+        // Pesan sukses spesifik
+        $info = [];
+        if ($request->filled('password')) $info[] = 'Password';
+        if ($request->hasFile('avatar')) $info[] = 'Foto Profil';
+        
+        $msg = 'Profil berhasil diperbarui.';
+        if (!empty($info)) {
+            $msg .= ' (' . implode(' & ', $info) . ' telah diupdate)';
+        }
+
         // Redirect dengan pesan sukses
-        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
+        return redirect()->back()->with('success', $msg);
     }
 
     /**
@@ -268,16 +338,26 @@ class UserController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
+        $userName = $user->name;
+
         // Mencegah user menghapus dirinya sendiri
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete yourself.');
         }
 
         // Hapus user
-        $user->delete();
+        User::destroy($user->id);
 
         // Redirect dengan pesan sukses
         return redirect()->route('users.index')
-            ->with('success', 'User deleted successfully.');
+            ->with('success', 'Pengguna "' . $userName . '" berhasil dihapus.');
+    }
+
+    public function dismissWelcome(): RedirectResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+        $user->update(['first_login' => false]);
+        return back();
     }
 }

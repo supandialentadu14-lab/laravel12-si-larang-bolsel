@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends($isMobile ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
 <div x-data="{

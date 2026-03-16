@@ -18,14 +18,25 @@
     @method('PUT')
 
     {{-- Foto Profil --}}
-    <div class="bg-indigo-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 transition-all flex flex-col items-center text-center space-y-4">
+    <div x-data="{ 
+        imageUrl: '{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=ffffff&color=4F46E5' }}',
+        fileChosen(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                this.imageUrl = e.target.result;
+            };
+        }
+    }" class="bg-indigo-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 transition-all flex flex-col items-center text-center space-y-4">
       <div class="relative">
         <img class="w-24 h-24 rounded-[2rem] object-cover ring-4 ring-white/20 shadow-2xl"
-           src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=ffffff&color=4F46E5' }}"
+           :src="imageUrl"
            alt="Avatar">
         <label class="absolute -bottom-2 -right-2 w-10 h-10 bg-white text-indigo-600 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer active:scale-90 transition-transform">
           <i class="fas fa-camera text-sm"></i>
-          <input type="file" name="avatar" accept="image/*" class="hidden">
+          <input type="file" name="avatar" accept="image/*" class="hidden" @change="fileChosen">
         </label>
       </div>
       <div>
@@ -34,24 +45,63 @@
       </div>
     </div>
 
-    {{-- Informasi Akun --}}
+    {{-- Informasi Profil --}}
     <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6 transition-colors">
       <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
         <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
           <i class="fas fa-user-circle text-xs"></i>
         </div>
-        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest transition-colors">Informasi Dasar</h3>
+        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest transition-colors">Informasi Profil</h3>
       </div>
 
-      <div class="space-y-4">
-        <div class="space-y-1.5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-1.5 md:col-span-2">
           <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Lengkap</label>
-          <input type="text" name="name" value="{{ old('name', $user->name) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          <input type="text" name="name" value="{{ old('name', $user->name) }}" 
+            oninvalid="this.setCustomValidity('Kolom Nama Lengkap harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          @error('name')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal Lahir</label>
+          <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', $user->tanggal_lahir?->format('Y-m-d')) }}" 
+            oninvalid="this.setCustomValidity('Kolom Tanggal Lahir harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          @error('tanggal_lahir')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Jenis Kelamin</label>
+          <select name="jenis_kelamin" 
+            oninvalid="this.setCustomValidity('Kolom Jenis Kelamin harus dipilih')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
+            <option value="" disabled {{ old('jenis_kelamin', $user->jenis_kelamin) ? '' : 'selected' }}>Pilih</option>
+            <option value="L" {{ old('jenis_kelamin', $user->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
+            <option value="P" {{ old('jenis_kelamin', $user->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
+          </select>
+          @error('jenis_kelamin')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama OPD</label>
+          <input type="text" name="nama_opd" value="{{ old('nama_opd', $user->nama_opd) }}" 
+            oninvalid="this.setCustomValidity('Kolom Nama OPD harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          @error('nama_opd')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
 
         <div class="space-y-1.5">
           <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Alamat Email</label>
-          <input type="email" name="email" value="{{ old('email', $user->email) }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          <input type="email" name="email" value="{{ old('email', $user->email) }}" 
+            oninvalid="this.setCustomValidity('Kolom Email harus diisi dengan format yang benar')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          @error('email')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
       </div>
     </div>
@@ -139,6 +189,7 @@
               <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
           </div>
+          @error('password')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
         <div class="space-y-1.5" x-data="{ show: false }">
           <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Konfirmasi Password</label>

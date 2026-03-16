@@ -137,7 +137,7 @@ class ProductController extends Controller
         'min_stock' => $request->min_stock ?? 10,
     ]);
 
-    return redirect()->route('products.index')->with('success', 'Barang berhasil ditambahkan');
+    return redirect()->route('products.index')->with('success', 'Barang "' . $request->name . '" berhasil ditambahkan');
 }
 
 
@@ -196,7 +196,7 @@ class ProductController extends Controller
         $product->update($productData);
 
         return redirect()->route('products.index')
-            ->with('success', 'Produk berhasil diperbarui.');
+            ->with('success', 'Barang "' . $product->name . '" berhasil diperbarui.');
     }
 
     /**
@@ -238,6 +238,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        $productName = $product->name;
         // Bersihkan barang dari seluruh Nota, BA, dan Kwitansi
         $this->cleanupProductFromDocs($product->name);
 
@@ -247,7 +248,7 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('products.index')
-            ->with('success', 'Produk berhasil dihapus.');
+            ->with('success', 'Barang "' . $productName . '" berhasil dihapus.');
     }
     
     public function bulkDestroy(Request $request)

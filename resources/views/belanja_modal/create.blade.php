@@ -85,7 +85,10 @@
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
             <div>
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tahun Anggaran <span class="text-rose-500">*</span></label>
-              <input type="number" min="2000" max="2100" name="tahun" x-model="tahun" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold shadow-sm" required>
+              <input type="number" min="2000" max="2100" name="tahun" x-model="tahun" 
+                oninvalid="this.setCustomValidity('Tahun Anggaran harus diisi')" 
+                oninput="this.setCustomValidity('')"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm font-bold shadow-sm" required>
             </div>
             <div class="md:col-span-2">
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nama OPD Pelaksana</label>
@@ -128,6 +131,8 @@
                     <div class="space-y-2">
                       <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Nama Kegiatan <span class="text-rose-500">*</span></label>
                       <input type="text" :name="`items[${i}][nama_kegiatan]`" x-model="item.nama_kegiatan" :x-ref="`row_${i}_kegiatan`" 
+                        oninvalid="this.setCustomValidity('Nama Kegiatan harus diisi')" 
+                        oninput="this.setCustomValidity('')"
                         class="w-full px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition" 
                         placeholder="Contoh: Pembangunan Jalan..." required>
                     </div>

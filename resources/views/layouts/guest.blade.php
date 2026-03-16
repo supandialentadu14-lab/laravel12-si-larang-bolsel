@@ -14,9 +14,8 @@
   @vite(['resources/css/desktop.css', 'resources/js/desktop.js'])
   
   
-
-
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
 
 <body class="font-sans antialiased text-slate-800 bg-[#f8faff] min-h-screen flex items-center justify-center p-4">

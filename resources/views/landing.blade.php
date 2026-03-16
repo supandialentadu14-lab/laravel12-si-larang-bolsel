@@ -21,9 +21,9 @@
   {{-- Specialized Optimized Assets --}}
   @vite(['resources/css/landing.css', 'resources/js/landing.js'])
 
-  {{-- Asynchronous Non-Blocking CSS --}}
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0-beta3/css/all.min.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" media="print" onload="this.media='all'">
+  {{-- FontAwesome Stable 6.5.1 --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
   <style>
     /* Critical CSS for Hero - Inlined for instant paint */
@@ -54,7 +54,7 @@
   <nav class="fixed top-0 w-full z-50 transition-all duration-300" 
     :class="window.pageYOffset > 20 ? 'glass py-3 shadow-sm' : 'bg-transparent py-6'"
     @scroll.window="window.pageYOffset > 20 ? $el.classList.add('glass', 'py-3', 'shadow-sm') : $el.classList.remove('glass', 'py-3', 'shadow-sm'); $el.classList.contains('glass') ? '' : $el.classList.add('py-6')">
-    <div class="container mx-auto px-6 flex justify-between items-center">
+    <div class="w-full max-w-none px-6 md:px-12 lg:px-20 mx-auto flex justify-between items-center">
       <div class="flex items-center gap-3">
         <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-10 w-10 object-contain" width="40" height="40" decoding="async" fetchpriority="high">
         <span class="text-xl font-black tracking-tighter text-indigo-900">SI-LARANG</span>
@@ -94,7 +94,7 @@
     <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-100/40 rounded-full filter blur-[120px] animate-blob z-0"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-100/40 rounded-full filter blur-[120px] animate-blob animation-delay-2000 z-0"></div>
     
-    <div class="container mx-auto px-6 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+    <div class="w-full max-w-none px-6 md:px-12 lg:px-20 mx-auto relative z-10 grid md:grid-cols-2 gap-12 items-center">
       <div class="animate__animated animate__fadeInLeft">
         <h1 class="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight mb-6">
           Kelola Persediaan <br>
@@ -109,7 +109,7 @@
           </div>
         </div>
         <p class="text-lg text-slate-500 font-medium leading-relaxed mb-10 max-w-lg">
-          SI-LARANG (Sistem Informasi Pengelolaan Persediaaan Barang) adalah solusi digital pengelolaan persediaan barang milik daerah pada Pemerintah Kabupaten Bolaang Mongondow Selatan.
+          SI-LARANG (Sistem Informasi Pengelolaan Persediaaan Barang) adalah solusi digital pengelolaan persediaan barang milik Pemerintah Daerah Kabupaten Bolaang Mongondow Selatan.
         </p>
         <div class="flex flex-wrap gap-4">
           <a href="{{ route('login') }}" class="px-8 py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-2xl shadow-indigo-200 hover:bg-slate-800 transition transform hover:-translate-y-1">
@@ -135,7 +135,7 @@
 
   <!-- Services Section -->
   <section id="services" class="py-24 bg-white relative">
-    <div class="container mx-auto px-6">
+    <div class="w-full max-w-none px-6 md:px-12 lg:px-20 mx-auto">
       <div class="text-center mb-20 animate__animated animate__fadeInUp">
         <h2 class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.3em] mb-3">Layanan Kami</h2>
         <h3 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Efisien. Akurat. Terintegrasi.</h3>
@@ -183,7 +183,7 @@
 
   <!-- About Section -->
   <section id="about" class="py-24 bg-slate-50">
-    <div class="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+    <div class="w-full max-w-none px-6 md:px-12 lg:px-20 mx-auto grid md:grid-cols-2 gap-16 items-center">
       <div class="order-2 md:order-1 relative w-full">
         <div class="absolute inset-0 bg-indigo-600/10 rounded-[1.5rem] md:rounded-[4rem] rotate-3"></div>
         <div class="relative bg-white rounded-[1.5rem] md:rounded-[4rem] shadow-xl border border-slate-100 overflow-hidden group">
@@ -194,7 +194,7 @@
         <h2 class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.3em] mb-3">Tentang Aplikasi</h2>
         <h3 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-8">Optimalisasi Aset <br>Menuju Bolsel Digital</h3>
         <p class="text-lg text-slate-500 font-medium leading-relaxed mb-6">
-          SI-LARANG (Sistem Informasi Pengelolaan Persediaan Barang) merupakan inisiatif digital untuk mendigitalisasi proses penatausahaan barang milik daerah di Pemerintah Kabupaten Bolaang Mongondow Selatan.
+          SI-LARANG (Sistem Informasi Pengelolaan Persediaan Barang) merupakan inisiatif digital untuk mendigitalisasi proses penatausahaan barang milik Pemerintah Daerah Kabupaten Bolaang Mongondow Selatan.
         </p>
         <p class="text-lg text-slate-500 font-medium leading-relaxed mb-8">
           Dengan SI-LARANG, setiap OPD dapat melakukan input, monitoring, dan pelaporan barang secara transparan, akuntabel, dan tepat waktu guna mendukung tata kelola keuangan yang baik.
@@ -206,7 +206,7 @@
 
   <!-- Contact Section -->
   <section id="contact" class="py-24 bg-white">
-    <div class="container mx-auto px-6">
+    <div class="w-full max-w-none px-6 md:px-12 lg:px-20 mx-auto">
       <div class="max-w-5xl mx-auto glass rounded-[4rem] p-12 md:p-20 shadow-2xl relative overflow-hidden border-2 border-indigo-50">
         <!-- Decoration -->
         <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
@@ -233,7 +233,7 @@
                 </div>
                 <div>
                   <p class="text-[10px] font-black text-emerald-400 uppercase tracking-tighter">Email Dukungan</p>
-                  <p class="text-sm font-bold text-slate-800">support@silarang.bolselkab.go.id</p>
+                  <p class="text-sm font-bold text-slate-800">supandialentadu14@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -246,11 +246,11 @@
           </div>
           
           <div class="bg-indigo-600 rounded-[3rem] p-10 text-white shadow-2xl shadow-indigo-100">
-            <h4 class="text-xl font-black uppercase tracking-widest mb-6">Konsultasi Gratis</h4>
+            <h4 class="text-xl font-black uppercase tracking-widest mb-6">Konsultasi & Bantuan</h4>
             <div class="space-y-4">
               <div class="p-4 bg-white/10 rounded-2xl border border-white/20">
-                <p class="text-[10px] font-black uppercase text-indigo-200 tracking-widest mb-1">Butuh Akun?</p>
-                <p class="text-sm font-bold">Hubungi Administrator Pengelola Barang pada Dinas terkait untuk pembuatan akun sistem.</p>
+                <p class="text-[10px] font-black uppercase text-indigo-200 tracking-widest mb-1">Butuh Bantuan?</p>
+                <p class="text-sm font-bold">Hubungi Administrator Pengelola Barang pada Dinas terkait untuk mendapatkan bantuan.</p>
               </div>
               <div class="p-4 bg-white/10 rounded-2xl border border-white/20">
                 <p class="text-[10px] font-black uppercase text-indigo-200 tracking-widest mb-1">Developer</p>
@@ -268,7 +268,7 @@
 
   <!-- Footer -->
   <footer class="py-12 bg-slate-900 text-white">
-    <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+    <div class="w-full max-w-none px-6 md:px-12 lg:px-20 mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
       <div class="flex items-center gap-3">
         <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-8 w-8 object-contain" loading="lazy" width="32" height="32" decoding="async">
         <span class="text-xl font-black tracking-tighter">SI-LARANG</span>

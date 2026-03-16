@@ -20,6 +20,8 @@
           <i class="far fa-envelope text-[10px] sm:text-xs"></i>
         </div>
         <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+          oninvalid="this.setCustomValidity('Email harus diisi')" 
+          oninput="this.setCustomValidity('')"
           class="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 bg-slate-50 border-2 border-transparent focus:border-indigo-600 focus:bg-white rounded-[1.2rem] text-[10px] sm:text-[11px] font-bold text-slate-800 transition-all outline-none"
           placeholder="nama@email.com">
       </div>
@@ -36,6 +38,8 @@
           <i class="fas fa-lock text-[10px] sm:text-xs"></i>
         </div>
         <input id="password" :type="show ? 'text' : 'password'" name="password" required
+          oninvalid="this.setCustomValidity('Password harus diisi')" 
+          oninput="this.setCustomValidity('')"
           class="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 bg-slate-50 border-2 border-transparent focus:border-indigo-600 focus:bg-white rounded-[1.2rem] text-[10px] sm:text-[11px] font-bold text-slate-800 transition-all outline-none"
           placeholder="••••••••">
         <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 sm:pr-5 flex items-center text-slate-300 hover:text-indigo-600 transition-colors">

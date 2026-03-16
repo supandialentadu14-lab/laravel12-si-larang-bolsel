@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 
 <head>
   <meta charset="utf-8">
@@ -252,17 +252,28 @@
       const setProgress = (w) => {
         progressBar.style.width = w + '%';
         if (w >= 100) {
-          setTimeout(() => { progressBar.style.width = '0%'; }, 400);
+          setTimeout(() => { 
+            progressBar.style.opacity = '0';
+            setTimeout(() => {
+              progressBar.style.width = '0%';
+              progressBar.style.opacity = '1';
+            }, 300);
+          }, 500);
         }
       };
 
       const startProgress = () => {
+        progressBar.style.opacity = '1';
         let w = 5;
         setProgress(w);
         const inv = setInterval(() => {
-          w += (100 - w) * 0.1;
+          if (w < 90) {
+            w += (90 - w) * 0.15;
+          } else if (w < 98) {
+            w += 0.2;
+          }
           setProgress(w);
-          if (w > 95) clearInterval(inv);
+          if (w >= 98) clearInterval(inv);
         }, 150);
         return inv;
       };
@@ -272,14 +283,17 @@
         const doc = parser.parseFromString(html, 'text/html');
         const newContent = doc.getElementById('page-content');
         
-        if (!newContent) { window.location.href = url; return; }
+        if (!newContent) {
+            setProgress(100);
+            window.location.href = url;
+            return;
+        }
         
         document.title = doc.title;
         pageContent.innerHTML = newContent.innerHTML;
         
         if (push) history.pushState({}, '', url);
         
-        // Re-init scripts and Alpine
         const scripts = pageContent.querySelectorAll('script');
         scripts.forEach(s => {
           const n = document.createElement('script');
@@ -289,11 +303,8 @@
         });
 
         if (window.Alpine) Alpine.discover();
-        
-        // Scroll top
         pageContent.scrollTo({ top: 0, behavior: 'smooth' });
         
-        // Update Bottom Nav active states
         const newNav = doc.querySelector('nav.bottom-nav');
         if (newNav && bottomNav) bottomNav.innerHTML = newNav.innerHTML;
         
@@ -315,9 +326,10 @@
           const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
           const html = await res.text();
           clearInterval(pid);
-          updateContent(html, href);
+          updateContent(html, res.url);
         } catch (err) {
           clearInterval(pid);
+          setProgress(100);
           window.location.href = href;
         }
       };
@@ -330,7 +342,7 @@
         e.preventDefault();
         const pid = startProgress();
         const formData = new FormData(form);
-        const action = form.getAttribute('action');
+        const action = form.getAttribute('action') || window.location.href;
         
         try {
           const res = await fetch(action, {
@@ -343,6 +355,7 @@
           updateContent(html, res.url);
         } catch (err) {
           clearInterval(pid);
+          setProgress(100);
           form.submit();
         }
       };
@@ -354,10 +367,46 @@
         fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
           .then(r => r.text())
           .then(html => { clearInterval(pid); updateContent(html, window.location.href, false); })
-          .catch(() => { clearInterval(pid); window.location.reload(); });
+          .catch(() => { clearInterval(pid); setProgress(100); window.location.reload(); });
       });
 
-      // PWA Registration
+      // Native validation message customization
+      document.addEventListener('invalid', (function() {
+        return function(e) {
+          // e.preventDefault(); // Do not prevent default, keep the bubble
+          const input = e.target;
+          let label = '';
+          
+          const labelEl = input.closest('.space-y-1.5')?.querySelector('label') 
+                        || input.parentElement?.querySelector('label')
+                        || document.querySelector(`label[for="${input.id || ''}"]`);
+                        
+          if (labelEl) {
+            label = labelEl.textContent.trim().split('(')[0].trim().replace(':', '');
+          } else if (input.placeholder) {
+            label = input.placeholder.split('...')[0].trim().replace('Masukkan ', '').replace('Input ', '').replace('Contoh: ', '');
+          }
+          
+          if (!label || label.length > 30) {
+            label = input.getAttribute('name') ? input.getAttribute('name').replace('_', ' ') : 'ini';
+          }
+          
+          // Title case simple name
+          if (label === label.toLowerCase()) {
+            label = label.charAt(0).toUpperCase() + label.slice(1);
+          }
+          
+          input.setCustomValidity('Kolom ' + label + ' harus diisi');
+        };
+      })(), true);
+
+      // Listener to clear native validation message when user starts typing
+      document.addEventListener('input', function(e) {
+        if (e.target.willValidate) {
+          e.target.setCustomValidity('');
+        }
+      }, true);
+
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').catch(() => {});

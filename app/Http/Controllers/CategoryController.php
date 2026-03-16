@@ -31,7 +31,7 @@ class CategoryController extends Controller
         // withCount('products') → menghitung jumlah produk dalam setiap kategori
         // latest() → urut berdasarkan data terbaru
         // paginate(10) → menampilkan 10 data per halaman
-        $query = Category::withCount('products')->latest();
+        $query = Category::withCount('products')->latest('created_at');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -98,7 +98,7 @@ class CategoryController extends Controller
 
         // Redirect ke halaman index dengan pesan sukses
         return redirect()->route('categories.index')
-                         ->with('success', 'Category created successfully.');
+                         ->with('success', 'Jenis belanja "' . $validated['name'] . '" berhasil dibuat.');
     }
 
     /**
@@ -164,7 +164,7 @@ class CategoryController extends Controller
 
         // Redirect kembali ke halaman index (daftar belanja)
         return redirect()->route('categories.index')
-                         ->with('success', 'Data jenis belanja berhasil diperbarui.');
+                         ->with('success', 'Data jenis belanja "' . $category->name . '" berhasil diperbarui.');
     }
 
     /**
@@ -172,12 +172,13 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): RedirectResponse
     {
+        $categoryName = $category->name;
         // Menghapus data kategori
-        $category->delete();
+        Category::destroy($category->id);
 
         // Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('categories.index')
-                         ->with('success', 'Category deleted successfully.');
+                         ->with('success', 'Jenis belanja "' . $categoryName . '" berhasil dihapus.');
     }
     
     public function bulkDestroy(Request $request): RedirectResponse
@@ -189,7 +190,7 @@ class CategoryController extends Controller
             'ids.required' => 'Tidak ada jenis belanja yang dipilih.',
         ]);
 
-        Category::whereIn('id', $validated['ids'])->delete();
+        Category::whereIn('id', $validated['ids'], 'and', false)->delete();
 
         return redirect()->route('categories.index')
                          ->with('success', 'Jenis belanja terpilih dihapus.');

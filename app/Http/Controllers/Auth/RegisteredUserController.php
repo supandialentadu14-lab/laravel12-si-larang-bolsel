@@ -59,8 +59,24 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
         ]);
 
-        // Generate password acak 10 karakter
-        $randomPassword = \Illuminate\Support\Str::random(10);
+        // Generate password kompleks (minimal 8 karakter dengan huruf besar, kecil, angka, dan simbol)
+        $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lower = 'abcdefghijklmnopqrstuvwxyz';
+        $nums = '0123456789';
+        $syms = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+        
+        $passChars = [];
+        $passChars[] = $upper[rand(0, strlen($upper) - 1)];
+        $passChars[] = $lower[rand(0, strlen($lower) - 1)];
+        $passChars[] = $nums[rand(0, strlen($nums) - 1)];
+        $passChars[] = $syms[rand(0, strlen($syms) - 1)];
+        
+        $allChars = $upper . $lower . $nums . $syms;
+        for ($i = 0; $i < 6; $i++) {
+            $passChars[] = $allChars[rand(0, strlen($allChars) - 1)];
+        }
+        shuffle($passChars);
+        $randomPassword = implode('', $passChars);
 
         // Membuat user baru di database
         $user = User::create([

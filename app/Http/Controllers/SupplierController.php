@@ -81,7 +81,7 @@ class SupplierController extends Controller
 
         // Redirect ke halaman daftar supplier dengan pesan sukses
         return redirect()->route('suppliers.index')
-            ->with('success', 'Supplier created successfully.');
+            ->with('success', 'Penyedia "' . $validated['name'] . '" berhasil ditambahkan.');
     }
 
     /**
@@ -122,7 +122,7 @@ class SupplierController extends Controller
 
         // Redirect kembali ke halaman daftar supplier dengan pesan sukses
         return redirect()->route('suppliers.index')
-            ->with('success', 'Supplier updated successfully.');
+            ->with('success', 'Penyedia "' . $supplier->name . '" berhasil diperbarui.');
     }
 
     /**
@@ -130,11 +130,12 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier): RedirectResponse
     {
+        $supplierName = $supplier->name;
         // Menghapus data supplier
         $supplier->delete();
 
         // Redirect kembali ke halaman daftar supplier dengan pesan sukses
         return redirect()->route('suppliers.index')
-            ->with('success', 'Supplier deleted successfully.');
+            ->with('success', 'Penyedia "' . $supplierName . '" berhasil dihapus.');
     }
 }

@@ -185,7 +185,7 @@ class StockController extends Controller
                 }
 
                 return redirect()->route('stock.index')
-                    ->with('success', 'Transaksi berhasil disimpan.');
+                    ->with('success', 'Transaksi ' . ($data['type'] === 'in' ? 'masuk' : 'keluar') . ' "' . $product->name . '" berhasil disimpan.');
             });
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage())->withInput();
@@ -268,7 +268,7 @@ class StockController extends Controller
                 }
 
                 return redirect()->route('stock.index')
-                    ->with('success', 'Transaksi berhasil diperbarui.');
+                    ->with('success', 'Transaksi ' . ($data['type'] === 'in' ? 'masuk' : 'keluar') . ' "' . $newProduct->name . '" berhasil diperbarui.');
             });
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage())->withInput();
@@ -315,8 +315,8 @@ class StockController extends Controller
                 }
             });
 
-            return redirect()->route('stock.index')
-                ->with('success', count($ids).' transaksi berhasil dihapus dan stok telah disesuaikan.');
+            $msg = count($ids) . ' transaksi berhasil dihapus dan stok telah disesuaikan.';
+            return redirect()->route('stock.index')->with('success', $msg);
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus transaksi: '.$e->getMessage());
         }

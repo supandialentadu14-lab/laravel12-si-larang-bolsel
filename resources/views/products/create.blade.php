@@ -18,7 +18,10 @@
 
       <div class="space-y-1.5">
         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Nama Barang</label>
-        <input type="text" name="name" value="{{ old('name') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+        <input type="text" name="name" value="{{ old('name') }}" 
+          oninvalid="this.setCustomValidity('Kolom Nama Barang harus diisi')" 
+          oninput="this.setCustomValidity('')"
+          class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
         @error('name')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 
@@ -31,12 +34,18 @@
       <div class="grid grid-cols-2 gap-4">
         <div class="space-y-1.5">
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Harga Satuan</label>
-          <input type="number" name="price" step="0.01" value="{{ old('price') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          <input type="number" name="price" step="0.01" value="{{ old('price') }}" 
+            oninvalid="this.setCustomValidity('Kolom Harga Satuan harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
           @error('price')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
         <div class="space-y-1.5">
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Satuan</label>
-          <select name="unit" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
+          <select name="unit" 
+            oninvalid="this.setCustomValidity('Kolom Satuan harus dipilih')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
             <option value="">Pilih Satuan</option>
             @foreach (['pcs','buah','box','pak','rim','kg','galon','paket','liter'] as $u)
               <option value="{{ $u }}" {{ old('unit') === $u ? 'selected' : '' }}>{{ strtoupper($u) }}</option>
@@ -48,7 +57,10 @@
 
       <div class="space-y-1.5">
         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Jenis Belanja</label>
-        <select name="category_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
+        <select name="category_id" 
+          oninvalid="this.setCustomValidity('Kolom Jenis Belanja harus dipilih')" 
+          oninput="this.setCustomValidity('')"
+          class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
           <option value="">Pilih Jenis Belanja</option>
           @foreach($categories as $cat)
             <option value="{{ $cat->id }}" {{ (string)old('category_id') === (string)$cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>

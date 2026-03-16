@@ -93,7 +93,7 @@ return [
     | APP_LOCALE=id
     |
     */
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'id'),
 
     /*
     | Bahasa fallback jika terjemahan tidak ditemukan

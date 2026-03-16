@@ -18,13 +18,19 @@
 
       <div class="space-y-1.5">
         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Perusahaan</label>
-        <input type="text" name="name" value="{{ old('name') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+        <input type="text" name="name" value="{{ old('name') }}" 
+          oninvalid="this.setCustomValidity('Kolom Nama Perusahaan harus diisi')" 
+          oninput="this.setCustomValidity('')"
+          class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
         @error('name')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 
       <div class="space-y-1.5">
         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Direktur</label>
-        <input type="text" name="dir" value="{{ old('dir') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+        <input type="text" name="dir" value="{{ old('dir') }}" 
+          oninvalid="this.setCustomValidity('Kolom Nama Direktur harus diisi')" 
+          oninput="this.setCustomValidity('')"
+          class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
         @error('dir')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 

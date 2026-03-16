@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\ActivityLog;
+use Illuminate\Http\RedirectResponse;
 
 class KwitansiController extends Controller
 {
@@ -455,7 +456,7 @@ class KwitansiController extends Controller
                 'user_agent' => request()->userAgent(),
             ]);
 
-            $msg = $oldId ? 'Kwitansi berhasil diperbarui' : 'Kwitansi berhasil disimpan';
+            $msg = $oldId ? 'Kwitansi "' . $data['nomor_kwt'] . '" berhasil diperbarui' : 'Kwitansi "' . $data['nomor_kwt'] . '" berhasil disimpan';
             return redirect()->route('reports.kwitansi.list')->with('success', $msg);
 
         } catch (\Throwable $e) {
@@ -653,16 +654,18 @@ class KwitansiController extends Controller
         return view('kwitansi.edit', compact('data', 'opd', 'docs', 'id'));
     }
 
-
-
-    public function delete($id)
+    public function delete(string $id): RedirectResponse
     {
         $disk = Storage::disk('local');
         $path = "users/".Auth::id()."/kwitansi/{$id}.json";
+        $kwitansiNomor = 'Kwitansi'; // Initialize with a default value
+        $oldData = []; // Initialize $oldData
+
         if ($disk->exists($path)) {
             $oldData = json_decode($disk->get($path), true);
             if ($oldData && !empty($oldData['nomor_kwt'])) {
                 $this->removeKwitansiStock($oldData['nomor_kwt']);
+                $kwitansiNomor = $oldData['nomor_kwt']; // Assign actual number if available
             }
             $disk->delete($path);
 
@@ -676,29 +679,27 @@ class KwitansiController extends Controller
                 'user_agent' => request()->userAgent(),
             ]);
         }
-        return redirect()->route('reports.kwitansi.list')->with('status', 'Kwitansi dihapus');
+        return redirect()->route('reports.kwitansi.list')->with('success', 'Kwitansi "' . $kwitansiNomor . '" berhasil dihapus');
     }
 
-    public function bulkDelete(Request $request)
+    public function bulkDelete(Request $request): RedirectResponse
     {
         $ids = $request->input('ids', []);
         $count = 0;
-        $disk = Storage::disk('local');
+        $disk = Storage::disk('local'); // Ensure $disk is defined here
         foreach ($ids as $id) {
-            $path = "users/".Auth::id()."/kwitansi/{$id}.json";
-            if (Storage::disk('local')->exists($path)) {
-                $oldData = json_decode($disk->get($path), true);
+            $path = "users/".Auth::id()."/kwitansi/{$id}.json"; // Correct path for kwitansi
+            if ($disk->exists($path)) { // Use $disk for consistency
+                $oldData = json_decode($disk->get($path), true); // Get data to remove stock
                 if ($oldData && !empty($oldData['nomor_kwt'])) {
                     $this->removeKwitansiStock($oldData['nomor_kwt']);
                 }
-                Storage::disk('local')->delete($path);
+                $disk->delete($path); // Use $disk for consistency
                 $count++;
             }
         }
-        return redirect()->route('reports.kwitansi.list')->with('status', "{$count} Kwitansi dihapus");
+        return redirect()->route('reports.kwitansi.list')->with('success', "{$count} Kwitansi berhasil dihapus");
     }
-
-
 
     public function printAll(Request $request)
     {

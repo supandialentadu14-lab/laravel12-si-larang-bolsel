@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends($isMobile ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
   <script>
@@ -84,17 +84,26 @@
         <div class="space-y-4">
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Berita Acara</label>
-            <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono" placeholder="001/BASTBI/..." required>
+            <input type="text" name="nomor" value="{{ $data['nomor'] ?? '' }}" 
+              oninvalid="this.setCustomValidity('Nomor Berita Acara harus diisi')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono" placeholder="001/BASTBI/..." required>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div class="space-y-1.5">
               <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
-              <input x-ref="tanggal" @change="updatePembuka()" type="date" name="tanggal" value="{{ $data['tanggal'] ?? now()->toDateString() }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+              <input x-ref="tanggal" @change="updatePembuka()" type="date" name="tanggal" value="{{ $data['tanggal'] ?? now()->toDateString() }}" 
+                oninvalid="this.setCustomValidity('Tanggal harus diisi')" 
+                oninput="this.setCustomValidity('')"
+                class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
             </div>
             <div class="space-y-1.5">
               <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tempat</label>
-              <input x-ref="tempat" @input="updatePembuka()" type="text" name="tempat" value="{{ $data['tempat'] ?? ($opd->nama_opd ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="Boroko" required>
+              <input x-ref="tempat" @input="updatePembuka()" type="text" name="tempat" value="{{ $data['tempat'] ?? ($opd->nama_opd ?? '') }}" 
+                oninvalid="this.setCustomValidity('Tempat harus diisi')" 
+                oninput="updatePembuka(); this.setCustomValidity('');"
+                class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="Boroko" required>
             </div>
           </div>
 
@@ -121,11 +130,17 @@
           <div class="space-y-4">
             <div class="space-y-1.5">
               <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Nama Lengkap</label>
-              <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" placeholder="Nama Atasan" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none" required>
+              <input x-ref="pp_nama" type="text" name="pihak_pertama[nama]" value="{{ $data['pihak_pertama']['nama'] ?? '' }}" placeholder="Nama Atasan" 
+                oninvalid="this.setCustomValidity('Nama Pihak Pertama harus diisi')" 
+                oninput="this.setCustomValidity('')"
+                class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none" required>
             </div>
             <div class="space-y-1.5">
               <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">NIP</label>
-              <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" placeholder="NIP" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-mono placeholder:text-white/40 outline-none" required>
+              <input x-ref="pp_nip" type="text" name="pihak_pertama[nip]" value="{{ $data['pihak_pertama']['nip'] ?? '' }}" placeholder="NIP" 
+                oninvalid="this.setCustomValidity('NIP Pihak Pertama harus diisi')" 
+                oninput="this.setCustomValidity('')"
+                class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-mono placeholder:text-white/40 outline-none" required>
             </div>
             <div class="space-y-1.5">
               <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Jabatan</label>
@@ -145,7 +160,10 @@
           <div class="space-y-4">
             <div class="space-y-1.5">
               <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">Nama Lengkap</label>
-              <input type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" placeholder="Nama Peminjam" class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none" required>
+              <input type="text" name="pihak_kedua[nama]" value="{{ $data['pihak_kedua']['nama'] ?? '' }}" placeholder="Nama Peminjam" 
+                oninvalid="this.setCustomValidity('Nama Pihak Kedua harus diisi')" 
+                oninput="this.setCustomValidity('')"
+                class="w-full bg-white/10 border-none rounded-xl px-4 py-3 text-xs font-bold placeholder:text-white/40 outline-none" required>
             </div>
             <div class="space-y-1.5">
               <label class="text-[8px] font-black uppercase tracking-widest opacity-60 ml-2">NIP</label>

@@ -516,7 +516,7 @@
   <div class="flex items-center justify-center min-w-full overflow-x-auto no-scrollbar py-4 scroll-smooth snap-x snap-mandatory">
     <!-- Master Barang (Left 1) -->
     @if(auth()->user()->hasPermission('master_data'))
-    <a data-master-nav data-skip-transition href="{{ route('products.index') }}" @click.prevent="masterMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'active-menu scale-110' : '' }}">
+    <a data-master-nav data-skip-transition href="{{ route('products.index') }}" @click.prevent="masterMenuOpen = true" class="no-soft flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'active-menu scale-110' : '' }}">
       <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-400' }}">
         <i class="fas fa-layer-group text-lg"></i>
       </div>
@@ -535,7 +535,7 @@
       auth()->user()->hasPermission('stock_opname') ||
       auth()->user()->hasPermission('pinjam_pakai')
     )
-    <a data-flow-nav data-skip-transition href="{{ route('stock.index') }}" @click.prevent="flowMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'active-menu scale-110' : '' }}">
+    <a data-flow-nav data-skip-transition href="{{ route('stock.index') }}" @click.prevent="flowMenuOpen = true" class="no-soft flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'active-menu scale-110' : '' }}">
       <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 ' : 'bg-slate-50 text-slate-400 ' }}">
         <i class="fas fa-folder-open text-lg"></i>
       </div>
@@ -552,7 +552,7 @@
     </a>
 
     <!-- Manajemen (Right 1) -->
-    <a data-settings-nav data-skip-transition href="{{ route('settings.opd.edit') }}" @click.prevent="settingsMenuOpen = true" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'active-menu scale-110' : '' }}">
+    <a data-settings-nav data-skip-transition href="{{ route('settings.opd.edit') }}" @click.prevent="settingsMenuOpen = true" class="no-soft flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'active-menu scale-110' : '' }}">
       <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 ' : 'bg-slate-50 text-slate-400 ' }}">
         <i class="fas fa-sliders text-lg"></i>
       </div>

@@ -16,25 +16,71 @@
   <form action="{{ route('users.store') }}" method="POST" class="space-y-6">
     @csrf
 
-    {{-- Informasi Akun --}}
+    {{-- Informasi Profil --}}
     <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
       <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
         <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
           <i class="fas fa-user-circle text-xs"></i>
         </div>
-        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Informasi Akun</h3>
+        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Informasi Profil</h3>
       </div>
 
-      <div class="space-y-4">
-        <div class="space-y-1.5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-1.5 md:col-span-2">
           <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Lengkap</label>
-          <input type="text" name="name" value="{{ old('name') }}" placeholder="Contoh: John Doe" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+          <input type="text" name="name" value="{{ old('name') }}" placeholder="Nama Lengkap" 
+            oninvalid="this.setCustomValidity('Kolom Nama Lengkap harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+          @error('name')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Alamat Email</label>
-          <input type="email" name="email" value="{{ old('email') }}" placeholder="email@example.com" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal Lahir</label>
+          <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" 
+            oninvalid="this.setCustomValidity('Kolom Tanggal Lahir harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+          @error('tanggal_lahir')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Jenis Kelamin</label>
+          <select name="jenis_kelamin" 
+            oninvalid="this.setCustomValidity('Kolom Jenis Kelamin harus dipilih')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+            <option value="" disabled {{ old('jenis_kelamin') ? '' : 'selected' }}>Pilih</option>
+            <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+            <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+          </select>
+          @error('jenis_kelamin')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama OPD</label>
+          <input type="text" name="nama_opd" value="{{ old('nama_opd') }}" placeholder="Instansi / OPD" 
+            oninvalid="this.setCustomValidity('Kolom Nama OPD harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+          @error('nama_opd')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Alamat Email Aktif</label>
+          <input type="email" name="email" value="{{ old('email') }}" placeholder="email@example.com" 
+            oninvalid="this.setCustomValidity('Kolom Email harus diisi dengan format yang benar')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+          @error('email')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
+        </div>
+      </div>
+
+      <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100/50 flex items-start gap-3">
+        <i class="fas fa-info-circle text-amber-500 mt-0.5"></i>
+        <p class="text-[9px] font-bold text-amber-800 leading-relaxed uppercase">
+          Sandi login akan otomatis dibuat secara acak dan dikirimkan ke alamat email di atas. Pastikan email sudah benar.
+        </p>
       </div>
     </div>
 
@@ -60,6 +106,7 @@
               <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-purple-600 peer-checked:shadow-sm transition-all">Admin</div>
             </label>
           </div>
+          @error('role')<p class="text-[9px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
 
         {{-- Permission Checkboxes --}}
@@ -95,26 +142,7 @@
       </div>
     </div>
 
-    {{-- Keamanan --}}
-    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
-      <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
-        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-          <i class="fas fa-lock text-xs"></i>
-        </div>
-        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Keamanan</h3>
-      </div>
 
-      <div class="grid grid-cols-1 gap-4">
-        <div class="space-y-1.5">
-          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Password</label>
-          <input type="password" name="password" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
-        </div>
-        <div class="space-y-1.5">
-          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Konfirmasi Password</label>
-          <input type="password" name="password_confirmation" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
-        </div>
-      </div>
-    </div>
 
     {{-- Actions --}}
     <div class="flex gap-3 px-2">

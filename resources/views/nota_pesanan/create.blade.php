@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends($isMobile ? 'layouts.mobile' : 'layouts.admin')
 
 @section('content')
   <script>
@@ -87,12 +87,20 @@
         <div class="space-y-4">
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Kegiatan</label>
-            <textarea name="kegiatan" rows="2" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed" placeholder="Contoh: Penyediaan Jasa Penunjang..." required>{{ old('kegiatan', $data['kegiatan'] ?? '') }}</textarea>
+            <textarea name="kegiatan" rows="2" 
+              oninvalid="this.setCustomValidity('Kolom Nama Kegiatan harus diisi')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed" placeholder="Contoh: Penyediaan Jasa Penunjang..." required>{{ old('kegiatan', $data['kegiatan'] ?? '') }}</textarea>
+            @error('kegiatan')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
           </div>
 
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Sub Kegiatan</label>
-            <textarea name="sub_kegiatan" rows="2" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed" placeholder="Contoh: Penyelenggaraan Rapat..." required>{{ old('sub_kegiatan', $data['sub_kegiatan'] ?? '') }}</textarea>
+            <textarea name="sub_kegiatan" rows="2" 
+              oninvalid="this.setCustomValidity('Kolom Sub Kegiatan harus diisi')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed" placeholder="Contoh: Penyelenggaraan Rapat..." required>{{ old('sub_kegiatan', $data['sub_kegiatan'] ?? '') }}</textarea>
+            @error('sub_kegiatan')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
           </div>
         </div>
       </div>
@@ -111,21 +119,33 @@
             <div class="space-y-1.5">
               <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Kode Rekening</label>
               <input type="text" name="rekening" value="{{ old('rekening', $data['rekening'] ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-mono font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="5.1.02.01...">
+              @error('rekening')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
             </div>
             <div class="space-y-1.5">
               <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
-              <input type="date" name="tanggal" x-model="tanggal" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+              <input type="date" name="tanggal" x-model="tanggal" 
+                oninvalid="this.setCustomValidity('Kolom Tanggal harus diisi')" 
+                oninput="this.setCustomValidity('')"
+                class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+              @error('tanggal')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
             </div>
           </div>
 
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Nota Pesanan</label>
-            <input type="text" name="nomor" value="{{ old('nomor', $data['nomor'] ?? '') }}" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001/NPB/..." required>
+            <input type="text" name="nomor" value="{{ old('nomor', $data['nomor'] ?? '') }}" 
+              oninvalid="this.setCustomValidity('Kolom Nomor Nota harus diisi')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001/NPB/..." required>
+            @error('nomor')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
           </div>
 
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Kategori Belanja</label>
-            <select name="belanja" x-model="belanja" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+            <select name="belanja" x-model="belanja" 
+              oninvalid="this.setCustomValidity('Kolom Kategori Belanja harus dipilih')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
               <option value="">-- Pilih Kategori --</option>
               @foreach($categories as $cat)
                 <option value="{{ $cat->name }}">{{ $cat->name }}</option>
@@ -135,7 +155,10 @@
 
           <div class="space-y-1.5">
             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Penyedia / Supplier</label>
-            <select name="supplier_id" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+            <select name="supplier_id" 
+              oninvalid="this.setCustomValidity('Kolom Penyedia harus dipilih')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
               <option value="">-- Pilih Penyedia --</option>
               @foreach($suppliers as $s)
                 <option value="{{ $s->id }}" {{ (old('supplier_id', $data['supplier_id'] ?? '') == $s->id) ? 'selected' : '' }}>
@@ -177,7 +200,10 @@
               <template x-for="(item, i) in items" :key="item._key">
                 <tr class="hover:bg-slate-50/50 transition">
                   <td class="py-3 px-1">
-                    <select :name="`items[${i}][name]`" x-model="item.name" @change="onProductChange(i, $event.target.value)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20 appearance-none" required>
+                    <select :name="`items[${i}][name]`" x-model="item.name" @change="onProductChange(i, $event.target.value)" 
+                      oninvalid="this.setCustomValidity('Barang harus dipilih')" 
+                      oninput="this.setCustomValidity('')"
+                      class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20 appearance-none" required>
                       <option value="">-- Pilih Barang --</option>
                       <template x-for="p in productsByBelanja()" :key="p.id">
                         <option :value="p.name" x-text="p.name" :selected="item.name === p.name"></option>

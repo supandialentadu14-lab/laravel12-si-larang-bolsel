@@ -196,6 +196,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('profile', [UserController::class, 'editSelf'])->name('profile.edit');
     Route::put('profile', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::post('profile/dismiss-welcome', [UserController::class, 'dismissWelcome'])->name('users.welcome.dismiss');
 
     // User Management (Admin only)
     Route::middleware('can:admin-access')->group(function () {

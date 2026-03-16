@@ -2,6 +2,40 @@
 
 @section('content')
 <div class="space-y-6 animate-slide-up">
+
+  @if(auth()->user()->first_login)
+    {{-- Mobile First Login Banner --}}
+    <div class="animate__animated animate__fadeInDown">
+      <div class="bg-indigo-600 rounded-[2rem] p-6 text-white shadow-lg shadow-indigo-100 relative overflow-hidden">
+        <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+        <div class="relative z-10 space-y-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl">
+              <i class="fas fa-rocket animate-pulse"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-black tracking-tight">Halo, Selamat Datang!</h3>
+              <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest">SI-LARANG Bolsel</p>
+            </div>
+          </div>
+          <p class="text-[10px] font-bold leading-relaxed uppercase tracking-wider bg-black/10 p-3 rounded-2xl border border-white/10">
+            Demi keamanan, silakan segera <span class="text-white underline">Lengkapi Foto Profil</span> dan <span class="text-white underline">Perbarui Password</span> Anda.
+          </p>
+          <div class="flex gap-2">
+            <a href="{{ route('profile.edit') }}" class="flex-1 py-3.5 bg-white text-indigo-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center">
+                Lengkapi Profil
+            </a>
+            <form action="{{ route('users.welcome.dismiss') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="w-12 h-12 bg-indigo-700/50 rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
   <!-- Welcome Header -->
   <div class="flex items-center justify-between">
     <div>

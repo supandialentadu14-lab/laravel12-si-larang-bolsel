@@ -21,6 +21,42 @@
 @section('content')
 <div class="space-y-6 pb-20 animate-fadeIn">
   
+  @if(auth()->user()->first_login && (!auth()->user()->password_updated_at || !auth()->user()->avatar_updated_at))
+    {{-- Welcome Banner for Initial Setup --}}
+    <div class="mb-8 animate__animated animate__fadeInDown">
+      <div class="bg-indigo-600 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-indigo-100 relative overflow-hidden">
+        {{-- Decorative circles --}}
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex items-center gap-6 text-center md:text-left">
+            <div class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl">
+              <i class="fas fa-rocket animate-bounce"></i>
+            </div>
+            <div class="space-y-1">
+              <h3 class="text-xl font-black uppercase tracking-tight">Selamat Datang, {{ explode(' ', auth()->user()->name)[0] }}!</h3>
+              <p class="text-[11px] font-bold opacity-80 max-w-md leading-relaxed uppercase tracking-wider">
+                Sandi akun Anda saat ini dibuat otomatis oleh sistem. Demi keamanan, silakan <span class="text-white underline decoration-white/40">Ganti Password</span> dan <span class="text-white underline decoration-white/40">Lengkapi Foto Profil</span> Anda.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+              <a href="{{ route('profile.edit') }}" class="px-8 py-3.5 bg-white text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                  Lengkapi Profil
+              </a>
+              <form action="{{ route('users.welcome.dismiss') }}" method="POST">
+                  @csrf
+                  <button type="submit" class="w-12 h-12 bg-indigo-700/50 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center transition-all group">
+                      <i class="fas fa-times group-hover:rotate-90 transition-transform"></i>
+                  </button>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
+  
   <!-- 1. Welcome Header (Mobile Style) -->
   <div class="flex items-center justify-between bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
     <div class="space-y-1">
