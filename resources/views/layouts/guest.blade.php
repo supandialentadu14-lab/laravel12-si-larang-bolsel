@@ -7,6 +7,9 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name', 'Inventory') }}</title>
   <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 
   @vite(['resources/css/desktop.css', 'resources/js/desktop.js'])
   
@@ -40,7 +43,7 @@
           <div class="relative group">
             <div class="absolute -inset-4 bg-white/20 rounded-[2rem] blur-xl group-hover:bg-white/30 transition duration-500"></div>
             <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-[2rem] p-4 overflow-hidden shadow-2xl">
-              <img src="{{ asset('images/login-bg-neww.webp') }}" class="w-full h-auto rounded-[1.5rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview" loading="lazy">
+              <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto rounded-[1.5rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview" loading="lazy">
             </div>
           </div>
           

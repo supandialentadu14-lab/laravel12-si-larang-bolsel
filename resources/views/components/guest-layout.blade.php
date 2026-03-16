@@ -7,26 +7,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'SI-LARANG') }}</title>
     
-    {{-- Typography --}}
+    {{-- Assets --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     
-    {{-- Icons & Animations --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/desktop.css', 'resources/js/desktop.js'])
+
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -85,7 +72,7 @@
                     <div class="relative group">
                         <div class="absolute -inset-3 bg-white/20 rounded-[1.8rem] blur-lg group-hover:bg-white/30 transition duration-500"></div>
                         <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-[1.8rem] p-2.5 overflow-hidden shadow-2xl">
-                            <img src="{{ asset('images/login-bg-neww.png') }}" class="w-full h-auto rounded-[1.2rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview">
+                            <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto rounded-[1.2rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview" loading="lazy">
                         </div>
                     </div>
                     <div class="mt-6 space-y-2">

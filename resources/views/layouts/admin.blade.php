@@ -373,7 +373,7 @@
       <div class="p-8">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <img src="{{ asset('images/silarang-logo.png') }}" class="w-7 h-7 object-contain brightness-0 invert" onerror="this.style.display='none'">
+            <img src="{{ asset('images/silarang-logo.webp') }}" class="w-7 h-7 object-contain brightness-0 invert" onerror="this.style.display='none'">
           </div>
           <div class="flex flex-col">
             <span class="text-lg font-black tracking-tight text-white leading-none">SI-LARANG</span>

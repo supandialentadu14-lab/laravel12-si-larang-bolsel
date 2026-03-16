@@ -7,7 +7,10 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>SI-LARANG</title>
   <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   @vite(['resources/css/desktop.css', 'resources/js/desktop.js'])
 
@@ -113,7 +116,7 @@
           <div class="absolute inset-0 bg-indigo-600/5 rounded-[1.5rem] md:rounded-[4rem] rotate-3 md:rotate-6 scale-95"></div>
           <div class="absolute inset-0 bg-indigo-600/10 rounded-[1.5rem] md:rounded-[4rem] -rotate-2 md:-rotate-3 scale-95"></div>
           <div class="relative bg-white rounded-[1.5rem] md:rounded-[4rem] shadow-2xl border border-slate-50 overflow-hidden">
-             <img src="{{ asset('images/login-bg-neww.webp') }}" class="w-full h-auto block" fetchpriority="high">
+             <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto block" fetchpriority="high">
           </div>
         </div>
       </div>
