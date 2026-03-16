@@ -40,7 +40,7 @@
           <div class="relative group">
             <div class="absolute -inset-4 bg-white/20 rounded-[2rem] blur-xl group-hover:bg-white/30 transition duration-500"></div>
             <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-[2rem] p-4 overflow-hidden shadow-2xl">
-              <img src="{{ asset('images/login-bg-neww.png') }}" class="w-full h-auto rounded-[1.5rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview">
+              <img src="{{ asset('images/login-bg-neww.webp') }}" class="w-full h-auto rounded-[1.5rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview" loading="lazy">
             </div>
           </div>
           

@@ -113,7 +113,7 @@
           <div class="absolute inset-0 bg-indigo-600/5 rounded-[1.5rem] md:rounded-[4rem] rotate-3 md:rotate-6 scale-95"></div>
           <div class="absolute inset-0 bg-indigo-600/10 rounded-[1.5rem] md:rounded-[4rem] -rotate-2 md:-rotate-3 scale-95"></div>
           <div class="relative bg-white rounded-[1.5rem] md:rounded-[4rem] shadow-2xl border border-slate-50 overflow-hidden">
-             <img src="{{ asset('images/login-bg-neww.png') }}" class="w-full h-auto block">
+             <img src="{{ asset('images/login-bg-neww.webp') }}" class="w-full h-auto block" fetchpriority="high">
           </div>
         </div>
       </div>
@@ -174,7 +174,7 @@
       <div class="order-2 md:order-1 relative w-full">
         <div class="absolute inset-0 bg-indigo-600/10 rounded-[1.5rem] md:rounded-[4rem] rotate-3"></div>
         <div class="relative bg-white rounded-[1.5rem] md:rounded-[4rem] shadow-xl border border-slate-100 overflow-hidden group">
-          <img src="{{ asset('images/login-bg-new.png') }}" class="w-full h-auto block transform group-hover:scale-110 transition duration-700">
+          <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto block transform group-hover:scale-110 transition duration-700" loading="lazy">
         </div>
       </div>
       <div class="order-1 md:order-2">
