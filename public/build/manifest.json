@@ -16,7 +16,7 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "resources/css/desktop.css": {
-    "file": "assets/desktop-C4HFSDPt.css",
+    "file": "assets/desktop-wCvWg98e.css",
     "src": "resources/css/desktop.css",
     "isEntry": true,
     "name": "desktop",
@@ -25,7 +25,7 @@
     ]
   },
   "resources/css/mobile.css": {
-    "file": "assets/mobile-BPzTtTNX.css",
+    "file": "assets/mobile-CBTV6Rlx.css",
     "src": "resources/css/mobile.css",
     "isEntry": true,
     "name": "mobile",

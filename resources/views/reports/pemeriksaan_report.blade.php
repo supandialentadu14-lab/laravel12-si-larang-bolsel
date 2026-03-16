@@ -188,7 +188,7 @@
     
     <p class="mb-3 text-sm">1. Barang Baik (V)</p>
     <p class="mb-6 text-sm">2. Barang Tidak Baik (X)</p>
-    
+        
     <div class="grid grid-cols-2 gap-6 mt-6 signature-block">
       <div class="text-center">
         <p class="mb-1">Penyedia</p>

@@ -32,6 +32,50 @@
     }
     .animation-delay-2000 { animation-delay: 2s; }
     .animation-delay-4000 { animation-delay: 4s; }
+
+    @media (max-width: 768px) {
+      html {
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+      }
+      section {
+        height: 100vh;
+        height: 100dvh;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        scroll-margin-top: -1px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        position: relative;
+      }
+      /* Ensure container fits */
+      section > .container {
+        max-height: 100vh;
+        max-height: 100dvh;
+        overflow-y: auto;
+        padding-top: 80px !important;
+        padding-bottom: 40px !important;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      section > .container::-webkit-scrollbar {
+        display: none;
+      }
+      
+      /* Specific Hero Tweak */
+      #home .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      #home h1 {
+        font-size: 2.5rem !important;
+      }
+      footer {
+        scroll-snap-align: end;
+      }
+    }
   </style>
 </head>
 
@@ -128,41 +172,41 @@
         <h3 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Efisien. Akurat. Terintegrasi.</h3>
       </div>
 
-      <div class="grid md:grid-cols-4 gap-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
         <!-- Service 1 -->
-        <div class="group p-8 bg-slate-50 rounded-[3rem] border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-2xl transition duration-500">
-          <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-8 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition duration-500">
-            <i class="fas fa-boxes-stacked text-2xl"></i>
+        <div class="group p-5 md:p-8 bg-slate-50 rounded-[2rem] md:rounded-[3rem] border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-2xl transition duration-500">
+          <div class="w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-8 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition duration-500">
+            <i class="fas fa-boxes-stacked text-xl md:text-2xl"></i>
           </div>
-          <h4 class="text-xl font-extrabold text-slate-900 mb-4 uppercase tracking-tight">Manajemen Stok</h4>
-          <p class="text-sm text-slate-500 font-bold leading-relaxed">Pantau ketersediaan barang secara real-time dari mana saja.</p>
+          <h4 class="text-xs md:text-xl font-extrabold text-slate-900 mb-2 md:mb-4 uppercase tracking-tight leading-tight">Manajemen Stok</h4>
+          <p class="text-[9px] md:text-sm text-slate-500 font-bold leading-relaxed">Pantau stok real-time.</p>
         </div>
 
         <!-- Service 2 -->
-        <div class="group p-8 bg-slate-50 rounded-[3rem] border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-2xl transition duration-500">
-          <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-8 shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition duration-500">
-            <i class="fas fa-file-invoice text-2xl"></i>
+        <div class="group p-5 md:p-8 bg-slate-50 rounded-[2rem] md:rounded-[3rem] border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-2xl transition duration-500">
+          <div class="w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-8 shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition duration-500">
+            <i class="fas fa-file-invoice text-xl md:text-2xl"></i>
           </div>
-          <h4 class="text-xl font-extrabold text-slate-900 mb-4 uppercase tracking-tight">Pelaporan</h4>
-          <p class="text-sm text-slate-500 font-bold leading-relaxed">Hasilkan laporan persediaan otomatis yang akurat dan siap cetak.</p>
+          <h4 class="text-xs md:text-xl font-extrabold text-slate-900 mb-2 md:mb-4 uppercase tracking-tight leading-tight">Pelaporan</h4>
+          <p class="text-[9px] md:text-sm text-slate-500 font-bold leading-relaxed">Laporan otomatis & akurat.</p>
         </div>
 
         <!-- Service 3 -->
-        <div class="group p-8 bg-slate-50 rounded-[3rem] border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-2xl transition duration-500">
-          <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-8 shadow-sm group-hover:bg-amber-600 group-hover:text-white transition duration-500">
-            <i class="fas fa-file-signature text-2xl"></i>
+        <div class="group p-5 md:p-8 bg-slate-50 rounded-[2rem] md:rounded-[3rem] border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-2xl transition duration-500">
+          <div class="w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-8 shadow-sm group-hover:bg-amber-600 group-hover:text-white transition duration-500">
+            <i class="fas fa-file-signature text-xl md:text-2xl"></i>
           </div>
-          <h4 class="text-xl font-extrabold text-slate-900 mb-4 uppercase tracking-tight">Berita Acara</h4>
-          <p class="text-sm text-slate-500 font-bold leading-relaxed">Cetak berbagai dokumen administrasi (BA) hanya dengan satu klik.</p>
+          <h4 class="text-xs md:text-xl font-extrabold text-slate-900 mb-2 md:mb-4 uppercase tracking-tight leading-tight">Berita Acara</h4>
+          <p class="text-[9px] md:text-sm text-slate-500 font-bold leading-relaxed">Cetak dokumen administrasi.</p>
         </div>
 
         <!-- Service 4 -->
-        <div class="group p-8 bg-slate-50 rounded-[3rem] border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-2xl transition duration-500">
-          <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-8 shadow-sm group-hover:bg-purple-600 group-hover:text-white transition duration-500">
-            <i class="fas fa-users-gear text-2xl"></i>
+        <div class="group p-5 md:p-8 bg-slate-50 rounded-[2rem] md:rounded-[3rem] border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-2xl transition duration-500">
+          <div class="w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-8 shadow-sm group-hover:bg-purple-600 group-hover:text-white transition duration-500">
+            <i class="fas fa-users-gear text-xl md:text-2xl"></i>
           </div>
-          <h4 class="text-xl font-extrabold text-slate-900 mb-4 uppercase tracking-tight">Kolaborasi</h4>
-          <p class="text-sm text-slate-500 font-bold leading-relaxed">Sistem multi-user untuk koordinasi antar bidang dalam OPD.</p>
+          <h4 class="text-xs md:text-xl font-extrabold text-slate-900 mb-2 md:mb-4 uppercase tracking-tight leading-tight">Kolaborasi</h4>
+          <p class="text-[9px] md:text-sm text-slate-500 font-bold leading-relaxed">Sistem multi-user OPD.</p>
         </div>
       </div>
     </div>
