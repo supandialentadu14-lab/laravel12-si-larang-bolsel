@@ -5,9 +5,9 @@
 }
 
 body {
-    background-color: #F8FAFC;
-    color: #1E293B;
-    overflow-x: hidden;
+  background-color: #ffffff;
+  color: #1E293B;
+  overflow-x: hidden;
 }
 
 .glass-effect {
@@ -18,7 +18,7 @@ body {
 
 /* Navigation Underline Animation */
 .nav-item {
-    position: relative;
+  position: relative;
 }
 
 .nav-item::after {
@@ -34,7 +34,8 @@ body {
   transform: translateX(-50%);
 }
 
-.nav-item.active::after, .nav-item:hover::after {
+.nav-item.active::after,
+.nav-item:hover::after {
   width: 20px;
   bottom: 4px;
 }
@@ -60,18 +61,42 @@ body {
 
 /* Animations */
 @keyframes blob {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0px, 0px) scale(1); }
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
 }
-.animate-blob { animation: blob 10s infinite; }
+
+.animate-blob {
+  animation: blob 10s infinite;
+}
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
 }
-.animate-float { animation: float 6s ease-in-out infinite; }
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
 
 /* Smooth Scrolling */
 html {

@@ -1,4 +1,4 @@
-<x-guest-layout title="LOGIN">
+<x-guest-layout title="MASUK" subtitle="Silakan masuk ke akun Anda">
 
   @if (session('success_message'))
     <div class="mb-4 animate__animated animate__fadeIn">
@@ -60,12 +60,5 @@
       Masuk <i class="fas fa-arrow-right ml-1 sm:ml-2 text-[9px] sm:text-[10px]"></i>
     </button>
   </form>
-
-  <div class="mt-6 text-center pt-4 border-t border-slate-50">
-    <p class="text-[9px] font-bold text-slate-400 uppercase">
-      Belum punya akun?
-      <a href="{{ route('register') }}" class="font-black text-indigo-600 hover:text-slate-800 ml-1">Daftar disini</a>
-    </p>
-  </div>
 
 </x-guest-layout>

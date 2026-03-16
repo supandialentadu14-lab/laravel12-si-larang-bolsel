@@ -22,81 +22,65 @@
 
 </head>
 
-<body class="font-sans antialiased text-slate-800 bg-white flex min-h-screen overflow-hidden">
-  <!-- Left Side - Illustration (Desktop Only) -->
-  <div class="hidden lg:flex w-1/2 relative bg-slate-50 overflow-hidden items-center justify-center">
-    <!-- Abstract Background -->
-    <div class="absolute inset-0 bg-gradient-to-tr from-indigo-50 via-white to-purple-50 z-0"></div>
-    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] z-10"></div>
+<body class="font-sans antialiased text-slate-800 bg-[#f8faff] min-h-screen flex items-center justify-center p-4">
+
+  <div class="w-full max-w-[1000px] bg-white rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(79,70,229,0.15)] overflow-hidden flex flex-col lg:flex-row min-h-[650px] border border-white animate__animated animate__zoomIn">
     
-    <!-- Subtle Blobs -->
-    <div class="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-indigo-100/50 rounded-full filter blur-[100px] animate-blob"></div>
-    <div class="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-purple-100/50 rounded-full filter blur-[100px] animate-blob animation-delay-2000"></div>
-
-    <!-- Main Image Container -->
-    <div class="relative z-20 w-full h-full p-16 flex items-center justify-center animate__animated animate__fadeIn">
-      <div class="relative w-full max-w-sm aspect-square rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(79,70,229,0.15)] border border-white/80 group bg-white">
-        <div class="absolute inset-0 bg-indigo-50/20 group-hover:bg-transparent transition duration-500 z-10"></div>
-        <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-1000 ease-in-out opacity-90 group-hover:opacity-100">
-        
-        <!-- Floating Badge -->
-        <div class="absolute bottom-8 right-8 bg-white/80 backdrop-blur-md border border-white p-4 rounded-2xl shadow-xl animate-float z-20">
-          <!-- <div class="flex items-center gap-4">
-            <div class="p-2 bg-indigo-600 rounded-xl text-white shadow-lg shadow-indigo-100">
-              <i class="fas fa-shield-alt text-xl"></i>
-            </div>
-            <div>
-              <p class="text-slate-800 font-black text-sm uppercase tracking-tight">Terverifikasi</p>
-              <p class="text-slate-400 text-[9px] uppercase font-bold tracking-widest">Sistem Aman</p>
-            </div>
-          </div> -->
-        </div>
+    <!-- Left Column: Visual Showcase -->
+    <div class="lg:w-1/2 bg-[#1e60d5] relative overflow-hidden hidden lg:flex flex-col p-12 text-white">
+      <!-- Decorative Patterns -->
+      <div class="absolute inset-0 opacity-10">
+        <svg class="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <circle cx="0" cy="0" r="40" fill="white" />
+          <circle cx="100" cy="100" r="40" fill="white" />
+        </svg>
       </div>
-    </div>
-
-    <!-- Text Overlay -->
-    <div class="absolute bottom-12 left-12 z-30">
-      <h2 class="text-4xl font-black text-slate-800 tracking-widest uppercase mb-2">SI-LARANG</h2>
-      <div class="h-1 w-12 bg-indigo-600/20 mb-3"></div>
-      <p class="text-slate-500 font-bold text-sm max-w-xs uppercase tracking-tight leading-relaxed">Sistem Informasi Pengelolaan Persediaan Barang.</p>
-    </div>
-  </div>
-
-  <!-- Right Side - Auth Form -->
-  <div class="w-full lg:w-1/2 flex items-center justify-center p-6 relative bg-white overflow-y-auto">
-    <!-- Background Decor -->
-    <div class="absolute top-[5%] -right-[5%] w-[30%] h-[30%] bg-indigo-50 rounded-full filter blur-[60px] opacity-60 animate-blob"></div>
-    <div class="absolute bottom-[5%] left-[5%] w-[30%] h-[30%] bg-purple-50 rounded-full filter blur-[60px] opacity-60 animate-blob animation-delay-2000"></div>
-
-    <div class="w-full max-w-[420px] relative z-10 animate__animated animate__fadeIn">
       
-      <!-- Logo Header -->
-      <div class="text-center mb-10 flex flex-col items-center">
-        <div class="inline-flex items-center justify-center mb-5 p-4 bg-white rounded-3xl shadow-[0_10px_30px_-5px_rgba(79,70,229,0.1)] border border-slate-50 transform -rotate-3 transition hover:rotate-0">
-          <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-12 w-12 object-contain">
-        </div>
-        <div class="flex flex-col items-center">
-          <h2 class="text-2xl font-black text-slate-800 tracking-[0.2em] uppercase leading-none">SI-LARANG</h2>
-          <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-3">Sistem Informasi Pengelolaan Persediaan Barang</p>
-        </div>
-      </div>
+      <div class="relative z-10 flex flex-col h-full">
+        <a href="/" class="inline-flex items-center gap-2 font-black text-xl tracking-tighter hover:opacity-80 transition">
+          <img src="{{ asset('images/silarang-logo.webp') }}" class="h-8 w-8 brightness-0 invert" alt="Logo">
+          SI-LARANG
+        </a>
 
-      <!-- Form Card -->
-      <div class="bg-white rounded-[3rem] border border-slate-100 p-8 sm:p-12 shadow-[0_20px_60px_-15px_rgba(79,70,229,0.06)] relative transition-all hover:shadow-[0_25px_70px_-15px_rgba(79,70,229,0.08)]">
-        <div class="relative z-10">
-          {{ $slot }}
+        <div class="mt-auto mb-auto">
+          <div class="relative group">
+            <div class="absolute -inset-4 bg-white/20 rounded-[2rem] blur-xl group-hover:bg-white/30 transition duration-500"></div>
+            <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-[2rem] p-4 overflow-hidden shadow-2xl">
+              <img src="{{ asset('images/login-bg-neww.png') }}" class="w-full h-auto rounded-[1.5rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview">
+            </div>
+          </div>
+          
+          <div class="mt-12 space-y-4">
+            <h2 class="text-3xl font-black leading-tight">Pengelolaan Aset <br> Jadi Lebih Mudah</h2>
+            <p class="text-white/70 font-medium text-sm max-w-sm">Optimalkan inventarisasi dan pelaporan barang daerah dengan sistem informasi yang terintegrasi dan aman.</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Footer -->
-      <div class="mt-10 text-center animate__animated animate__fadeIn animate__delay-1s px-6">
-        <p class="text-[9px] text-slate-300 font-black tracking-[0.3em] uppercase leading-loose">
-          &copy; 2026 Emon Alentadu <br>
-          <span class="text-indigo-200">Sistem Informasi Pengelolaan Persediaan Barang</span>
-        </p>
+        <!-- <div class="mt-auto flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/50">
+          <span>&copy; 2026 Bolsel IT Team</span>
+          <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+          <span>Version 2.0</span>
+        </div>
+      </div> -->
+
+      <!-- Wave divider (SVG) -->
+      <div class="absolute top-0 bottom-0 -right-px w-20 pointer-events-none">
+        <svg class="h-full w-full" viewBox="0 0 100 1000" preserveAspectRatio="none">
+          <path d="M0,0 C50,200 0,400 50,600 C100,800 50,1000 0,1000 L100,1000 L100,0 Z" fill="white" />
+        </svg>
       </div>
     </div>
+
+    <!-- Right Column: Form -->
+    <div class="w-full lg:w-1/2 p-8 sm:p-16 flex flex-col justify-center bg-white">
+      <div class="w-full max-w-sm mx-auto">
+        {{ $slot }}
+      </div>
+    </div>
+
   </div>
+
+</body>
 
 
 </body>

@@ -50,8 +50,8 @@ nav.bottom-nav.glass-card {
 }
 
 /* Fix for date input overflow and stretching on mobile */
-input[type="date"], 
-input[type="text"], 
+input[type="date"],
+input[type="text"],
 select {
   max-width: 100% !important;
   width: 100% !important;
