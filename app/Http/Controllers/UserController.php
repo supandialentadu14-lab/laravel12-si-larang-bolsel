@@ -82,6 +82,13 @@ class UserController extends Controller
                 'permissions' => $request->role === 'admin' ? [] : $request->input('permissions', []),
             ]);
 
+            // Kirim Email Credentials
+            try {
+                \Illuminate\Support\Facades\Mail::to($newUser->email)->send(new \App\Mail\UserCredentialsMail($newUser, $validated['password']));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal mengirim email kredensial: ' . $e->getMessage());
+            }
+
             \Illuminate\Support\Facades\Log::debug('UserController@store: User created with ID=' . $newUser->id);
 
             return redirect()->route('users.index')

@@ -82,6 +82,13 @@ class RegisteredUserController extends Controller
         // Biasanya digunakan untuk mengirim email verifikasi
         event(new Registered($user));
 
+        // Kirim Email Credentials
+        try {
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserCredentialsMail($user, $request->password));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim email registrasi: ' . $e->getMessage());
+        }
+
         // Alihkan ke halaman login dengan pesan sukses
         // Memberikan notifikasi bahwa registrasi berhasil dan user silakan login
         return redirect(route('login'))
