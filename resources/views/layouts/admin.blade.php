@@ -582,11 +582,32 @@
   </div>
 </div>
 
+  <!-- Top Progress Bar -->
+  <div id="page-progress" class="fixed top-0 left-0 h-1 bg-indigo-600 z-[10000] transition-all duration-300 pointer-events-none" style="width: 0%; box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);"></div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const main = document.querySelector('#app-content');
-      const nav = document.querySelector('nav');
+      const progressBar = document.getElementById('page-progress');
       
+      const setProgress = (w) => {
+        progressBar.style.width = w + '%';
+        if (w >= 100) {
+          setTimeout(() => { progressBar.style.width = '0%'; }, 400);
+        }
+      };
+
+      const startProgress = () => {
+        let w = 5;
+        setProgress(w);
+        const inv = setInterval(() => {
+          w += (100 - w) * 0.1;
+          setProgress(w);
+          if (w > 95) clearInterval(inv);
+        }, 150);
+        return inv;
+      };
+
       const isSameOrigin = (url) => {
         try {
           const u = new URL(url, window.location.origin);
@@ -594,42 +615,21 @@
         } catch { return false; }
       };
 
-      const shouldSoftLink = (a) => {
-        const href = a.getAttribute('href') || '';
-        if (!href || href.startsWith('#')) return false;
-        if (!isSameOrigin(href)) return false;
-        if (a.hasAttribute('download') || a.target === '_blank') return false;
-        if (a.classList.contains('no-soft') || href.includes('logout')) return false;
-        return true;
-      };
-
       const setActive = (href) => {
-        // Ensure href is a comparable path
         let path = href;
         try { path = new URL(href, window.location.origin).pathname; } catch(e) {}
-
-        // Handle single sidebar links
-        const sideLinks = nav.querySelectorAll('.sidebar-link');
-        sideLinks.forEach(link => {
-          link.classList.remove('active');
-          try {
-            const linkPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
-            if (linkPath === path) link.classList.add('active');
-          } catch(e) {}
-        });
-
-        // Handle sub links and their parents
-        const subLinks = nav.querySelectorAll('.sub-link');
-        subLinks.forEach(link => {
+        
+        // Update regular links
+        document.querySelectorAll('.sidebar-link, .sub-link').forEach(link => {
           link.classList.remove('active');
           try {
             const linkPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
             if (linkPath === path) {
               link.classList.add('active');
-              // Make parent sidebar-link active
-              const parentGroup = link.closest('.pb-4');
-              if (parentGroup) {
-                const parentBtn = parentGroup.querySelector('.sidebar-link');
+              // Highlight parent if it's a sub-link
+              if (link.classList.contains('sub-link')) {
+                const parentGroup = link.closest('.pb-4');
+                const parentBtn = parentGroup ? parentGroup.querySelector('.sidebar-link') : null;
                 if (parentBtn) parentBtn.classList.add('active');
               }
             }
@@ -638,98 +638,93 @@
       };
 
       const initScripts = (root) => {
-        const scripts = root.querySelectorAll('script');
-        scripts.forEach(s => {
+        root.querySelectorAll('script').forEach(s => {
           const n = document.createElement('script');
           if (s.src) n.src = s.src;
           else n.textContent = s.textContent;
           if (s.type) n.type = s.type;
           root.appendChild(n);
         });
-        if (window.Alpine && Alpine.initTree) Alpine.initTree(root);
+        if (window.Alpine) Alpine.discover();
       };
 
-      const swapMain = async (href, push = true) => {
-        try {
-          const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-          if (!res.ok) throw new Error('Failed');
-          const html = await res.text();
-          const doc = new DOMParser().parseFromString(html, 'text/html');
-          const newMain = doc.querySelector('#app-content') || doc.querySelector('main');
-          
-          if (!newMain) { window.location.href = href; return; }
-          
-          document.title = doc.title || document.title;
-          main.innerHTML = newMain.innerHTML;
-          
-          // Update Page Header & Actions
-          const newHeader = doc.querySelector('#page-header');
-          const newActions = doc.querySelector('#page-actions');
-          if (newHeader) document.querySelector('#page-header').innerHTML = newHeader.innerHTML;
-          if (newActions) document.querySelector('#page-actions').innerHTML = newActions.innerHTML;
+      const updateContent = (html, url, push = true) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const newMain = doc.querySelector('#app-content') || doc.querySelector('main');
+        
+        if (!newMain) { window.location.href = url; return; }
+        
+        document.title = doc.title || document.title;
+        main.innerHTML = newMain.innerHTML;
+        
+        // Update Header & Actions
+        ['#page-header', '#page-actions'].forEach(selector => {
+            const el = doc.querySelector(selector);
+            const target = document.querySelector(selector);
+            if (el && target) target.innerHTML = el.innerHTML;
+        });
 
-          setActive(href);
-          initScripts(main);
-          if (push) history.pushState({}, '', href);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch { window.location.href = href; }
+        setActive(url);
+        initScripts(main);
+        if (push) history.pushState({}, '', url);
+        main.scrollTo({ top: 0, behavior: 'smooth' });
+        setProgress(100);
       };
 
-      document.addEventListener('click', (e) => {
+      document.addEventListener('click', async (e) => {
         const a = e.target.closest('a[href]');
-        if (!a || !shouldSoftLink(a)) return;
+        if (!a || a.hasAttribute('download') || a.target === '_blank' || a.classList.contains('no-soft')) return;
+        
+        const href = a.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.includes('logout')) return;
+        if (!isSameOrigin(href)) return;
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         
         e.preventDefault();
-        swapMain(a.getAttribute('href'), true);
+        const pid = startProgress();
+        try {
+          const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+          const html = await res.text();
+          clearInterval(pid);
+          updateContent(html, href);
+        } catch {
+          clearInterval(pid);
+          window.location.href = href;
+        }
       });
-
-      window.addEventListener('popstate', () => swapMain(window.location.href, false));
 
       document.addEventListener('submit', async (e) => {
         const form = e.target.closest('form');
+        if (!form || form.classList.contains('no-soft') || (form.getAttribute('method') || 'GET').toUpperCase() === 'GET') return;
+        
         const action = form.getAttribute('action') || window.location.href;
-        if (form.classList.contains('no-soft') || action.includes('logout')) return;
-        const method = (form.getAttribute('method') || 'GET').toUpperCase();
-        if (!isSameOrigin(action)) return;
+        if (!isSameOrigin(action) || action.includes('logout')) return;
         
         e.preventDefault();
+        const pid = startProgress();
+        const fd = new FormData(form);
+        
         try {
-          const fd = new FormData(form);
-          let url = action;
-          const options = {
-            method,
+          const res = await fetch(action, {
+            method: 'POST',
+            body: fd,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
-          };
-
-          if (method === 'GET') {
-            const u = new URL(action, window.location.origin);
-            const params = new URLSearchParams(fd);
-            params.forEach((v, k) => u.searchParams.set(k, v));
-            url = u.toString();
-          } else {
-            options.body = fd;
-          }
-
-          const res = await fetch(url, options);
+          });
           const html = await res.text();
-          const doc = new DOMParser().parseFromString(html, 'text/html');
-          const newMain = doc.querySelector('#app-content') || doc.querySelector('main');
-          
-          if (!newMain) { window.location.href = url; return; }
-          
-          document.title = doc.title || document.title;
-          main.innerHTML = newMain.innerHTML;
-          
-          const newHeader = doc.querySelector('#page-header');
-          const newActions = doc.querySelector('#page-actions');
-          if (newHeader) document.querySelector('#page-header').innerHTML = newHeader.innerHTML;
-          if (newActions) document.querySelector('#page-actions').innerHTML = newActions.innerHTML;
+          clearInterval(pid);
+          updateContent(html, res.url);
+        } catch {
+          clearInterval(pid);
+          form.submit();
+        }
+      });
 
-          initScripts(main);
-          history.pushState({}, '', url);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch { window.location.href = action; }
+      window.addEventListener('popstate', () => {
+          const pid = startProgress();
+          fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.text())
+            .then(html => { clearInterval(pid); updateContent(html, window.location.href, false); })
+            .catch(() => { clearInterval(pid); window.location.reload(); });
       });
     });
   </script>
