@@ -239,123 +239,130 @@
     </a>
   </div>
 
+  <div id="page-progress" class="fixed top-0 left-0 h-0.5 bg-indigo-600 z-[9999] transition-all duration-300 pointer-events-none" style="width: 0%"></div>
+
   @include('partials.mobile_bottom_nav')
 
   <script>
     (() => {
-      const supportsViewTransition = 'startViewTransition' in document;
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const content = document.getElementById('page-content');
+      const pageContent = document.getElementById('page-content');
+      const progressBar = document.getElementById('page-progress');
       const bottomNav = document.querySelector('nav.bottom-nav');
-      const sheets = document.querySelectorAll('[x-show$="Open"]');
-
-      const applyEnter = () => {
-        const dir = sessionStorage.getItem('navDir') || 'right';
-        if (content) content.classList.add(dir === 'right' ? 'page-enter-right' : 'page-enter-left');
-        if (bottomNav) bottomNav.classList.add(dir === 'right' ? 'nav-enter-right' : 'nav-enter-left');
-        sessionStorage.removeItem('navDir');
-      };
-
-      const registerTransitionLinks = () => {
-        const normalizePath = (p) => {
-          if (!p) return '';
-          let path = p.split('?')[0].split('#')[0];
-          if (path.startsWith(window.location.origin)) path = path.slice(window.location.origin.length);
-          return path.replace(/\/$/, '') || '/';
-        };
-
-        const getNavIndex = (el, scope) => {
-          const links = Array.from(scope.querySelectorAll('a[href]'));
-          const idx = links.indexOf(el);
-          return idx === -1 ? null : idx;
-        };
-
-        const globalIndex = new Map();
-        const masterIndex = 0;
-        const flowIndex = 1;
-        const settingsIndex = 3;
-
-        if (masterIndex !== null) {
-          document.querySelectorAll('a[data-master-target][href]').forEach((a) => {
-            const href = a.getAttribute('href');
-            if (!href) return;
-            globalIndex.set(normalizePath(href), masterIndex);
-          });
-        }
-        if (flowIndex !== null) {
-          document.querySelectorAll('a[data-flow-target][href]').forEach((a) => {
-            const href = a.getAttribute('href');
-            if (!href) return;
-            globalIndex.set(normalizePath(href), flowIndex);
-          });
-        }
-        if (settingsIndex !== null) {
-          document.querySelectorAll('a[data-settings-target][href]').forEach((a) => {
-            const href = a.getAttribute('href');
-            if (!href) return;
-            globalIndex.set(normalizePath(href), settingsIndex);
-          });
-        }
-
-        const bindScope = (scope) => {
-          if (!scope) return;
-          scope.querySelectorAll('a[href]').forEach(link => {
-            link.addEventListener('click', (e) => {
-              if (e.defaultPrevented) return;
-              if (e.button !== 0) return;
-              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-              if (link.hasAttribute('data-skip-transition')) return;
-
-              const href = link.getAttribute('href');
-              if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
-              if (href === window.location.href || href === window.location.pathname) return;
-
-              const current = sessionStorage.getItem('navIndex');
-              const mapped = globalIndex.get(normalizePath(href));
-              const target = String(mapped ?? getNavIndex(link, scope));
-              if (current && target && current !== 'null' && target !== 'null') {
-                const dir = Number(target) > Number(current) ? 'right' : 'left';
-                sessionStorage.setItem('navDir', dir);
-                document.documentElement.dataset.navDir = dir;
-              }
-              sessionStorage.setItem('navIndex', target);
-
-              if (prefersReduced) return;
-              if (supportsViewTransition) return;
-              e.preventDefault();
-              const dir = sessionStorage.getItem('navDir') || 'right';
-              if (content) content.classList.add(dir === 'right' ? 'page-exit-right' : 'page-exit-left');
-              if (bottomNav) bottomNav.classList.add(dir === 'right' ? 'nav-exit-right' : 'nav-exit-left');
-              setTimeout(() => { window.location.href = href; }, 240);
-            }, { passive: false });
-          });
-        };
-
-        bindScope(bottomNav);
-        sheets.forEach(bindScope);
-
-        if (bottomNav) {
-          const active = bottomNav.querySelector('.active-menu') || bottomNav.querySelector('a[href].active-menu');
-          if (active) {
-            const idx = getNavIndex(active.closest('a[href]') || active, bottomNav);
-            if (idx !== null) sessionStorage.setItem('navIndex', String(idx));
-          }
+      
+      const setProgress = (w) => {
+        progressBar.style.width = w + '%';
+        if (w >= 100) {
+          setTimeout(() => { progressBar.style.width = '0%'; }, 400);
         }
       };
 
-      document.addEventListener('DOMContentLoaded', () => {
-        applyEnter();
-        registerTransitionLinks();
+      const startProgress = () => {
+        let w = 5;
+        setProgress(w);
+        const inv = setInterval(() => {
+          w += (100 - w) * 0.1;
+          setProgress(w);
+          if (w > 95) clearInterval(inv);
+        }, 150);
+        return inv;
+      };
 
-        // Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-              .then(reg => console.log('Service Worker registered'))
-              .catch(err => console.log('Service Worker registration failed', err));
-          });
+      const updateContent = (html, url, push = true) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.getElementById('page-content');
+        
+        if (!newContent) { window.location.href = url; return; }
+        
+        document.title = doc.title;
+        pageContent.innerHTML = newContent.innerHTML;
+        
+        if (push) history.pushState({}, '', url);
+        
+        // Re-init scripts and Alpine
+        const scripts = pageContent.querySelectorAll('script');
+        scripts.forEach(s => {
+          const n = document.createElement('script');
+          if (s.src) n.src = s.src;
+          else n.textContent = s.textContent;
+          pageContent.appendChild(n);
+        });
+
+        if (window.Alpine) Alpine.discover();
+        
+        // Scroll top
+        pageContent.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Update Bottom Nav active states
+        const newNav = doc.querySelector('nav.bottom-nav');
+        if (newNav && bottomNav) bottomNav.innerHTML = newNav.innerHTML;
+        
+        setProgress(100);
+      };
+
+      const handleLinkClick = async (e) => {
+        const link = e.target.closest('a[href]');
+        if (!link || link.classList.contains('no-soft')) return;
+        if (link.origin !== window.location.origin) return;
+        if (link.target === '_blank' || e.metaKey || e.ctrlKey) return;
+        
+        const href = link.getAttribute('href');
+        if (href.startsWith('#') || href.startsWith('javascript:')) return;
+        
+        e.preventDefault();
+        const pid = startProgress();
+        try {
+          const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+          const html = await res.text();
+          clearInterval(pid);
+          updateContent(html, href);
+        } catch (err) {
+          clearInterval(pid);
+          window.location.href = href;
         }
+      };
+
+      const handleFormSubmit = async (e) => {
+        const form = e.target.closest('form');
+        if (!form || form.classList.contains('no-soft')) return;
+        if (form.method.toUpperCase() === 'GET') return;
+        
+        e.preventDefault();
+        const pid = startProgress();
+        const formData = new FormData(form);
+        const action = form.getAttribute('action');
+        
+        try {
+          const res = await fetch(action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+          });
+          const html = await res.text();
+          clearInterval(pid);
+          updateContent(html, res.url);
+        } catch (err) {
+          clearInterval(pid);
+          form.submit();
+        }
+      };
+
+      document.addEventListener('click', handleLinkClick);
+      document.addEventListener('submit', handleFormSubmit);
+      window.addEventListener('popstate', () => {
+        const pid = startProgress();
+        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          .then(r => r.text())
+          .then(html => { clearInterval(pid); updateContent(html, window.location.href, false); })
+          .catch(() => { clearInterval(pid); window.location.reload(); });
       });
+
+      // PWA Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
     })();
   </script>
 </body>

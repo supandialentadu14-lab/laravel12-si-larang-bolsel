@@ -14,11 +14,6 @@ class TrackLastSeen
         if (Auth::check()) {
             $user = Auth::user();
 
-            // Update last_seen_at setiap 1 menit (throttle agar tidak excessive DB write)
-            if (!$user->last_seen_at || $user->last_seen_at->lt(now()->subMinute())) {
-                $user->updateQuietly(['last_seen_at' => now()]);
-            }
-
             // Blokir user yang dinonaktifkan admin (kecuali admin itu sendiri & halaman logout)
             if (
                 !$user->is_active &&
@@ -37,5 +32,20 @@ class TrackLastSeen
         }
 
         return $next($request);
+    }
+
+    /**
+     * Terminate - Dipanggil setelah response dikirim ke browser.
+     * Digunakan untuk update DB agar tidak memperlambat loading.
+     */
+    public function terminate(Request $request, Response $response): void
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            // Update last_seen_at setiap 1 menit (throttle)
+            if (!$user->last_seen_at || $user->last_seen_at->lt(now()->subMinute())) {
+                $user->updateQuietly(['last_seen_at' => now()]);
+            }
+        }
     }
 }
