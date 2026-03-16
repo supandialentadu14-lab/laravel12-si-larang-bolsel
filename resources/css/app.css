@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import 'animate.css';
 
 /* Scan file pagination bawaan Laravel */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

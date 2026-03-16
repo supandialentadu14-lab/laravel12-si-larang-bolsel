@@ -11,8 +11,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
     @vite(['resources/css/desktop.css', 'resources/js/desktop.js'])
@@ -56,10 +54,6 @@
       }
     </script>
   @endif
-  <!-- Alpine.js -->
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   {{-- CSS laporan global untuk preview F4, KOP, dan tabel --}}
   <link rel="stylesheet" href="{{ asset('css/report.css') }}">
 
@@ -478,7 +472,10 @@
           <div class="marquee-container w-full group">
             <div class="marquee-content flex items-center gap-20">
               @php
-                $opdName = \App\Models\OpdSetting::first()->nama_opd ?? 'OPD';
+                $opdSetting = \Illuminate\Support\Facades\Cache::remember('opd_setting_' . Auth::id(), 3600, function() {
+                    return \App\Models\OpdSetting::where('user_id', Auth::id())->first();
+                });
+                $opdName = $opdSetting->nama_opd ?? 'OPD';
                 $welcomeText = "Selamat datang di SI-LARANG (Sistem Informasi Pengelolaan Persediaan Barang). " . $opdName . " Kabupaten Bolaang Mongondow Selatan";
                 $marqueeText = $welcomeText;
               @endphp

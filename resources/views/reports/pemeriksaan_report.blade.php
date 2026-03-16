@@ -184,7 +184,7 @@
       </table>
     </div>
     
-    <p </p>
+    <div class="h-4"></div>
     
     <p class="mb-3 text-sm">1. Barang Baik (V)</p>
     <p class="mb-6 text-sm">2. Barang Tidak Baik (X)</p>

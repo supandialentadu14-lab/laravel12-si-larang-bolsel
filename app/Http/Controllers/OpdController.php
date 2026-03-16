@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class OpdController extends Controller
 {
@@ -112,6 +113,8 @@ class OpdController extends Controller
         if (count($olds) > 0) {
             $this->syncNomorSurat(Auth::id(), $olds, $newSingkatan);
         }
+
+        Cache::forget('opd_setting_' . Auth::id());
         
         return redirect()->back()->with('success', 'Pengaturan berhasil disimpan.');
     }
