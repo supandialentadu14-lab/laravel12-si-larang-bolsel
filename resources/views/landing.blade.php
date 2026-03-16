@@ -9,45 +9,46 @@
   <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   {{-- Preload Critical Assets --}}
   <link rel="preload" href="{{ asset('images/silarang-logo.webp') }}" as="image" type="image/webp">
   <link rel="preload" href="{{ asset('images/login-bg-neww.webp') }}" as="image" type="image/webp">
   
-  @vite(['resources/css/desktop.css', 'resources/js/desktop.js'])
+  {{-- Specialized Optimized Assets --}}
+  @vite(['resources/css/landing.css', 'resources/js/landing.js'])
+
+  {{-- Asynchronous Non-Blocking CSS --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0-beta3/css/all.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" media="print" onload="this.media='all'">
 
   <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .glass {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    .animate-blob {
-      animation: blob 7s infinite;
-      will-change: transform;
-    }
-    @keyframes blob {
-      0% { transform: translate(0px, 0px) scale(1); }
-      33% { transform: translate(30px, -50px) scale(1.1); }
-      66% { transform: translate(-20px, 20px) scale(0.9); }
-      100% { transform: translate(0px, 0px) scale(1); }
-    }
-    .animation-delay-2000 { animation-delay: 2s; }
-    .animation-delay-4000 { animation-delay: 4s; }
+    /* Critical CSS for Hero - Inlined for instant paint */
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; text-rendering: optimizeSpeed; }
+    .hero-gradient { background: linear-gradient(to right, #4f46e5, #9333ea); -webkit-background-clip: text; color: transparent; }
+    #home { min-height: 100vh; display: flex; align-items: center; }
+    nav { position: fixed; width: 100%; z-index: 50; top: 0; }
     
-    section {
-      contain: paint;
+    /* Optimization for non-visible sections */
+    section { contain: paint; content-visibility: auto; contain-intrinsic-size: 1px 500px; }
+    
+    /* Extreme speed for mobile: hide heavy decorative elements */
+    @media (max-width: 767px) {
+      .animate-blob, .blur-[120px], [class*="animate-blob"], .animate__animated { 
+        display: none !important; 
+        animation: none !important;
+        transition: none !important;
+      }
+      .hero-image-container { transform: none !important; }
+      nav { background: rgba(255,255,255,0.9) !important; backdrop-filter: none !important; }
     }
   </style>
 </head>
 
-<body class="bg-slate-50 text-slate-900 overflow-x-hidden" x-data="{ mobileMenu: false }">
+<body class="bg-slate-50 text-slate-900 overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-900" x-data="{ mobileMenu: false }">
 
   <!-- Navbar -->
   <nav class="fixed top-0 w-full z-50 transition-all duration-300" 
@@ -55,7 +56,7 @@
     @scroll.window="window.pageYOffset > 20 ? $el.classList.add('glass', 'py-3', 'shadow-sm') : $el.classList.remove('glass', 'py-3', 'shadow-sm'); $el.classList.contains('glass') ? '' : $el.classList.add('py-6')">
     <div class="container mx-auto px-6 flex justify-between items-center">
       <div class="flex items-center gap-3">
-        <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-10 w-10 object-contain" width="40" height="40" decoding="async">
+        <img src="{{ asset('images/silarang-logo.webp') }}" alt="Logo" class="h-10 w-10 object-contain" width="40" height="40" decoding="async" fetchpriority="high">
         <span class="text-xl font-black tracking-tighter text-indigo-900">SI-LARANG</span>
       </div>
 
@@ -97,7 +98,7 @@
       <div class="animate__animated animate__fadeInLeft">
         <h1 class="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight mb-6">
           Kelola Persediaan <br>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Lebih Cerdas & Cepat.</span>
+          <span class="hero-gradient">Lebih Cerdas & Cepat.</span>
         </h1>
         <div class="flex items-center gap-6 mb-6">
           <img src="{{ asset('images/bolsel.webp') }}" alt="Bolsel" class="h-16 w-auto contrast-125 opacity-70" width="150" height="64" loading="lazy" decoding="async">
@@ -119,11 +120,11 @@
           </a>
         </div>
       </div>
-      <div class="relative animate__animated animate__fadeInRight">
+      <div class="relative animate__animated animate__fadeInRight hero-image-container">
         <div class="relative w-full max-w-lg mx-auto">
           <!-- Floating UI Elements Mockup style -->
-          <div class="absolute inset-0 bg-indigo-600/5 rounded-[1.5rem] md:rounded-[4rem] rotate-3 md:rotate-6 scale-95"></div>
-          <div class="absolute inset-0 bg-indigo-600/10 rounded-[1.5rem] md:rounded-[4rem] -rotate-2 md:-rotate-3 scale-95"></div>
+          <div class="absolute inset-0 bg-indigo-600/5 rounded-[1.5rem] md:rounded-[4rem] rotate-3 md:rotate-6 scale-95 hidden md:block"></div>
+          <div class="absolute inset-0 bg-indigo-600/10 rounded-[1.5rem] md:rounded-[4rem] -rotate-2 md:-rotate-3 scale-95 hidden md:block"></div>
           <div class="relative bg-white rounded-[1.5rem] md:rounded-[4rem] shadow-2xl border border-slate-50 overflow-hidden">
              <img src="{{ asset('images/login-bg-neww.webp') }}" class="w-full h-auto block" fetchpriority="high" width="800" height="600" decoding="async">
           </div>

@@ -10,6 +10,8 @@ export default defineConfig({
                 'resources/js/mobile.js',
                 'resources/css/desktop.css',
                 'resources/js/desktop.js',
+                'resources/css/landing.css',
+                'resources/js/landing.js',
             ],
             refresh: true,
         }),
