@@ -52,47 +52,39 @@ class RegisteredUserController extends Controller
     {
         // Validasi input dari form registrasi
         $request->validate([
-            // Name wajib diisi, berupa string, maksimal 255 karakter
             'name' => ['required', 'string', 'max:255'],
-
-            // Email wajib, format email, huruf kecil, unik di tabel users, maksimal 255 karakter
+            'tanggal_lahir' => ['required', 'date'],
+            'jenis_kelamin' => ['required', 'in:L,P'],
+            'nama_opd' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-
-            // Password wajib, harus ada konfirmasi (password_confirmation),
-            // dan mengikuti aturan default password Laravel
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        // Generate password acak 10 karakter
+        $randomPassword = \Illuminate\Support\Str::random(10);
 
         // Membuat user baru di database
         $user = User::create([
-            // Mengambil nama dari input form
             'name' => $request->name,
-
-            // Mengambil email dari input form
             'email' => $request->email,
-
-            // Password dienkripsi terlebih dahulu sebelum disimpan
-            'password' => Hash::make($request->password),
-
-            // Mengatur role default sebagai staff
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'nama_opd' => $request->nama_opd,
+            'password' => Hash::make($randomPassword),
             'role' => 'staff',
         ]);
 
         // Memicu event Registered
-        // Biasanya digunakan untuk mengirim email verifikasi
         event(new Registered($user));
 
         // Kirim Email Credentials
         try {
-            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserCredentialsMail($user, $request->password));
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserCredentialsMail($user, $randomPassword));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Gagal mengirim email registrasi: ' . $e->getMessage());
         }
 
         // Alihkan ke halaman login dengan pesan sukses
-        // Memberikan notifikasi bahwa registrasi berhasil dan user silakan login
         return redirect(route('login'))
-            ->with('status', 'Registrasi Berhasil!')
-            ->with('success_message', 'Akun Anda telah berhasil dibuat. Silakan login menggunakan email dan password yang telah didaftarkan.');
+            ->with('success_message', 'Registrasi Berhasil! Silakan cek email Anda (' . $user->email . ') untuk melihat detail Akun (Username & Password) untuk login.');
     }
 }

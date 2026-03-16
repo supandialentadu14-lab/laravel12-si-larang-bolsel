@@ -35,6 +35,9 @@ class User extends Authenticatable
         'is_active',
         'chat_enabled',
         'permissions',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'nama_opd',
     ];
 
     /**
@@ -94,6 +97,7 @@ class User extends Authenticatable
             'is_active'         => 'boolean',
             'chat_enabled'      => 'boolean',
             'permissions'       => 'array',
+            'tanggal_lahir'     => 'date',
         ];
     }
 }
