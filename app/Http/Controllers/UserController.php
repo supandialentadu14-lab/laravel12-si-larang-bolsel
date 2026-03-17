@@ -179,7 +179,7 @@ class UserController extends Controller
                 'confirmed',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+-=\[\]{}|;:,.<>?]).{8,}$/'
             ],
-            'avatar' => 'nullable|image|max:2048',
+            'avatar' => 'nullable|image|max:10240',
         ], [
             'password.regex' => 'Password harus mengandung kombinasi huruf besar, huruf kecil, angka, dan karakter khusus dengan panjang minimal 8 karakter.',
             'password.min' => 'Password minimal harus 8 karakter.',
@@ -252,7 +252,7 @@ class UserController extends Controller
                 'confirmed',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+-=\[\]{}|;:,.<>?]).{8,}$/'
             ],
-            'avatar' => 'nullable|image|max:2048',
+            'avatar' => 'nullable|image|max:10240',
         ], [
             'password.regex' => 'Password harus mengandung kombinasi huruf besar, huruf kecil, angka, dan karakter khusus dengan panjang minimal 8 karakter.',
             'password.min' => 'Password minimal harus 8 karakter.',

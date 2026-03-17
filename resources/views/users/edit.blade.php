@@ -19,7 +19,7 @@
 
     {{-- Foto Profil --}}
     <div x-data="{ 
-        imageUrl: '{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=ffffff&color=4F46E5' }}',
+        imageUrl: '{{ $user->avatar ? asset('storage/'.$user->avatar . '?v=' . ($user->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=ffffff&color=4F46E5' }}',
         fileChosen(event) {
             const file = event.target.files[0];
             if (!file) return;

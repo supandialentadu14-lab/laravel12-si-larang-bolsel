@@ -15,11 +15,8 @@ class MobileDetection
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $userAgent = $request->header('User-Agent');
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
-
-        // Share $isMobile variable to all views
-        view()->share('isMobile', (bool)$isMobile);
+        // Share $isMobile variable to all views using the macro defined in AppServiceProvider
+        view()->share('isMobile', (bool)$request->isMobile());
 
         return $next($request);
     }

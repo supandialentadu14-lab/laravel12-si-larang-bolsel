@@ -351,10 +351,11 @@
   </script>
 </head>
 
-<body class="font-sans antialiased bg-[#F4F7FA] min-h-screen" 
+  <body class="font-sans antialiased bg-[#F4F7FA] min-h-screen" 
   x-data="{ 
     unreadChatCount: 0,
     notifOpen: false,
+    sidebarOpen: false,
     checkNewMessages() {
       fetch('{{ route('chat.unread') }}')
         .then(res => res.json())
@@ -362,23 +363,42 @@
         .catch(e => {});
     }
   }" 
+  @open-sidebar.window="sidebarOpen = true"
   x-init="checkNewMessages(); setInterval(() => checkNewMessages(), 15000)">
 
   <!-- Application Boxed Wrapper -->
   <div class="max-w-none mx-auto bg-white h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
 
   <div class="flex flex-row flex-1 min-h-0 overflow-hidden">
+    <!-- Sidebar Overlay for Mobile -->
+    <div x-show="sidebarOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click="sidebarOpen = false" 
+         class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[50] hidden"></div>
+
     <!-- Sidebar Navigation -->
-    <aside id="sidebar-main" class="w-64 flex flex-col no-print bg-[#0F172A] border-r border-slate-800/50 z-10" style="background-color: #0F172A;">
+    <aside id="sidebar-main" 
+           x-cloak
+            class="static inset-y-0 left-0 w-64 flex flex-col no-print bg-[#0F172A] border-r border-slate-800/50 z-10 transition-transform duration-300 transform translate-x-0 flex flex-shrink-0" style="background-color: #0F172A;">
       <div class="p-8">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <img src="{{ asset('images/silarang-logo.webp') }}" class="w-7 h-7 object-contain brightness-0 invert" onerror="this.style.display='none'">
+            <img src="{{ asset('images/silarang-logo.webp') }}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=S&background=4F46E5&color=ffffff'">
           </div>
-          <div class="flex flex-col">
+          <div class="flex flex-col flex-1">
             <span class="text-lg font-black tracking-tight text-white leading-none">SI-LARANG</span>
             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Bolsel</span>
           </div>
+          
+          <!-- Close Sidebar Mobile -->
+          <button @click="sidebarOpen = false" class="hidden w-8 h-8 rounded-lg bg-white/10 text-white/40 flex items-center justify-center hover:text-white transition-colors">
+            <i class="fas fa-times text-xs"></i>
+          </button>
         </a>
       </div>
 
@@ -459,8 +479,13 @@
     <!-- Main Content Wrapper (Header + Content) -->
     <div class="flex-1 flex flex-col min-w-0 bg-white relative">
       <!-- Minimal Top Header (Fixed Position) -->
-      <header class="h-20 sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-50 flex items-center justify-between px-8 no-print z-20">
+      <header class="h-20 sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-50 flex items-center justify-between px-4 lg:px-8 no-print z-20">
         <div class="flex-none flex items-center gap-4">
+          <!-- Hamburger for Mobile (Only if sidebar is hidden) -->
+          <button @click="sidebarOpen = true" class="hidden w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
+            <i class="fas fa-bars"></i>
+          </button>
+          
           <div class="relative max-w-xs w-full lg:block hidden">
             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
             <input type="text" placeholder="Cari di SI-LARANG..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-bold text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-100 outline-none">
@@ -509,12 +534,12 @@
  
           <!-- Profile Photo Only -->
           <div class="w-10 h-10 rounded-xl bg-white overflow-hidden border border-slate-100 shadow-sm flex-shrink-0 p-0.5">
-            <img class="w-full h-full rounded-[10px] object-cover" src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}">
+            <img class="w-full h-full rounded-[10px] object-cover" src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}">
           </div>
         </div>
       </header>
 
-      <div class="flex-1 overflow-y-auto custom-scrollbar px-8 py-10 bg-slate-50/50">
+      <div class="flex-1 overflow-y-auto custom-scrollbar px-4 lg:px-8 py-6 lg:py-10 bg-slate-50/50">
         <!-- Breadcrumbs/Subheader -->
         <div class="flex items-center justify-between mb-2 no-print">
           <div id="page-header">
