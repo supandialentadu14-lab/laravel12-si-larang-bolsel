@@ -379,12 +379,13 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          @click="sidebarOpen = false" 
-         class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[50] hidden"></div>
+         class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[50] lg:hidden"></div>
 
     <!-- Sidebar Navigation -->
     <aside id="sidebar-main" 
            x-cloak
-            class="static inset-y-0 left-0 w-64 flex flex-col no-print bg-[#0F172A] border-r border-slate-800/50 z-10 transition-transform duration-300 transform translate-x-0 flex flex-shrink-0" style="background-color: #0F172A;">
+            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+            class="fixed lg:static inset-y-0 left-0 w-64 flex flex-col no-print bg-[#0F172A] border-r border-slate-800/50 z-[60] lg:z-10 transition-transform duration-300 transform -translate-x-full lg:translate-x-0 lg:flex flex-shrink-0" style="background-color: #0F172A;">
       <div class="p-8">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -396,7 +397,7 @@
           </div>
           
           <!-- Close Sidebar Mobile -->
-          <button @click="sidebarOpen = false" class="hidden w-8 h-8 rounded-lg bg-white/10 text-white/40 flex items-center justify-center hover:text-white transition-colors">
+          <button @click="sidebarOpen = false" class="lg:hidden w-8 h-8 rounded-lg bg-white/10 text-white/40 flex items-center justify-center hover:text-white transition-colors">
             <i class="fas fa-times text-xs"></i>
           </button>
         </a>
@@ -482,7 +483,7 @@
       <header class="h-20 sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-50 flex items-center justify-between px-4 lg:px-8 no-print z-20">
         <div class="flex-none flex items-center gap-4">
           <!-- Hamburger for Mobile (Only if sidebar is hidden) -->
-          <button @click="sidebarOpen = true" class="hidden w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
+          <button @click="sidebarOpen = true" class="lg:hidden w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
             <i class="fas fa-bars"></i>
           </button>
           
@@ -611,11 +612,19 @@
   <div id="page-progress" class="fixed top-0 left-0 h-1 bg-indigo-600 z-[10000] transition-all duration-300 pointer-events-none" style="width: 0%; box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);"></div>
 
   <script>
+    /**
+     * SI-LARANG SPA-Like Navigation System
+     * Resolves Sidebar Blinking and Improves Performance
+     */
     document.addEventListener('DOMContentLoaded', function() {
       const main = document.querySelector('#app-content');
+      if (!main) return;
+
       const progressBar = document.getElementById('page-progress');
+      let progressTimer = null;
       
       const setProgress = (w) => {
+        if (!progressBar) return;
         progressBar.style.width = w + '%';
         if (w >= 100) {
           setTimeout(() => { 
@@ -629,141 +638,156 @@
       };
 
       const startProgress = () => {
+        if (!progressBar) return;
         progressBar.style.opacity = '1';
         let w = 5;
         setProgress(w);
-        const inv = setInterval(() => {
-          if (w < 90) {
-            w += (90 - w) * 0.15;
-          } else if (w < 98) {
-            w += 0.2;
-          }
+        return setInterval(() => {
+          if (w < 90) w += (90 - w) * 0.15;
+          else if (w < 98) w += 0.2;
           setProgress(w);
-          if (w >= 98) clearInterval(inv);
         }, 150);
-        return inv;
       };
 
-      const isSameOrigin = (url) => {
-        try {
-          const u = new URL(url, window.location.origin);
-          return u.origin === window.location.origin;
-        } catch { return false; }
-      };
-
-      const setActive = (href) => {
-        let path = href;
-        try { path = new URL(href, window.location.origin).pathname; } catch(e) {}
+      const setActiveState = (url) => {
+        const path = new URL(url, window.location.origin).pathname;
         
+        // Update regular links
         document.querySelectorAll('.sidebar-link, .sub-link').forEach(link => {
-          link.classList.remove('active');
-          try {
-            const linkPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
-            if (linkPath === path) {
-              link.classList.add('active');
-              if (link.classList.contains('sub-link')) {
-                const parentGroup = link.closest('.pb-4');
-                const parentBtn = parentGroup ? parentGroup.querySelector('.sidebar-link') : null;
-                if (parentBtn) parentBtn.classList.add('active');
-              }
-            }
-          } catch(e) {}
+          const linkPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
+          link.classList.toggle('active', linkPath === path);
+          
+          // If sub-link is active, ensure parent is highlighted
+          if (linkPath === path && link.classList.contains('sub-link')) {
+            const group = link.closest('.pb-4');
+            const parent = group ? group.querySelector('.sidebar-link') : null;
+            if (parent) parent.classList.add('active');
+          }
         });
-      };
 
-      const initScripts = (root) => {
-        root.querySelectorAll('script').forEach(s => {
-          const n = document.createElement('script');
-          if (s.src) n.src = s.src;
-          else n.textContent = s.textContent;
-          if (s.type) n.type = s.type;
-          root.appendChild(n);
-        });
-        if (window.Alpine) Alpine.discover();
-      };
-
-      const updateContent = (html, url, push = true) => {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const newMain = doc.querySelector('#app-content') || doc.querySelector('main');
-        
-        if (!newMain) {
-            setProgress(100);
-            window.location.href = url;
-            return;
+        // Sync with Alpine activeMenu if possible
+        const nav = document.querySelector('nav[x-data]');
+        if (nav && nav.__x_data) {
+          const masterUrls = ['/products', '/categories', '/suppliers'];
+          const transUrls = ['/stock', '/reports'];
+          const manageUrls = ['/settings', '/users', '/activity-log'];
+          
+          if (masterUrls.some(u => path.startsWith(u))) nav.__x_data.activeMenu = 'master';
+          else if (transUrls.some(u => path.startsWith(u))) nav.__x_data.activeMenu = 'transaksi';
+          else if (manageUrls.some(u => path.startsWith(u))) nav.__x_data.activeMenu = 'manajemen';
+          else nav.__x_data.activeMenu = 'none';
         }
-        
-        document.title = doc.title || document.title;
-        main.innerHTML = newMain.innerHTML;
-        
-        ['#page-header', '#page-actions'].forEach(selector => {
-            const el = doc.querySelector(selector);
-            const target = document.querySelector(selector);
-            if (el && target) target.innerHTML = el.innerHTML;
-        });
-
-        setActive(url);
-        initScripts(main);
-        if (push) history.pushState({}, '', url);
-        main.scrollTo({ top: 0, behavior: 'smooth' });
-        setProgress(100);
       };
 
+      const updatePage = (html, url, push = true) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const newContent = doc.querySelector('#app-content');
+        
+        if (!newContent) {
+          window.location.href = url;
+          return;
+        }
+
+        // Smooth Title Update
+        document.title = doc.title || document.title;
+        
+        // Dynamic Content Update
+        main.style.opacity = '0.5';
+        setTimeout(() => {
+          main.innerHTML = newContent.innerHTML;
+          
+          // Update Header & Actions
+          ['#page-header', '#page-actions'].forEach(selector => {
+            const source = doc.querySelector(selector);
+            const target = document.querySelector(selector);
+            if (source && target) target.innerHTML = source.innerHTML;
+          });
+
+          setActiveState(url);
+          
+          // Initialize New Scripts & Alpine
+          main.querySelectorAll('script').forEach(s => {
+            const n = document.createElement('script');
+            if (s.src) n.src = s.src;
+            else n.textContent = s.textContent;
+            if (s.type) n.type = s.type;
+            main.appendChild(n);
+          });
+          
+          if (window.Alpine) {
+            window.Alpine.discover();
+          }
+
+          if (push) history.pushState({}, '', url);
+          
+          main.style.opacity = '1';
+          main.parentElement.scrollTo({ top: 0, behavior: 'instant' });
+          setProgress(100);
+        }, 50);
+      };
+
+      // Intercept Links
       document.addEventListener('click', async (e) => {
-        const a = e.target.closest('a[href]');
-        if (!a || a.hasAttribute('download') || a.target === '_blank' || a.classList.contains('no-soft')) return;
+        const link = e.target.closest('a[href]');
+        if (!link || link.hasAttribute('download') || link.target === '_blank' || link.classList.contains('no-soft')) return;
         
-        const href = a.getAttribute('href');
+        const href = link.getAttribute('href');
         if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.includes('logout')) return;
-        if (!isSameOrigin(href)) return;
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         
-        e.preventDefault();
-        const pid = startProgress();
         try {
+          const url = new URL(href, window.location.origin);
+          if (url.origin !== window.location.origin) return;
+          
+          e.preventDefault();
+          const timer = startProgress();
+          
           const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
           const html = await res.text();
-          clearInterval(pid);
-          updateContent(html, res.url);
-        } catch {
-          clearInterval(pid);
-          setProgress(100);
+          
+          clearInterval(timer);
+          updatePage(html, res.url);
+        } catch (err) {
           window.location.href = href;
         }
       });
 
+      // Intercept Forms
       document.addEventListener('submit', async (e) => {
         const form = e.target.closest('form');
-        if (!form || form.classList.contains('no-soft') || (form.getAttribute('method') || 'GET').toUpperCase() === 'GET') return;
+        if (!form || form.classList.contains('no-soft') || (form.method || 'GET').toUpperCase() === 'GET') return;
         
         const action = form.getAttribute('action') || window.location.href;
-        if (!isSameOrigin(action) || action.includes('logout')) return;
+        if (action.includes('logout')) return;
         
         e.preventDefault();
-        const pid = startProgress();
-        const fd = new FormData(form);
+        const timer = startProgress();
         
         try {
           const res = await fetch(action, {
             method: 'POST',
-            body: fd,
+            body: new FormData(form),
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           });
+          
+          if (res.status === 419) {
+            window.location.reload();
+            return;
+          }
+          
           const html = await res.text();
-          clearInterval(pid);
-          updateContent(html, res.url);
-        } catch {
-          clearInterval(pid);
-          setProgress(100);
+          clearInterval(timer);
+          updatePage(html, res.url);
+        } catch (err) {
           form.submit();
         }
       });
 
       window.addEventListener('popstate', () => {
-          const pid = startProgress();
-          fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(r => r.text())
-            .then(html => { clearInterval(pid); updateContent(html, window.location.href, false); })
-            .catch(() => { clearInterval(pid); setProgress(100); window.location.reload(); });
+        const timer = startProgress();
+        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          .then(r => r.text())
+          .then(html => { clearInterval(timer); updatePage(html, window.location.href, false); })
+          .catch(() => window.location.reload());
       });
     });
     
