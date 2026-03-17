@@ -222,6 +222,9 @@ class UserController extends Controller
     public function editSelf(): View
     {
         $user = Auth::user();
+        if (request()->isMobile()) {
+            return view('mobile.users.edit', compact('user'));
+        }
         return view('users.edit', compact('user'));
     }
 
