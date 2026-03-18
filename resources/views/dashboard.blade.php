@@ -58,10 +58,10 @@
   @endif
   
   <!-- 1. Welcome Header (Mobile Style) -->
-  <div class="flex items-center justify-between bg-white p-5 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] border border-slate-100 shadow-sm">
+  <div class="flex items-center justify-between bg-app-surface p-5 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] border border-app-main shadow-sm transition-colors duration-300">
     <div class="space-y-1">
-      <h2 class="text-xl lg:text-3xl font-black text-slate-800 tracking-tight">Hello, {{ Auth::user()->name }}!</h2>
-      <p class="text-[10px] lg:text-sm text-slate-400 font-black uppercase tracking-widest">{{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</p>
+      <h2 class="text-xl lg:text-3xl font-black text-app-main tracking-tight transition-colors duration-300">Hello, {{ Auth::user()->name }}!</h2>
+      <p class="text-[10px] lg:text-sm text-app-muted font-black uppercase tracking-widest transition-colors duration-300">{{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</p>
     </div>
     <div class="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-500 text-white shadow-xl shadow-indigo-100 relative overflow-hidden flex items-center justify-center">
       <div class="absolute -top-6 -right-6 w-16 h-16 bg-white/20 rounded-full blur-xl"></div>
@@ -101,14 +101,14 @@
   </div>
 
   <!-- 3. Inventory Valuation (Horizontal Card) -->
-  <div class="p-5 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] bg-white shadow-sm border border-slate-100 flex items-center justify-between group hover:border-amber-200 transition-colors">
+  <div class="p-5 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] bg-app-surface shadow-sm border border-app-main flex items-center justify-between group hover:border-amber-200/50 transition-all duration-300">
     <div class="flex items-center gap-4 lg:gap-8">
-      <div class="w-14 h-14 lg:w-20 lg:h-20 rounded-2xl lg:rounded-[2rem] bg-amber-50 text-amber-500 flex items-center justify-center text-2xl lg:text-4xl group-hover:scale-110 transition-transform">
+      <div class="w-14 h-14 lg:w-20 lg:h-20 rounded-2xl lg:rounded-[2rem] bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl lg:text-4xl group-hover:scale-110 transition-transform">
         <i class="fas fa-wallet"></i>
       </div>
       <div>
-        <p class="text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Nilai Persediaan Keseluruhan</p>
-        <p class="text-xl lg:text-4xl font-black text-slate-800">Rp {{ number_format($totalInventoryValue, 0, ',', '.') }}</p>
+        <p class="text-[10px] lg:text-xs font-black text-app-muted uppercase tracking-widest mb-1 transition-colors duration-300">Nilai Persediaan Keseluruhan</p>
+        <p class="text-xl lg:text-4xl font-black text-app-main transition-colors duration-300">Rp {{ number_format($totalInventoryValue, 0, ',', '.') }}</p>
       </div>
     </div>
     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
@@ -118,47 +118,47 @@
 
   <!-- 4. Ringkasan Data (Grid 2x2 style from mobile but bigger) -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all">
-      <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl">
+    <div class="p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all duration-300">
+      <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-2xl">
         <i class="fas fa-boxes-stacked"></i>
       </div>
       <div>
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total Barang</p>
-        <p class="text-2xl font-black text-slate-800">{{ number_format($totalProducts) }}</p>
+        <p class="text-[10px] font-black text-app-muted uppercase tracking-widest leading-none mb-1 transition-colors">Total Barang</p>
+        <p class="text-2xl font-black text-app-main transition-colors">{{ number_format($totalProducts) }}</p>
       </div>
     </div>
-    <div class="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all">
-      <div class="w-14 h-14 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-2xl">
+    <div class="p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all duration-300">
+      <div class="w-14 h-14 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center text-2xl">
         <i class="fas fa-tags"></i>
       </div>
       <div>
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Jenis Belanja</p>
-        <p class="text-2xl font-black text-slate-800">{{ number_format($totalCategories) }}</p>
+        <p class="text-[10px] font-black text-app-muted uppercase tracking-widest leading-none mb-1 transition-colors">Jenis Belanja</p>
+        <p class="text-2xl font-black text-app-main transition-colors">{{ number_format($totalCategories) }}</p>
       </div>
     </div>
-    <div class="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all">
-      <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl">
+    <div class="p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all duration-300">
+      <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl">
         <i class="fas fa-truck-fast"></i>
       </div>
       <div>
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Penyedia</p>
-        <p class="text-2xl font-black text-slate-800">{{ number_format($supplierCount) }}</p>
+        <p class="text-[10px] font-black text-app-muted uppercase tracking-widest leading-none mb-1 transition-colors">Penyedia</p>
+        <p class="text-2xl font-black text-app-main transition-colors">{{ number_format($supplierCount) }}</p>
       </div>
     </div>
-    <div class="p-6 rounded-[2rem] bg-rose-50 border border-rose-100 shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all">
-      <div class="w-14 h-14 rounded-2xl bg-white text-rose-500 flex items-center justify-center text-2xl shadow-sm shadow-rose-100">
+    <div class="p-6 rounded-[2rem] bg-rose-500/5 dark:bg-rose-500/10 border border-rose-500/20 shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all duration-300">
+      <div class="w-14 h-14 rounded-2xl bg-white dark:bg-rose-500 text-rose-500 dark:text-white flex items-center justify-center text-2xl shadow-sm shadow-rose-100 dark:shadow-none">
         <i class="fas fa-warning"></i>
       </div>
       <div>
-        <p class="text-[10px] font-black text-rose-400 uppercase tracking-widest leading-none mb-1">Stok Rendah</p>
-        <p class="text-2xl font-black text-rose-600">{{ number_format($lowStockCount) }}</p>
+        <p class="text-[10px] font-black text-rose-400 dark:text-rose-300 uppercase tracking-widest leading-none mb-1 transition-colors">Stok Rendah</p>
+        <p class="text-2xl font-black text-rose-600 dark:text-rose-400 transition-colors">{{ number_format($lowStockCount) }}</p>
       </div>
     </div>
   </div>
 
   <!-- 5. Ringkasan Dokumen (Enhanced for desktop) -->
   <div class="space-y-6">
-    <h3 class="text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-[0.2em] lg:tracking-[0.3em] px-2 mb-4">Ringkasan Dokumen Berkas</h3>
+    <h3 class="text-[10px] lg:text-xs font-black text-app-muted uppercase tracking-[0.2em] lg:tracking-[0.3em] px-2 mb-4 transition-colors">Ringkasan Dokumen Berkas</h3>
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
       @foreach([
         ['label' => 'Belanja Modal', 'count' => $belanjaModalCount, 'icon' => 'fa-file-contract', 'color' => 'indigo'],
@@ -169,13 +169,13 @@
         ['label' => 'BA Opname', 'count' => $opnameCount, 'icon' => 'fa-clipboard-check', 'color' => 'cyan'],
         ['label' => 'Pinjam Pakai', 'count' => $pinjamCount, 'icon' => 'fa-people-carry-box', 'color' => 'slate']
       ] as $doc)
-        <div class="p-5 rounded-3xl bg-white border border-slate-100 shadow-sm flex items-center gap-4 group hover:border-indigo-200 transition-all">
-          <div class="w-12 h-12 rounded-2xl bg-{{ $doc['color'] }}-50 text-{{ $doc['color'] }}-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+        <div class="p-5 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4 group hover:border-indigo-500/30 transition-all duration-300">
+          <div class="w-12 h-12 rounded-2xl bg-{{ $doc['color'] }}-500/10 text-{{ $doc['color'] }}-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
             <i class="fas {{ $doc['icon'] }}"></i>
           </div>
           <div>
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{{ $doc['label'] }}</p>
-            <p class="text-xl font-black text-slate-800">{{ number_format($doc['count'] ?? 0) }}</p>
+            <p class="text-[9px] font-black text-app-muted uppercase tracking-widest leading-none mb-1 transition-colors">{{ $doc['label'] }}</p>
+            <p class="text-xl font-black text-app-main transition-colors">{{ number_format($doc['count'] ?? 0) }}</p>
           </div>
         </div>
       @endforeach
@@ -185,26 +185,26 @@
   <!-- 6. Analisis Performa & Control System (Side by side for desktop) -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
     {{-- Tren Performa --}}
-    <div class="p-10 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm">
+    <div class="p-10 rounded-[2.5rem] bg-app-surface border border-app-main shadow-sm transition-colors duration-300">
       <div class="flex items-center justify-between mb-8">
-        <h3 class="text-sm font-black text-slate-800 uppercase tracking-[0.2em]">Analisis Performa (Bulanan)</h3>
-        <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded-full uppercase tracking-widest">3 Bulan Terakhir</span>
+        <h3 class="text-sm font-black text-app-main uppercase tracking-[0.2em] transition-colors">Analisis Performa (Bulanan)</h3>
+        <span class="px-3 py-1 bg-indigo-500/10 text-indigo-500 text-[10px] font-black rounded-full uppercase tracking-widest">3 Bulan Terakhir</span>
       </div>
       <div class="space-y-6">
         @foreach($monthlyLabels->take(-3) as $idx => $lbl)
           <div class="space-y-3">
             <div class="flex justify-between items-end">
               <div>
-                <span class="text-[11px] font-black text-slate-800 uppercase tracking-tighter">{{ $lbl }}</span>
+                <span class="text-[11px] font-black text-app-main uppercase tracking-tighter transition-colors">{{ $lbl }}</span>
               </div>
               <div class="text-right">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                  In: <span class="text-indigo-600">{{ number_format($monthlyIn[$idx]) }}</span> / 
+                <span class="text-[10px] font-bold text-app-muted uppercase tracking-widest transition-colors">
+                  In: <span class="text-indigo-500">{{ number_format($monthlyIn[$idx]) }}</span> / 
                   Out: <span class="text-rose-500">{{ number_format($monthlyOut[$idx]) }}</span>
                 </span>
               </div>
             </div>
-            <div class="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
+            <div class="h-3 w-full bg-app-bg rounded-full overflow-hidden flex border border-app-main transition-colors">
               @php
                 $total = $monthlyIn[$idx] + $monthlyOut[$idx];
                 $pIn = $total > 0 ? ($monthlyIn[$idx] / $total) * 100 : 0;
@@ -241,50 +241,50 @@
   </div>
 
   <!-- 7. Aksi Cepat Section (Mockup Match - Forced Single Row) -->
-  <div class="bg-white p-5 lg:p-10 rounded-[2rem] lg:rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6 lg:space-y-10">
+  <div class="bg-app-surface p-5 lg:p-10 rounded-[2rem] lg:rounded-[2.5rem] border border-app-main shadow-sm space-y-6 lg:space-y-10 transition-colors duration-300">
     <div class="px-4 py-2 lg:py-4">
-      <h3 class="text-center py-2 text-[10px] lg:text-sm font-black text-slate-800 uppercase tracking-[0.2em]">Aksi Cepat</h3>
+      <h3 class="text-center py-2 text-[10px] lg:text-sm font-black text-app-main uppercase tracking-[0.2em] transition-colors">Aksi Cepat</h3>
     </div>
     
     <div class="flex flex-row flex-wrap items-center justify-between px-2 lg:px-10">
       {{-- Barang Masuk --}}
       <a href="{{ route('stock.create', ['type' => 'in']) }}" class="flex flex-col items-center gap-3 group">
-        <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-emerald-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-app-bg border border-app-main shadow-sm flex items-center justify-center text-emerald-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-plus-circle"></i>
         </div>
-        <span class="text-[9px] font-black text-slate-700 uppercase tracking-widest text-center leading-tight">BARANG MASUK</span>
+        <span class="text-[9px] font-black text-app-main uppercase tracking-widest text-center leading-tight transition-colors">BARANG MASUK</span>
       </a>
 
       {{-- Barang Keluar --}}
       <a href="{{ route('stock.create', ['type' => 'out']) }}" class="flex flex-col items-center gap-3 group">
-        <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-rose-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-app-bg border border-app-main shadow-sm flex items-center justify-center text-rose-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-minus-circle"></i>
         </div>
-        <span class="text-[9px] font-black text-slate-700 uppercase tracking-widest text-center leading-tight">BARANG KELUAR</span>
+        <span class="text-[9px] font-black text-app-main uppercase tracking-widest text-center leading-tight transition-colors">BARANG KELUAR</span>
       </a>
 
       {{-- Cari Barang --}}
       <a href="{{ route('products.index') }}" class="flex flex-col items-center gap-3 group">
-        <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-blue-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-app-bg border border-app-main shadow-sm flex items-center justify-center text-blue-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-search"></i>
         </div>
-        <span class="text-[9px] font-black text-slate-700 uppercase tracking-widest text-center leading-tight">CARI BARANG</span>
+        <span class="text-[9px] font-black text-app-main uppercase tracking-widest text-center leading-tight transition-colors">CARI BARANG</span>
       </a>
 
       {{-- Cetak --}}
       <a href="{{ route('reports.index') }}" class="flex flex-col items-center gap-3 group">
-        <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-purple-600 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-app-bg border border-app-main shadow-sm flex items-center justify-center text-purple-600 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-print"></i>
         </div>
-        <span class="text-[9px] font-black text-slate-700 uppercase tracking-widest text-center leading-tight">CETAK</span>
+        <span class="text-[9px] font-black text-app-main uppercase tracking-widest text-center leading-tight transition-colors">CETAK</span>
       </a>
 
       {{-- Audit Log --}}
       <a href="{{ route('activity_log.index') }}" class="flex flex-col items-center gap-3 group">
-        <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-app-bg border border-app-main shadow-sm flex items-center justify-center text-slate-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-history"></i>
         </div>
-        <span class="text-[9px] font-black text-slate-700 uppercase tracking-widest text-center leading-tight">AUDIT LOG</span>
+        <span class="text-[9px] font-black text-app-main uppercase tracking-widest text-center leading-tight transition-colors">AUDIT LOG</span>
       </a>
     </div>
   </div>
@@ -292,22 +292,22 @@
   <!-- 8. Recent Activity (Desktop Table/List Style) -->
   <div class="space-y-6">
     <div class="flex items-center justify-between px-2 mb-4">
-      <h3 class="text-sm font-black text-slate-800 uppercase tracking-[0.2em]">Aktivitas Gudang Hari Ini</h3>
-      <a href="{{ route('stock.index') }}" class="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline">Lihat Detail Riwayat</a>
+      <h3 class="text-sm font-black text-app-main uppercase tracking-[0.2em] transition-colors">Aktivitas Gudang Hari Ini</h3>
+      <a href="{{ route('stock.index') }}" class="text-[10px] font-black text-indigo-500 uppercase tracking-widest hover:underline transition-colors">Lihat Detail Riwayat</a>
     </div>
     <div class="space-y-4">
       @forelse($recentTransactions as $tx)
-        <div class="p-4 lg:p-6 rounded-[2rem] bg-white border border-slate-50 shadow-sm flex items-center justify-between group hover:border-indigo-100 transition-all">
+        <div class="p-4 lg:p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm flex items-center justify-between group hover:border-indigo-500/30 transition-all duration-300">
           <div class="flex items-center gap-4 lg:gap-6">
-            <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl flex items-center justify-center text-sm lg:text-xl shadow-md border border-slate-50
-              {{ $tx->type == 'in' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }}">
+            <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl flex items-center justify-center text-sm lg:text-xl shadow-md border border-app-main
+              {{ $tx->type == 'in' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500' }}">
               <i class="fas {{ $tx->type == 'in' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
             </div>
             <div class="min-w-0">
-              <p class="text-sm lg:text-lg font-black text-slate-800 truncate">{{ $tx->product?->name ?? 'Produk Dihapus' }}</p>
-              <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">
+              <p class="text-sm lg:text-lg font-black text-app-main truncate transition-colors">{{ $tx->product?->name ?? 'Produk Dihapus' }}</p>
+              <p class="text-[10px] text-app-muted font-black uppercase tracking-widest mt-1 transition-colors">
                 <i class="far fa-clock mr-1 text-indigo-400"></i> {{ $tx->date->format('H:i') }} • 
-                <span class="text-slate-500">{{ $tx->user->name ?? 'System' }}</span>
+                <span class="text-app-muted opacity-80 transition-colors">{{ $tx->user->name ?? 'System' }}</span>
               </p>
             </div>
           </div>
@@ -315,7 +315,7 @@
             <p class="text-2xl font-black {{ $tx->type == 'in' ? 'text-emerald-500' : 'text-rose-500' }}">
               {{ $tx->type == 'in' ? '+' : '−' }}{{ number_format($tx->quantity) }}
             </p>
-            <p class="text-[10px] text-slate-300 font-extrabold uppercase tracking-widest leading-none">{{ $tx->product?->unit ?? 'Unit' }}</p>
+            <p class="text-[10px] text-app-muted font-extrabold uppercase tracking-widest leading-none transition-colors">{{ $tx->product?->unit ?? 'Unit' }}</p>
           </div>
         </div>
       @empty

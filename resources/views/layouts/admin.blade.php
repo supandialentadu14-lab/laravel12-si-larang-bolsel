@@ -398,7 +398,7 @@
     }
   }" 
   @open-sidebar.window="sidebarOpen = true">
-  <div class="max-w-none mx-auto bg-[#0F172A] h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
+  <div class="max-w-none mx-auto bg-app-bg h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-app-main relative transition-colors duration-300">
 
   <div class="flex flex-row flex-1 min-h-0 overflow-hidden">
     <!-- Sidebar Overlay for Mobile -->
@@ -510,12 +510,12 @@
     </aside>
 
     <!-- Main Content Wrapper (Header + Content) -->
-    <div id="desktop-content-wrapper" class="flex-1 flex flex-col min-w-0 bg-white relative transition-all duration-300 ease-in-out">
+    <div id="desktop-content-wrapper" class="flex-1 flex flex-col min-w-0 bg-app-bg relative transition-all duration-300 ease-in-out">
       <!-- Minimal Top Header (Fixed Position) -->
-      <header class="h-20 sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-50 flex items-center justify-between px-4 lg:px-8 no-print z-20">
+      <header class="h-20 sticky top-0 bg-app-surface/80 backdrop-blur-md border-b border-app-main flex items-center justify-between px-4 lg:px-8 no-print z-20 transition-colors duration-300">
         <div class="flex-none flex items-center gap-4">
           <!-- Hamburger for Mobile (Only if sidebar is hidden) -->
-          <button @click="sidebarOpen = true" class="lg:hidden w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
+          <button @click="sidebarOpen = true" class="lg:hidden w-10 h-10 rounded-xl bg-app-bg border border-app-main flex items-center justify-center text-app-main transition-colors duration-300">
             <i class="fas fa-bars"></i>
           </button>
           
@@ -535,7 +535,7 @@
                 $marqueeText = $welcomeText;
               @endphp
               <div class="flex items-center gap-10">
-                <span class="text-[20px] font-black text-slate-400 uppercase tracking-[0.15em] flex items-center gap-4">
+                <span class="text-[20px] font-black text-app-muted opacity-50 uppercase tracking-[0.15em] flex items-center gap-4 transition-colors">
                   {{ $marqueeText }}
                 </span>
               </div>
@@ -579,8 +579,8 @@
           <!-- Breadcrumbs/Subheader -->
           <div class="flex items-center justify-between mb-2 no-print">
             <div id="page-header">
-              <h1 class="text-[2.2rem] font-black text-slate-800 tracking-tight leading-none">@yield('header')</h1>
-              <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.3em] mt-3">@yield('subheader')</p>
+              <h1 class="text-[2.2rem] font-black text-app-main tracking-tight leading-none transition-colors duration-300">@yield('header')</h1>
+              <p class="text-[10px] font-extrabold text-app-muted uppercase tracking-[0.3em] mt-3 transition-colors duration-300">@yield('subheader')</p>
             </div>
             <div id="page-actions" class="flex items-center gap-3">
               @yield('actions')
