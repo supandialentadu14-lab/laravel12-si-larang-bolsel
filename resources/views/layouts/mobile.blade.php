@@ -239,7 +239,7 @@
     </a>
   </div>
 
-  <div id="page-progress" class="fixed top-0 left-0 h-0.5 bg-indigo-600 z-[9999] transition-all duration-300 pointer-events-none" style="width: 0%"></div>
+  <div id="page-progress" class="fixed top-0 left-0 h-[3px] bg-indigo-600 z-[9999] transition-all duration-300 pointer-events-none shadow-[0_0_10px_rgba(79,70,229,0.5)]" style="width: 0%"></div>
 
   @include('partials.mobile_bottom_nav')
 
