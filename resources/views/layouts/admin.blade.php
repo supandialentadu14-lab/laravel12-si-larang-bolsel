@@ -737,11 +737,13 @@
               appContent.innerHTML = newMain.innerHTML;
             }
 
-            // Sync Top Header Profile Photo
+            // Sync Top Header Profile Photo (Force Refresh)
             const newTopImg = doc.getElementById('top-profile-img');
             const currentTopImg = document.getElementById('top-profile-img');
             if (newTopImg && currentTopImg) {
-              currentTopImg.src = newTopImg.src;
+              // Tambahkan cache-buster unik setiap kali navigasi selesai
+              const baseUrl = newTopImg.src.split('?')[0];
+              currentTopImg.src = baseUrl + '?t=' + Date.now();
             }
 
             if (push) history.pushState({ spa: true }, '', url);
