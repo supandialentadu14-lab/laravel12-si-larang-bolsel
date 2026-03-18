@@ -69,7 +69,7 @@
           {{-- Avatar Section --}}
           <div class="relative flex-shrink-0">
             <img class="w-14 h-14 rounded-2xl object-cover ring-4 {{ $isOnline ? 'ring-emerald-50 ' : 'ring-slate-50 ' }} transition-all"
-               src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=4F46E5&color=ffffff' }}"
+               src="{{ $user->avatar ? asset('media/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=4F46E5&color=ffffff' }}"
                alt="{{ $user->name }}">
             <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-sm {{ $isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-slate-300 ' }} transition-colors"></span>
           </div>

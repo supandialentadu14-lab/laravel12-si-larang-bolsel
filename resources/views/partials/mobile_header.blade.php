@@ -23,7 +23,7 @@
     </button>
 
     <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 overflow-hidden shadow-sm transition-colors">
-      <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}" class="w-full h-full object-cover">
+      <img src="{{ Auth::user()->avatar ? asset('media/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}" class="w-full h-full object-cover">
     </div>
   </div>
 </header>

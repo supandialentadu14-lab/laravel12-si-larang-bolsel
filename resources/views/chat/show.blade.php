@@ -135,7 +135,7 @@
         </a>
         <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100 overflow-hidden shadow-sm">
-                <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=4F46E5&color=ffffff' }}" class="w-full h-full object-cover">
+                <img src="{{ $user->avatar ? asset('media/' . $user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=4F46E5&color=ffffff' }}" class="w-full h-full object-cover">
             </div>
             <div class="min-w-0 flex-1">
                 <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight truncate">{{ $user->name }}</h3>

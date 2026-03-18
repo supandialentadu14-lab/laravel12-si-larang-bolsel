@@ -18,7 +18,7 @@
                 <a href="{{ route('chat.show', $user->id) }}" class="flex items-center gap-4 p-5 active:bg-slate-50 transition-colors">
                     <div class="relative">
                         <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 overflow-hidden shadow-sm">
-                            <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=4F46E5&color=ffffff' }}" class="w-full h-full object-cover">
+                            <img src="{{ $user->avatar ? asset('media/' . $user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=4F46E5&color=ffffff' }}" class="w-full h-full object-cover">
                         </div>
                         @if($user->isOnline())
                             <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white"></span>

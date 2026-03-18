@@ -569,7 +569,7 @@
  
           <!-- Profile Photo Only -->
           <div class="w-10 h-10 rounded-xl bg-white overflow-hidden border border-slate-100 shadow-sm flex-shrink-0 p-0.5">
-            <img id="top-profile-img" class="w-full h-full rounded-[10px] object-cover" src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}">
+            <img id="top-profile-img" class="w-full h-full rounded-[10px] object-cover" src="{{ Auth::user()->avatar ? asset('media/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}">
           </div>
         </div>
       </header>
