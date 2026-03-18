@@ -837,13 +837,25 @@
             return;
           }
           
+          if (!res.ok) {
+            throw new Error('Server returned error status ' + res.status);
+          }
+
           const html = await res.text();
           clearInterval(pid);
+          
+          // Sinkronisasi paksa jika ini update profil
+          if (action.includes('profile/update') || action.includes('profile')) {
+            window.location.reload(); // Refresh total untuk profil agar pesan sukses & foto pasti tampil
+            return;
+          }
+
           updateContent(html, res.url);
         } catch (err) {
+          console.error('SPA: Form submission failed, falling back to normal submit', err);
           clearInterval(pid);
           setProgress(100);
-          form.submit();
+          form.submit(); // Kirim dengan cara biasa jika AJAX gagal
         }
       });
 
