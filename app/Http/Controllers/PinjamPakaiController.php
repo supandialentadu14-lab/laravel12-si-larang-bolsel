@@ -306,7 +306,7 @@ class PinjamPakaiController extends Controller
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         session(['pinjam_pakai_current' => $data, 'pinjam_pakai_current_id' => $id]);
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.pinjam_pakai_report' : 'reports.pinjam_pakai_report';
 
         return view($view, [

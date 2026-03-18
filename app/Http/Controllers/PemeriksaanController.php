@@ -465,7 +465,7 @@ class PemeriksaanController extends Controller
 
         session(['bap_current' => $data, 'bap_current_id' => $id]);
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.pemeriksaan_report' : 'reports.pemeriksaan_report';
 
         return view($view, [

@@ -58,10 +58,10 @@
   @endif
   
   <!-- 1. Welcome Header (Mobile Style) -->
-  <div class="flex items-center justify-between bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+  <div class="flex items-center justify-between bg-white p-5 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] border border-slate-100 shadow-sm">
     <div class="space-y-1">
-      <h2 class="text-3xl font-black text-slate-800 tracking-tight">Hello, {{ Auth::user()->name }}!</h2>
-      <p class="text-sm text-slate-400 font-black uppercase tracking-widest">{{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</p>
+      <h2 class="text-xl lg:text-3xl font-black text-slate-800 tracking-tight">Hello, {{ Auth::user()->name }}!</h2>
+      <p class="text-[10px] lg:text-sm text-slate-400 font-black uppercase tracking-widest">{{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</p>
     </div>
     <div class="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-500 text-white shadow-xl shadow-indigo-100 relative overflow-hidden flex items-center justify-center">
       <div class="absolute -top-6 -right-6 w-16 h-16 bg-white/20 rounded-full blur-xl"></div>
@@ -101,14 +101,14 @@
   </div>
 
   <!-- 3. Inventory Valuation (Horizontal Card) -->
-  <div class="p-8 rounded-[2.5rem] bg-white shadow-sm border border-slate-100 flex items-center justify-between group hover:border-amber-200 transition-colors">
-    <div class="flex items-center gap-8">
-      <div class="w-20 h-20 rounded-[2rem] bg-amber-50 text-amber-500 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">
+  <div class="p-5 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] bg-white shadow-sm border border-slate-100 flex items-center justify-between group hover:border-amber-200 transition-colors">
+    <div class="flex items-center gap-4 lg:gap-8">
+      <div class="w-14 h-14 lg:w-20 lg:h-20 rounded-2xl lg:rounded-[2rem] bg-amber-50 text-amber-500 flex items-center justify-center text-2xl lg:text-4xl group-hover:scale-110 transition-transform">
         <i class="fas fa-wallet"></i>
       </div>
       <div>
-        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Nilai Persediaan Keseluruhan</p>
-        <p class="text-4xl font-black text-slate-800">Rp {{ number_format($totalInventoryValue, 0, ',', '.') }}</p>
+        <p class="text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Nilai Persediaan Keseluruhan</p>
+        <p class="text-xl lg:text-4xl font-black text-slate-800">Rp {{ number_format($totalInventoryValue, 0, ',', '.') }}</p>
       </div>
     </div>
     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
@@ -158,8 +158,8 @@
 
   <!-- 5. Ringkasan Dokumen (Enhanced for desktop) -->
   <div class="space-y-6">
-    <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] px-2 mb-4">Ringkasan Dokumen Berkas</h3>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <h3 class="text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-[0.2em] lg:tracking-[0.3em] px-2 mb-4">Ringkasan Dokumen Berkas</h3>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
       @foreach([
         ['label' => 'Belanja Modal', 'count' => $belanjaModalCount, 'icon' => 'fa-file-contract', 'color' => 'indigo'],
         ['label' => 'Nota Pesanan', 'count' => $notaCount, 'icon' => 'fa-file-invoice', 'color' => 'violet'],
@@ -239,12 +239,12 @@
   </div>
 
   <!-- 7. Aksi Cepat Section (Mockup Match - Forced Single Row) -->
-  <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-10">
-    <div class="px-4 py-4">
-      <h3 class="text-center py-2 text-sm font-black text-slate-800 uppercase tracking-[0.2em]">Aksi Cepat</h3>
+  <div class="bg-white p-5 lg:p-10 rounded-[2rem] lg:rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6 lg:space-y-10">
+    <div class="px-4 py-2 lg:py-4">
+      <h3 class="text-center py-2 text-[10px] lg:text-sm font-black text-slate-800 uppercase tracking-[0.2em]">Aksi Cepat</h3>
     </div>
     
-    <div class="flex flex-row items-start justify-between gap-2">
+    <div class="grid grid-cols-5 gap-2 lg:gap-2">
       {{-- Barang Masuk --}}
       <a href="{{ route('stock.create', ['type' => 'in']) }}" class="flex flex-col items-center gap-3 group flex-1">
         <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-emerald-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
@@ -295,14 +295,14 @@
     </div>
     <div class="space-y-4">
       @forelse($recentTransactions as $tx)
-        <div class="p-6 rounded-[2rem] bg-white border border-slate-50 shadow-sm flex items-center justify-between group hover:border-indigo-100 transition-all">
-          <div class="flex items-center gap-6">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-xl shadow-md border border-slate-50
+        <div class="p-4 lg:p-6 rounded-[2rem] bg-white border border-slate-50 shadow-sm flex items-center justify-between group hover:border-indigo-100 transition-all">
+          <div class="flex items-center gap-4 lg:gap-6">
+            <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl flex items-center justify-center text-sm lg:text-xl shadow-md border border-slate-50
               {{ $tx->type == 'in' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }}">
               <i class="fas {{ $tx->type == 'in' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
             </div>
             <div class="min-w-0">
-              <p class="text-lg font-black text-slate-800 truncate">{{ $tx->product?->name ?? 'Produk Dihapus' }}</p>
+              <p class="text-sm lg:text-lg font-black text-slate-800 truncate">{{ $tx->product?->name ?? 'Produk Dihapus' }}</p>
               <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">
                 <i class="far fa-clock mr-1 text-indigo-400"></i> {{ $tx->date->format('H:i') }} • 
                 <span class="text-slate-500">{{ $tx->user->name ?? 'System' }}</span>

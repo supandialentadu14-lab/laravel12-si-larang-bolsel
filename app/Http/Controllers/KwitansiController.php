@@ -272,7 +272,7 @@ class KwitansiController extends Controller
         ];
         session(['kwitansi_current' => $data]);
         
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.kwitansi_report' : 'reports.kwitansi_report';
 
         return view($view, compact('data', 'opd'));
@@ -631,7 +631,7 @@ class KwitansiController extends Controller
         $saved_id = $id;
         session(['kwitansi_current' => $data, 'kwitansi_current_id' => $id]);
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.kwitansi_report' : 'reports.kwitansi_report';
 
         return view($view, [

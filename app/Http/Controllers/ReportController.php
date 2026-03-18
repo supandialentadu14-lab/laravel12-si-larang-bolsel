@@ -110,7 +110,7 @@ class ReportController extends Controller
             ];
         }
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.kartu_tahunan' : 'reports.kartu_tahunan';
 
         return view($view, compact('grouped', 'startDate', 'endDate', 'opd', 'master', 'categories', 'categoryId'));
@@ -162,7 +162,7 @@ class ReportController extends Controller
             ];
         }
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.index' : 'reports.index';
 
         return view($view, compact(

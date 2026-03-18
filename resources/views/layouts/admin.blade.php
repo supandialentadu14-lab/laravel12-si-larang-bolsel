@@ -264,6 +264,27 @@
     @media print {
       .no-print { display: none !important; }
     }
+
+    /* Transition classes for smooth SPA navigation */
+    .content-area-fade {
+      opacity: 1;
+      filter: none;
+      transform: none;
+      will-change: opacity, transform, filter;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                  filter 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                  transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .content-loading {
+      opacity: 0 !important;
+      filter: blur(8px) !important;
+      transform: translateY(12px) !important;
+      pointer-events: none;
+    }
+
+    #sidebar-main {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -367,7 +388,7 @@
   x-init="checkNewMessages(); setInterval(() => checkNewMessages(), 15000)">
 
   <!-- Application Boxed Wrapper -->
-  <div class="max-w-none mx-auto bg-white h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
+  <div class="max-w-none mx-auto bg-[#0F172A] h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
 
   <div class="flex flex-row flex-1 min-h-0 overflow-hidden">
     <!-- Sidebar Overlay for Mobile -->
@@ -383,7 +404,6 @@
 
     <!-- Sidebar Navigation -->
     <aside id="sidebar-main" 
-           x-cloak
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
             class="fixed lg:static inset-y-0 left-0 w-64 flex flex-col no-print bg-[#0F172A] border-r border-slate-800/50 z-[60] lg:z-10 transition-transform duration-300 transform -translate-x-full lg:translate-x-0 lg:flex flex-shrink-0" style="background-color: #0F172A;">
       <div class="p-8">
@@ -540,47 +560,49 @@
         </div>
       </header>
 
-      <div class="flex-1 overflow-y-auto custom-scrollbar px-4 lg:px-8 py-6 lg:py-10 bg-slate-50/50">
-        <!-- Breadcrumbs/Subheader -->
-        <div class="flex items-center justify-between mb-2 no-print">
-          <div id="page-header">
-            <h1 class="text-[2.2rem] font-black text-slate-800 tracking-tight leading-none transition-all">@yield('header')</h1>
-            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.3em] mt-3">@yield('subheader')</p>
+      <div id="main-content-wrapper" class="flex-1 overflow-y-auto custom-scrollbar px-4 lg:px-8 py-6 lg:py-10 bg-[#F8FAFC]">
+        <div id="content-container-fade" class="content-area-fade">
+          <!-- Breadcrumbs/Subheader -->
+          <div class="flex items-center justify-between mb-2 no-print">
+            <div id="page-header">
+              <h1 class="text-[2.2rem] font-black text-slate-800 tracking-tight leading-none">@yield('header')</h1>
+              <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.3em] mt-3">@yield('subheader')</p>
+            </div>
+            <div id="page-actions" class="flex items-center gap-3">
+              @yield('actions')
+            </div>
           </div>
-          <div id="page-actions" class="flex items-center gap-3">
-            @yield('actions')
-          </div>
+
+          <!-- Feedback Alerts -->
+          @if (session('success'))
+            <div class="mb-8 p-6 bg-emerald-50 border border-emerald-100 rounded-[2rem] flex items-center gap-4 text-emerald-800 animate-fadeIn">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-lg shadow-emerald-200">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-black text-sm">Berhasil!</p>
+                <p class="text-xs opacity-80">{{ session('success') }}</p>
+              </div>
+            </div>
+          @endif
+
+          @if (session('error') || $errors->any())
+            <div class="mb-8 p-6 bg-rose-50 border border-rose-100 rounded-[2rem] flex items-center gap-4 text-rose-800 animate-fadeIn">
+              <div class="w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center text-xl shadow-lg shadow-rose-200">
+                <i class="fas fa-times-circle"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-black text-sm">Terjadi Kesalahan</p>
+                <p class="text-xs opacity-80">{{ session('error') ?? 'Silakan periksa inputan Anda.' }}</p>
+              </div>
+            </div>
+          @endif
+          
+          <!-- Main Dynamic Content -->
+          <main id="app-content">
+            @yield('content')
+          </main>
         </div>
-
-        <!-- Feedback Alerts -->
-        @if (session('success'))
-          <div class="mb-8 p-6 bg-emerald-50 border border-emerald-100 rounded-[2rem] flex items-center gap-4 text-emerald-800 animate-fadeIn">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-lg shadow-emerald-200">
-              <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="flex-1">
-              <p class="font-black text-sm">Berhasil!</p>
-              <p class="text-xs opacity-80">{{ session('success') }}</p>
-            </div>
-          </div>
-        @endif
-
-        @if (session('error') || $errors->any())
-          <div class="mb-8 p-6 bg-rose-50 border border-rose-100 rounded-[2rem] flex items-center gap-4 text-rose-800 animate-fadeIn">
-            <div class="w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center text-xl shadow-lg shadow-rose-200">
-              <i class="fas fa-times-circle"></i>
-            </div>
-            <div class="flex-1">
-              <p class="font-black text-sm">Terjadi Kesalahan</p>
-              <p class="text-xs opacity-80">{{ session('error') ?? 'Silakan periksa inputan Anda.' }}</p>
-            </div>
-          </div>
-        @endif
-        
-        <!-- Main Dynamic Content -->
-        <main id="app-content" class="transition-all duration-300">
-          @yield('content')
-        </main>
       </div>
 
       <footer class="px-8 py-4 bg-white border-t border-slate-50 no-print z-10 shadow-[0_-5px_20px_-10px_rgba(0,0,0,0.05)]">
@@ -612,17 +634,13 @@
   <div id="page-progress" class="fixed top-0 left-0 h-1 bg-indigo-600 z-[10000] transition-all duration-300 pointer-events-none" style="width: 0%; box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);"></div>
 
   <script>
-    /**
-     * SI-LARANG SPA-Like Navigation System
-     * Resolves Sidebar Blinking and Improves Performance
-     */
-    document.addEventListener('DOMContentLoaded', function() {
-      const main = document.querySelector('#app-content');
-      if (!main) return;
-
+    (() => {
       const progressBar = document.getElementById('page-progress');
-      let progressTimer = null;
-      
+      const appContent = document.getElementById('app-content');
+      const pageHeader = document.getElementById('page-header');
+      const pageActions = document.getElementById('page-actions');
+      const fadeWrap = document.getElementById('content-container-fade');
+
       const setProgress = (w) => {
         if (!progressBar) return;
         progressBar.style.width = w + '%';
@@ -634,138 +652,141 @@
               progressBar.style.opacity = '1';
             }, 300);
           }, 500);
+        } else {
+          progressBar.style.opacity = '1';
         }
       };
 
       const startProgress = () => {
-        if (!progressBar) return;
-        progressBar.style.opacity = '1';
         let w = 5;
         setProgress(w);
-        return setInterval(() => {
-          if (w < 90) w += (90 - w) * 0.15;
-          else if (w < 98) w += 0.2;
+        const inv = setInterval(() => {
+          if (w < 85) w += (85 - w) * 0.1;
+          else if (w < 95) w += 0.5;
           setProgress(w);
+          if (w >= 95) clearInterval(inv);
         }, 150);
+        return inv;
       };
 
-      const setActiveState = (url) => {
-        const path = new URL(url, window.location.origin).pathname;
-        
-        // Update regular links
-        document.querySelectorAll('.sidebar-link, .sub-link').forEach(link => {
-          const linkPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
-          link.classList.toggle('active', linkPath === path);
-          
-          // If sub-link is active, ensure parent is highlighted
-          if (linkPath === path && link.classList.contains('sub-link')) {
-            const group = link.closest('.pb-4');
-            const parent = group ? group.querySelector('.sidebar-link') : null;
-            if (parent) parent.classList.add('active');
-          }
-        });
+      const updateActiveLink = (doc) => {
+        try {
+          const newSidebar = doc.querySelector('aside nav');
+          const currentSidebar = document.querySelector('aside nav');
+          if (!newSidebar || !currentSidebar) return;
 
-        // Sync with Alpine activeMenu if possible
-        const nav = document.querySelector('nav[x-data]');
-        if (nav && nav.__x_data) {
-          const masterUrls = ['/products', '/categories', '/suppliers'];
-          const transUrls = ['/stock', '/reports'];
-          const manageUrls = ['/settings', '/users', '/activity-log'];
-          
-          if (masterUrls.some(u => path.startsWith(u))) nav.__x_data.activeMenu = 'master';
-          else if (transUrls.some(u => path.startsWith(u))) nav.__x_data.activeMenu = 'transaksi';
-          else if (manageUrls.some(u => path.startsWith(u))) nav.__x_data.activeMenu = 'manajemen';
-          else nav.__x_data.activeMenu = 'none';
+          const currentLinks = currentSidebar.querySelectorAll('a[href], button');
+          const nextLinks = newSidebar.querySelectorAll('a[href], button');
+
+          nextLinks.forEach((next, idx) => {
+            const curr = currentLinks[idx];
+            if (curr && curr.className !== next.className) {
+              curr.className = next.className;
+            }
+          });
+        } catch (e) {
+          console.error('SPA: Sidebar update error', e);
         }
       };
 
-      const updatePage = (html, url, push = true) => {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const newContent = doc.querySelector('#app-content');
+      const updateContent = (html, url, push = true) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
         
-        if (!newContent) {
+        const isMobile = doc.getElementById('page-content') && !doc.getElementById('app-content');
+        const newMain = doc.querySelector('#app-content');
+        const currentWrapper = document.getElementById('main-content-wrapper');
+        const newFadeContent = doc.getElementById('content-container-fade');
+        
+        if (!newMain || !fadeWrap || isMobile) {
           window.location.href = url;
           return;
         }
 
-        // Smooth Title Update
-        document.title = doc.title || document.title;
+        // Apply fade-out to the ENTIRE inner content area
+        fadeWrap.classList.add('content-loading');
         
-        // Dynamic Content Update
-        main.style.opacity = '0.5';
         setTimeout(() => {
-          main.innerHTML = newContent.innerHTML;
-          
-          // Update Header & Actions
-          ['#page-header', '#page-actions'].forEach(selector => {
-            const source = doc.querySelector(selector);
-            const target = document.querySelector(selector);
-            if (source && target) target.innerHTML = source.innerHTML;
-          });
+          if (currentWrapper) currentWrapper.scrollTo(0, 0);
+          document.title = doc.title;
 
-          setActiveState(url);
-          
-          // Initialize New Scripts & Alpine
-          main.querySelectorAll('script').forEach(s => {
-            const n = document.createElement('script');
-            if (s.src) n.src = s.src;
-            else n.textContent = s.textContent;
-            if (s.type) n.type = s.type;
-            main.appendChild(n);
-          });
-          
-          if (window.Alpine) {
-            window.Alpine.discover();
+          // Replace the entire contents of the fade container
+          if (newFadeContent) {
+            fadeWrap.innerHTML = newFadeContent.innerHTML;
+          } else {
+            // Fallback for pages that might have a different structure
+            appContent.innerHTML = newMain.innerHTML;
           }
 
-          if (push) history.pushState({}, '', url);
-          
-          main.style.opacity = '1';
-          main.parentElement.scrollTo({ top: 0, behavior: 'instant' });
-          setProgress(100);
-        }, 50);
+          if (push) history.pushState({ spa: true }, '', url);
+          updateActiveLink(doc);
+
+          // Re-execute scripts
+          fadeWrap.querySelectorAll('script').forEach(oldScript => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+            newScript.remove();
+          });
+
+          if (window.Alpine) {
+            window.Alpine.discover(fadeWrap);
+          }
+
+          // Give Tailwind CDN and Alpine 200ms to finish their pass
+          setTimeout(() => {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                fadeWrap.classList.remove('content-loading');
+                setProgress(100);
+              });
+            });
+          }, 200);
+        }, 150);
       };
 
-      // Intercept Links
+      // Click Interceptor
       document.addEventListener('click', async (e) => {
         const link = e.target.closest('a[href]');
-        if (!link || link.hasAttribute('download') || link.target === '_blank' || link.classList.contains('no-soft')) return;
+        if (!link || link.classList.contains('no-soft') || link.getAttribute('download')) return;
+        if (link.origin !== window.location.origin) return;
+        if (link.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey) return;
         
         const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.includes('logout')) return;
+        if (href.startsWith('#') || href.startsWith('javascript:') || href.includes('logout')) return;
+
+        e.preventDefault();
+        const pid = startProgress();
         
         try {
-          const url = new URL(href, window.location.origin);
-          if (url.origin !== window.location.origin) return;
-          
-          e.preventDefault();
-          const timer = startProgress();
-          
           const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
           const html = await res.text();
-          
-          clearInterval(timer);
-          updatePage(html, res.url);
+          clearInterval(pid);
+          updateContent(html, res.url);
         } catch (err) {
+          clearInterval(pid);
+          setProgress(100);
           window.location.href = href;
         }
       });
 
-      // Intercept Forms
+      // Form Submitter Interceptor
       document.addEventListener('submit', async (e) => {
         const form = e.target.closest('form');
         if (!form || form.classList.contains('no-soft') || (form.method || 'GET').toUpperCase() === 'GET') return;
         
         const action = form.getAttribute('action') || window.location.href;
-        if (action.includes('logout')) return;
+        if (!action.startsWith(window.location.origin) && action.startsWith('http')) return;
         
         e.preventDefault();
-        const timer = startProgress();
+        const pid = startProgress();
+        const formData = new FormData(form);
         
         try {
           const res = await fetch(action, {
             method: 'POST',
-            body: new FormData(form),
+            body: formData,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           });
           
@@ -775,21 +796,37 @@
           }
           
           const html = await res.text();
-          clearInterval(timer);
-          updatePage(html, res.url);
+          clearInterval(pid);
+          updateContent(html, res.url);
         } catch (err) {
+          clearInterval(pid);
+          setProgress(100);
           form.submit();
         }
       });
 
-      window.addEventListener('popstate', () => {
-        const timer = startProgress();
-        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-          .then(r => r.text())
-          .then(html => { clearInterval(timer); updatePage(html, window.location.href, false); })
-          .catch(() => window.location.reload());
+      // Handle Back/Forward
+      window.addEventListener('popstate', async (e) => {
+        const pid = startProgress();
+        try {
+          const res = await fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+          const html = await res.text();
+          clearInterval(pid);
+          updateContent(html, res.url, false);
+        } catch (err) {
+          clearInterval(pid);
+          window.location.reload();
+        }
       });
-    });
+
+      // SW Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    })();
+
     
     // Native validation message customization
     document.addEventListener('invalid', (function() {

@@ -799,7 +799,7 @@ class NotaPesananController extends Controller
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         session(['nota_current' => $data, 'nota_current_id' => $id]);
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.nota_pesanan_report' : 'reports.nota_pesanan_report';
 
         return view($view, [

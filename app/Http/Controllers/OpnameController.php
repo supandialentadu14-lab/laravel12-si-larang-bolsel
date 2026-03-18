@@ -337,7 +337,7 @@ class OpnameController extends Controller
         }
         session(['opname_current' => $data, 'opname_current_id' => $id]);
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.opname_report' : 'reports.opname_report';
 
         return view($view, [

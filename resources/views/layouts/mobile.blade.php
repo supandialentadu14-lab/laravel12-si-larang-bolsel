@@ -360,15 +360,9 @@
         }
       };
 
-      document.addEventListener('click', handleLinkClick);
-      document.addEventListener('submit', handleFormSubmit);
-      window.addEventListener('popstate', () => {
-        const pid = startProgress();
-        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-          .then(r => r.text())
-          .then(html => { clearInterval(pid); updateContent(html, window.location.href, false); })
-          .catch(() => { clearInterval(pid); setProgress(100); window.location.reload(); });
-      });
+      // document.addEventListener('click', handleLinkClick);
+      // document.addEventListener('submit', handleFormSubmit);
+      // window.addEventListener('popstate', ...);
 
       // Native validation message customization
       document.addEventListener('invalid', (function() {

@@ -470,7 +470,7 @@ class PenerimaanController extends Controller
 
         session(['penerimaan_current' => $data, 'penerimaan_current_id' => $id]);
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.penerimaan_report' : 'reports.penerimaan_report';
 
         return view($view, [

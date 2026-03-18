@@ -106,7 +106,7 @@ class BelanjaModalController extends Controller
         }
         session(['belanja_modal_current' => $data, 'belanja_modal_current_id' => $id]);
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.belanja_modal_report' : 'reports.belanja_modal_report';
 
         return view($view, compact('data', 'opd', 'master'))->with('saved_id', $id);
@@ -239,7 +239,7 @@ class BelanjaModalController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $request->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'belanja_modal.index' : 'belanja_modal.desktop.index';
 
         return view($view, compact('items', 'opd', 'master'));

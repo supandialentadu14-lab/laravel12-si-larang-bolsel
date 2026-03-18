@@ -105,8 +105,12 @@ class DashboardController extends Controller
         // DATA UNTUK CHART (HARI INI PER JAM)
         // ============================
 
+        $hourFormat = DB::connection()->getDriverName() === 'sqlite' 
+            ? 'strftime("%H", date) as hour' 
+            : 'DATE_FORMAT(date, "%H") as hour';
+
         $raw = StockTransaction::select(
-                DB::raw('DATE_FORMAT(date, "%H") as hour'),
+                DB::raw($hourFormat),
                 DB::raw('SUM(CASE WHEN type = "in" THEN quantity ELSE 0 END) as total_in'),
                 DB::raw('SUM(CASE WHEN type = "out" THEN quantity ELSE 0 END) as total_out')
             )
@@ -202,7 +206,7 @@ class DashboardController extends Controller
         $categoryLabels = $categoryDistribution->pluck('name');
         $categoryValues = $categoryDistribution->pluck('total_stock');
 
-        $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', request()->header('User-Agent'));
+        $isMobile = request()->isMobile();
         $view = $isMobile ? 'mobile.dashboard' : 'dashboard';
 
         return view($view, compact(
