@@ -280,6 +280,7 @@ class UserController extends Controller
 
         // Update user
         $user->update($data);
+        $user->refresh();
 
         // Pesan sukses spesifik
         $info = [];
