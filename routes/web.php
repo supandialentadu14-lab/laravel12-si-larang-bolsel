@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BelanjaModalController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
@@ -27,7 +28,6 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/backup/run', [\App\Http\Controllers\BackupController::class, 'run'])->name('backup.run');
 
     // Chat System
     Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');

@@ -411,8 +411,13 @@
       setInterval(() => this.checkNewMessages(), 15000);
     },
     checkNewMessages() {
-
-  <!-- Application Boxed Wrapper -->
+      fetch('{{ route('chat.unread') }}')
+        .then(res => res.json())
+        .then(data => { this.unreadChatCount = data.count; })
+        .catch(e => {});
+    }
+  }" 
+  @open-sidebar.window="sidebarOpen = true">
   <div class="max-w-none mx-auto bg-[#0F172A] h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
 
   <div class="flex flex-row flex-1 min-h-0 overflow-hidden">
