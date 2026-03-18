@@ -7,27 +7,27 @@
   </div>
   <div class="flex items-center gap-5">
     <!-- Theme Toggle Mobile -->
-    <button @click="toggleDarkMode()" class="text-app-muted relative transition-colors p-2 rounded-lg bg-app-bg border border-app-main shadow-sm">
-      <i class="fas" :class="darkMode ? 'fa-sun' : 'fa-moon'" style="font-size: 0.75rem;"></i>
+    <button @click="toggleDarkMode()" class="btn-icon-mini text-app-muted bg-app-bg border border-app-main shadow-sm relative transition-colors">
+      <i class="fas" :class="darkMode ? 'fa-sun' : 'fa-moon'" style="font-size: 0.85rem;"></i>
     </button>
 
     @if(auth()->check() && (auth()->user()->chat_enabled || auth()->user()->isAdmin()))
     <!-- Chat Trigger -->
-    <a href="{{ route('chat.index') }}" class="btn-icon-mini text-app-muted relative transition-colors">
+    <a href="{{ route('chat.index') }}" class="btn-icon-mini text-app-muted bg-app-bg border border-app-main shadow-sm relative transition-colors">
       <i class="fas fa-comment-dots text-xs"></i>
       <span x-show="unreadChatCount > 0" class="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-white"></span>
     </a>
     @endif
 
     <!-- Notification Trigger Mobile -->
-    <button @click="notifOpen = true" class="btn-icon-mini text-app-muted relative transition-colors">
+    <button @click="notifOpen = true" class="btn-icon-mini text-app-muted bg-app-bg border border-app-main shadow-sm relative transition-colors">
       <i class="fas fa-bell text-xs"></i>
       @if (isset($lowStockCount) && $lowStockCount > 0)
         <span class="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
       @endif
     </button>
 
-    <div class="w-9 h-9 rounded-xl bg-indigo-600 border border-indigo-500 overflow-hidden shadow-sm transition-colors">
+    <div class="w-10 h-10 rounded-2xl bg-indigo-600 border border-indigo-500 overflow-hidden shadow-sm transition-colors">
       <img id="top-profile-img-mobile" src="{{ Auth::user()->avatar ? asset('media/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}" class="w-full h-full object-cover">
     </div>
   </div>

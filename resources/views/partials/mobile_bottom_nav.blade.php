@@ -13,7 +13,7 @@
   <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" @click="mobileMenuOpen = false"></div>
 
   <!-- Panel (Bottom Sheet) -->
-  <div class="absolute inset-x-0 bottom-0 max-h-[85vh] w-full bg-white rounded-t-[2.5rem] shadow-2xl flex flex-col transition-colors duration-300"
+  <div class="absolute inset-x-0 bottom-0 max-h-[85vh] w-full bg-app-surface border-t border-app-main rounded-t-[2.5rem] shadow-2xl flex flex-col transition-colors duration-300"
     x-transition:enter="transition ease-out duration-500 transform"
     x-transition:enter-start="translate-y-full"
     x-transition:enter-end="translate-y-0"
@@ -33,8 +33,8 @@
           <i class="fas fa-grid-2"></i>
         </div>
         <div>
-          <h3 class="font-black text-sm tracking-widest text-gray-900 uppercase">MENU NAVIGASI</h3>
-          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Semua Akses Halaman</p>
+          <h3 class="font-black text-sm tracking-widest text-app-main uppercase">MENU NAVIGASI</h3>
+          <p class="text-[9px] font-bold text-app-muted uppercase tracking-widest mt-0.5">Semua Akses Halaman</p>
         </div>
       </div>
       <button @click="mobileMenuOpen = false" class="btn-icon-mini bg-gray-50 text-gray-400">
@@ -254,8 +254,8 @@
           <i class="fas fa-boxes"></i>
         </div>
         <div>
-          <h3 class="font-black text-sm tracking-widest text-gray-900 uppercase">MASTER DATA</h3>
-          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Kategori, Barang, Penyedia</p>
+          <h3 class="font-black text-sm tracking-widest text-app-main uppercase">MASTER DATA</h3>
+          <p class="text-[9px] font-bold text-app-muted uppercase tracking-widest mt-0.5">Kategori, Barang, Penyedia</p>
         </div>
       </div>
       <button type="button" @click="masterMenuOpen = false" class="btn-icon-mini bg-gray-50 text-gray-400">
@@ -330,8 +330,8 @@
           <i class="fas fa-gear"></i>
         </div>
         <div>
-          <h3 class="font-black text-sm tracking-widest text-gray-900 uppercase">PENGATURAN</h3>
-          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Instansi & Akun</p>
+          <h3 class="font-black text-sm tracking-widest text-app-main uppercase">PENGATURAN</h3>
+          <p class="text-[9px] font-bold text-app-muted uppercase tracking-widest mt-0.5">Instansi & Akun</p>
         </div>
       </div>
       <button type="button" @click="settingsMenuOpen = false" class="btn-icon-mini bg-gray-50 text-gray-400">
@@ -413,8 +413,8 @@
           <i class="fas fa-folder-open"></i>
         </div>
         <div>
-          <h3 class="font-black text-sm tracking-widest text-gray-900 uppercase">TRANSAKSI & BERKAS</h3>
-          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Mutasi & Dokumen</p>
+          <h3 class="font-black text-sm tracking-widest text-app-main uppercase">TRANSAKSI & BERKAS</h3>
+          <p class="text-[9px] font-bold text-app-muted uppercase tracking-widest mt-0.5">Mutasi & Dokumen</p>
         </div>
       </div>
       <button type="button" @click="flowMenuOpen = false" class="btn-icon-mini bg-gray-50 text-gray-400">
@@ -512,15 +512,15 @@
 <!-- Bottom Navigation (Full Scrollable & Auto Center) -->
 <nav x-init="$nextTick(() => { const activeItem = $el.querySelector('.active-menu'); if (activeItem) activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); })"
   :class="scrollingDown ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100 pointer-events-auto'"
-  class="transition-all duration-500 ease-in-out transform fixed bottom-0 left-0 right-0 z-[9999] glass-card border-t border-gray-100/50 bottom-nav shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:hidden">
+  class="transition-all duration-500 ease-in-out transform fixed bottom-0 left-0 right-0 z-[9999] bg-app-surface/95 backdrop-blur-xl border-t border-app-main bottom-nav shadow-[0_-4px_30px_rgba(0,0,0,0.05)] lg:hidden">
   <div class="flex items-center justify-center min-w-full overflow-x-auto no-scrollbar py-4 scroll-smooth snap-x snap-mandatory">
     <!-- Master Barang (Left 1) -->
     @if(auth()->user()->hasPermission('master_data'))
     <a data-master-nav data-skip-transition href="{{ route('products.index') }}" @click.prevent="masterMenuOpen = true" class="no-soft flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'active-menu scale-110' : '' }}">
-      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-400' }}">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-app-bg text-app-muted border border-app-main' }}">
         <i class="fas fa-layer-group text-lg"></i>
       </div>
-      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'text-indigo-600' : 'text-slate-500 font-bold' }}">Master</span>
+      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'text-indigo-600' : 'text-app-muted' }}">Master</span>
     </a>
     @endif
 
@@ -536,35 +536,35 @@
       auth()->user()->hasPermission('pinjam_pakai')
     )
     <a data-flow-nav data-skip-transition href="{{ route('stock.index') }}" @click.prevent="flowMenuOpen = true" class="no-soft flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'active-menu scale-110' : '' }}">
-      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 ' : 'bg-slate-50 text-slate-400 ' }}">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 ' : 'bg-app-bg text-app-muted border border-app-main ' }}">
         <i class="fas fa-folder-open text-lg"></i>
       </div>
-      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'text-indigo-600 ' : 'text-slate-500 font-bold' }}">Berkas</span>
+      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('stock.*') || request()->routeIs('reports.belanja.modal.*') || request()->routeIs('reports.nota.*') || request()->routeIs('reports.pemeriksaan.*') || request()->routeIs('reports.penerimaan.*') || request()->routeIs('reports.kwitansi.*') || request()->routeIs('reports.opname.*') || request()->routeIs('reports.pinjam.*') ? 'text-indigo-600 ' : 'text-app-muted' }}">Berkas</span>
     </a>
     @endif
 
     <!-- Beranda (Always Center) -->
     <a href="{{ route('dashboard') }}" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('dashboard') ? 'active-menu scale-110' : '' }}">
-      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-400 border border-slate-100' }}">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-app-bg text-app-muted border border-app-main' }}">
         <i class="fas fa-home text-lg"></i>
       </div>
-      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-slate-500 font-bold' }}">Beranda</span>
+      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-app-muted' }}">Beranda</span>
     </a>
 
     <!-- Manajemen (Right 1) -->
     <a data-settings-nav data-skip-transition href="{{ route('settings.opd.edit') }}" @click.prevent="settingsMenuOpen = true" class="no-soft flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'active-menu scale-110' : '' }}">
-      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 ' : 'bg-slate-50 text-slate-400 ' }}">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 ' : 'bg-app-bg text-app-muted border border-app-main ' }}">
         <i class="fas fa-sliders text-lg"></i>
       </div>
-      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'text-indigo-600 ' : 'text-slate-500 font-bold' }}">Manajemen</span>
+      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'text-indigo-600 ' : 'text-app-muted' }}">Manajemen</span>
     </a>
 
     <!-- Profil (Right 2) -->
     <a href="{{ route('profile.edit') }}" class="flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('profile.*') ? 'active-menu scale-110' : '' }}">
-      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('profile.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 ' : 'bg-slate-50 text-slate-400 ' }}">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('profile.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 ' : 'bg-app-bg text-app-muted border border-app-main ' }}">
         <i class="fas fa-user-circle text-lg"></i>
       </div>
-      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('profile.*') ? 'text-indigo-600 ' : 'text-slate-500 font-bold' }}">Profil</span>
+      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('profile.*') ? 'text-indigo-600 ' : 'text-app-muted' }}">Profil</span>
     </a>
   </div>
 </nav>

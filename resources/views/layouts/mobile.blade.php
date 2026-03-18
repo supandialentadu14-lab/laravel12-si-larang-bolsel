@@ -87,6 +87,51 @@
       max-width: 100% !important;
       overflow-x: hidden !important;
     }
+
+    /* FORCED DARK MODE OVERRIDES */
+    html.dark body,
+    html.dark .bg-white,
+    html.dark .bg-app-surface,
+    html.dark [data-mobile-sheet] .bg-white {
+      background-color: var(--app-bg) !important;
+    }
+
+    html.dark .bg-gray-50,
+    html.dark .bg-slate-50,
+    html.dark .bg-indigo-50 {
+      background-color: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    html.dark .text-gray-900,
+    html.dark .text-slate-900,
+    html.dark .text-slate-800,
+    html.dark .text-slate-700,
+    html.dark .text-app-main {
+      color: var(--app-text-main) !important;
+    }
+
+    html.dark .text-gray-600,
+    html.dark .text-slate-600,
+    html.dark .text-gray-500,
+    html.dark .text-slate-400,
+    html.dark .text-app-muted {
+      color: var(--app-text-muted) !important;
+    }
+
+    html.dark .border-gray-100,
+    html.dark .border-gray-50,
+    html.dark .border-slate-100,
+    html.dark .border-slate-50,
+    html.dark .border-app-main {
+      border-color: var(--app-border) !important;
+    }
+
+    html.dark .shadow-sm,
+    html.dark .shadow-md,
+    html.dark .shadow-lg,
+    html.dark .shadow-xl {
+      box-shadow: none !important;
+    }
   </style>
 </head>
 

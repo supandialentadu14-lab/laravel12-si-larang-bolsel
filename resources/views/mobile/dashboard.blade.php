@@ -77,7 +77,7 @@
   </div>
 
   <!-- Inventory Valuation -->
-  <div class="p-5 rounded-3xl glass-card shadow-sm border border-gray-100 flex items-center justify-between">
+  <div class="p-5 rounded-3xl glass-card shadow-sm border border-app-main flex items-center justify-between">
     <div class="flex items-center gap-4">
       <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl">
         <i class="fas fa-wallet"></i>
@@ -101,31 +101,31 @@
         <p class="text-xl font-black text-app-main">{{ number_format($totalProducts) }}</p>
       </div>
     </div>
-    <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-      <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center">
+    <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+      <div class="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 flex items-center justify-center">
         <i class="fas fa-tags"></i>
       </div>
       <div>
-        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Kategori</p>
-        <p class="text-xl font-black text-gray-900">{{ number_format($totalCategories) }}</p>
+        <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Kategori</p>
+        <p class="text-xl font-black text-app-main">{{ number_format($totalCategories) }}</p>
       </div>
     </div>
-    <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-      <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+    <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+      <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
         <i class="fas fa-truck"></i>
       </div>
       <div>
-        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Penyedia</p>
-        <p class="text-xl font-black text-gray-900">{{ number_format($supplierCount) }}</p>
+        <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Penyedia</p>
+        <p class="text-xl font-black text-app-main">{{ number_format($supplierCount) }}</p>
       </div>
     </div>
-    <div class="p-4 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center gap-4">
-      <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+    <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4">
+      <div class="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 flex items-center justify-center">
         <i class="fas fa-exclamation-triangle"></i>
       </div>
       <div>
-        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Stok Rendah</p>
-        <p class="text-xl font-black text-gray-900">{{ number_format($lowStockCount) }}</p>
+        <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Stok Rendah</p>
+        <p class="text-xl font-black text-app-main">{{ number_format($lowStockCount) }}</p>
       </div>
     </div>
   </div>
@@ -254,35 +254,35 @@
     <h3 class="text-sm font-extrabold text-gray-900 mb-4 px-1 uppercase tracking-widest">Aksi Cepat</h3>
     <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
       <a href="{{ route('stock.create', ['type' => 'in']) }}" class="flex-shrink-0 w-24 flex flex-col items-center gap-2">
-        <div class="btn-icon-mini bg-white shadow-sm border border-gray-50 text-green-500 text-xl">
+        <div class="btn-icon-mini bg-app-surface shadow-sm border border-app-main text-green-500 text-xl">
           <i class="fas fa-plus-circle"></i>
         </div>
-        <span class="text-[10px] font-bold text-gray-600 uppercase">Barang Masuk</span>
+        <span class="text-[10px] font-bold text-app-muted uppercase">Barang Masuk</span>
       </a>
       <a href="{{ route('stock.create', ['type' => 'out']) }}" class="flex-shrink-0 w-24 flex flex-col items-center gap-2">
-        <div class="btn-icon-mini bg-white shadow-sm border border-gray-50 text-red-500 text-xl">
+        <div class="btn-icon-mini bg-app-surface shadow-sm border border-app-main text-red-500 text-xl">
           <i class="fas fa-minus-circle"></i>
         </div>
-        <span class="text-[10px] font-bold text-gray-600 uppercase">Barang Keluar</span>
+        <span class="text-[10px] font-bold text-app-muted uppercase">Barang Keluar</span>
       </a>
       <a href="{{ route('stock.index') }}" class="flex-shrink-0 w-24 flex flex-col items-center gap-2">
-        <div class="btn-icon-mini bg-white shadow-sm border border-gray-50 text-blue-500 text-xl">
+        <div class="btn-icon-mini bg-app-surface shadow-sm border border-app-main text-blue-500 text-xl">
           <i class="fas fa-search"></i>
         </div>
-        <span class="text-[10px] font-bold text-gray-600 uppercase">Cari Barang</span>
+        <span class="text-[10px] font-bold text-app-muted uppercase">Cari Barang</span>
       </a>
       <a href="{{ route('reports.index') }}" class="flex-shrink-0 w-24 flex flex-col items-center gap-2">
-        <div class="btn-icon-mini bg-white shadow-sm border border-gray-50 text-purple-500 text-xl">
+        <div class="btn-icon-mini bg-app-surface shadow-sm border border-app-main text-purple-500 text-xl">
           <i class="fas fa-print"></i>
         </div>
-        <span class="text-[10px] font-bold text-gray-600 uppercase">Cetak</span>
+        <span class="text-[10px] font-bold text-app-muted uppercase">Cetak</span>
       </a>
       @if(auth()->user()->isAdmin())
       <a href="{{ route('activity_log.index') }}" class="flex-shrink-0 w-24 flex flex-col items-center gap-2">
-        <div class="btn-icon-mini bg-white shadow-sm border border-gray-50 text-slate-500 text-xl">
+        <div class="btn-icon-mini bg-app-surface shadow-sm border border-app-main text-slate-500 text-xl">
           <i class="fas fa-history"></i>
         </div>
-        <span class="text-[10px] font-bold text-gray-600 uppercase">Audit Log</span>
+        <span class="text-[10px] font-bold text-app-muted uppercase">Audit Log</span>
       </a>
       @endif
     </div>
@@ -296,21 +296,21 @@
     </div>
     <div class="space-y-3">
       @forelse($recentTransactions as $tx)
-        <div class="p-4 rounded-3xl glass-card border border-gray-50 shadow-sm flex items-center justify-between active:scale-[0.98] transition">
+        <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center justify-between active:scale-[0.98] transition">
           <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl {{ $tx->type == 'in' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600' }} flex items-center justify-center text-sm">
+            <div class="w-10 h-10 rounded-xl {{ $tx->type == 'in' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500' }} flex items-center justify-center text-sm">
               <i class="fas {{ $tx->type == 'in' ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
             </div>
             <div class="min-w-0">
-              <p class="text-sm font-bold text-gray-900 truncate">{{ $tx->product?->name ?? '-' }}</p>
-              <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{{ $tx->date->format('H:i') }} • {{ $tx->user->name ?? 'Admin' }}</p>
+              <p class="text-sm font-bold text-app-main truncate">{{ $tx->product?->name ?? '-' }}</p>
+              <p class="text-[10px] text-app-muted font-medium uppercase tracking-wider">{{ $tx->date->format('H:i') }} • {{ $tx->user->name ?? 'Admin' }}</p>
             </div>
           </div>
           <div class="text-right">
-            <p class="text-sm font-black {{ $tx->type == 'in' ? 'text-green-600' : 'text-red-600' }}">
+            <p class="text-sm font-black {{ $tx->type == 'in' ? 'text-emerald-500' : 'text-rose-500' }}">
               {{ $tx->type == 'in' ? '+' : '-' }}{{ number_format($tx->quantity) }}
             </p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">{{ $tx->product?->unit ?? 'Unit' }}</p>
+            <p class="text-[9px] text-app-muted font-bold uppercase tracking-tighter">{{ $tx->product?->unit ?? 'Unit' }}</p>
           </div>
         </div>
       @empty
