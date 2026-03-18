@@ -106,4 +106,13 @@ class User extends Authenticatable
             'avatar_updated_at' => 'datetime',
         ];
     }
+    public function messagesSent()
+    {
+        return $this->hasMany(\App\Models\ChatMessage::class, 'sender_id');
+    }
+
+    public function messagesReceived()
+    {
+        return $this->hasMany(\App\Models\ChatMessage::class, 'receiver_id');
+    }
 }

@@ -788,6 +788,31 @@
         }, 2000);
       };
 
+      // Smart Cache
+      const prefetchCache = new Map();
+      let prefetchTimer;
+
+      const prefetch = async (url) => {
+        if (prefetchCache.has(url) || url.includes('logout')) return;
+        try {
+          const promise = fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(res => res.ok ? res.text() : null)
+            .catch(() => null);
+          prefetchCache.set(url, promise);
+        } catch (e) {}
+      };
+
+      // Hover Prefetch (Smart Pre-loading)
+      document.addEventListener('mouseover', (e) => {
+        const link = e.target.closest('a[href]');
+        if (!link || link.classList.contains('no-soft') || link.origin !== window.location.origin) return;
+        const href = link.getAttribute('href');
+        if (href.startsWith('#') || href.startsWith('javascript:') || href.includes('logout')) return;
+
+        clearTimeout(prefetchTimer);
+        prefetchTimer = setTimeout(() => prefetch(href), 40); // 40ms hover = intent to click
+      });
+
       // Click Interceptor
       document.addEventListener('click', async (e) => {
         const link = e.target.closest('a[href]');
@@ -802,10 +827,19 @@
         const pid = startProgress();
         
         try {
-          const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-          const html = await res.text();
+          let html;
+          if (prefetchCache.has(href)) {
+            html = await prefetchCache.get(href);
+            prefetchCache.delete(href); // Use once, keep memory clean
+          }
+
+          if (!html) {
+            const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            html = await res.text();
+          }
+
           clearInterval(pid);
-          updateContent(html, res.url);
+          updateContent(html, href);
         } catch (err) {
           clearInterval(pid);
           setProgress(100);

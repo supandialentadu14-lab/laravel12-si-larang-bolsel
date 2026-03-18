@@ -24,14 +24,11 @@ class ChatController extends Controller
             });
         }
 
-        $users = $query->get()
-            ->map(function($user) {
-                $user->unread_count = \App\Models\ChatMessage::where('sender_id', $user->id)
-                    ->where('receiver_id', auth()->id())
-                    ->where('is_read', false)
-                    ->count();
-                return $user;
-            });
+        $users = $query->withCount(['messagesReceived as unread_count' => function($q) {
+                $q->where('receiver_id', auth()->id())
+                  ->where('is_read', false);
+            }])
+            ->get();
 
         return view('chat.index', compact('users'));
     }
