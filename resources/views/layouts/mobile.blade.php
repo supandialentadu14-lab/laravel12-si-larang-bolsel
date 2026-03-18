@@ -146,6 +146,7 @@
     notifOpen: false,
     unreadChatCount: 0,
     chatNotifOpen: false,
+    stockNotifOpen: false,
     darkMode: localStorage.getItem('darkMode') === 'true',
     latestChatMessage: null,
     scrollingDown: false,
@@ -166,6 +167,7 @@
         document.documentElement.classList.add('dark');
       }
       this.checkNewMessages();
+      this.checkLowStock();
       setInterval(() => this.checkNewMessages(), 15000);
     },
 
@@ -185,6 +187,20 @@
         }
         this.unreadChatCount = data.count;
       } catch (e) {}
+      @endif
+    },
+
+    checkLowStock() {
+      @if(isset($lowStockCount) && $lowStockCount > 0)
+        const lastShown = localStorage.getItem('low_stock_notif_last');
+        const now = Date.now();
+        if (!lastShown || (now - lastShown > 3600)) { // Simplified: one show per hour
+          setTimeout(() => {
+            this.stockNotifOpen = true;
+            localStorage.setItem('low_stock_notif_last', now);
+            setTimeout(() => { this.stockNotifOpen = false; }, 8000);
+          }, 3000);
+        }
       @endif
     },
 
@@ -326,6 +342,38 @@
         </button>
       </div>
     </a>
+  </div>
+
+  <!-- Low Stock Notification Sheet (Top Position) -->
+  <div x-show="stockNotifOpen" 
+    x-transition:enter="transition ease-out duration-500" 
+    x-transition:enter-start="opacity-0 -translate-y-full" 
+    x-transition:enter-end="opacity-100 translate-y-0" 
+    x-transition:leave="transition ease-in duration-300" 
+    x-transition:leave-start="opacity-100 translate-y-0" 
+    x-transition:leave-end="opacity-0 -translate-y-full" 
+    class="fixed top-4 left-4 right-4 z-[75]" x-cloak>
+    <div class="block bg-rose-600 rounded-3xl p-5 shadow-2xl shadow-rose-200 border border-rose-500/30 backdrop-blur-md">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 animate-pulse">
+          <i class="fas fa-exclamation-triangle text-white text-lg"></i>
+        </div>
+        <div class="min-w-0 pr-4">
+          <div class="text-[9px] font-black text-rose-100 uppercase tracking-widest">Peringatan Stok Low</div>
+          <h3 class="text-xs font-black text-white tracking-tight mt-0.5">Ada {{ $lowStockCount ?? 0 }} Barang Menipis!</h3>
+          <p class="text-[10px] font-bold text-rose-50 mt-1 leading-snug">Segera lakukan pengadaan untuk menghindari kehabisan stok.</p>
+        </div>
+        <button @click="stockNotifOpen = false" class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
+          <i class="fas fa-times text-[10px]"></i>
+        </button>
+      </div>
+      <div class="mt-4 pt-4 border-t border-white/10">
+        <a href="{{ route('products.index', ['filter' => 'low_stock']) }}" class="w-full py-3 bg-white/20 hover:bg-white/30 rounded-xl text-white text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
+          Lihat Daftar Barang
+          <i class="fas fa-chevron-right text-[7px]"></i>
+        </a>
+      </div>
+    </div>
   </div>
 
   <div id="page-progress" class="fixed top-0 left-0 h-[3px] bg-indigo-600 z-[9999] transition-all duration-300 pointer-events-none shadow-[0_0_10px_rgba(79,70,229,0.5)]" style="width: 0%"></div>

@@ -48,6 +48,40 @@ nav.bottom-nav.glass-card {
   box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.03) !important;
 }
 
+/* Form & Input Enhancements for Mobile */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.mobile-input {
+  @apply w-full px-6 py-4 bg-slate-50 border border-transparent rounded-2xl text-[13px] font-bold text-slate-800 focus:bg-white focus:border-indigo-500/20 focus:ring-4 focus:ring-indigo-500/5 outline-none transition-all duration-300;
+}
+
+.dark .mobile-input {
+  @apply bg-white/5 text-white/90 border-transparent focus:bg-white/10 focus:border-indigo-500/30;
+}
+
+.btn-primary-mobile {
+  @apply w-full py-4 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 active:scale-[0.97] transition-all flex items-center justify-center;
+}
+
+.btn-secondary-mobile {
+  @apply w-full py-4 bg-rose-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-rose-500/10 active:scale-[0.97] transition-all flex items-center justify-center;
+}
+
+.btn-ghost-mobile {
+  @apply w-full py-4 bg-slate-100 text-slate-500 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] active:scale-[0.97] transition-all flex items-center justify-center;
+}
+
+.dark .btn-ghost-mobile {
+  @apply bg-white/5 text-slate-400 border border-white/5;
+}
+
 /* Fix for date input overflow and stretching on mobile */
 input[type="date"],
 input[type="text"],

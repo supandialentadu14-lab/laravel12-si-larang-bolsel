@@ -28,16 +28,52 @@ class DatabaseBackup extends Command
         $config = config("database.connections.{$connection}");
 
         if ($connection === 'mysql') {
+            $binaryPath = 'mysqldump';
+            
+            // On Windows, if mysqldump is not in PATH, try common locations
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                $commonPaths = [
+                    'C:\xampp\mysql\bin\mysqldump.exe',
+                    'D:\xampp\mysql\bin\mysqldump.exe',
+                    'C:\laragon\bin\mysql\mysql-8.x.x\bin\mysqldump.exe', // generic
+                    'C:\laragon\bin\mysql\mysql-5.x.x\bin\mysqldump.exe',
+                ];
+                
+                // Also check Laragon's path dynamically if available
+                $laragonPath = 'C:\laragon\bin\mysql';
+                if (is_dir($laragonPath)) {
+                    $dirs = glob($laragonPath . '\*', GLOB_ONLYDIR);
+                    if ($dirs) {
+                        foreach($dirs as $dir) {
+                           $fullPath = $dir . '\bin\mysqldump.exe';
+                           if (file_exists($fullPath)) $commonPaths[] = $fullPath;
+                        }
+                    }
+                }
+
+                foreach ($commonPaths as $cp) {
+                    if (file_exists($cp)) {
+                        $binaryPath = '"' . $cp . '"';
+                        break;
+                    }
+                }
+            }
+
+            $passwordPart = $config['password'] ? '--password=' . escapeshellarg($config['password']) : '';
+            
             $command = sprintf(
-                'mysqldump --user=%s --password=%s --host=%s %s > %s',
+                '%s --user=%s %s --host=%s %s > %s',
+                $binaryPath,
                 escapeshellarg($config['username']),
-                escapeshellarg($config['password']),
+                $passwordPart,
                 escapeshellarg($config['host']),
                 escapeshellarg($config['database']),
                 escapeshellarg($path)
             );
         } elseif ($connection === 'sqlite') {
-            $command = sprintf('cp %s %s', escapeshellarg($config['database']), escapeshellarg($path));
+            // Windows 'copy' instead of 'cp'
+            $cmd = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? 'copy' : 'cp';
+            $command = sprintf('%s %s %s', $cmd, escapeshellarg($config['database']), escapeshellarg($path));
         } else {
             $this->error("Database connection '{$connection}' not supported for backup.");
             return 1;
@@ -50,7 +86,7 @@ class DatabaseBackup extends Command
         if ($returnVar === 0) {
             $this->info("Backup successfully created: {$path}");
             
-            // Optional: Limit total backups to keep (e.g., last 7)
+            // Optional: Limit total backups to keep (e.g., last 10)
             $files = glob("{$storagePath}/*.sql");
             if (count($files) > 10) {
                 $mtimes = array_map('filemtime', $files);
@@ -60,6 +96,9 @@ class DatabaseBackup extends Command
             }
         } else {
             $this->error("Backup failed with error code: {$returnVar}");
+            if ($connection === 'mysql' && $returnVar === 1) {
+                $this->error("Note: 'mysqldump' might not be in your system PATH or accessible.");
+            }
         }
     }
 }

@@ -679,13 +679,13 @@
 
           <!-- Right: Contact Developer & Socials -->
           <div class="flex items-center gap-6">
-            <a href="https://wa.me/6282194680004" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-emerald-50 hover:text-emerald-500 transition-all shadow-sm active:scale-90 hover:scale-110">
+            <a href="https://wa.me/6285824268216" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-emerald-50 hover:text-emerald-500 transition-all shadow-sm active:scale-90 hover:scale-110">
               <i class="fab fa-whatsapp text-sm"></i>
             </a>
-            <a href="https://instagram.com/emon_alentadu" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all shadow-sm active:scale-90 hover:scale-110">
+            <a href="https://www.instagram.com/emonn_65?igsh=MWM4c2JzdjNvZG4xMQ%3D%3D&utm_source=qr" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all shadow-sm active:scale-90 hover:scale-110">
               <i class="fab fa-instagram text-sm"></i>
             </a>
-            <a href="https://facebook.com/emon.alentadu" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm active:scale-90 hover:scale-110">
+            <a href="https://www.facebook.com/share/18J61xd2XQ/?mibextid=wwXIfr" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm active:scale-90 hover:scale-110">
               <i class="fab fa-facebook-f text-sm"></i>
             </a>
           </div>

@@ -39,10 +39,10 @@
 }">
   <div class="flex items-center justify-between px-2">
     <div>
-      <h1 class="text-2xl font-black text-slate-800 transition-colors uppercase tracking-tight">Transaksi Baru</h1>
-      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Mutasi Masuk & Keluar</p>
+      <h1 class="text-2xl font-black text-app-main transition-colors uppercase tracking-tight">Transaksi Baru</h1>
+      <p class="text-[10px] font-bold text-app-muted uppercase tracking-[0.2em] mt-1">Mutasi Masuk & Keluar</p>
     </div>
-    <a href="{{ route('stock.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-colors">
+    <a href="{{ route('stock.index') }}" class="btn-icon-mini bg-app-surface text-app-muted border border-app-main shadow-sm flex items-center justify-center transition-colors">
       <i class="fas fa-times text-xs"></i>
     </a>
   </div>
@@ -52,28 +52,36 @@
       @csrf
 
       <div class="space-y-1.5">
-        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Barang</label>
-        <select name="product_id" x-model="selectedProductId" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
-          <option value="">Pilih Barang</option>
-          @foreach ($products as $product)
-            <option value="{{ $product->id }}">{{ $product->name }} (Stok: {{ $product->stock }} {{ $product->unit }})</option>
-          @endforeach
-        </select>
+        <label class="block text-[10px] font-black text-app-muted uppercase tracking-widest ml-4 transition-colors">Barang</label>
+        <div class="relative">
+          <select name="product_id" x-model="selectedProductId" class="mobile-input appearance-none bg-app-surface" required>
+            <option value="">Pilih Barang</option>
+            @foreach ($products as $product)
+              <option value="{{ $product->id }}">{{ $product->name }} (Stok: {{ $product->stock }} {{ $product->unit }})</option>
+            @endforeach
+          </select>
+          <i class="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-app-muted pointer-events-none text-[10px]"></i>
+        </div>
         @error('product_id')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 
       <div class="grid grid-cols-2 gap-4">
         <div class="space-y-1.5">
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Jenis</label>
-          <select name="type" x-model="type" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
-            <option value="in">Masuk</option>
-            <option value="out">Keluar</option>
-          </select>
+          <label class="block text-[10px] font-black text-app-muted uppercase tracking-widest ml-4 transition-colors">Jenis</label>
+          <div class="relative">
+            <select name="type" x-model="type" class="mobile-input appearance-none bg-app-surface" required>
+              <option value="in">Masuk</option>
+              <option value="out">Keluar</option>
+            </select>
+            <i class="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-app-muted pointer-events-none text-[10px]"></i>
+          </div>
           @error('type')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
         <div class="space-y-1.5">
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Jumlah</label>
-          <input type="number" name="quantity" x-model.number="quantity" min="1" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 outline-none transition-colors" :class="isInvalid ? 'ring-2 ring-rose-500 bg-rose-50 text-rose-900' : 'text-slate-800 focus:ring-indigo-500/20'" required>
+          <label class="block text-[10px] font-black text-app-muted uppercase tracking-widest ml-4 transition-colors">Jumlah</label>
+          <input type="number" name="quantity" x-model.number="quantity" inputmode="numeric" min="1" 
+            class="mobile-input" 
+            :class="isInvalid ? 'border-rose-500 bg-rose-50 dark:bg-rose-500/10 text-rose-600' : 'bg-app-surface'" required>
           <template x-if="isInvalid">
             <p class="text-[9px] font-black text-rose-600 mt-1 ml-4 uppercase tracking-tighter">Stok tidak mencukupi (Tersedia: <span x-text="availableStock"></span>)</p>
           </template>
@@ -83,33 +91,33 @@
 
       <div class="space-y-4">
         <div class="space-y-1.5">
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Tanggal Transaksi</label>
+          <label class="block text-[10px] font-black text-app-muted uppercase tracking-widest ml-4 transition-colors">Tanggal Transaksi</label>
           <div class="relative">
-            <i class="fas fa-calendar-alt absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-xs pointer-events-none"></i>
-            <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}" class="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+            <i class="fas fa-calendar-alt absolute left-5 top-1/2 -translate-y-1/2 text-app-muted text-xs pointer-events-none"></i>
+            <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}" class="mobile-input pl-12 bg-app-surface" required>
           </div>
           @error('date')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
 
         <div class="space-y-1.5">
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Nomor Surat / Referensi (Opsional)</label>
+          <label class="block text-[10px] font-black text-app-muted uppercase tracking-widest ml-4 transition-colors">Nomor Surat / Referensi (Opsional)</label>
           <div class="relative">
-            <i class="fas fa-file-invoice absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-xs pointer-events-none"></i>
-            <input type="text" name="nosur" value="{{ old('nosur') }}" placeholder="Contoh: 001/BAPB/..." class="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none font-mono transition-colors">
+            <i class="fas fa-file-invoice absolute left-5 top-1/2 -translate-y-1/2 text-app-muted text-xs pointer-events-none"></i>
+            <input type="text" name="nosur" value="{{ old('nosur') }}" placeholder="Contoh: 001/BAPB/..." class="mobile-input pl-12 font-mono bg-app-surface">
           </div>
           @error('nosur')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
         </div>
       </div>
 
       <div class="space-y-1.5">
-        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Keterangan (Opsional)</label>
-        <textarea name="notes" rows="3" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors">{{ old('notes') }}</textarea>
+        <label class="block text-[10px] font-black text-app-muted uppercase tracking-widest ml-4 transition-colors">Keterangan (Opsional)</label>
+        <textarea name="notes" rows="3" class="mobile-input bg-app-surface leading-relaxed">{{ old('notes') }}</textarea>
         @error('notes')<p class="text-[10px] font-bold text-rose-600 mt-1 ml-4">{{ $message }}</p>@enderror
       </div>
 
       <div class="grid grid-cols-2 gap-3 pt-2">
-        <a href="{{ route('stock.index') }}" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center transition-colors">Batal</a>
-        <button type="submit" :disabled="isInvalid" :class="isInvalid ? 'opacity-50 cursor-not-allowed bg-slate-400' : 'bg-indigo-600 bg-indigo-600 shadow-indigo-100 active:scale-[0.98]'" class="w-full py-4 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md transition-all">Simpan</button>
+        <a href="{{ route('stock.index') }}" class="btn-ghost-mobile">Batal</a>
+        <button type="submit" :disabled="isInvalid" :class="isInvalid ? 'opacity-50 grayscale' : ''" class="btn-primary-mobile">Simpan</button>
       </div>
     </form>
   </div>
