@@ -133,55 +133,48 @@ class DashboardController extends Controller
 
 
         // ============================
-        // DATA TREN BULANAN (6 BULAN TERAKHIR)
+        // DATA TREN BULANAN (6 BULAN TERAKHIR) - OPTIMIZED
         // ============================
+        $sixMonthsAgo = Carbon::today()->subMonths(5)->startOfMonth();
+        
+        $monthlyData = StockTransaction::select(
+                DB::raw(DB::connection()->getDriverName() === 'sqlite' ? 'strftime("%Y-%m", date) as month' : 'DATE_FORMAT(date, "%Y-%m") as month'),
+                DB::raw('SUM(CASE WHEN type = "in" THEN quantity ELSE 0 END) as total_in'),
+                DB::raw('SUM(CASE WHEN type = "out" THEN quantity ELSE 0 END) as total_out')
+            )
+            ->where('user_id', Auth::id())
+            ->whereDate('date', '>=', $sixMonthsAgo)
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $monthlyValueData = StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
+            ->select(
+                DB::raw(DB::connection()->getDriverName() === 'sqlite' ? 'strftime("%Y-%m", stock_transactions.date) as month' : 'DATE_FORMAT(stock_transactions.date, "%Y-%m") as month'),
+                DB::raw('SUM(CASE WHEN stock_transactions.type = "in" THEN stock_transactions.quantity * products.price ELSE 0 END) as val_in'),
+                DB::raw('SUM(CASE WHEN stock_transactions.type = "out" THEN stock_transactions.quantity * products.price ELSE 0 END) as val_out')
+            )
+            ->where('stock_transactions.user_id', Auth::id())
+            ->whereDate('stock_transactions.date', '>=', $sixMonthsAgo)
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
         $monthlyLabels = collect();
         $monthlyIn = collect();
         $monthlyOut = collect();
-
-        for ($i = 5; $i >= 0; $i--) {
-            $month = Carbon::today()->subMonths($i);
-            $monthlyLabels->push($month->translatedFormat('M Y'));
-            $monthlyIn->push(
-                StockTransaction::where('user_id', Auth::id())
-                    ->where('type', 'in')
-                    ->whereYear('date', $month->year)
-                    ->whereMonth('date', $month->month)
-                    ->sum('quantity')
-            );
-            $monthlyOut->push(
-                StockTransaction::where('user_id', Auth::id())
-                    ->where('type', 'out')
-                    ->whereYear('date', $month->year)
-                    ->whereMonth('date', $month->month)
-                    ->sum('quantity')
-            );
-        }
-
-        // ============================
-        // TREN NILAI BULANAN (6 BULAN TERAKHIR)
-        // ============================
         $monthlyValueIn = collect();
         $monthlyValueOut = collect();
 
         for ($i = 5; $i >= 0; $i--) {
-            $month = Carbon::today()->subMonths($i);
-            $monthlyValueIn->push(
-                StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
-                    ->where('stock_transactions.type', 'in')
-                    ->where('stock_transactions.user_id', Auth::id())
-                    ->whereYear('stock_transactions.date', $month->year)
-                    ->whereMonth('stock_transactions.date', $month->month)
-                    ->sum(DB::raw('stock_transactions.quantity * products.price'))
-            );
-            $monthlyValueOut->push(
-                StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
-                    ->where('stock_transactions.type', 'out')
-                    ->where('stock_transactions.user_id', Auth::id())
-                    ->whereYear('stock_transactions.date', $month->year)
-                    ->whereMonth('stock_transactions.date', $month->month)
-                    ->sum(DB::raw('stock_transactions.quantity * products.price'))
-            );
+            $monthObj = Carbon::today()->subMonths($i);
+            $key = $monthObj->format('Y-m');
+            
+            $monthlyLabels->push($monthObj->translatedFormat('M Y'));
+            $monthlyIn->push((int)($monthlyData[$key]->total_in ?? 0));
+            $monthlyOut->push((int)($monthlyData[$key]->total_out ?? 0));
+            $monthlyValueIn->push((float)($monthlyValueData[$key]->val_in ?? 0));
+            $monthlyValueOut->push((float)($monthlyValueData[$key]->val_out ?? 0));
         }
 
         // ============================

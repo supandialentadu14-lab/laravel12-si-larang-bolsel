@@ -338,20 +338,21 @@
         setProgress(100);
       };
 
-      // Prefetch on Touch/Hover
+      // Prefetch on Touch/Hover (Smart & Lightweight)
+      let touchTimer;
       document.addEventListener('touchstart', (e) => {
         const link = e.target.closest('a[href]');
         if (!link || link.classList.contains('no-soft') || link.origin !== window.location.origin) return;
-        prefetch(link.getAttribute('href'));
+        
+        // Jangan prefetch saat scrolling
+        clearTimeout(touchTimer);
+        touchTimer = setTimeout(() => {
+          prefetch(link.getAttribute('href'));
+        }, 80); // Tunggu 80ms, jika masih menempel berarti ingin klik
       }, { passive: true });
 
-      document.addEventListener('mouseover', (e) => {
-        const link = e.target.closest('a[href]');
-        if (!link || link.classList.contains('no-soft') || link.origin !== window.location.origin) return;
-        const href = link.getAttribute('href');
-        clearTimeout(prefetchTimer);
-        prefetchTimer = setTimeout(() => prefetch(href), 40);
-      });
+      document.addEventListener('touchend', () => clearTimeout(touchTimer));
+      document.addEventListener('touchmove', () => clearTimeout(touchTimer));
 
       // Click Interceptor
       document.addEventListener('click', async (e) => {
