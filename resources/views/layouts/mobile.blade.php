@@ -278,6 +278,20 @@
         return inv;
       };
 
+      // Smart Cache
+      const prefetchCache = new Map();
+      let prefetchTimer;
+
+      const prefetch = async (url) => {
+        if (prefetchCache.has(url) || url.includes('logout')) return;
+        try {
+          const promise = fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(res => res.ok ? res.text() : null)
+            .catch(() => null);
+          prefetchCache.set(url, promise);
+        } catch (e) {}
+      };
+
       const updateContent = (html, url, push = true) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
@@ -292,17 +306,30 @@
         document.title = doc.title;
         pageContent.innerHTML = newContent.innerHTML;
         
-        if (push) history.pushState({}, '', url);
+        // Sync Top Header Profile Photo (Mobile)
+        const newTopImg = doc.getElementById('top-profile-img-mobile');
+        const currentTopImg = document.getElementById('top-profile-img-mobile');
+        if (newTopImg && currentTopImg) {
+          currentTopImg.src = newTopImg.src.split('?')[0] + '?t=' + Date.now();
+        }
+
+        if (push) history.pushState({ spa: true }, '', url);
         
         const scripts = pageContent.querySelectorAll('script');
         scripts.forEach(s => {
-          const n = document.createElement('script');
-          if (s.src) n.src = s.src;
-          else n.textContent = s.textContent;
-          pageContent.appendChild(n);
+          try {
+            const n = document.createElement('script');
+            Array.from(s.attributes).forEach(attr => n.setAttribute(attr.name, attr.value));
+            n.textContent = s.textContent;
+            document.body.appendChild(n);
+            n.remove();
+          } catch(e) {}
         });
 
-        if (window.Alpine) Alpine.discover();
+        if (window.Alpine) {
+          try { window.Alpine.discover(pageContent); } catch(e) {}
+        }
+        
         pageContent.scrollTo({ top: 0, behavior: 'smooth' });
         
         const newNav = doc.querySelector('nav.bottom-nav');
@@ -311,38 +338,63 @@
         setProgress(100);
       };
 
-      const handleLinkClick = async (e) => {
+      // Prefetch on Touch/Hover
+      document.addEventListener('touchstart', (e) => {
         const link = e.target.closest('a[href]');
-        if (!link || link.classList.contains('no-soft')) return;
+        if (!link || link.classList.contains('no-soft') || link.origin !== window.location.origin) return;
+        prefetch(link.getAttribute('href'));
+      }, { passive: true });
+
+      document.addEventListener('mouseover', (e) => {
+        const link = e.target.closest('a[href]');
+        if (!link || link.classList.contains('no-soft') || link.origin !== window.location.origin) return;
+        const href = link.getAttribute('href');
+        clearTimeout(prefetchTimer);
+        prefetchTimer = setTimeout(() => prefetch(href), 40);
+      });
+
+      // Click Interceptor
+      document.addEventListener('click', async (e) => {
+        const link = e.target.closest('a[href]');
+        if (!link || link.classList.contains('no-soft') || link.getAttribute('download')) return;
         if (link.origin !== window.location.origin) return;
         if (link.target === '_blank' || e.metaKey || e.ctrlKey) return;
         
         const href = link.getAttribute('href');
-        if (href.startsWith('#') || href.startsWith('javascript:')) return;
+        if (href.startsWith('#') || href.startsWith('javascript:') || href.includes('logout')) return;
         
         e.preventDefault();
         const pid = startProgress();
         try {
-          const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-          const html = await res.text();
+          let html;
+          if (prefetchCache.has(href)) {
+            html = await prefetchCache.get(href);
+            prefetchCache.delete(href);
+          }
+          if (!html) {
+            const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            html = await res.text();
+          }
           clearInterval(pid);
-          updateContent(html, res.url);
+          updateContent(html, href);
         } catch (err) {
           clearInterval(pid);
           setProgress(100);
           window.location.href = href;
         }
-      };
+      });
 
-      const handleFormSubmit = async (e) => {
+      // Form Interceptor
+      document.addEventListener('submit', async (e) => {
         const form = e.target.closest('form');
         if (!form || form.classList.contains('no-soft')) return;
-        if (form.method.toUpperCase() === 'GET') return;
+        if ((form.method || 'GET').toUpperCase() === 'GET') return;
+        
+        const action = form.getAttribute('action') || window.location.href;
         
         e.preventDefault();
         const pid = startProgress();
         const formData = new FormData(form);
-        const action = form.getAttribute('action') || window.location.href;
         
         try {
           const res = await fetch(action, {
@@ -350,56 +402,40 @@
             body: formData,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           });
+
+          if (res.status === 419) {
+            window.location.reload();
+            return;
+          }
+
           const html = await res.text();
           clearInterval(pid);
+
+          if (action.includes('profile/update') || action.includes('profile')) {
+            window.location.reload();
+            return;
+          }
+
           updateContent(html, res.url);
         } catch (err) {
           clearInterval(pid);
           setProgress(100);
           form.submit();
         }
-      };
+      });
 
-      // document.addEventListener('click', handleLinkClick);
-      // document.addEventListener('submit', handleFormSubmit);
-      // window.addEventListener('popstate', ...);
-
-      // Native validation message customization
-      document.addEventListener('invalid', (function() {
-        return function(e) {
-          // e.preventDefault(); // Do not prevent default, keep the bubble
-          const input = e.target;
-          let label = '';
-          
-          const labelEl = input.closest('.space-y-1.5')?.querySelector('label') 
-                        || input.parentElement?.querySelector('label')
-                        || document.querySelector(`label[for="${input.id || ''}"]`);
-                        
-          if (labelEl) {
-            label = labelEl.textContent.trim().split('(')[0].trim().replace(':', '');
-          } else if (input.placeholder) {
-            label = input.placeholder.split('...')[0].trim().replace('Masukkan ', '').replace('Input ', '').replace('Contoh: ', '');
-          }
-          
-          if (!label || label.length > 30) {
-            label = input.getAttribute('name') ? input.getAttribute('name').replace('_', ' ') : 'ini';
-          }
-          
-          // Title case simple name
-          if (label === label.toLowerCase()) {
-            label = label.charAt(0).toUpperCase() + label.slice(1);
-          }
-          
-          input.setCustomValidity('Kolom ' + label + ' harus diisi');
-        };
-      })(), true);
-
-      // Listener to clear native validation message when user starts typing
-      document.addEventListener('input', function(e) {
-        if (e.target.willValidate) {
-          e.target.setCustomValidity('');
+      window.addEventListener('popstate', async () => {
+        const pid = startProgress();
+        try {
+          const res = await fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+          const html = await res.text();
+          clearInterval(pid);
+          updateContent(html, window.location.href, false);
+        } catch (err) {
+          clearInterval(pid);
+          window.location.reload();
         }
-      }, true);
+      });
 
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
