@@ -244,9 +244,9 @@
       <h3 class="text-center py-2 text-[10px] lg:text-sm font-black text-slate-800 uppercase tracking-[0.2em]">Aksi Cepat</h3>
     </div>
     
-    <div class="grid grid-cols-5 gap-2 lg:gap-2">
+    <div class="flex flex-row flex-wrap items-center justify-between px-2 lg:px-10">
       {{-- Barang Masuk --}}
-      <a href="{{ route('stock.create', ['type' => 'in']) }}" class="flex flex-col items-center gap-3 group flex-1">
+      <a href="{{ route('stock.create', ['type' => 'in']) }}" class="flex flex-col items-center gap-3 group">
         <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-emerald-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-plus-circle"></i>
         </div>
@@ -254,7 +254,7 @@
       </a>
 
       {{-- Barang Keluar --}}
-      <a href="{{ route('stock.create', ['type' => 'out']) }}" class="flex flex-col items-center gap-3 group flex-1">
+      <a href="{{ route('stock.create', ['type' => 'out']) }}" class="flex flex-col items-center gap-3 group">
         <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-rose-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-minus-circle"></i>
         </div>
@@ -262,7 +262,7 @@
       </a>
 
       {{-- Cari Barang --}}
-      <a href="{{ route('products.index') }}" class="flex flex-col items-center gap-3 group flex-1">
+      <a href="{{ route('products.index') }}" class="flex flex-col items-center gap-3 group">
         <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-blue-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-search"></i>
         </div>
@@ -270,7 +270,7 @@
       </a>
 
       {{-- Cetak --}}
-      <a href="{{ route('reports.index') }}" class="flex flex-col items-center gap-3 group flex-1">
+      <a href="{{ route('reports.index') }}" class="flex flex-col items-center gap-3 group">
         <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-purple-600 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-print"></i>
         </div>
@@ -278,7 +278,7 @@
       </a>
 
       {{-- Audit Log --}}
-      <a href="{{ route('activity_log.index') }}" class="flex flex-col items-center gap-3 group flex-1">
+      <a href="{{ route('activity_log.index') }}" class="flex flex-col items-center gap-3 group">
         <div class="w-16 h-16 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-500 text-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
           <i class="fas fa-history"></i>
         </div>

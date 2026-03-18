@@ -3,7 +3,7 @@
 @section('content')
 <div class="space-y-6 animate-slide-up">
 
-  @if(auth()->user()->first_login)
+  @if(auth()->user()->first_login && (!auth()->user()->password_updated_at || !auth()->user()->avatar_updated_at))
     {{-- Mobile First Login Banner --}}
     <div class="animate__animated animate__fadeInDown">
       <div class="bg-indigo-600 rounded-[2rem] p-6 text-white shadow-lg shadow-indigo-100 relative overflow-hidden">

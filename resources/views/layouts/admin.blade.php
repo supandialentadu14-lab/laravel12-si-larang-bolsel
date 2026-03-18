@@ -285,6 +285,22 @@
     #sidebar-main {
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    /* FORCED DESKTOP LAYOUT FIX */
+    @media (min-width: 768px) {
+      #sidebar-main {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        transform: none !important;
+        width: 256px !important;
+      }
+      #desktop-content-wrapper {
+        margin-left: 256px !important;
+        width: calc(100% - 256px) !important;
+      }
+    }
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -376,7 +392,7 @@
   x-data="{ 
     unreadChatCount: 0,
     notifOpen: false,
-    sidebarOpen: false,
+    sidebarOpen: window.innerWidth >= 1024,
     checkNewMessages() {
       fetch('{{ route('chat.unread') }}')
         .then(res => res.json())
@@ -404,8 +420,9 @@
 
     <!-- Sidebar Navigation -->
     <aside id="sidebar-main" 
-            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-            class="fixed lg:static inset-y-0 left-0 w-64 flex flex-col no-print bg-[#0F172A] border-r border-slate-800/50 z-[60] lg:z-10 transition-transform duration-300 transform -translate-x-full lg:translate-x-0 lg:flex flex-shrink-0" style="background-color: #0F172A;">
+            :class="sidebarOpen ? 'translate-x-0 shadow-2xl z-[60]' : '-translate-x-full md:translate-x-0 md:z-10'"
+            class="transition-transform duration-300 transform -translate-x-full flex flex-col no-print bg-[#0F172A] border-r border-slate-800/50 flex-shrink-0" 
+            style="background-color: #0F172A;">
       <div class="p-8">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -498,7 +515,7 @@
     </aside>
 
     <!-- Main Content Wrapper (Header + Content) -->
-    <div class="flex-1 flex flex-col min-w-0 bg-white relative">
+    <div id="desktop-content-wrapper" class="flex-1 flex flex-col min-w-0 bg-white relative transition-all duration-300 ease-in-out">
       <!-- Minimal Top Header (Fixed Position) -->
       <header class="h-20 sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-50 flex items-center justify-between px-4 lg:px-8 no-print z-20">
         <div class="flex-none flex items-center gap-4">
@@ -507,14 +524,11 @@
             <i class="fas fa-bars"></i>
           </button>
           
-          <div class="relative max-w-xs w-full lg:block hidden">
-            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
-            <input type="text" placeholder="Cari di SI-LARANG..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-bold text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-100 outline-none">
-          </div>
+          <!-- Search Removed -->
         </div>
 
         <!-- Full Width Marquee Bar -->
-        <div class="hidden lg:flex flex-1 items-center overflow-hidden ml-8 mr-48">
+        <div class="hidden lg:flex flex-1 items-center overflow-hidden ml-8 mr-8">
           <div class="marquee-container w-full group">
             <div class="marquee-content flex items-center gap-20">
               @php
@@ -555,7 +569,7 @@
  
           <!-- Profile Photo Only -->
           <div class="w-10 h-10 rounded-xl bg-white overflow-hidden border border-slate-100 shadow-sm flex-shrink-0 p-0.5">
-            <img class="w-full h-full rounded-[10px] object-cover" src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}">
+            <img id="top-profile-img" class="w-full h-full rounded-[10px] object-cover" src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}">
           </div>
         </div>
       </header>
@@ -695,55 +709,81 @@
         
         const isMobile = doc.getElementById('page-content') && !doc.getElementById('app-content');
         const newMain = doc.querySelector('#app-content');
-        const currentWrapper = document.getElementById('main-content-wrapper');
         const newFadeContent = doc.getElementById('content-container-fade');
+        const currentWrapper = document.getElementById('main-content-wrapper');
         
         if (!newMain || !fadeWrap || isMobile) {
           window.location.href = url;
           return;
         }
 
-        // Apply fade-out to the ENTIRE inner content area
+        // Apply fade-out
         fadeWrap.classList.add('content-loading');
         
         setTimeout(() => {
-          if (currentWrapper) currentWrapper.scrollTo(0, 0);
-          document.title = doc.title;
+          try {
+            if (currentWrapper) currentWrapper.scrollTo(0, 0);
+            document.title = doc.title;
 
-          // Replace the entire contents of the fade container
-          if (newFadeContent) {
-            fadeWrap.innerHTML = newFadeContent.innerHTML;
-          } else {
-            // Fallback for pages that might have a different structure
-            appContent.innerHTML = newMain.innerHTML;
-          }
+            // Holistic Update: Catch all header/content areas
+            if (newFadeContent) {
+              fadeWrap.innerHTML = newFadeContent.innerHTML;
+            } else {
+              // Fallback: sync individual pieces
+              const newHeader = doc.querySelector('#page-header');
+              const newActions = doc.querySelector('#page-actions');
+              if (newHeader && pageHeader) pageHeader.innerHTML = newHeader.innerHTML;
+              if (newActions && pageActions) pageActions.innerHTML = newActions.innerHTML;
+              appContent.innerHTML = newMain.innerHTML;
+            }
 
-          if (push) history.pushState({ spa: true }, '', url);
-          updateActiveLink(doc);
+            // Sync Top Header Profile Photo
+            const newTopImg = doc.getElementById('top-profile-img');
+            const currentTopImg = document.getElementById('top-profile-img');
+            if (newTopImg && currentTopImg) {
+              currentTopImg.src = newTopImg.src;
+            }
 
-          // Re-execute scripts
-          fadeWrap.querySelectorAll('script').forEach(oldScript => {
-            const newScript = document.createElement('script');
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.textContent = oldScript.textContent;
-            document.body.appendChild(newScript);
-            newScript.remove();
-          });
+            if (push) history.pushState({ spa: true }, '', url);
+            updateActiveLink(doc);
 
-          if (window.Alpine) {
-            window.Alpine.discover(fadeWrap);
-          }
-
-          // Give Tailwind CDN and Alpine 200ms to finish their pass
-          setTimeout(() => {
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                fadeWrap.classList.remove('content-loading');
-                setProgress(100);
-              });
+            // Re-execute scripts with safety
+            fadeWrap.querySelectorAll('script').forEach(oldScript => {
+              try {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                newScript.textContent = oldScript.textContent;
+                document.body.appendChild(newScript);
+                newScript.remove();
+              } catch (se) { console.warn('SPA: Script error', se); }
             });
-          }, 200);
+
+            // Re-init Alpine
+            if (window.Alpine) {
+              try { window.Alpine.discover(fadeWrap); } catch (ae) { console.warn('SPA: Alpine error', ae); }
+            }
+          } catch (e) {
+            console.error('SPA: Update error', e);
+          } finally {
+            // ALWAYS reveal content after a short delay
+            setTimeout(() => {
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  fadeWrap.classList.remove('content-loading');
+                  setProgress(100);
+                });
+              });
+            }, 100);
+          }
         }, 150);
+
+        // Emergency Reveal Fallback (2 seconds)
+        setTimeout(() => {
+          if (fadeWrap.classList.contains('content-loading')) {
+            fadeWrap.classList.remove('content-loading');
+            setProgress(100);
+          }
+        }, 2000);
       };
 
       // Click Interceptor
