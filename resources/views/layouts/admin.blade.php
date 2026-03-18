@@ -56,7 +56,7 @@
   @endif
   {{-- CSS laporan global untuk preview F4, KOP, dan tabel --}}
   <link rel="stylesheet" href="{{ asset('css/report.css') }}">
-
+  <style>
     [x-cloak] { display: none !important; }
 
     html, body {
@@ -229,7 +229,6 @@
       100% { transform: translateX(-50%); }
     }
     .marquee-container {    
-      ba
       overflow: hidden;
       white-space: nowrap;
       position: relative;
