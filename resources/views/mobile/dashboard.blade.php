@@ -230,6 +230,7 @@
     </div>
   </div>
 
+  @if(auth()->user()->isAdmin())
   <!-- System Control -->
   <div class="pb-10">
     <h3 class="text-sm font-extrabold text-app-main mb-4 px-1 uppercase tracking-widest">Kontrol Sistem</h3>
@@ -238,14 +239,15 @@
         <div class="relative flex items-center justify-between">
             <div class="space-y-1">
                 <p class="text-xs font-black uppercase tracking-widest">Keamanan Data</p>
-                <p class="text-[9px] font-medium opacity-80 uppercase leading-relaxed">Backup database secara rutin untuk <br>menghindari kehilangan data.</p>
+                <p class="text-[9px] font-medium opacity-80 uppercase leading-relaxed">Cek dan buat cadangan <br>database secara rutin.</p>
             </div>
-            <a href="{{ route('backup.run') }}" class="px-6 py-3 bg-white text-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all">
-                <i class="fas fa-cloud-upload-alt mr-2"></i> Backup
+            <a href="{{ route('backups.index') }}" class="px-6 py-3 bg-white text-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all">
+                <i class="fas fa-server mr-2"></i> Kelola
             </a>
         </div>
     </div>
   </div>
+  @endif
 
   <!-- Quick Actions Scroll -->
   <div>

@@ -218,6 +218,7 @@
       </div>
     </div>
 
+    @if(auth()->user()->isAdmin())
     {{-- System Control Card --}}
     <div class="p-10 rounded-[2.5rem] bg-indigo-600 shadow-2xl shadow-indigo-100 text-white relative overflow-hidden flex flex-col justify-center items-center text-center">
       <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
@@ -229,13 +230,14 @@
           <p class="text-sm font-medium opacity-80 leading-relaxed">Jamin keamanan data inventaris Anda dengan pencadangan basis data berkala ke penyimpanan aman.</p>
         </div>
         <div>
-          <a href="{{ route('backup.run') }}" 
+          <a href="{{ route('backups.index') }}" 
             class="inline-flex items-center justify-center gap-3 px-4 py-5 bg-white text-indigo-700 rounded-full font-black uppercase text-[11px] tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all w-full sm:w-auto">
-            <i class="px-4 fas fa-cloud-arrow-up text-lg"></i> JALANKAN BACKUP
+            <i class="px-4 fas fa-cloud-arrow-up text-lg"></i> MANAJEMEN BACKUP
           </a>
         </div>
       </div>
     </div>
+    @endif
   </div>
 
   <!-- 7. Aksi Cepat Section (Mockup Match - Forced Single Row) -->

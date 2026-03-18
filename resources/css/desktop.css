@@ -5,9 +5,10 @@
 }
 
 body {
-  background-color: #ffffff;
-  color: #1E293B;
+  background-color: var(--app-bg);
+  color: var(--app-text-main);
   overflow-x: hidden;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .glass-effect {

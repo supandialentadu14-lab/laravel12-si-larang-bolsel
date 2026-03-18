@@ -26,17 +26,17 @@
 
 body {
   @apply transition-colors duration-300;
-  background-color: #F9FAFB;
-  color: #111827;
+  background-color: var(--app-bg);
+  color: var(--app-text-main);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.84);
+  background: var(--app-surface);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--app-border);
   transition: all 0.3s ease;
 }
 

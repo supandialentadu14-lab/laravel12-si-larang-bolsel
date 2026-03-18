@@ -57,23 +57,6 @@
   {{-- CSS laporan global untuk preview F4, KOP, dan tabel --}}
   <link rel="stylesheet" href="{{ asset('css/report.css') }}">
 
-  <style>
-    :root {
-      --body-bg: #F8FAFC;
-      --body-text: #1E293B;
-      --nav-bg: rgba(255, 255, 255, 0.8);
-      --accent: #4F46E5;
-      --accent-soft: rgba(79, 70, 229, 0.1);
-    }
-
-    .theme-dark {
-      --body-bg: #0F172A;
-      --body-text: #F8FAFC;
-      --nav-bg: rgba(30, 41, 59, 0.8);
-      --accent: #818CF8;
-      --accent-soft: rgba(129, 140, 248, 0.1);
-    }
-
     [x-cloak] { display: none !important; }
 
     html, body {
@@ -81,8 +64,6 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: var(--body-bg);
-      color: var(--body-text);
     }
 
     .glass-nav {
