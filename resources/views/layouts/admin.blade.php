@@ -18,6 +18,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
@@ -56,6 +57,16 @@
   @endif
   {{-- CSS laporan global untuk preview F4, KOP, dan tabel --}}
   <link rel="stylesheet" href="{{ asset('css/report.css') }}">
+
+  {{-- Theme initialization script to prevent white flash --}}
+  <script>
+    if (localStorage.getItem('darkMode') === 'true' || 
+        (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
   <style>
     [x-cloak] { display: none !important; }
 
