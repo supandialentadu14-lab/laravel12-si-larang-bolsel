@@ -388,20 +388,29 @@
   </script>
 </head>
 
-  <body class="font-sans antialiased bg-[#F4F7FA] min-h-screen" 
+  <body class="font-sans antialiased bg-app-bg text-app-main min-h-screen" 
   x-data="{ 
     unreadChatCount: 0,
     notifOpen: false,
+    darkMode: localStorage.getItem('darkMode') === 'true',
     sidebarOpen: window.innerWidth >= 1024,
+    toggleDarkMode() {
+      this.darkMode = !this.darkMode;
+      localStorage.setItem('darkMode', this.darkMode);
+      if (this.darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    },
+    init() {
+      if (this.darkMode) {
+        document.documentElement.classList.add('dark');
+      }
+      this.checkNewMessages();
+      setInterval(() => this.checkNewMessages(), 15000);
+    },
     checkNewMessages() {
-      fetch('{{ route('chat.unread') }}')
-        .then(res => res.json())
-        .then(data => { this.unreadChatCount = data.count; })
-        .catch(e => {});
-    }
-  }" 
-  @open-sidebar.window="sidebarOpen = true"
-  x-init="checkNewMessages(); setInterval(() => checkNewMessages(), 15000)">
 
   <!-- Application Boxed Wrapper -->
   <div class="max-w-none mx-auto bg-[#0F172A] h-screen overflow-hidden shadow-[0_0_60px_-15px_rgba(0,0,0,0.1)] flex flex-col border-x border-slate-100 relative">
@@ -441,7 +450,7 @@
       </div>
 
       <nav x-data="{ 
-        activeMenu: '{{ request()->is('products*') || request()->is('categories*') || request()->is('suppliers*') || request()->is('import/products*') ? 'master' : (request()->is('stock*') || request()->is('reports*') ? 'transaksi' : (request()->is('settings*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'manajemen' : 'none')) }}' 
+        activeMenu: '{{ request()->is('products*') || request()->is('categories*') || request()->is('suppliers*') || request()->is('import/products*') ? 'master' : (request()->is('stock*') || request()->is('reports*') ? 'transaksi' : (request()->is('settings*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') || request()->routeIs('backups.*') ? 'manajemen' : 'none')) }}' 
       }" class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
         <div class="pb-4">
 
@@ -500,6 +509,7 @@
             @if(Auth::user()->isAdmin())
               <a href="{{ route('users.index') }}" class="sub-link {{ request()->routeIs('users.*') ? 'active' : '' }}">Pengguna</a>
               <a href="{{ route('activity_log.index') }}" class="sub-link {{ request()->routeIs('activity_log.*') ? 'active' : '' }}">Log Aktivitas</a>
+              <a href="{{ route('backups.index') }}" class="sub-link {{ request()->routeIs('backups.*') ? 'active' : '' }}">Cadangan Data</a>
             @endif
           </div>
         </div>
@@ -548,9 +558,14 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-6 pl-10 border-l border-slate-50">
+        <div class="flex items-center gap-4 pl-10 border-l border-app-main">
+          <!-- Theme Toggle -->
+          <button @click="toggleDarkMode()" class="w-11 h-11 rounded-xl bg-app-surface border border-app-main flex items-center justify-center text-app-muted hover:text-indigo-600 transition shadow-sm">
+            <i class="fas" :class="darkMode ? 'fa-sun' : 'fa-moon'"></i>
+          </button>
+
           <!-- Chat -->
-          <a href="{{ route('chat.index') }}" class="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition relative">
+          <a href="{{ route('chat.index') }}" class="w-11 h-11 rounded-xl bg-app-surface border border-app-main flex items-center justify-center text-app-muted hover:text-indigo-600 transition relative shadow-sm">
             <i class="fas fa-comment-dots text-lg"></i>
             <template x-if="unreadChatCount > 0">
               <span class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white" x-text="unreadChatCount"></span>
@@ -558,7 +573,7 @@
           </a>
 
           <!-- Notifications -->
-          <button @click="notifOpen = true" class="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition relative">
+          <button @click="notifOpen = true" class="w-11 h-11 rounded-xl bg-app-surface border border-app-main flex items-center justify-center text-app-muted hover:text-rose-500 transition relative shadow-sm">
             <i class="fas fa-bell text-lg"></i>
             @if (isset($lowStockCount) && $lowStockCount > 0)
               <span class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-bounce-subtle">
@@ -568,13 +583,13 @@
           </button>
  
           <!-- Profile Photo Only -->
-          <div class="w-10 h-10 rounded-xl bg-white overflow-hidden border border-slate-100 shadow-sm flex-shrink-0 p-0.5">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600 overflow-hidden border border-indigo-500 shadow-sm flex-shrink-0 p-0.5">
             <img id="top-profile-img" class="w-full h-full rounded-[10px] object-cover" src="{{ Auth::user()->avatar ? asset('media/' . Auth::user()->avatar . '?v=' . (Auth::user()->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4F46E5&color=ffffff' }}">
           </div>
         </div>
       </header>
 
-      <div id="main-content-wrapper" class="flex-1 overflow-y-auto custom-scrollbar px-4 lg:px-8 py-6 lg:py-10 bg-[#F8FAFC]">
+      <div id="main-content-wrapper" class="flex-1 overflow-y-auto custom-scrollbar px-4 lg:px-8 py-6 lg:py-10 bg-app-bg">
         <div id="content-container-fade" class="content-area-fade">
           <!-- Breadcrumbs/Subheader -->
           <div class="flex items-center justify-between mb-2 no-print">

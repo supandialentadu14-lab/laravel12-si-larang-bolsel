@@ -65,7 +65,7 @@
   </style>
 </head>
 
-  <body class="antialiased select-none overflow-hidden" 
+  <body class="antialiased select-none overflow-hidden bg-app-bg text-app-main" 
   style="height: 100vh; height: 100dvh;"
   x-data="{ 
     mobileMenuOpen: false, 
@@ -76,10 +76,29 @@
     notifOpen: false,
     unreadChatCount: 0,
     chatNotifOpen: false,
+    darkMode: localStorage.getItem('darkMode') === 'true',
     latestChatMessage: null,
     scrollingDown: false,
     lastScrollTop: 0,
     
+    toggleDarkMode() {
+      this.darkMode = !this.darkMode;
+      localStorage.setItem('darkMode', this.darkMode);
+      if (this.darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    },
+
+    init() {
+      if (this.darkMode) {
+        document.documentElement.classList.add('dark');
+      }
+      this.checkNewMessages();
+      setInterval(() => this.checkNewMessages(), 15000);
+    },
+
     async checkNewMessages() {
       @if(auth()->check() && (auth()->user()->chat_enabled || auth()->user()->isAdmin()))
       try {

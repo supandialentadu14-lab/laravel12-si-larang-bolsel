@@ -273,8 +273,20 @@ class UserController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $data['avatar'] = $path;
+            $file = $request->file('avatar');
+            $filename = time() . '_' . $user->id . '.jpg';
+            $storagePath = storage_path('app/public/avatars');
+            
+            if (!is_dir($storagePath)) {
+                mkdir($storagePath, 0755, true);
+            }
+
+            $destPath = $storagePath . '/' . $filename;
+            
+            // Compress and resize
+            $this->compressImage($file->getRealPath(), $destPath, 600, 75);
+            
+            $data['avatar'] = 'avatars/' . $filename;
             $data['avatar_updated_at'] = now();
         }
 
@@ -360,5 +372,46 @@ class UserController extends Controller
         $user = auth()->user();
         $user->update(['first_login' => false]);
         return back();
+    }
+
+    private function compressImage($source, $destination, $maxWidth, $quality)
+    {
+        $info = getimagesize($source);
+
+        if ($info['mime'] == 'image/jpeg') {
+            $image = imagecreatefromjpeg($source);
+        } elseif ($info['mime'] == 'image/gif') {
+            $image = imagecreatefromgif($source);
+        } elseif ($info['mime'] == 'image/png') {
+            $image = imagecreatefrompng($source);
+        } else {
+            return false;
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        if ($width > $maxWidth) {
+            $newWidth = $maxWidth;
+            $newHeight = floor($height * ($maxWidth / $width));
+            $tmpImg = imagecreatetruecolor($newWidth, $newHeight);
+            
+            // Handle transparency for PNGs
+            if ($info['mime'] == 'image/png' || $info['mime'] == 'image/gif') {
+                imagealphablending($tmpImg, false);
+                imagesavealpha($tmpImg, true);
+                $transparent = imagecolorallocatealpha($tmpImg, 255, 255, 255, 127);
+                imagefilledrectangle($tmpImg, 0, 0, $newWidth, $newHeight, $transparent);
+            }
+
+            imagecopyresampled($tmpImg, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagejpeg($tmpImg, $destination, $quality);
+            imagedestroy($tmpImg);
+        } else {
+            imagejpeg($image, $destination, $quality);
+        }
+
+        imagedestroy($image);
+        return true;
     }
 }

@@ -20,21 +20,43 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* Theme Utilities (Fallback to Light for compatibility) */
+:root {
+    --app-bg: #F8FAFC;
+    --app-surface: #FFFFFF;
+    --app-text-main: #0F172A;
+    --app-text-muted: #64748B;
+    --app-border: #E2E8F0;
+}
+
+.dark {
+    --app-bg: #020617;
+    --app-surface: #0F172A;
+    --app-text-main: #F8FAFC;
+    --app-text-muted: #94A3B8;
+    --app-border: #1E293B;
+}
+
+body {
+    background-color: var(--app-bg);
+    color: var(--app-text-main);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Theme Utilities (Using CSS Variables) */
 @utility bg-app-bg {
-    background-color: #F9FAFB;
+    background-color: var(--app-bg);
 }
 @utility bg-app-surface {
-    background-color: #FFFFFF;
+    background-color: var(--app-surface);
 }
 @utility text-app-main {
-    color: #111827;
+    color: var(--app-text-main);
 }
 @utility text-app-muted {
-    color: #6B7280;
+    color: var(--app-text-muted);
 }
 @utility border-app-main {
-    border-color: #E5E7EB;
+    border-color: var(--app-border);
 }
 
 /* Professional Print Styles */

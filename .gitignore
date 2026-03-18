@@ -16,9 +16,12 @@
 /public/hot
 /public/storage
 /public/media
+/storage/app/backups
 /storage/*.key
 /storage/pail
 /vendor
+.idea
+.vscode
 Homestead.json
 Homestead.yaml
 Thumbs.db

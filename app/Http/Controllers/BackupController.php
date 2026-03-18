@@ -3,80 +3,84 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Log;
-use Ifsnop\Mysqldump\Mysqldump;
-use Exception;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class BackupController extends Controller
 {
-
-
-    public function run()
+    public function index()
     {
-        return $this->downloadUser(auth()->id());
-    }
+        $this->authorizeAdmin();
+        $path = storage_path('app/backups');
+        $backups = [];
 
-    public function downloadUser($userId)
-    {
-        try {
-            $user = \App\Models\User::findOrFail($userId);
-            $filename = 'backup_user_' . $user->id . '_' . str()->slug($user->name) . '_' . date('Y_m_d_H_i_s') . '.sql';
-            $path = storage_path('app/' . $filename);
-
-            // Identify tables to include with WHERE clause, and tables to exclude
-            $tables = DB::select('SHOW TABLES');
-            $wheres = [];
-            $excludeTables = [];
-            
-            foreach ($tables as $tableRow) {
-                $table = current((array)$tableRow);
-                if (\Illuminate\Support\Facades\Schema::hasColumn($table, 'user_id')) {
-                    $wheres[$table] = 'user_id = ' . $user->id;
-                } else if ($table === 'users') {
-                    $wheres[$table] = 'id = ' . $user->id;
-                } else {
-                    $excludeTables[] = $table;
+        if (File::exists($path)) {
+            $files = File::files($path);
+            foreach ($files as $file) {
+                if ($file->getExtension() === 'sql') {
+                    $backups[] = [
+                        'name' => $file->getFilename(),
+                        'size' => round($file->getSize() / 1024, 2) . ' KB',
+                        'at' => date('Y-m-d H:i:s', $file->getMTime()),
+                        'raw_at' => $file->getMTime()
+                    ];
                 }
             }
+            // Sort by newest
+            usort($backups, fn($a, $b) => $b['raw_at'] <=> $a['raw_at']);
+        }
 
-            $dumpSettings = array(
-                'compress' => Mysqldump::NONE,
-                'no-data' => false,
-                'add-drop-table' => false, 
-                'no-create-info' => true,
-                'insert-ignore' => true, // Gunakan INSERT IGNORE untuk menghindari duplicate error
-                'single-transaction' => true,
-                'lock-tables' => false,  // Matikan lock agar tidak error table not locked
-                'add-locks' => false,    // Matikan lock agar tidak error table not locked
-                'extended-insert' => true,
-                'disable-keys' => false,
-                'skip-triggers' => false,
-                'add-drop-trigger' => false,
-                'routines' => false,
-                'hex-blob' => true,
-                'net_buffer_length' => 819200,
-                'exclude-tables' => $excludeTables
-            );
+        return view('backups.index', compact('backups'));
+    }
 
-            $dump = new Mysqldump(
-                'mysql:host=' . env('DB_HOST', '127.0.0.1') . ';dbname=' . env('DB_DATABASE', 'laravel'),
-                env('DB_USERNAME', 'root'),
-                env('DB_PASSWORD', ''),
-                $dumpSettings
-            );
+    public function create()
+    {
+        $this->authorizeAdmin();
+        
+        try {
+            Artisan::call('db:backup');
+            $output = Artisan::output();
             
-            $dump->setTableWheres($wheres);
-            $dump->start($path);
-
-            return Response::download($path, $filename, [
-                'Content-Type' => 'application/sql',
-            ])->deleteFileAfterSend(true);
+            if (str_contains($output, 'failed')) {
+                return back()->with('error', 'Gagal membuat cadangan database. ' . $output);
+            }
             
+            return back()->with('success', 'Cadangan database berhasil dibuat.');
         } catch (\Exception $e) {
-            Log::error('User Backup failed: ' . $e->getMessage());
-            return back()->with('error', 'Gagal membackup database pengguna: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function download($filename)
+    {
+        $this->authorizeAdmin();
+        $path = storage_path('app/backups/' . $filename);
+
+        if (!File::exists($path)) {
+            return back()->with('error', 'File tidak ditemukan.');
+        }
+
+        return response()->download($path);
+    }
+
+    public function destroy($filename)
+    {
+        $this->authorizeAdmin();
+        $path = storage_path('app/backups/' . $filename);
+
+        if (File::exists($path)) {
+            File::delete($path);
+            return back()->with('success', 'File cadangan berhasil dihapus.');
+        }
+
+        return back()->with('error', 'File tidak ditemukan.');
+    }
+
+    protected function authorizeAdmin()
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Akses ditolak.');
         }
     }
 }

@@ -148,7 +148,8 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('month');
 
-        $monthlyValueData = StockTransaction::join('products', 'stock_transactions.product_id', '=', 'products.id')
+        $monthlyValueData = DB::table('stock_transactions')
+            ->join('products', 'stock_transactions.product_id', '=', 'products.id')
             ->select(
                 DB::raw(DB::connection()->getDriverName() === 'sqlite' ? 'strftime("%Y-%m", stock_transactions.date) as month' : 'DATE_FORMAT(stock_transactions.date, "%Y-%m") as month'),
                 DB::raw('SUM(CASE WHEN stock_transactions.type = "in" THEN stock_transactions.quantity * products.price ELSE 0 END) as val_in'),
@@ -156,15 +157,16 @@ class DashboardController extends Controller
             )
             ->where('stock_transactions.user_id', Auth::id())
             ->whereDate('stock_transactions.date', '>=', $sixMonthsAgo)
+            ->whereNull('stock_transactions.deleted_at')
             ->groupBy('month')
             ->get()
             ->keyBy('month');
 
-        $monthlyLabels = collect();
-        $monthlyIn = collect();
-        $monthlyOut = collect();
-        $monthlyValueIn = collect();
-        $monthlyValueOut = collect();
+        $monthlyLabels = collect([]);
+        $monthlyIn = collect([]);
+        $monthlyOut = collect([]);
+        $monthlyValueIn = collect([]);
+        $monthlyValueOut = collect([]);
 
         for ($i = 5; $i >= 0; $i--) {
             $monthObj = Carbon::today()->subMonths($i);
@@ -180,9 +182,9 @@ class DashboardController extends Controller
         // ============================
         // TOP 5 PRODUK PALING AKTIF
         // ============================
-        $topProducts = Product::where('user_id', Auth::id())
+        $topProducts = Product::where('user_id', '=', Auth::id())
             ->withCount(['transactions' => function($q) {
-                $q->where('user_id', Auth::id());
+                $q->where('user_id', '=', Auth::id());
             }])
             ->orderBy('transactions_count', 'desc')
             ->take(5)
@@ -191,7 +193,7 @@ class DashboardController extends Controller
         // ============================
         // DISTRIBUSI STOK PER KATEGORI
         // ============================
-        $categoryDistribution = Category::where('user_id', Auth::id())
+        $categoryDistribution = Category::where('user_id', '=', Auth::id())
             ->withCount(['products as total_stock' => function ($query) {
                 $query->select(DB::raw('COALESCE(SUM(stock), 0)'));
             }])->get()->filter(fn($c) => $c->total_stock > 0);

@@ -208,6 +208,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('users/{user}/backup', [\App\Http\Controllers\BackupController::class, 'downloadUser'])->name('users.backup');
         Route::post('users/{user}/restore', [\App\Http\Controllers\UserRestoreController::class, 'restore'])->name('users.restore');
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity_log.index');
+
+        // Database Management
+        Route::get('backups', [\App\Http\Controllers\BackupController::class, 'index'])->name('backups.index');
+        Route::post('backups', [\App\Http\Controllers\BackupController::class, 'create'])->name('backups.create');
+        Route::get('backups/download/{filename}', [\App\Http\Controllers\BackupController::class, 'download'])->name('backups.download');
+        Route::delete('backups/{filename}', [\App\Http\Controllers\BackupController::class, 'destroy'])->name('backups.destroy');
     });
 });
 
