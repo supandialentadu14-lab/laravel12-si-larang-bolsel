@@ -25,29 +25,20 @@
               sans: ['Nunito', 'sans-serif'],
             },
             colors: {
+              app: {
+                bg: 'var(--app-bg)',
+                surface: 'var(--app-surface)',
+                main: 'var(--app-text-main)',
+                muted: 'var(--app-text-muted)',
+                border: 'var(--app-border)',
+              },
               orange: {
-                50: '#FFF1E6',
-                100: '#FFE3CC',
-                200: '#FFD0A3',
-                300: '#FFB875',
-                400: '#FF9E47',
-                500: '#FF7F1A',
-                600: '#E76A09',
-                700: '#C45508',
-                800: '#9A4407',
-                900: '#7A3606',
+                50: '#FFF1E6', 100: '#FFE3CC', 200: '#FFD0A3', 300: '#FFB875', 400: '#FF9E47',
+                500: '#FF7F1A', 600: '#E76A09', 700: '#C45508', 800: '#9A4407', 900: '#7A3606',
               },
               indigo: {
-                50: '#EEF2FF',
-                100: '#E0E7FF',
-                200: '#C7D2FE',
-                300: '#A5B4FC',
-                400: '#818CF8',
-                500: '#6366F1',
-                600: '#4F46E5',
-                700: '#4338CA',
-                800: '#3730A3',
-                900: '#312E81',
+                50: '#EEF2FF', 100: '#E0E7FF', 200: '#C7D2FE', 300: '#A5B4FC', 400: '#818CF8',
+                500: '#6366F1', 600: '#4F46E5', 700: '#4338CA', 800: '#3730A3', 900: '#312E81',
               },
             }
           },
@@ -68,20 +59,69 @@
     }
   </script>
   <style>
+    /* Theme Variables - Always Available */
+    :root {
+      --app-bg: #F8FAFC;
+      --app-surface: #FFFFFF;
+      --app-text-main: #0F172A;
+      --app-text-muted: #64748B;
+      --app-border: #E2E8F0;
+      
+      /* Legacy support */
+      --body-bg: var(--app-bg);
+      --body-text: var(--app-text-main);
+      --nav-bg: rgba(255, 255, 255, 0.8);
+      --accent: #4F46E5;
+      --accent-soft: rgba(79, 70, 229, 0.1);
+    }
+
+    .dark {
+      --app-bg: #020617;
+      --app-surface: #0F172A;
+      --app-text-main: #F8FAFC;
+      --app-text-muted: #94A3B8;
+      --app-border: #1E293B;
+      
+      /* Legacy support */
+      --body-bg: var(--app-bg);
+      --body-text: var(--app-text-main);
+      --nav-bg: rgba(15, 23, 42, 0.8);
+      --accent: #818CF8;
+      --accent-soft: rgba(129, 140, 248, 0.1);
+    }
+
+    /* Basic Reset & Forced Theme Utilities */
     [x-cloak] { display: none !important; }
+
+    html.dark body, 
+    html.dark #desktop-content-wrapper,
+    html.dark .bg-white { 
+      background-color: var(--app-bg) !important; 
+    }
+
+    /* Force Utilities for CDN/Production Consistency */
+    .bg-app-bg { background-color: var(--app-bg) !important; }
+    .bg-app-surface { background-color: var(--app-surface) !important; }
+    .text-app-main { color: var(--app-text-main) !important; }
+    .text-app-muted { color: var(--app-text-muted) !important; }
+    .border-app-main { border-color: var(--app-border) !important; }
 
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
       overflow: hidden;
+      background-color: var(--app-bg);
+      color: var(--app-text-main);
+      transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                  color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .glass-nav {
       backdrop-filter: blur(12px) saturate(180%);
       -webkit-backdrop-filter: blur(12px) saturate(180%);
-      background-color: var(--nav-bg);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      background-color: var(--nav-bg) !important;
+      border-bottom: 1px solid var(--app-border) !important;
     }
 
     .nav-item {

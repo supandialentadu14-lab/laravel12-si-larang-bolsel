@@ -40,13 +40,30 @@
 
 
   <style>
+    /* Theme Variables - Always Available */
+    :root {
+      --app-bg: #F8FAFC;
+      --app-surface: #FFFFFF;
+      --app-text-main: #111827;
+      --app-text-muted: #6B7280;
+      --app-border: #E5E7EB;
+    }
+
+    .dark {
+      --app-bg: #030712;
+      --app-surface: #111827;
+      --app-text-main: #F9FAFB;
+      --app-text-muted: #9CA3AF;
+      --app-border: #374151;
+    }
+
     /* FORCE STYLE FOR PRODUCTION - Bypassing Cache */
     nav.bottom-nav {
-      background-color: #ffffff !important;
-      background: rgba(255, 255, 255, 0.98) !important;
+      background-color: var(--app-surface) !important;
+      background: var(--app-surface) !important;
       backdrop-filter: blur(25px) saturate(200%) !important;
       -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
-      border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+      border-top: 1px solid var(--app-border) !important;
       opacity: 1 !important;
       visibility: visible !important;
     }
