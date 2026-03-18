@@ -28,33 +28,46 @@ class DatabaseBackup extends Command
         $config = config("database.connections.{$connection}");
 
         if ($connection === 'mysql') {
-            $binaryPath = 'mysqldump';
+            $binaryPath = env('MYSQLDUMP_PATH', 'mysqldump');
             
             // On Windows, if mysqldump is not in PATH, try common locations
             if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                $commonPaths = [
-                    'C:\xampp\mysql\bin\mysqldump.exe',
-                    'D:\xampp\mysql\bin\mysqldump.exe',
-                    'C:\laragon\bin\mysql\mysql-8.x.x\bin\mysqldump.exe', // generic
-                    'C:\laragon\bin\mysql\mysql-5.x.x\bin\mysqldump.exe',
-                ];
-                
-                // Also check Laragon's path dynamically if available
-                $laragonPath = 'C:\laragon\bin\mysql';
-                if (is_dir($laragonPath)) {
-                    $dirs = glob($laragonPath . '\*', GLOB_ONLYDIR);
-                    if ($dirs) {
-                        foreach($dirs as $dir) {
-                           $fullPath = $dir . '\bin\mysqldump.exe';
-                           if (file_exists($fullPath)) $commonPaths[] = $fullPath;
+                if ($binaryPath === 'mysqldump') {
+                    $commonPaths = [
+                        'C:\xampp\mysql\bin\mysqldump.exe',
+                        'D:\xampp\mysql\bin\mysqldump.exe',
+                        'C:\laragon\bin\mysql\mysql-8.x.x\bin\mysqldump.exe',
+                        'C:\laragon\bin\mysql\mysql-5.x.x\bin\mysqldump.exe',
+                    ];
+                    
+                    // Also check Laragon's path dynamically if available
+                    $laragonPath = 'C:\laragon\bin\mysql';
+                    if (is_dir($laragonPath)) {
+                        $dirs = glob($laragonPath . '\*', GLOB_ONLYDIR);
+                        if ($dirs) {
+                            foreach($dirs as $dir) {
+                                $fullPath = $dir . '\bin\mysqldump.exe';
+                                if (file_exists($fullPath)) $commonPaths[] = $fullPath;
+                            }
+                        }
+                    }
+
+                    foreach ($commonPaths as $cp) {
+                        if (file_exists($cp)) {
+                            $binaryPath = '"' . $cp . '"';
+                            break;
                         }
                     }
                 }
-
-                foreach ($commonPaths as $cp) {
-                    if (file_exists($cp)) {
-                        $binaryPath = '"' . $cp . '"';
-                        break;
+            } else {
+                // On Linux/macOS, check if mysqldump is in common binary locations if not found
+                if ($binaryPath === 'mysqldump') {
+                    $commonLinuxPaths = ['/usr/bin/mysqldump', '/usr/local/bin/mysqldump', '/usr/bin/mysql/bin/mysqldump'];
+                    foreach ($commonLinuxPaths as $cp) {
+                        if (file_exists($cp)) {
+                            $binaryPath = $cp;
+                            break;
+                        }
                     }
                 }
             }
@@ -76,6 +89,11 @@ class DatabaseBackup extends Command
             $command = sprintf('%s %s %s', $cmd, escapeshellarg($config['database']), escapeshellarg($path));
         } else {
             $this->error("Database connection '{$connection}' not supported for backup.");
+            return 1;
+        }
+
+        if (!function_exists('exec')) {
+            $this->error("Function 'exec' is disabled on this server. Contact your hosting provider.");
             return 1;
         }
 

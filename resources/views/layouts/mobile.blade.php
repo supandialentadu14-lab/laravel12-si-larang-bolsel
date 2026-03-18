@@ -132,6 +132,26 @@
     html.dark .shadow-xl {
       box-shadow: none !important;
     }
+
+    /* Global Cursor Pointer Fixes */
+    a, 
+    button, 
+    [role="button"],
+    .sidebar-link,
+    .sub-link,
+    .nav-item,
+    .btn-icon-mini,
+    [x-on\:click],
+    [x-on\:click\.prevent],
+    [\@click],
+    [\@click\.prevent],
+    .cursor-pointer {
+      cursor: pointer !important;
+    }
+
+    button *, a * {
+      cursor: pointer !important;
+    }
   </style>
 </head>
 

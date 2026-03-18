@@ -144,6 +144,26 @@
       color: var(--accent);
     }
 
+    /* Global Cursor Pointer Fixes */
+    a, 
+    button, 
+    [role="button"],
+    .sidebar-link,
+    .sub-link,
+    .nav-item,
+    .btn-icon-mini,
+    [x-on\:click],
+    [x-on\:click\.prevent],
+    [\@click],
+    [\@click\.prevent],
+    .cursor-pointer {
+      cursor: pointer !important;
+    }
+
+    button *, a * {
+      cursor: pointer !important;
+    }
+
     .nav-dropdown-card {
       position: absolute;
       top: calc(100% + 0.5rem);
@@ -685,7 +705,7 @@
             <a href="https://www.instagram.com/emonn_65?igsh=MWM4c2JzdjNvZG4xMQ%3D%3D&utm_source=qr" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all shadow-sm active:scale-90 hover:scale-110">
               <i class="fab fa-instagram text-sm"></i>
             </a>
-            <a href="https://www.facebook.com/share/18J61xd2XQ/?mibextid=wwXIfr" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm active:scale-90 hover:scale-110">
+            <a href="https://facebook.com/share/18J61xd2XQ/?mibextid=wwXIfr" target="_blank" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm active:scale-90 hover:scale-110 cursor-pointer">
               <i class="fab fa-facebook-f text-sm"></i>
             </a>
           </div>

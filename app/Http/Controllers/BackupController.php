@@ -15,20 +15,26 @@ class BackupController extends Controller
         $path = storage_path('app/backups');
         $backups = [];
 
-        if (File::exists($path)) {
-            $files = File::files($path);
-            foreach ($files as $file) {
-                if ($file->getExtension() === 'sql') {
-                    $backups[] = [
-                        'name' => $file->getFilename(),
-                        'size' => round($file->getSize() / 1024, 2) . ' KB',
-                        'at' => date('Y-m-d H:i:s', $file->getMTime()),
-                        'raw_at' => $file->getMTime()
-                    ];
+        try {
+            if (File::exists($path)) {
+                $files = File::files($path);
+                foreach ($files as $file) {
+                    if ($file->getExtension() === 'sql') {
+                        $backups[] = [
+                            'name' => $file->getFilename(),
+                            'size' => round($file->getSize() / 1024, 2) . ' KB',
+                            'at' => date('Y-m-d H:i:s', $file->getMTime()),
+                            'raw_at' => $file->getMTime()
+                        ];
+                    }
                 }
+                // Sort by newest
+                usort($backups, fn($a, $b) => $b['raw_at'] <=> $a['raw_at']);
             }
-            // Sort by newest
-            usort($backups, fn($a, $b) => $b['raw_at'] <=> $a['raw_at']);
+        } catch (\Exception $e) {
+            // Log error or provide message but don't crash
+            report($e);
+            session()->flash('error', 'Gagal memuat daftar cadangan: ' . $e->getMessage());
         }
 
         return view('backups.index', compact('backups'));

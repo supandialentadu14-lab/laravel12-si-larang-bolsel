@@ -42,6 +42,32 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
+/* Global Cursor Pointer for Interactive Elements */
+a, 
+button, 
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+label,
+select,
+summary,
+[x-on\:click],
+[x-on\:click\.prevent],
+[x-on\:click\.stop],
+[x-on\:click\.outside],
+[x-on\:click\.window],
+[\@click],
+[\@click\.prevent],
+[\@click\.stop],
+[\@click\.outside],
+[\@click\.window],
+[onclick],
+[data-action],
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
 /* Theme Utilities (Using CSS Variables) */
 @utility bg-app-bg {
     background-color: var(--app-bg);
