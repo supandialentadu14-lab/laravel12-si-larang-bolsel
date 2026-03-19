@@ -62,11 +62,19 @@
           .text-right { text-align: right; }
           .text-left { text-align: left; }
           .font-bold { font-weight: bold; }
-          .split-cell { position: relative; display: flex; width: 100%; height: 100%; }
+          .split-cell { position: relative; display: flex; width: 100%; height: 100%; align-items: stretch; }
           .split-cell .left { flex: 0 0 var(--qty-w, 28px); padding: 4px 0; display: flex; align-items: center; justify-content: center; }
-          .split-cell .right { flex: 1 1 auto; padding: 4px 8px; text-align: center; }
+          .split-cell .right { flex: 1 1 auto; padding: 4px 8px; text-align: center; display: flex; align-items: center; justify-content: center; }
           td.split-col { position: relative; padding: 0 !important; --qty-w: 28px; }
-          td.split-col::after { content: ''; position: absolute; left: var(--qty-w, 28px); top: -1px; bottom: -1px; width: 1px; background: #9ca3af; pointer-events: none; }
+          td.split-col::after { 
+            content: ''; 
+            position: absolute; 
+            left: var(--qty-w, 28px); 
+            top: 0; 
+            bottom: 0; 
+            border-left: 1px solid black; 
+            pointer-events: none; 
+          }
           .signature-block { break-inside: avoid; page-break-inside: avoid; }
           .signature-block * { break-inside: avoid; page-break-inside: avoid; }
           .info-table-mobile { border: none !important; margin-bottom: 15px; width: auto !important; }
@@ -103,7 +111,7 @@
                 <th colspan="3">MUTASI KELUAR</th>
                 <th colspan="3">SALDO AKHIR</th>
               </tr>
-              <tr style="background-color: #f8fafc;" class="font-bold">
+              <tr class="font-bold">
                 @for ($i = 0; $i < 4; $i++)
                   <th>Jml</th>
                   <th>Harga</th>
@@ -125,7 +133,7 @@
                 @endphp
 
                 @if ($lastDate != $currentDate)
-                  <tr style="background-color: #f1f5f9;" class="font-bold text-left">
+                  <tr class="font-bold text-left">
                     <td colspan="14" style="padding: 6px 8px;">
                       Tanggal : {{ \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') }}
                     </td>
@@ -159,7 +167,7 @@
                   <td class="text-right">{{ number_format($saldoAwal * $harga, 0, ',', '.') }}</td>
                   <td class="split-col">
                     <div class="split-cell">
-                      <div class="left font-bold" style="color: #16a34a;">{{ $masuk }}</div>
+                      <div class="left font-bold">{{ $masuk }}</div>
                       <div class="right">{{ $satuan }}</div>
                     </div>
                   </td>
@@ -167,7 +175,7 @@
                   <td class="text-right">{{ number_format($masuk * $harga, 0, ',', '.') }}</td>
                   <td class="split-col">
                     <div class="split-cell">
-                      <div class="left font-bold" style="color: #dc2626;">{{ $keluar }}</div>
+                      <div class="left font-bold">{{ $keluar }}</div>
                       <div class="right">{{ $satuan }}</div>
                     </div>
                   </td>
@@ -193,7 +201,7 @@
                 foreach ($lastSaldoPerProduct as $data) { $grandTotal += $data['saldo'] * $data['harga']; }
               @endphp
 
-              <tr style="background-color: #f1f5f9;" class="font-bold">
+              <tr class="font-bold">
                 <td colspan="13" class="text-right" style="padding: 10px;">TOTAL NILAI PERSEDIAAN</td>
                 <td class="text-center" style="font-size: 14px;">{{ number_format($grandTotal, 0, ',', '.') }}</td>
               </tr>
@@ -253,11 +261,19 @@
           .text-right { text-align: right; }
           .text-left { text-align: left; }
           .font-bold { font-weight: bold; }
-          .split-cell { position: relative; display: flex; width: 100%; height: 100%; }
+          .split-cell { position: relative; display: flex; width: 100%; height: 100%; align-items: stretch; }
           .split-cell .left { flex: 0 0 28px; padding: 4px 0; display: flex; align-items: center; justify-content: center; }
-          .split-cell .right { flex: 1 1 auto; padding: 4px 8px; text-align: center; }
+          .split-cell .right { flex: 1 1 auto; padding: 4px 8px; text-align: center; display: flex; align-items: center; justify-content: center; }
           td.split-col { position: relative; padding: 0 !important; }
-          td.split-col::after { content: ''; position: absolute; left: 28px; top: -1px; bottom: -1px; width: 1px; background: #000; pointer-events: none; }
+          td.split-col::after { 
+            content: ''; 
+            position: absolute; 
+            left: 28px; 
+            top: 0; 
+            bottom: 0; 
+            border-left: 1px solid black; 
+            pointer-events: none; 
+          }
           .signature-block { break-inside: avoid; page-break-inside: avoid; }
           .signature-block * { break-inside: avoid; page-break-inside: avoid; }
           .info-table-mobile { border: none !important; margin-bottom: 15px; width: auto !important; }

@@ -118,7 +118,7 @@
 
         <table class="report-table text-center w-full">
             <thead>
-                <tr class="bg-gray-200">
+                <tr>
                     <th rowspan="2" style="width: 35px;">No</th>
                     <th rowspan="2" style="width: 14rem;">Nama Barang</th>
                     <th colspan="3">SALDO AWAL</th>
@@ -126,7 +126,7 @@
                     <th colspan="3">MUTASI KELUAR</th>
                     <th colspan="3">SALDO AKHIR</th>
                 </tr>
-                <tr class="bg-gray-100 text-[9px] font-bold">
+                <tr class="text-[9px] font-bold">
                     @for ($i=0; $i<4; $i++)
                         <th>Jmlh Brg</th><th>Harga (Rp)</th><th>Jumlah (Rp)</th>
                     @endfor
@@ -146,7 +146,7 @@
                         
                         if ($lastDateForChunking !== $currentDate) {
                             $dateNo = 1;
-                            echo '<tr class="bg-gray-100 font-bold text-left"><td colspan="14" class="px-2 py-1 text-[11px]">Tanggal : ' . \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') . '</td></tr>';
+                            echo '<tr class="font-bold text-left"><td colspan="14" class="px-2 py-1 text-[11px]">Tanggal : ' . \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') . '</td></tr>';
                             $lastDateForChunking = $currentDate;
                         }
 
@@ -164,22 +164,22 @@
                     @endphp
 
                     <tr style="font-size: 10px;">
-                        <td class="text-gray-400">{{ $dateNo++ }}</td>
+                        <td>{{ $dateNo++ }}</td>
                         <td align="left">{{ $item['name'] }}</td>
                         
                         <td class="p-0 split-col"><div class="split-cell"><div class="left font-semibold">{{ $saldoAwal }}</div><div class="right">{{ $satuan }}</div></div></td>
                         <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
                         <td align="right">{{ number_format($saldoAwal * $harga, 0, ',', '.') }}</td>
                         
-                        <td class="p-0 split-col"><div class="split-cell"><div class="left text-green-600 font-bold">{{ $masuk ?: '0' }}</div><div class="right">{{ $satuan }}</div></div></td>
+                        <td class="p-0 split-col"><div class="split-cell"><div class="left font-bold">{{ $masuk ?: '0' }}</div><div class="right">{{ $satuan }}</div></div></td>
                         <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
                         <td align="right">{{ number_format($masuk * $harga, 0, ',', '.') }}</td>
                         
-                        <td class="p-0 split-col"><div class="split-cell"><div class="left text-red-600 font-bold">{{ $keluar ?: '0' }}</div><div class="right">{{ $satuan }}</div></div></td>
+                        <td class="p-0 split-col"><div class="split-cell"><div class="left font-bold">{{ $keluar ?: '0' }}</div><div class="right">{{ $satuan }}</div></div></td>
                         <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
                         <td align="right">{{ number_format($keluar * $harga, 0, ',', '.') }}</td>
                         
-                        <td class="p-0 split-col font-bold bg-yellow-50"><div class="split-cell"><div class="left">{{ $saldoAkhir }}</div><div class="right">{{ $satuan }}</div></div></td>
+                        <td class="p-0 split-col font-bold"><div class="split-cell"><div class="left">{{ $saldoAkhir }}</div><div class="right">{{ $satuan }}</div></div></td>
                         <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
                         <td align="right" class="font-bold">{{ number_format($saldoAkhir * $harga, 0, ',', '.') }}</td>
                     </tr>
@@ -195,9 +195,9 @@
                 @endphp
                 
                 @if(count($reportData) > 0)
-                <tr class="bg-gray-200 font-bold">
+                <tr class="font-bold">
                     <td colspan="13" align="right" class="px-3 py-1">TOTAL NILAI PERSEDIAAN</td>
-                    <td align="right" class="text-indigo-800 px-3 py-1">{{ number_format($grandTotalAll, 0, ',', '.') }}</td>
+                    <td align="right" class="px-3 py-1">{{ number_format($grandTotalAll, 0, ',', '.') }}</td>
                 </tr>
                 @endif
             </tbody>

@@ -130,11 +130,11 @@
                             </table>
                         </th>
                     </tr>
-                    <tr class="bg-gray-100 text-center">
+                    <tr class="text-center">
                         <th rowspan="2">No</th><th rowspan="2">Tanggal</th><th rowspan="2">Nomor Surat Dasar Penerimaan / Pengeluaran</th><th rowspan="2">Uraian</th>
                         <th colspan="3">Barang-Barang</th><th rowspan="2">Harga Satuan (Rp)</th><th colspan="3">Jumlah Harga (Rp)</th><th rowspan="2">Keterangan</th>
                     </tr>
-                    <tr class="bg-gray-100 text-center uppercase text-[9px]">
+                    <tr class="text-center uppercase text-[9px]">
                         <th>Masuk</th><th>Keluar</th><th>Sisa</th><th>Masuk</th><th>Keluar</th><th>Sisa</th>
                     </tr>
                 </thead>
@@ -142,21 +142,21 @@
                     @foreach($rows as $row)
                         @php $saldo += ($row['masuk'] - $row['keluar']); @endphp
                         <tr align="center" style="font-size: 10px;">
-                            <td class="text-gray-400">{{ $rowNo++ }}</td>
+                            <td>{{ $rowNo++ }}</td>
                             <td>{{ $row['date'] ? \Carbon\Carbon::parse($row['date'])->translatedFormat('d F Y') : '-' }}</td>
                             <td align="left">{{ $row['nosur'] ?? '-' }}</td>
                             <td align="left" class="uppercase font-semibold">{{ $product->name }}</td>
-                            <td class="text-green-600 font-bold">{{ $row['masuk'] ?: '-' }}</td>
-                            <td class="text-red-500 font-bold">{{ $row['keluar'] ?: '-' }}</td>
+                            <td>{{ $row['masuk'] ?: '-' }}</td>
+                            <td>{{ $row['keluar'] ?: '-' }}</td>
                             <td class="font-bold">{{ $saldo }}</td>
                             <td align="right">{{ number_format($row['harga'] ?? 0, 0, ',', '.') }}</td>
                             <td align="right">{{ $row['masuk'] ? number_format($row['masuk'] * ($row['harga'] ?? 0), 0, ',', '.') : '-' }}</td>
                             <td align="right">{{ $row['keluar'] ? number_format($row['keluar'] * ($row['harga'] ?? 0), 0, ',', '.') : '-' }}</td>
-                            <td align="right" class="font-bold bg-yellow-50">{{ number_format($saldo * ($row['harga'] ?? 0), 0, ',', '.') }}</td>
+                            <td align="right" class="font-bold">{{ number_format($saldo * ($row['harga'] ?? 0), 0, ',', '.') }}</td>
                             <td></td>
                         </tr>
                     @endforeach
-                    <tr class="bg-gray-50 text-[11px]">
+                    <tr class="text-[11px]">
                         <td colspan="6" align="center"><strong>Saldo Per {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}</strong></td>
                         <td align="center"><strong>{{ $saldo == 0 ? 'Nihil' : $saldo }}</strong></td>
                         <td colspan="3"></td>
