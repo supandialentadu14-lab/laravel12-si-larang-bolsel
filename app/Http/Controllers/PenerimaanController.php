@@ -14,6 +14,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class PenerimaanController extends Controller
 {
+    use \App\Traits\AutoStock;
+
     protected function loadNotaMaster(): array
     {
         $row = NotaMaster::where('user_id', Auth::id())->first();
@@ -333,6 +335,18 @@ class PenerimaanController extends Controller
         }
 
         Storage::disk('local')->put("users/".Auth::id()."/bap-penerimaan/{$id}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        
+        // --- STOCK AUTOMATION START ---
+        if (!empty($data['items'])) {
+            $this->recordItemsToStock(
+                $data['items'],
+                $data['nomor'],
+                $data['tanggal'],
+                'Otomatis dari BASTB'
+            );
+        }
+        // --- STOCK AUTOMATION END ---
+
         session()->forget('penerimaan_current_id');
         if ($currentId) {
             return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan "' . $data['nomor'] . '" berhasil diperbarui');

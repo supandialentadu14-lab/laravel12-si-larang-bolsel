@@ -8,6 +8,9 @@
       <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Transaksi Masuk & Keluar</p>
     </div>
     <div class="flex gap-2">
+      <a href="{{ route('stock.sync') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-emerald-500 transition-all hover:bg-emerald-50 hover:border-emerald-100" title="Sinkronisasi dari Kwitansi/BASTB">
+        <i class="fas fa-sync-alt text-xs"></i>
+      </a>
       <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50 ' : ''">
         <i class="fas fa-filter text-xs"></i>
       </button>

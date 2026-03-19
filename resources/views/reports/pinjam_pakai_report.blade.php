@@ -84,6 +84,7 @@
           background: #fff;
           padding: 5mm 15mm;
           line-height: 1.4;
+          font-family: 'Nunito', sans-serif;
         }
         .preview-paper p { margin: 5px 0; }
         .preview-paper h2 { margin: 5px 0; }

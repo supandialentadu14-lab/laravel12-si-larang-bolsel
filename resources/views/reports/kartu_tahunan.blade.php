@@ -88,6 +88,7 @@
     .print-area {
       border: none !important;
       box-shadow: none !important;
+      font-family: 'Nunito', sans-serif;
     }
     @media screen {
       #print-area {

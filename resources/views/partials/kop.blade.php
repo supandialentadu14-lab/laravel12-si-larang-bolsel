@@ -1,23 +1,23 @@
 {{-- Komponen KOP Surat: gunakan @include('partials.kop', ['opd' => $opd]) --}}
 {{-- Parameter: $opd (object/array) dengan nama_opd, opsional logo di public/images/bolsel.png --}}
 <style>
-  .kop { width: 100%; table-layout: fixed; border-collapse: collapse; }
-  .kop td { vertical-align: middle; border: none !important; }
-  .kop-logo { width: 80px; text-align: center; }
-  .kop-logo img { width: 75px; height: auto; object-fit: contain; }
+  .kop { width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 0px; }
+  .kop td { vertical-align: middle; border: none !important; padding: 0 !important; }
+  .kop-logo { width: 65px; text-align: center; }
+  .kop-logo img { width: 60px; height: auto; object-fit: contain; }
   .kop-text { text-align: center; padding-right: 40px; }
   .kop-text .line1 { font-weight: 800; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; line-height: 1.2; margin: 0; }
   .kop-text .line2 { font-weight: 800; font-size: 18px; text-transform: uppercase; line-height: 1.2; margin: 2px 0; }
   .kop-text .line3 { 
     font-style: italic; 
     font-size: 11px; 
-    line-height: 1.3; 
+    line-height: 1.2; 
     margin: 0; 
     white-space: normal;
   }
   .kop-divider {
     border-bottom: 3px solid black;
-    margin-top: 5px;
+    margin-top: 2px;
     position: relative;
   }
   .kop-divider::after {
@@ -27,7 +27,7 @@
     margin-top: 2px;
   }
   @media print {
-    .kop-logo img { width: 80px; }
+    .kop-logo img { width: 65px; }
     .kop-text .line2 { font-size: 22px; }
   }
 </style>

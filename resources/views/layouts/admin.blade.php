@@ -76,6 +76,7 @@
     }
 
     .dark {
+      color-scheme: dark;
       --app-bg: #020617;
       --app-surface: #0F172A;
       --app-text-main: #F8FAFC;
@@ -105,6 +106,75 @@
     .text-app-main { color: var(--app-text-main) !important; }
     .text-app-muted { color: var(--app-text-muted) !important; }
     .border-app-main { border-color: var(--app-border) !important; }
+
+    html.dark .bg-slate-50,
+    html.dark .bg-slate-100,
+    html.dark .bg-gray-50,
+    html.dark .bg-indigo-50 {
+      background-color: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    html.dark .text-gray-900,
+    html.dark .text-slate-900,
+    html.dark .text-slate-800,
+    html.dark .text-slate-700,
+    html.dark .text-app-main {
+      color: var(--app-text-main) !important;
+    }
+
+    html.dark .text-gray-600,
+    html.dark .text-slate-600,
+    html.dark .text-gray-500,
+    html.dark .text-slate-400,
+    html.dark .text-app-muted {
+      color: var(--app-text-muted) !important;
+    }
+
+    html.dark .border-gray-100,
+    html.dark .border-gray-50,
+    html.dark .border-slate-100,
+    html.dark .border-slate-50,
+    html.dark .border-app-main {
+      border-color: var(--app-border) !important;
+    }
+
+    html.dark .shadow-sm,
+    html.dark .shadow-md,
+    html.dark .shadow-lg,
+    html.dark .shadow-xl {
+      box-shadow: none !important;
+    }
+
+    /* Print Preview Reset - Always Light */
+    html.dark #print-area {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.2) !important;
+    }
+
+    html.dark #print-area *,
+    html.dark #print-area td,
+    html.dark #print-area th,
+    html.dark #print-area div,
+    html.dark #print-area p,
+    html.dark #print-area span {
+      background-color: transparent !important;
+      color: #000000 !important;
+      border-color: #000000 !important;
+    }
+
+    html.dark input,
+    html.dark textarea,
+    html.dark select {
+      background-color: rgba(255, 255, 255, 0.03) !important;
+      color: var(--app-text-main) !important;
+      border-color: var(--app-border) !important;
+    }
+
+    html.dark option {
+      background-color: var(--app-surface) !important;
+      color: var(--app-text-main) !important;
+    }
 
     html, body {
       height: 100%;

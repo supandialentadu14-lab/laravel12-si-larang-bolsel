@@ -817,50 +817,8 @@ class NotaPesananController extends Controller
         }
         $json = Storage::disk('local')->get($path);
         $data = json_decode($json, true) ?: [];
-        $items = ($data['items'] ?? []);
-        $belanja = (string)($data['belanja'] ?? '');
-        $allowedNames = [];
-        $productById = [];
-        try {
-            $allProducts = \App\Models\Product::with('category')->get();
-            $allowedNames = $allProducts
-                ->filter(fn($p) => (optional($p->category)->name ?? '') === $belanja)
-                ->map(fn($p) => (string)$p->name)
-                ->all();
-            $productById = $allProducts
-                ->mapWithKeys(fn($p) => [(string)$p->id => (string)$p->name])
-                ->all();
-        } catch (\Throwable $e) {
-            $allowedNames = [];
-            $productById = [];
-        }
-        $unique = [];
-        foreach ($items as $it) {
-            $name = trim((string)($it['name'] ?? ''));
-            $pid = trim((string)($it['product_id'] ?? ''));
-            if ($name === '' && $pid !== '' && isset($productById[$pid])) {
-                $name = $productById[$pid];
-            }
-            if ($name !== '' && preg_match('/^\d+$/', $name) && isset($productById[$name])) {
-                $name = $productById[$name];
-            }
-            $qty = (int)($it['qty'] ?? 0);
-            $price = (int)($it['price'] ?? 0);
-            $unit = trim((string)($it['unit'] ?? ''));
-            if ($name === '' || preg_match('/^\d+$/', $name)) {
-                continue;
-            }
-            if (!empty($allowedNames) && !in_array($name, $allowedNames, true)) {
-                continue;
-            }
-            $key = strtolower($name) . '|' . $qty . '|' . strtolower($unit) . '|' . $price;
-            if (!isset($unique[$key])) {
-                $it['name'] = $name;
-                $unique[$key] = $it;
-            }
-        }
-        $data['items'] = array_values($unique);
-        Storage::disk('local')->put($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        
+        // Simpan ke session untuk state saat ini
         session([
             'nota_current' => $data,
             'nota_current_id' => $id,
@@ -914,6 +872,8 @@ class NotaPesananController extends Controller
         if ($value < 2000) return 'seribu ' . $this->toWordsIdInternal($value - 1000);
         if ($value < 1000000) return $this->toWordsIdInternal(intval($value / 1000)) . ' ribu ' . $this->toWordsIdInternal($value % 1000);
         if ($value < 1000000000) return $this->toWordsIdInternal(intval($value / 1000000)) . ' juta ' . $this->toWordsIdInternal($value % 1000000);
+        if ($value < 1000000000000) return $this->toWordsIdInternal(intval($value / 1000000000)) . ' miliar ' . $this->toWordsIdInternal($value % 1000000000);
+        if ($value < 1000000000000000) return $this->toWordsIdInternal(intval($value / 1000000000000)) . ' triliun ' . $this->toWordsIdInternal($value % 1000000000000);
         return (string) $value;
     }
 }

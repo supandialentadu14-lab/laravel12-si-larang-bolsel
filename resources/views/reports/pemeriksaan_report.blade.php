@@ -1,214 +1,272 @@
 @extends('layouts.admin')
 
-@section('title', 'Cetak Berita Acara Pemeriksaan')
-@section('header', 'Berita Acara Pemeriksaan Barang/Pekerjaan')
-@section('subheader', 'Pratinjau & cetak')
+@section('header', 'Berita Acara Pemeriksaan')
 
-@section('actions')
-  <div class="flex items-center gap-3 w-full sm:w-auto">
-    <a href="{{ route('reports.pemeriksaan.list') }}" class="no-print btn btn-outline font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </a>
-    <button onclick="window.print()" class="no-print btn btn-neutral font-bold flex-1 sm:flex-none justify-center py-4 sm:py-2 rounded-2xl sm:rounded-lg shadow-sm active:scale-95 transition-all">
-      <i class="fas fa-print"></i> Cetak
-    </button>
-  </div>
-  <form method="POST" action="{{ route('reports.pemeriksaan.save') }}" class="no-print inline-block ml-2 hidden sm:block">
-    @csrf
-    <input type="hidden" name="id" value="{{ session('bap_current_id') ?? ($saved_id ?? '') }}">
-    <!-- <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button> -->
-  </form>
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.innerWidth >= 1024) {
+          window.dispatchEvent(new CustomEvent('close-sidebar'));
+        }
+    });
+</script>
 @endsection
 
 @section('content')
-  <div id="print-area" class="preview-paper bg-white text-black">
-    <div class="mb-4">
-      <style>
-        .preview-paper { 
-          width: 210mm; 
-          min-height: 330mm; 
-          margin: 0 auto; 
-          background: #fff; 
-          padding: 5mm 15mm;
-          line-height: 1.4;
-          font-family: 'Times New Roman', serif;
-        }
-        .preview-paper p { margin: 5px 0; }
-        .preview-paper h2 { margin: 5px 0; }
-        .preview-paper table { margin-top: 6px; }
-        @media print {
-          body { 
-            margin: 0 !important; 
-            padding: 0 !important;
-            background: #fff !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          body * { visibility: hidden; }
-          #print-area, #print-area * { visibility: visible; }
-          
-          @page { 
-            size: 210mm 330mm; 
-            margin: 5mm 15mm; 
-          }
-          
-          #print-area {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-          }
-          
-          .preview-paper { 
-            width: 100% !important; 
-            min-height: auto !important; 
-            padding: 0 !important; 
-            margin: 0 !important; 
-            border: none !important;
-            background: transparent !important;
-            line-height: 1.4;
-          }
-          
-          .signature-block {
-            break-inside: avoid !important;
-          }
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* HYPER-FIDELITY PREVIEW */
+    .pemeriksaan-hifi-preview {
+      width: 100%;
+      min-height: calc(100vh - 200px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+      background-color: #0f172a;
+      border-radius: 1rem;
+    }
 
-          table {
-            border-collapse: collapse !important;
-          }
+    .bundle-paper-container {
+      position: relative;
+      width: 210mm;
+      margin: 0 auto;
+    }
 
-          table.items td, table.items th { 
-            border: 1px solid #000 !important; 
-          }
-        }
-        @media screen {
-          #print-area { width: 210mm; margin: 0 auto; }
-          .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; }
-        }
-        table.items td, table.items th { border: 1px solid #000; }
-      </style>
-      @include('partials.kop', ['opd' => $opd])
-    </div>
-    
-    <div class="text-center mb-4">
-      <h2 class="font-extrabold text-lg">BERITA ACARA PEMERIKSAAN BARANG/PEKERJAAN</h2>
-      <p class="text-sm">NOMOR: {{ $data['nomor'] ?? '' }}</p>
-    </div>
-    
-    <p class="mb-3 text-sm">
-      {{ $data['tanggal_kata'] ?? ('Pada hari ' . \Carbon\Carbon::parse($data['tanggal'])->locale('id')->translatedFormat('l') . ' tanggal ' . \Carbon\Carbon::parse($data['tanggal'])->translatedFormat('d F Y')) }},
-      kami yang bertanda tangan di bawah ini:
-    </p>
-    
-    <div class="mb-4">
-      <table class="w-full text-sm">
-        <tr>
-          <td class="w-28 pl-6">Nama</td>
-          <td class="w-4 pl-6">:</td>
-          <td><span class="font-bold pl-6">{{ $data['ppk']['nama'] ?? '' }}</span></td>
-        </tr>
-        <tr>
-          <td class="pl-6">Jabatan</td>
-          <td class="pl-6">:</td>
-          <td class="pl-6">Pejabat Pembuat Komitmen</td>
-        </tr>
-        <tr>
-          <td class="pl-6">Alamat</td>
-          <td class="pl-6">:</td>
-          <td class="pl-6">{{ $data['ppk']['alamat'] ?? '' }}</td>
-        </tr>
-      </table>
-    </div>
- 
-    @php
-      $pekerjaan = $data['nota']['belanja'] ?? '';
-    @endphp
-    <p class="mb-1 text-sm">Menerangkan dengan benar bahwa Pihak Pertama telah menyerahkan pekerjaan : <span class="font-bold">{{ $pekerjaan }}</span></p>
-    <table class="w-full text-sm mb-3">
-      <tr>
-        <td class="w-40 pl-6">Nama Penyedia Jasa</td>
-        <td class="w-4 pl-6">:</td>
-        <td class="font-bold pl-6">{{ $data['nota']['penyedia']['toko'] ?? '' }}</td>
-      </tr>
-      <tr>
-        <td class="pl-6 align-top">Alamat</td>
-        <td class="pl-6 align-top">:</td>
-        <td class="pl-6">{{ $data['nota']['penyedia']['alamat'] ?? '' }}</td>
-      </tr>
-    </table>
-    
-    <p class="mb-3 text-sm">
-      Sebagai realisasi Nota Pesanan Nomor : {{ $data['nota']['nomor'] ?? '-' }} tanggal {{ \Carbon\Carbon::parse($data['nota']['tanggal'] ?? now())->locale('id')->translatedFormat('d F Y') }},
-      dengan jumlah/jenis daftar barang terlampir dan berkesimpulan bahwa barang/pekerjaan dapat diterima sesuai mestinya:
-    </p>
-    
-    <div class="overflow-x-auto mb-4">
-      <table class="items w-full text-xs border border-black">
-        <thead>
-          <tr class="text-center font-bold">
-            <th class="px-2 py-1">No</th>
-            <th class="px-2 py-1">Jenis Bahan/Alat (Barang)</th>
-            <th class="px-2 py-1">Kuantitas</th>
-            <th class="px-2 py-1">Satuan</th>
-            <th class="px-2 py-1">Harga Satuan</th>
-            <th class="px-2 py-1">Total</th>
-            <th class="px-2 py-1">Keterangan</th>
-          </tr>
-        </thead>
-        <tbody>
-          @php $total = 0; @endphp
-          @foreach ($data['items'] as $i => $item)
-            @php $total += (int)($item['jumlah'] ?? 0); @endphp
-            <tr>
-              <td class="px-2 py-1 text-center">{{ $i + 1 }}</td>
-              <td class="px-2 py-1">{{ $item['nama'] }}</td>
-              <td class="px-2 py-1 text-center">{{ $item['kuantitas'] }}</td>
-              <td class="px-2 py-1 text-center">{{ $item['satuan'] ?? '-' }}</td>
-              <td class="px-2 py-1 text-right">{{ number_format($item['harga'] ?? 0, 0, ',', '.') }}</td>
-              <td class="px-2 py-1 text-right">{{ number_format($item['jumlah'] ?? 0, 0, ',', '.') }}</td>
-              <td></td>
-            </tr>
-          @endforeach
-          <tr>
-            <td colspan="5" class="px-2 py-1 text-right font-bold">Jumlah</td>
-            <td class="px-2 py-1 text-right font-bold">{{ number_format($total, 0, ',', '.') }}</td>
-          </tr>
-          <tr>
-            <td colspan="7" class="mb-3 text-xs text-center font-extrabold">Terbilang {{ \Illuminate\Support\Str::upper($data['terbilang'] ?? '') }} rupiah</td>
+    .bundle-paper {
+      width: 210mm;
+      min-height: 297mm;
+      background-color: white;
+      padding: 10mm 15mm;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4);
+      position: relative;
+      line-height: var(--line-height, 1.4);
+      color: black !important;
+      font-family: 'Nunito', sans-serif !important;
+      box-sizing: border-box;
+    }
 
-          </tr>
-        </tbody>
-      </table>
+    .bundle-paper * {
+      font-family: 'Nunito', sans-serif !important;
+      color: black !important;
+    }
+
+    .paper-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 296.8mm,
+        #0f172a 296.8mm,
+        #0f172a 297.2mm
+      );
+      z-index: 10;
+    }
+
+    .doc-pemeriksaan .bundle-paper p { margin: 5px 0; font-size: 14px; }
+    .doc-pemeriksaan .bundle-paper h2 { margin: 5px 0; font-size: 18px; font-weight: bold; }
+    .doc-pemeriksaan .bundle-paper table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .doc-pemeriksaan .bundle-paper table.report-table th, 
+    .doc-pemeriksaan .bundle-paper table.report-table td { border: 1px solid black !important; padding: 2px 10px !important; font-size: 12px; }
+    .doc-pemeriksaan .bundle-paper table.report-table th { background-color: #f8fafc !important; }
+
+    @media print {
+      /* Teknik Visibility: Sembunyikan Body, Tampilkan Laporan */
+      body { 
+        visibility: hidden !important; 
+        background: white !important;
+      }
+      
+      /* Wrapper Laporan: Pojok kiri atas */
+      #pemeriksaan-print-wrapper { 
+        visibility: visible !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      /* Paksa SEMUA teks hitam */
+      #pemeriksaan-print-wrapper, 
+      #pemeriksaan-print-wrapper * { 
+        visibility: visible !important; 
+        color: black !important;
+        opacity: 1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Rapatkan spasi teks */
+      #pemeriksaan-print-wrapper p { margin: 2px 0 !important; line-height: 1.2 !important; }
+
+      /* Kertas: Sesuaikan padding layar */
+      #pemeriksaan-print-wrapper .bundle-paper {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        padding: 10mm 15mm !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        box-sizing: border-box !important;
+      }
+
+      .js-page-break { 
+        display: block !important; 
+        break-before: page !important; 
+        page-break-before: always !important; 
+        height: 0 !important; 
+      }
+      
+      .print\:hidden { display: none !important; }
+
+      @page { size: A4; margin: 0 !important; }
+      
+      tr, .signature-section { break-inside: avoid !important; }
+      table { width: 100% !important; border-collapse: collapse !important; border: none !important; }
+      
+      /* Border hanya untuk tabel laporan utama */
+      table.report-table { margin-bottom: 20px !important; }
+      table.report-table th, 
+      table.report-table td { 
+        border: 1px solid black !important; 
+        padding: 4px 8px !important;
+      }
+      
+      /* Tabel metadata bersih dari border */
+      table:not(.report-table) td { 
+        border: none !important; 
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        line-height: 1.2 !important;
+      }
+    }
+
+    .nav-buttons {
+      width: 210mm;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+    }
+  </style>
+
+  <div class="pemeriksaan-hifi-preview">
+    <div class="nav-buttons print:hidden">
+      <a href="{{ route('reports.pemeriksaan.list') }}" class="bg-slate-700 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+        <i class="fas fa-arrow-left"></i> Kembali
+      </a>
+      <button type="button" onclick="printReport()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+        <i class="fas fa-print"></i> Cetak Dokumen
+      </button>
+      @if(session('bap_current_id'))
+        <a href="{{ route('reports.paket.show', session('bap_current_id')) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+          <i class="fas fa-layer-group"></i> Paket 4 Dokumen
+        </a>
+      @endif
     </div>
-    
-    <div class="h-4"></div>
-    
-    <p class="mb-3 text-sm">1. Barang Baik (V)</p>
-    <p class="mb-6 text-sm">2. Barang Tidak Baik (X)</p>
+
+    <div id="printable-report" class="doc-pemeriksaan">
+      <div class="bundle-paper-container">
+        <div class="bundle-paper" id="periksa-paper">
+          @include('reports.partials.docs.pemeriksaan', ['data' => $data, 'opd' => $opd])
+        </div>
+        {{-- JS-generated page dividers (only as many as needed) --}}
+        <div id="periksa-page-dividers"></div>
+      </div>
+    </div>
+    <script>
+      document.fonts.ready.then(function () {
+        var paper = document.getElementById('periksa-paper');
+        if (!paper) return;
+        var container = paper.parentElement;
+        var pageH = paper.offsetWidth * (297 / 210);
+        // Set toleransi ke 0 agar benar-benar mepet batas kertas baru pindah
+        var padV = 0; 
+        var pushedEls = [];
+
+        function topFromPaper(el) {
+          var t = 0, n = el;
+          while (n && n !== paper) { t += n.offsetTop; n = n.offsetParent; }
+          return t;
+        }
+
+        function fixBreaks() {
+          var moved = false;
+          var els = paper.querySelectorAll('.signature-section');
+          for (var pg = 1; pg <= 20; pg++) {
+            var bnd = pageH * pg;
+            for (var j = 0; j < els.length; j++) {
+              var el = els[j];
+              var top = topFromPaper(el);
+              var bot = top + el.offsetHeight;
+              // Hanya pindah jika bagian bawah elemen benar-benar melewati batas bawah halaman
+              if (bot > bnd && top < bnd) {
+                var push = (bnd + 20) - top; // Beri sedikit jarak dari atas halaman baru
+                el.style.marginTop = (parseFloat(el.style.marginTop || 0) + push) + 'px';
+                if (pushedEls.indexOf(el) === -1) pushedEls.push(el);
+                moved = true;
+              }
+            }
+          }
+          return moved;
+        }
+
+        for (var pass = 0; pass < 5; pass++) { if (!fixBreaks()) break; }
+
+        pushedEls.forEach(function(el) {
+          var br = document.createElement('div');
+          br.className = 'js-page-break';
+          br.style.cssText = 'display:none;';
+          el.parentNode.insertBefore(br, el);
+        });
+
+        var totalH = paper.scrollHeight;
+        var pages = Math.ceil(totalH / pageH);
+        for (var i = 1; i < pages; i++) {
+          var d = document.createElement('div');
+          d.className = 'print:hidden';
+          d.style.cssText = 'position:absolute;top:' + (pageH * i) + 'px;transform:translateY(-50%);left:25mm;width:calc(100% - 50mm);height:10px;background:#0f172a;border-top:2px dashed #475569;border-bottom:2px dashed #475569;z-index:20;display:flex;align-items:center;justify-content:center;border-radius:10px;';
+          d.innerHTML = '<span style="background:#1e293b;color:#94a3b8;padding:2px 14px;border-radius:20px;font-size:9px;font-weight:700;border:1px solid #475569;letter-spacing:0.08em;">&#8212; HALAMAN ' + i + ' / ' + (i + 1) + ' &#8212;</span>';
+          container.appendChild(d);
+        }
+      });
+    </script>
+    <script>
+      function printReport() {
+        var paper = document.getElementById('periksa-paper');
+        if (!paper) return;
+
+        // Buat wrapper sementara
+        var wrapper = document.createElement('div');
+        wrapper.id = 'pemeriksaan-print-wrapper';
         
-    <div class="grid grid-cols-2 gap-6 mt-6 signature-block">
-      <div class="text-center">
-        <p class="mb-1">Penyedia</p>
-        <div class="h-24"></div>
-        <p class="font-bold underline">{{ $data['nota']['penyedia']['toko'] ?? '' }}</p>
-      </div>
-      <div class="text-center">
-        <p class="mb-1">Pejabat Pembuat Komitmen</p>
-        <div class="h-24"></div>
-        <p class="font-bold underline">{{ $data['ppk']['nama'] ?? '' }}</p>
-        <p class="text-sm">NIP. {{ $data['ppk']['nip'] ?? '' }}</p>
-      </div>
-    </div>
+        // PENTING: Tambahkan class doc-pemeriksaan agar CSS laporan tetap berfungsi!
+        wrapper.className = 'doc-pemeriksaan'; 
+        
+        var placeholder = document.createElement('span');
+        placeholder.id = 'periksa-print-placeholder';
+        paper.parentNode.insertBefore(placeholder, paper);
+        wrapper.appendChild(paper);
+        document.body.appendChild(wrapper);
+        document.body.classList.add('is-printing');
 
-    <div class="text-center mt-8 signature-block">
-      <p class="mb-1">MENGETAHUI,</p>
-      <p class="mb-1">PENGGUNA ANGGARAN SELAKU PPK</p>
-      <div class="h-24"></div>
-      <p class="font-bold underline">{{ $data['ppk']['nama'] ?? '' }}</p>
-      <p class="text-sm">NIP. {{ $data['ppk']['nip'] ?? '' }}</p>
-    </div>
+        setTimeout(function() {
+          window.print();
+          
+          var ph = document.getElementById('periksa-print-placeholder');
+          if (ph) {
+            ph.parentNode.insertBefore(paper, ph);
+            ph.remove();
+          }
+          if (wrapper) wrapper.remove();
+          document.body.classList.remove('is-printing');
+        }, 300);
+      }
+    </script>
   </div>
 @endsection

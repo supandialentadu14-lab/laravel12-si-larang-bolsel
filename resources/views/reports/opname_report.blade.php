@@ -48,6 +48,7 @@
         background: #fff;
         padding: 10mm 15mm;
         line-height: 1.4;
+        font-family: 'Nunito', sans-serif;
         box-shadow: 0 0 20px rgba(0,0,0,0.05);
       }
       @media print { 
@@ -73,7 +74,7 @@
         </div>
       @endif
       <div class="text-center mb-4">
-        <h2 class="font-extrabold text-lg">BERITA ACARA</h2>
+        <h2 class="font-bold text-lg">BERITA ACARA</h2>
         <h2 class="font-bold text-lg underline uppercase">HASIL STOCK OPNAME PERSEDIAAN BARANG HABIS PAKAI</h2>
         <p class="text-sm">NO: {{ $data['nomor'] ?? '' }}</p>
       </div>
@@ -174,7 +175,7 @@
       <p class="mb-4 text-sm">Demikian Berita Acara Stock Opname Persediaan Barang Habis Pakai ini dibuat untuk
         diperlukan sebagaimana mestinya.</p>
       
-      <div class="grid grid-cols-2 gap-6 mt-6 signature-block">
+      <div class="grid grid-cols-2 gap-5 mt-2 signature-block">
         <div class="text-center">
           <p class="mb-1">&nbsp;</p>
           <p class="mb-1">Pengurus Barang Pengguna</p>

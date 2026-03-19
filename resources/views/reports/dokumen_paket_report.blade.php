@@ -3,79 +3,141 @@
 @section('header', 'Paket Dokumen')
 @section('content')
   <style>
+    /* Base Styles Scoping */
+    .doc-nota, .doc-pemeriksaan, .doc-penerimaan, .doc-kwitansi {
+      --line-height: 1.25;
+      color: black;
+    }
+
     .bundle-paper {
       width: 210mm;
-      min-height: 330mm;
+      min-height: 297mm;
       margin: 16px auto;
       background: #ffffff;
       padding: 10mm 15mm;
-      line-height: 1.4;
-      color: black;
+      line-height: var(--line-height);
       font-family: 'Nunito', sans-serif;
       box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+      position: relative;
       box-sizing: border-box;
+      overflow: hidden;
     }
 
     .bundle-sheet {
       page-break-after: always;
+      position: relative;
     }
 
     .bundle-sheet:last-child {
       page-break-after: auto;
     }
 
+    /* Utilitas Teks */
     .text-center { text-align: center; }
     .text-right { text-align: right; }
     .font-bold { font-weight: bold; }
     .underline { text-decoration: underline; }
     .uppercase { text-transform: uppercase; }
     .italic { font-style: italic; }
-    .border-kwt { border: 1px solid black; }
-    .border-t-kwt { border-top: 1px solid black; }
-    .border-r-kwt { border-right: 1px solid black; }
 
-    .doc-nota .bundle-paper p,
-    .doc-pemeriksaan .bundle-paper p,
-    .doc-penerimaan .bundle-paper p { margin: 5px 0; font-size: 14px; }
-    .doc-nota .bundle-paper h2,
-    .doc-pemeriksaan .bundle-paper h2,
-    .doc-penerimaan .bundle-paper h2 { margin: 5px 0; }
-    .doc-nota .bundle-paper table,
-    .doc-pemeriksaan .bundle-paper table,
-    .doc-penerimaan .bundle-paper table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .doc-nota .bundle-paper th, .doc-nota .bundle-paper td,
-    .doc-pemeriksaan .bundle-paper th, .doc-pemeriksaan .bundle-paper td,
-    .doc-penerimaan .bundle-paper th, .doc-penerimaan .bundle-paper td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
-    .doc-kwitansi .bundle-paper th, .doc-kwitansi .bundle-paper td { padding: 8px 12px; font-size: 14px; }
+    /* Gaya Tabel Umum di Preview */
+    .bundle-paper table.report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .bundle-paper table.report-table th, 
+    .bundle-paper table.report-table td {
+      border: 1px solid black;
+      padding: 4px 8px;
+      font-size: 12px;
+    }
 
     @media print {
-      body * { visibility: hidden; }
-      #bundle-print-area, #bundle-print-area * { visibility: visible; }
-      #bundle-print-area { position: static !important; width: auto !important; overflow: visible !important; }
-      @page { size: 210mm 330mm; margin: 10mm 15mm; }
-      body { margin: 0; }
-      .bundle-paper { width: 100% !important; min-height: auto !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; }
+      body { 
+        visibility: hidden !important; 
+        background: white !important;
+      }
+      
+      #paket-print-wrapper { 
+        visibility: visible !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #paket-print-wrapper * { 
+        visibility: visible !important; 
+        color: black !important;
+        opacity: 1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      #paket-print-wrapper p { margin: 2px 0 !important; line-height: 1.2 !important; }
+
+      #paket-print-wrapper .bundle-paper {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        padding: 10mm 15mm !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        box-sizing: border-box !important;
+      }
+
+      .js-page-break { 
+        display: block !important; 
+        break-before: page !important; 
+        page-break-before: always !important; 
+        height: 0 !important; 
+      }
+      
+      .print\:hidden { display: none !important; }
+
+      @page { size: A4; margin: 0 !important; }
+      
+      tr, .signature-section { break-inside: avoid !important; }
+      table { width: 100% !important; border-collapse: collapse !important; border: none !important; }
+      
+      table.report-table { margin-bottom: 20px !important; }
+      table.report-table th, 
+      table.report-table td { 
+        border: 1px solid black !important; 
+        padding: 4px 8px !important;
+      }
+      
+      table:not(.report-table) td { 
+        border: none !important; 
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        line-height: 1.2 !important;
+      }
     }
   </style>
 
   <div class="bg-white rounded-lg shadow p-6 mb-6 print:hidden flex items-center justify-end gap-2">
-      <a href="{{ route('reports.nota.list') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
+      <a href="{{ route('reports.nota.list') }}" class="bg-slate-700 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
         <i class="fas fa-arrow-left"></i> Kembali
       </a>
-      <button type="button" onclick="openPrintPreview()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
-        <i class="fas fa-print mr-2"></i> Print 4 Dokumen
+      <button type="button" onclick="printPackage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+        <i class="fas fa-print"></i> Cetak Paket Dokumen
       </button>
   </div>
 
-  <div id="bundle-print-area">
+  <div id="bundle-printable-area">
     <div class="bundle-sheet doc-nota">
-      <div class="bundle-paper">
+      <div class="bundle-paper" id="paper-nota">
         @include('reports.partials.docs.nota_pesanan', ['data' => $nota, 'opd' => $opd])
       </div>
     </div>
 
     <div class="bundle-sheet doc-pemeriksaan">
-      <div class="bundle-paper">
+      <div class="bundle-paper" id="paper-pemeriksaan">
         @if($pemeriksaan)
           @include('reports.partials.docs.pemeriksaan', ['data' => $pemeriksaan, 'opd' => $opd])
         @else
@@ -86,7 +148,7 @@
     </div>
 
     <div class="bundle-sheet doc-penerimaan">
-      <div class="bundle-paper">
+      <div class="bundle-paper" id="paper-penerimaan">
         @if($penerimaan)
           @include('reports.partials.docs.penerimaan', ['data' => $penerimaan, 'opd' => $opd])
         @else
@@ -97,7 +159,7 @@
     </div>
 
     <div class="bundle-sheet doc-kwitansi">
-      <div class="bundle-paper">
+      <div class="bundle-paper" id="paper-kwitansi">
         @if($kwitansi)
           @include('reports.partials.docs.kwitansi', ['data' => $kwitansi, 'opd' => $opd])
         @else
@@ -109,70 +171,74 @@
   </div>
 
   <script>
-    function openPrintPreview() {
-      const area = document.getElementById('bundle-print-area');
+    function printPackage() {
+      var area = document.getElementById('bundle-printable-area');
       if (!area) return;
-      const content = area.innerHTML;
-      const win = window.open('', '_blank', 'width=900,height=1200');
-      if (!win) {
-        alert('Silakan izinkan popup untuk mencetak laporan.');
-        return;
-      }
-      win.document.open();
-      win.document.write(`<!doctype html>
-        <html>
-        <head>
-          <title>Cetak Paket Dokumen</title>
-          <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-          <style>
-            body { margin: 0; padding: 0; font-family: 'Nunito', sans-serif; background: #fff; color: #000; }
-            .bundle-paper { width: 210mm; min-height: 330mm; margin: 0 auto; background: #fff; padding: 10mm 15mm; line-height: 1.4; box-sizing: border-box; }
-            .bundle-sheet { page-break-after: always; }
-            .bundle-sheet:last-child { page-break-after: auto; }
-            .text-center { text-align: center; }
-            .text-right { text-align: right; }
-            .font-bold { font-weight: bold; }
-            .underline { text-decoration: underline; }
-            .uppercase { text-transform: uppercase; }
-            .italic { font-style: italic; }
-            .border-kwt { border: 1px solid black; }
-            .border-t-kwt { border-top: 1px solid black; }
-            .border-r-kwt { border-right: 1px solid black; }
-            .signature-block { break-inside: avoid; page-break-inside: avoid; }
-            .signature-block * { break-inside: avoid; page-break-inside: avoid; }
 
-            .doc-nota .bundle-paper p,
-            .doc-pemeriksaan .bundle-paper p,
-            .doc-penerimaan .bundle-paper p { margin: 5px 0; font-size: 14px; }
-            .doc-nota .bundle-paper h2,
-            .doc-pemeriksaan .bundle-paper h2,
-            .doc-penerimaan .bundle-paper h2 { margin: 5px 0; }
-            .doc-nota .bundle-paper table,
-            .doc-pemeriksaan .bundle-paper table,
-            .doc-penerimaan .bundle-paper table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            .doc-nota .bundle-paper th, .doc-nota .bundle-paper td,
-            .doc-pemeriksaan .bundle-paper th, .doc-pemeriksaan .bundle-paper td,
-            .doc-penerimaan .bundle-paper th, .doc-penerimaan .bundle-paper td { border: 1px solid black; padding: 6px 10px; font-size: 12px; }
-            .doc-kwitansi .bundle-paper th, .doc-kwitansi .bundle-paper td { padding: 8px 12px; font-size: 14px; }
+      var wrapper = document.createElement('div');
+      wrapper.id = 'paket-print-wrapper';
+      
+      var placeholder = document.createElement('span');
+      placeholder.id = 'paket-print-placeholder';
+      area.parentNode.insertBefore(placeholder, area);
+      wrapper.appendChild(area);
+      document.body.appendChild(wrapper);
+      document.body.classList.add('is-printing');
 
-            @media print {
-              @page { size: 210mm 330mm; margin: 10mm 15mm; }
-              body { margin: 0; }
-              .bundle-paper { width: 100% !important; min-height: auto !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; }
-            }
-          </style>
-        </head>
-        <body>
-          <div id="bundle-print-area">${content}</div>
-          <script>
-            window.onload = function() {
-              window.print();
-              window.onafterprint = function() { window.close(); };
-            };
-          <\/script>
-        </body>
-        </html>`);
-      win.document.close();
+      setTimeout(function() {
+        window.print();
+        var ph = document.getElementById('paket-print-placeholder');
+        if (ph) {
+          ph.parentNode.insertBefore(area, ph);
+          ph.remove();
+        }
+        if (wrapper) wrapper.remove();
+        document.body.classList.remove('is-printing');
+      }, 500);
     }
+
+    document.fonts.ready.then(function () {
+      var papers = document.querySelectorAll('.bundle-paper');
+      
+      papers.forEach(function(paper) {
+        var pageH = paper.offsetWidth * (297 / 210);
+        var pushedEls = [];
+
+        function topFromPaper(el) {
+          var t = 0, n = el;
+          while (n && n !== paper) { t += n.offsetTop; n = n.offsetParent; }
+          return t;
+        }
+
+        function fixBreaks() {
+          var moved = false;
+          var els = paper.querySelectorAll('.signature-section');
+          for (var pg = 1; pg <= 10; pg++) {
+            var bnd = pageH * pg;
+            for (var j = 0; j < els.length; j++) {
+              var el = els[j];
+              var top = topFromPaper(el);
+              var bot = top + el.offsetHeight;
+              if (bot > bnd && top < bnd) {
+                var push = (bnd + 20) - top;
+                el.style.marginTop = (parseFloat(el.style.marginTop || 0) + push) + 'px';
+                if (pushedEls.indexOf(el) === -1) pushedEls.push(el);
+                moved = true;
+              }
+            }
+          }
+          return moved;
+        }
+
+        for (var pass = 0; pass < 3; pass++) { if (!fixBreaks()) break; }
+
+        pushedEls.forEach(function(el) {
+          var br = document.createElement('div');
+          br.className = 'js-page-break';
+          br.style.cssText = 'display:none;';
+          el.parentNode.insertBefore(br, el);
+        });
+      });
+    });
   </script>
 @endsection

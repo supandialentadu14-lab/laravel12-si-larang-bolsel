@@ -45,16 +45,16 @@
         },
         recalc(i) {
           const it = this.items[i] || {};
-          const qty = parseInt(it.qty, 10);
-          const price = parseInt(it.price, 10);
-          if (Number.isFinite(qty) && Number.isFinite(price)) {
+          const qty = parseFloat(it.qty || 0);
+          const price = parseFloat(it.price || 0);
+          if (!isNaN(qty) && !isNaN(price)) {
             this.items[i].total = qty * price;
           } else {
-            this.items[i].total = '';
+            this.items[i].total = 0;
           }
         },
         getTotal() {
-          return this.items.reduce((sum, item) => sum + (Number(item.total) || 0), 0);
+          return this.items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
         }
       }
     }

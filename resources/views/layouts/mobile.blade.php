@@ -50,6 +50,7 @@
     }
 
     .dark {
+      color-scheme: dark;
       --app-bg: #030712;
       --app-surface: #111827;
       --app-text-main: #F9FAFB;
@@ -100,6 +101,11 @@
     html.dark .bg-slate-50,
     html.dark .bg-indigo-50 {
       background-color: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    html.dark option {
+      background-color: var(--app-surface) !important;
+      color: var(--app-text-main) !important;
     }
 
     html.dark .text-gray-900,
@@ -372,7 +378,7 @@
     x-transition:leave="transition ease-in duration-300" 
     x-transition:leave-start="opacity-100 translate-y-0" 
     x-transition:leave-end="opacity-0 -translate-y-full" 
-    class="fixed top-4 left-4 right-4 z-[75]" x-cloak>
+    class="fixed top-6 left-4 right-4 z-[99]" x-cloak>
     <div class="block bg-rose-600 rounded-3xl p-5 shadow-2xl shadow-rose-200 border border-rose-500/30 backdrop-blur-md">
       <div class="flex items-start gap-4">
         <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 animate-pulse">
@@ -383,8 +389,8 @@
           <h3 class="text-xs font-black text-white tracking-tight mt-0.5">Ada {{ $lowStockCount ?? 0 }} Barang Menipis!</h3>
           <p class="text-[10px] font-bold text-rose-50 mt-1 leading-snug">Segera lakukan pengadaan untuk menghindari kehabisan stok.</p>
         </div>
-        <button @click="stockNotifOpen = false" class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
-          <i class="fas fa-times text-[10px]"></i>
+        <button @click="stockNotifOpen = false" class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-black/20 text-white/80 hover:text-white transition-colors">
+          <i class="fas fa-times text-xs"></i>
         </button>
       </div>
       <div class="mt-4 pt-4 border-t border-white/10">

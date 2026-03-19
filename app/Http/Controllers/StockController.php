@@ -22,6 +22,8 @@ use Illuminate\View\View;
 // Controller untuk mengelola transaksi stok
 class StockController extends Controller
 {
+    use \App\Traits\AutoStock;
+
     /**
      * Menampilkan daftar transaksi stok
      */
@@ -129,6 +131,61 @@ class StockController extends Controller
         $singkatanOpd = strtoupper($opdSetting->singkatan_opd ?? 'DISKOMINFO');
 
         return view('stock.create', compact('products', 'singkatanOpd'));
+    }
+
+    public function syncFromDocs(Request $request)
+    {
+        try {
+            $userId = auth()->id();
+            $disk = \Illuminate\Support\Facades\Storage::disk('local');
+            
+            // 1. Sync from PHP BAP Penerimaan (BASTB)
+            $pDir = "users/{$userId}/bap-penerimaan";
+            if ($disk->exists($pDir)) {
+                foreach ($disk->files($pDir) as $file) {
+                    if (!str_ends_with($file, '.json')) continue;
+                    $data = json_decode($disk->get($file), true);
+                    if ($data && !empty($data['items']) && !empty($data['nomor'])) {
+                        $this->recordItemsToStock($data['items'], $data['nomor'], $data['tanggal'] ?? now()->toDateString(), 'Otomatis dari BASTB');
+                    }
+                }
+            }
+
+            // 2. Sync from Kwitansi
+            $kDir = "users/{$userId}/kwitansi";
+            if ($disk->exists($kDir)) {
+                foreach ($disk->files($kDir) as $file) {
+                    if (!str_ends_with($file, '.json')) continue;
+                    $data = json_decode($disk->get($file), true);
+                    if ($data && !empty($data['nomor_kwt'])) {
+                        // Kwitansi usually takes items from a BAP Penerimaan
+                        // But let's check its own data if possible. 
+                        // Actually kwitansi saves the pRef.
+                        $pRef = $data['penerimaan_nomor'] ?? null;
+                        if ($pRef) {
+                            // Find that BAP
+                            $penerimaan = null;
+                            if ($disk->exists($pDir)) {
+                                foreach ($disk->files($pDir) as $pf) {
+                                    $pdata = json_decode($disk->get($pf), true);
+                                    if (($pdata['nomor'] ?? null) === $pRef) { 
+                                        $penerimaan = $pdata; break; 
+                                    }
+                                }
+                            }
+                            if ($penerimaan && !empty($penerimaan['items'])) {
+                                $this->recordItemsToStock($penerimaan['items'], $pRef, $penerimaan['tanggal'] ?? ($data['tanggal'] ?? now()->toDateString()), 'Otomatis dari Kwitansi');
+                            }
+                        }
+                    }
+                }
+            }
+
+            return redirect()->route('stock.index')->with('success', 'Sinkronisasi stok dari BASTB & Kwitansi berhasil selesai.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Sync Error: " . $e->getMessage());
+            return back()->with('error', 'Gagal sinkronisasi: ' . $e->getMessage());
+        }
     }
 
     /**

@@ -1,446 +1,277 @@
 @extends('layouts.admin')
 
 @section('header', 'Nota Pesanan')
-@section('content')
-  <style>
-    .preview-paper { 
-      width: 210mm; 
-      min-height: 330mm; 
-      margin: 0 auto; 
-      background: #ffffff; 
-      padding: 5mm 15mm;
-      line-height: 1.4;
-      font-family: 'Times New Roman', serif;
-    }
-    @media print {
-      body { 
-        margin: 0 !important; 
-        padding: 0 !important;
-        background: #fff !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      body * { visibility: hidden; }
-      #print-area, #print-area * { visibility: visible; }
-      
-      @page {
-        size: 210mm 330mm;
-        margin: 5mm 15mm;
-      }
 
-      #print-area {
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.innerWidth >= 1024) {
+          window.dispatchEvent(new CustomEvent('close-sidebar'));
+        }
+    });
+</script>
+@endsection
+
+@section('content')
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* HYPER-FIDELITY PREVIEW */
+    .nota-pesanan-hifi-preview {
+      width: 100%;
+      min-height: calc(100vh - 200px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+      background-color: #0f172a;
+      border-radius: 1rem;
+    }
+
+    .bundle-paper-container {
+      position: relative;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    .bundle-paper {
+      width: 210mm;
+      min-height: 297mm;
+      background-color: white;
+      padding: 10mm 15mm;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4);
+      position: relative;
+      line-height: var(--line-height, 1.4);
+      color: black !important;
+      font-family: 'Nunito', sans-serif !important;
+      box-sizing: border-box;
+    }
+
+    .bundle-paper * {
+      font-family: 'Nunito', sans-serif !important;
+      color: black !important;
+    }
+
+    .paper-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 296.8mm,
+        #0f172a 296.8mm,
+        #0f172a 297.2mm
+      );
+      z-index: 10;
+    }
+
+    .doc-nota .bundle-paper p { margin: 5px 0; font-size: 14px; }
+    .doc-nota .bundle-paper h2 { margin: 5px 0; font-size: 18px; font-weight: bold; }
+    .doc-nota .bundle-paper table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .doc-nota .bundle-paper table.report-table th, 
+    .doc-nota .bundle-paper table.report-table td { border: 1px solid black !important; padding: 2px 10px !important; font-size: 12px; }
+    .doc-nota .bundle-paper table.report-table th { background-color: #f8fafc !important; }
+
+    @media print {
+      /* Teknik Visibility: Sembunyikan Body, Tampilkan Laporan */
+      body { 
+        visibility: hidden !important; 
+        background: white !important;
+      }
+      
+      /* Wrapper Laporan: Munculkan kembali dan tarik ke pojok kiri atas */
+      #nota-print-wrapper { 
+        visibility: visible !important;
         position: absolute !important;
         left: 0 !important;
         top: 0 !important;
-        width: 100% !important;
+        width: 210mm !important;
         margin: 0 !important;
         padding: 0 !important;
+      }
+
+      /* Paksa SEMUA elemen di dalam laporan muncul dan berwarna hitam */
+      #nota-print-wrapper, 
+      #nota-print-wrapper * { 
+        visibility: visible !important; 
+        color: black !important;
+        opacity: 1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Kertas: Sesuaikan padding agar identik dengan layar */
+      #nota-print-wrapper .bundle-paper {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        padding: 10mm 15mm !important;
+        margin: 0 !important;
         box-shadow: none !important;
-      }
-      
-      .preview-paper {
-        width: 100% !important;
-        min-height: auto !important;
-        padding: 0 !important;
-        margin: 0 !important;
         border: none !important;
-        background: transparent !important;
+        background: white !important;
+        box-sizing: border-box !important;
       }
 
-      .signature-block {
-        break-inside: avoid !important;
+      .js-page-break { 
+        display: block !important; 
+        break-before: page !important; 
+        page-break-before: always !important; 
+        height: 0 !important; 
       }
       
-      table {
-        border-collapse: collapse !important;
+      .print\:hidden { display: none !important; }
+
+      @page { size: A4; margin: 0 !important; }
+      
+      tr, .signature-section { break-inside: avoid !important; }
+      table { width: 100% !important; border-collapse: collapse !important; border: none !important; }
+      
+      /* Rapatkan spasi teks umum */
+      #nota-print-wrapper p { margin: 2px 0 !important; line-height: 1.2 !important; }
+
+      /* HANYA berikan border pada tabel laporan utama */
+      table.report-table {
+        margin-bottom: 20px !important;
+      }
+      table.report-table th, 
+      table.report-table td { 
+        border: 1px solid black !important; 
+        padding: 4px 8px !important;
       }
       
-      .report-table th, .report-table td {
-        border: 1px solid black !important;
+      /* Rapatkan tabel lain (nomor/ketentuan) */
+      table:not(.report-table) td { 
+        border: none !important; 
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        line-height: 1.2 !important;
       }
     }
 
-    @media screen {
-      html, body { background: #f3f4f6; }
-      #print-area { width: 210mm; margin: 0 auto; }
-      .preview-paper { width: 210mm; min-height: 330mm; margin: 16px auto; background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 5mm 15mm; }
+    .nav-buttons {
+      width: 210mm;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
     }
-
-    .kop {
-      width: 100%;
-    }
-
-    .kop-logo {
-      width: 80px;
-      text-align: center;
-      vertical-align: top;
-    }
-
-    .kop-logo img {
-      width: 70px;
-      height: 70px;
-      object-fit: contain;
-    }
-
-    .kop-text {
-      text-align: center;
-    }
-
-    .kop-text .line1 {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-    }
-
-    .kop-text .line2 {
-      font-size: 15px;
-      font-weight: 700;
-      margin-top: 0.1px;
-    }
-
-    .kop-text .line3 {
-      font-size: 12px;
-      margin-top: 0.1px;
-    }
-
-    .kop-text .line4 {
-      font-size: 12px;
-    }
-
-    .report-table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-
-    .report-table th,
-    .report-table td {
-      border: 1px solid black;
-      padding: 6px;
-      font-size: 12px;
-    }
-
-    .report-table th {
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .kop {
-      margin-bottom: 10px;
-    }
-
-    .kop h1 {
-      text-align: center;
-      font-weight: 800;
-      text-transform: uppercase;
-      font-size: 16px;
-      margin: 6px 0;
-    }
-
-    .bold {
-      font-weight: 700;
-    }
-
-    .rules {
-      padding-left: 20px;
-      margin-left: 6px;
-    }
-
-    .rules li {
-      margin: 2px 0;
-      line-height: 1.4;
-    }
-
-    .italic {
-      font-style: italic;
-    }
-
-    .rules-table { border-collapse: collapse; width: 100%; border: none !important; }
-    .rules-table td { border: none !important; padding: 1px 0; }
-
-    .header-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .header-table td {
-      padding: 0;
-      vertical-align: top;
-      font-size: 12px;
-      line-height: 1.2;
-    }
-
-    .header-table .label {
-      width: 40px;
-      font-weight: 700;
-    }
-
-    .header-table .colon {
-      width: 8px;
-    }
-
-    .header-table .spacer {
-      width: 100px;
-    }
-
-    .header-table .content {
-      width: 300px;
-    }
-
-    .header-table .city {
-      width: 80px;
-      text-align: left;
-    }
-
-    .header-table .date {
-      width: 80px;
-      text-align: left;
-    }
-
-    /*  */
   </style>
 
-  <div class="bg-white rounded-lg shadow p-6 mb-6 print:hidden flex gap-2">
-    <a href="{{ route('reports.nota.list') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </a>
-    <button type="button" onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-bold shadow">
-      <i class="fas fa-print mr-2"></i> Print
-    </button>
-    @if(session('nota_current_id') && auth()->user()->hasPermission('pemeriksaan') && auth()->user()->hasPermission('penerimaan') && auth()->user()->hasPermission('berkas_lainnya'))
-      <a href="{{ route('reports.paket.show', session('nota_current_id')) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
-        <i class="fas fa-layer-group"></i> Paket 4 Dokumen
+  <div class="nota-pesanan-hifi-preview">
+    <div class="nav-buttons print:hidden">
+      <a href="{{ route('reports.nota.list') }}" class="bg-slate-700 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+        <i class="fas fa-arrow-left"></i> Kembali
       </a>
-    @endif
-    <form action="{{ route('reports.nota.save') }}" method="POST" class="inline">
-      @csrf
-      {{-- Hidden inputs from $data --}}
-      <input type="hidden" name="nomor" value="{{ $data['nomor'] }}">
-      <input type="hidden" name="tanggal" value="{{ $data['tanggal'] }}">
-      <input type="hidden" name="tahun" value="{{ $data['tahun'] }}">
-      <input type="hidden" name="kegiatan" value="{{ $data['kegiatan'] }}">
-      <input type="hidden" name="sub_kegiatan" value="{{ $data['sub_kegiatan'] }}">
-      <input type="hidden" name="rekening" value="{{ $data['rekening'] }}">
-      <input type="hidden" name="belanja" value="{{ $data['belanja'] }}">
-      
-      {{-- Pihak-pihak --}}
-      <input type="hidden" name="pejabat_nama" value="{{ $data['pejabat']['nama'] ?? '' }}">
-      <input type="hidden" name="pejabat_nip" value="{{ $data['pejabat']['nip'] ?? '' }}">
-      <input type="hidden" name="pptk_nama" value="{{ $data['pptk']['nama'] ?? '' }}">
-      <input type="hidden" name="pptk_nip" value="{{ $data['pptk']['nip'] ?? '' }}">
-      <input type="hidden" name="pb_nama" value="{{ $data['pengurus_barang']['nama'] ?? '' }}">
-      <input type="hidden" name="pb_nip" value="{{ $data['pengurus_barang']['nip'] ?? '' }}">
-      <input type="hidden" name="pbp_nama" value="{{ $data['pengurus_pengguna']['nama'] ?? '' }}">
-      <input type="hidden" name="pbp_nip" value="{{ $data['pengurus_pengguna']['nip'] ?? '' }}">
-      <input type="hidden" name="ppk_nama" value="{{ $data['ppk']['nama'] ?? '' }}">
-      <input type="hidden" name="ppk_nip" value="{{ $data['ppk']['nip'] ?? '' }}">
-      <input type="hidden" name="bendahara_nama" value="{{ $data['bendahara']['nama'] ?? '' }}">
-      <input type="hidden" name="bendahara_nip" value="{{ $data['bendahara']['nip'] ?? '' }}">
+      <button type="button" onclick="printReport()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+        <i class="fas fa-print"></i> Cetak Dokumen
+      </button>
+      @if(session('nota_current_id'))
+        <a href="{{ route('reports.paket.show', session('nota_current_id')) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+          <i class="fas fa-layer-group"></i> Paket 4 Dokumen
+        </a>
+      @endif
+    </div>
 
-      {{-- Penyedia --}}
-      {{-- Note: Controller prioritizes supplier_id, then session. We pass values directly to be safe or rely on session if controller supports it. 
-         But controller 'save' reads from session('nota_current') only for penyedia fallback. 
-         Since we are passing explicit data, we might need to pass penyedia details if they are editable? 
-         Actually 'save' doesn't seem to read penyedia_toko etc from request directly unless we modify it.
-         Wait, 'save' uses: 
-         $penyedia = ['toko' => '', ...];
-         if ($sid = $request->input('supplier_id')) { ... } else { $existing = session('nota_current') ... }
-         So if we don't pass supplier_id, it will look in session.
-         Since 'report' method saved to session 'nota_current', 'save' should pick it up!
-      --}}
-      
-      {{-- Items --}}
-      @foreach($data['items'] as $idx => $item)
-        <input type="hidden" name="items[{{ $idx }}][name]" value="{{ $item['name'] }}">
-        <input type="hidden" name="items[{{ $idx }}][qty]" value="{{ $item['qty'] }}">
-        <input type="hidden" name="items[{{ $idx }}][unit]" value="{{ $item['unit'] }}">
-        <input type="hidden" name="items[{{ $idx }}][price]" value="{{ $item['price'] }}">
-      @endforeach
+    <div id="printable-report" class="doc-nota">
+      <div class="bundle-paper-container">
+        <div class="bundle-paper" id="nota-paper">
+          @include('reports.partials.docs.nota_pesanan', ['data' => $data, 'opd' => $opd])
+        </div>
+        {{-- JS-generated page dividers (only as many as needed) --}}
+        <div id="nota-page-dividers"></div>
+      </div>
+    </div>
+    <script>
+      document.fonts.ready.then(function () {
+        var paper = document.getElementById('nota-paper');
+        if (!paper) return;
+        var container = paper.parentElement;
+        var pageH = paper.offsetWidth * (297 / 210);
+        // Set toleransi ke 0 agar benar-benar mepet batas kertas baru pindah
+        var padV = 0; 
+        var pushedEls = [];
 
-      <!-- <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold shadow flex items-center gap-2">
-        <i class="fas fa-save"></i> Simpan
-      </button> -->
-    </form>
-  </div>
+        function topFromPaper(el) {
+          var t = 0, n = el;
+          while (n && n !== paper) { t += n.offsetTop; n = n.offsetParent; }
+          return t;
+        }
 
-  <div id="print-area" class="preview-paper">
-    @php
-      function toWordsId($value)
-      {
-        $huruf = [
-          '',
-          'satu',
-          'dua',
-          'tiga',
-          'empat',
-          'lima',
-          'enam',
-          'tujuh',
-          'delapan',
-          'sembilan',
-          'sepuluh',
-          'sebelas',
-        ];
-        $value = intval($value);
-        if ($value < 12) {
-          return $huruf[$value];
+        function fixBreaks() {
+          var moved = false;
+          // Fokus pemindahan otomatis pada bagian tanda tangan agar tidak terpotong
+          var els = paper.querySelectorAll('.signature-section');
+          for (var pg = 1; pg <= 20; pg++) {
+            var bnd = pageH * pg;
+            for (var j = 0; j < els.length; j++) {
+              var el = els[j];
+              var top = topFromPaper(el);
+              var bot = top + el.offsetHeight;
+              // Hanya pindah jika bagian bawah elemen benar-benar melewati batas bawah halaman
+              if (bot > bnd && top < bnd) {
+                var push = (bnd + 20) - top; // Beri sedikit jarak dari atas halaman baru
+                el.style.marginTop = (parseFloat(el.style.marginTop || 0) + push) + 'px';
+                if (pushedEls.indexOf(el) === -1) pushedEls.push(el);
+                moved = true;
+              }
+            }
+          }
+          return moved;
         }
-        if ($value < 20) {
-          return toWordsId($value - 10) . ' belas';
+
+        for (var pass = 0; pass < 5; pass++) { if (!fixBreaks()) break; }
+
+        // Insert print page-break markers before every pushed element
+        pushedEls.forEach(function(el) {
+          var br = document.createElement('div');
+          br.className = 'js-page-break';
+          br.style.cssText = 'display:none;';
+          el.parentNode.insertBefore(br, el);
+        });
+
+        // Visual dividers for screen preview
+        var totalH = paper.scrollHeight;
+        var pages = Math.ceil(totalH / pageH);
+        for (var i = 1; i < pages; i++) {
+          var d = document.createElement('div');
+          d.className = 'print:hidden';
+          d.style.cssText = 'position:absolute;top:' + (pageH * i) + 'px;transform:translateY(-50%);left:25mm;width:calc(100% - 50mm);height:10px;background:#0f172a;border-top:2px dashed #475569;border-bottom:2px dashed #475569;z-index:20;display:flex;align-items:center;justify-content:center;border-radius:10px;';
+          d.innerHTML = '<span style="background:#1e293b;color:#94a3b8;padding:2px 14px;border-radius:20px;font-size:9px;font-weight:700;border:1px solid #475569;letter-spacing:0.08em;">&#8212; HALAMAN ' + i + ' / ' + (i + 1) + ' &#8212;</span>';
+          container.appendChild(d);
         }
-        if ($value < 100) {
-          return toWordsId(intval($value / 10)) . ' puluh ' . toWordsId($value % 10);
-        }
-        if ($value < 200) {
-          return 'seratus ' . toWordsId($value - 100);
-        }
-        if ($value < 1000) {
-          return toWordsId(intval($value / 100)) . ' ratus ' . toWordsId($value % 100);
-        }
-        if ($value < 2000) {
-          return 'seribu ' . toWordsId($value - 1000);
-        }
-        if ($value < 1000000) {
-          return toWordsId(intval($value / 1000)) . ' ribu ' . toWordsId($value % 1000);
-        }
-        if ($value < 1000000000) {
-          return toWordsId(intval($value / 1000000)) . ' juta ' . toWordsId($value % 1000000);
-        }
-        return (string) $value;
+      });
+    </script>
+    <script>
+      function printReport() {
+        var paper = document.getElementById('nota-paper');
+        if (!paper) return;
+
+        // Buat wrapper sementara
+        var wrapper = document.createElement('div');
+        wrapper.id = 'nota-print-wrapper';
+        
+        // PENTING: Tambahkan class doc-nota agar CSS laporan tetap berfungsi!
+        wrapper.className = 'doc-nota'; 
+        
+        var placeholder = document.createElement('span');
+        placeholder.id = 'nota-print-placeholder';
+        paper.parentNode.insertBefore(placeholder, paper);
+        wrapper.appendChild(paper);
+        document.body.appendChild(wrapper);
+        document.body.classList.add('is-printing');
+
+        setTimeout(function() {
+          window.print();
+          
+          var ph = document.getElementById('nota-print-placeholder');
+          if (ph) {
+            ph.parentNode.insertBefore(paper, ph);
+            ph.remove();
+          }
+          if (wrapper) wrapper.remove();
+          document.body.classList.remove('is-printing');
+        }, 300);
       }
-    @endphp
-
-    {{-- KOP Surat reusable --}}
-    @include('partials.kop', ['opd' => $opd])
-    <table class="header-table mb-4">
-      <td class="date" style="text-align: right">Bolaang Uki, {{ \Carbon\Carbon::parse($data['tanggal'])->translatedFormat('d F Y') }}</td>
-    </table>
-    <table class="header-table mb-2">
-      <tr>
-        <td class="label">Nomor</td>
-        <td class="colon">:</td>
-        <td class="bold content">{{ $data['nomor'] }}</td>
-        <td class="spacer"></td>
-        <td class="city">Kepada Yth.</td>
-        {{-- <td class="date">{{ \Carbon\Carbon::parse($data['tanggal'])->translatedFormat('F Y') }}</td> --}}
-      </tr>
-      <tr>
-        <td class="label">Lampiran</td>
-        <td class="colon">:</td>
-        <td class="content">-</td>
-        <td class="spacer"></td>
-        <td class="city"><span class="bold">{{ $data['penyedia']['toko'] ?? '' }}</span><br></td>
-        <td class="date"></td>
-      </tr>
-      <tr>
-        <td class="label">Perihal</td>
-        <td class="colon">:</td>
-        <td class="content bold">
-          Belanja {{ $data['belanja'] }}
-          Pada Keg. {{ $data['kegiatan'] }}
-          Sub Keg. {{ $data['sub_kegiatan'] }} Tahun 
-            {{ $data['tahun'] }}
-        </td>
-        <td class="spacer"></td>
-        <td class="city">
-
-          di-<br>
-          <span class="indent">Tempat</span>
-        </td>
-        <td class="date"></td>
-      </tr>
-    </table>
-    <br>
-    <div class="kop">
-      <h1 class="text-center font-extrabold mb-4">NOTA PESANAN BARANG / BAHAN</h1>
-    </div>
-
-    <p class="text-sm mb-2">Dengan hormat,</p>
-    <p class="text-sm mb-2 justify-between">
-      Untuk keperluan pengadaan {{ $data['belanja'] }} dalam Kegiatan {{ $data['kegiatan'] }},
-      Sub Kegiatan {{ $data['sub_kegiatan'] }} pada Tahun {{ $data['tahun'] }},
-      harap dapat diberikan barang/bahan di bawah ini:
-    </p>
-
-    <table class="report-table mb-2">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Jenis Bahan/Alat (Barang)</th>
-          <th>Kuantitas</th>
-          <th>Satuan</th>
-          <th>Harga Satuan (Rp)</th>
-          <th>Total (Rp)</th>
-        </tr>
-      </thead>
-      <tbody>
-        @php
-          $no = 1;
-          $grand = 0;
-        @endphp
-        @foreach ($data['items'] as $row)
-          @php $grand += $row['total']; @endphp
-          <tr>
-            <td align="center">{{ $no++ }}</td>
-            <td>{{ $row['name'] }}</td>
-            <td align="center">{{ $row['qty'] }}</td>
-            <td align="center">{{ $row['unit'] }}</td>
-            <td align="right">{{ number_format($row['price'], 0, ',', '.') }}</td>
-            <td align="right">{{ number_format($row['total'], 0, ',', '.') }}</td>
-          </tr>
-        @endforeach
-        <tr>
-          <td colspan="5" align="right">Jumlah</td>
-          <td align="right">{{ number_format($grand, 0, ',', '.') }}</td>
-        </tr>
-        <tr>
-          <td colspan="6" align="center" class="bold">{{ ucwords(toWordsId((int) $grand)) }} Rupiah</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p class="text-sm mb-1"><span class="bold">Dengan Ketentuan :</span></p>
-    <table class="rules-table text-sm mb-4">
-      <tr>
-        <td style="width: 18px; vertical-align: top;">1.</td>
-        <td style="text-align: justify; padding-left: 6px;">
-            Pembayaran melalui bendahara pengeluaran {{ \Illuminate\Support\Str::title($opd->nama_opd ?? 'Instansi Terkait') }}.
-        </td>
-      </tr>
-      <tr>
-        <td style="width: 18px; vertical-align: top;">2.</td>
-        <td style="text-align: justify; padding-left: 6px;">
-            Pembayaran dilaksanakan apabila barang-bahan tersebut telah diperiksa oleh Panitia Pemeriksa Barang
-            sesuai dengan kualitas dan kuantitas barang yang diperiksa.
-        </td>
-      </tr>
-    </table>
-
-    <div class="grid grid-cols-2 gap-6 mt-6 signature-block">
-      <div class="text-center text-sm">
-        <p class="mb-1">&nbsp;</p>
-        <p class="mb-1">Setuju Untuk Melaksanakan Pekerjaan</p>
-        <div class="h-20"></div>
-        <p class="font-bold underline">{{ $data['penyedia']['pemilik'] ?? '' }}</p>
-      </div>
-      <div class="text-center text-sm">
-        <p class="mb-1">Bolaang Uki, {{ \Carbon\Carbon::parse($data['tanggal'])->translatedFormat('d F Y') }}</p>
-
-        <p class="mb-1">Pejabat Pengadaan</p>
-        <div class="h-20"></div>
-        <p class="font-bold underline">{{ $data['pejabat']['nama'] ?? '' }}</p>
-        <p class="text-sm">NIP. {{ $data['pejabat']['nip'] ?? '-' }}</p>
-      </div>
-
-    </div>
-
-    <div class="grid grid-cols-1 mt-8 text-sm signature-block">
-      <div class="text-center">
-        <p class="mb-1">MENGETAHUI,</p>
-        <p class="mb-1">PENGGUNA ANGGARAN SELAKU PPK</p>
-        <div class="h-20"></div>
-        <p class="font-bold underline">{{ $data['ppk']['nama'] ?? '' }}</p>
-        <p class="text-sm">NIP. {{ $data['ppk']['nip'] ?? '-' }}</p>
-      </div>
-    </div>
+    </script>
   </div>
 @endsection

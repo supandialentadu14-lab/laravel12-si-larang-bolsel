@@ -66,6 +66,9 @@ Route::middleware(['auth'])->group(function () {
     // Stock Management
     Route::middleware('permission:transaksi')->group(function () {
         Route::resource('stock', StockController::class)->except(['edit']);
+        Route::get('stock', [StockController::class, 'index'])->name('stock.index');
+        Route::get('stock/sync', [StockController::class, 'syncFromDocs'])->name('stock.sync');
+        Route::get('stock/create', [StockController::class, 'create'])->name('stock.create');
         Route::get('stock/{stock}/edit', [StockController::class, 'edit'])->name('stock.edit');
         Route::post('stock/bulk-delete', [StockController::class, 'bulkDestroy'])->name('stock.bulk_delete');
     });

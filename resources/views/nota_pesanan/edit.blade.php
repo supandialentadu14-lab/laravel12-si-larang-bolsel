@@ -14,46 +14,13 @@
           this.items = (this.items || []).map(it => ({ ...it, _key: it._key || (this.nextKey++) }));
         },
         init() {
-          const normalizeName = (val) => {
-            const s = String(val ?? '').trim();
-            if (!s) return '';
-            if (/^\d+$/.test(s)) {
-              const pid = parseInt(s, 10);
-              const p = this.products.find(x => String(x.id) === String(pid));
-              return p ? (p.name || '') : '';
-            }
-            return s;
-          };
           this.items = (this.items || []).map(it => {
-            const name = normalizeName(it.name ?? it.product_id ?? '');
-            let unit = it.unit ?? '';
-            let priceRaw = it.price ?? '';
-            const prod = this.products.find(x => (x.name || '') === name);
-            if (prod) {
-              unit = unit || (prod.unit || '');
-              if (priceRaw === '' || priceRaw === null || priceRaw === undefined) {
-                priceRaw = prod.price ?? '';
-              }
-            }
-            const p = Number(priceRaw ?? 0);
-            const q = Number(it.qty ?? 0);
-            const price = Number.isFinite(p) ? Math.round(p) : (parseInt(String(priceRaw).replace(/\D+/g,''),10) || '');
-            const qty = Number.isFinite(q) ? Math.round(q) : (parseInt(String(it.qty).replace(/\D+/g,''),10) || '');
-            const total = (Number.isFinite(qty) && Number.isFinite(price)) ? qty * price : '';
-            return { ...it, name, unit, price, qty, total };
-          }).filter(it => (String(it.name || '').trim() !== ''));
-          
-          const by = {};
-          (this.items || []).forEach(it => {
-            const nm = String(it.name || '').trim();
-            if (!nm || /^\d+$/.test(nm)) return;
-            const qty = parseInt(it.qty,10) || 0;
-            const price = parseInt(it.price,10) || 0;
-            const unit = String(it.unit || '').trim().toLowerCase();
-            const key = `${nm.toLowerCase()}|${qty}|${unit}|${price}`;
-            if (!by[key]) by[key] = it;
+            const name = it.name ?? '';
+            const qty = parseFloat(it.qty || 0);
+            const price = parseFloat(it.price || 0);
+            const total = qty * price;
+            return { ...it, name, qty, price, total };
           });
-          this.items = Object.values(by);
           if (this.items.length === 0) this.addItem();
           this.ensureKeys();
         },
@@ -68,10 +35,8 @@
         onProductChange(i, name) {
           const p = this.products.find(x => x.name === name);
           if (p) {
-            const raw = Number(p.price ?? 0);
-            const price = Number.isFinite(raw) ? Math.round(raw) : (parseInt(String(p.price).replace(/\D+/g,''),10) || '');
             this.items[i].unit = p.unit || '';
-            this.items[i].price = price;
+            this.items[i].price = p.price || 0;
           } else {
             this.items[i].unit = '';
             this.items[i].price = '';
@@ -85,12 +50,12 @@
         },
         recalc(i) {
           const it = this.items[i] || {};
-          const qty = parseInt(it.qty, 10);
-          const price = parseInt(it.price, 10);
-          if (Number.isFinite(qty) && Number.isFinite(price)) {
+          const qty = parseFloat(it.qty || 0);
+          const price = parseFloat(it.price || 0);
+          if (!isNaN(qty) && !isNaN(price)) {
             this.items[i].total = qty * price;
           } else {
-            this.items[i].total = '';
+            this.items[i].total = 0;
           }
         },
         getTotal() {

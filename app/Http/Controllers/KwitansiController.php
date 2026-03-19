@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 
 class KwitansiController extends Controller
 {
+    use \App\Traits\AutoStock;
+
     protected function loadNotaMaster(): array
     {
         $row = NotaMaster::where('user_id', Auth::id())->first();
@@ -440,7 +442,16 @@ class KwitansiController extends Controller
             // --- TRANSACTION RECORDING START ---
             // When Kwitansi is SAVED, record items to stock transactions (Type: IN)
             if ($selected && !empty($selected['items'])) {
-                $this->recordKwitansiToStock($data, $selected['items']);
+                $pNomorInput = $data['penerimaan_nomor'] ?? '';
+                $penerimaan = $this->findPenerimaanByNomor($pNomorInput);
+                $nosurRef = (!empty($penerimaan['nomor'])) ? $penerimaan['nomor'] : ($data['nomor_kwt'] ?? '');
+                
+                $this->recordItemsToStock(
+                    $selected['items'], 
+                    $nosurRef, 
+                    $data['tanggal'], 
+                    'Otomatis dari Kwitansi'
+                );
             }
             // --- TRANSACTION RECORDING END ---
 
@@ -466,59 +477,6 @@ class KwitansiController extends Controller
         }
     }
 
-    /**
-     * Record Kwitansi items to Stock Transactions
-     */
-    protected function recordKwitansiToStock(array $kwtData, array $bapItems): void
-    {
-        $userId = Auth::id();
-        $date = $kwtData['tanggal'] ?? now()->toDateString();
-        // Find BAP Penerimaan to get its document number
-        $pNomorInput = $kwtData['penerimaan_nomor'] ?? '';
-        $penerimaan = $this->findPenerimaanByNomor($pNomorInput);
-        $nosur = (!empty($penerimaan['nomor'])) ? $penerimaan['nomor'] : ($kwtData['nomor_kwt'] ?? '');
-        
-        $notaData = $penerimaan['nota'] ?? [];
-
-        foreach ($bapItems as $item) {
-            $name = $item['nama'] ?? '';
-            $qty = (int)($item['kuantitas'] ?? 0);
-            
-            if ($name === '' || $qty <= 0) continue;
-
-            // Find matching product in database
-            // Match by name within the same tenant (user_id)
-            $product = \App\Models\Product::where('user_id', $userId)
-                ->where('name', $name)
-                ->first();
-
-            if ($product) {
-                // Check if already recorded to avoid double recording
-                $exists = \App\Models\StockTransaction::where('user_id', '=', $userId)
-                    ->where('product_id', '=', $product->id)
-                    ->where('nosur', '=', $nosur)
-                    ->where('type', '=', 'in')
-                    ->exists();
-                
-                if (!$exists) {
-                    \Illuminate\Support\Facades\DB::transaction(function() use ($product, $qty, $date, $nosur, $userId) {
-                        \App\Models\StockTransaction::create([
-                            'product_id' => $product->id,
-                            'user_id' => $userId,
-                            'type' => 'in',
-                            'quantity' => $qty,
-                            'date' => $date,
-                            'nosur' => $nosur,
-                            'notes' => 'Otomatis dari Kwitansi',
-                        ]);
-
-                        // Update product stock
-                        $product->increment('stock', $qty);
-                    });
-                }
-            }
-        }
-    }
 
     /**
      * Remove Stock Transactions related to a Kwitansi
@@ -543,27 +501,7 @@ class KwitansiController extends Controller
             }
         }
 
-        $query = \App\Models\StockTransaction::where('user_id', '=', $userId)
-            ->where('notes', '=', 'Otomatis dari Kwitansi');
-        
-        $query->where(function($q) use ($nomorKwt, $bapNomor) {
-            $q->where('nosur', '=', $nomorKwt);
-            if ($bapNomor) {
-                $q->orWhere('nosur', '=', $bapNomor);
-            }
-        });
-
-        $transactions = $query->get();
-
-        foreach ($transactions as $tx) {
-            \Illuminate\Support\Facades\DB::transaction(function() use ($tx) {
-                $product = \App\Models\Product::find($tx->product_id);
-                if ($product) {
-                    $product->decrement('stock', $tx->quantity);
-                }
-                $tx->delete();
-            });
-        }
+        $this->removeStockBySource($nomorKwt, $bapNomor);
     }
 
     public function list(Request $request)

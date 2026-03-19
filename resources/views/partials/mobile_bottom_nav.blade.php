@@ -195,6 +195,13 @@
               </div>
               <i class="fas fa-chevron-right text-[10px] opacity-30"></i>
             </a>
+            <a href="{{ route('backups.index') }}" class="flex items-center justify-between px-5 py-4 rounded-2xl transition {{ request()->routeIs('backups.*') ? 'bg-indigo-600 text-white shadow-lg' : 'bg-gray-50 text-gray-600 ' }}">
+              <div class="flex items-center gap-4">
+                <i class="fas fa-database w-5 text-center"></i>
+                <span class="text-[11px] font-black uppercase tracking-widest">Cadangan Data</span>
+              </div>
+              <i class="fas fa-chevron-right text-[10px] opacity-30"></i>
+            </a>
             <a href="{{ route('activity_log.index') }}" class="flex items-center justify-between px-5 py-4 rounded-2xl transition {{ request()->routeIs('activity_log.*') ? 'bg-indigo-600 text-white shadow-lg' : 'bg-gray-50 text-gray-600 ' }}">
               <div class="flex items-center gap-4">
                 <i class="fas fa-history w-5 text-center"></i>
@@ -358,6 +365,13 @@
           <i class="fas fa-chevron-right text-[10px] opacity-30"></i>
         </a>
 
+        <a data-settings-target href="{{ route('backups.index') }}" class="flex items-center justify-between px-5 py-4 rounded-2xl transition {{ request()->routeIs('backups.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-gray-50 text-gray-600 hover:bg-gray-100' }}" @click="settingsMenuOpen = false">
+          <div class="flex items-center gap-4">
+            <i class="fas fa-database w-5 text-center"></i>
+            <span class="text-[11px] font-black uppercase tracking-widest">Cadangan Data</span>
+          </div>
+          <i class="fas fa-chevron-right text-[10px] opacity-30"></i>
+        </a>
         <a data-settings-target href="{{ route('activity_log.index') }}" class="flex items-center justify-between px-5 py-4 rounded-2xl transition {{ request()->routeIs('activity_log.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-gray-50 text-gray-600 hover:bg-gray-100' }}" @click="settingsMenuOpen = false">
           <div class="flex items-center gap-4">
             <i class="fas fa-history w-5 text-center"></i>
@@ -552,11 +566,11 @@
     </a>
 
     <!-- Manajemen (Right 1) -->
-    <a data-settings-nav data-skip-transition href="{{ route('settings.opd.edit') }}" @click.prevent="settingsMenuOpen = true" class="no-soft flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'active-menu scale-110' : '' }}">
-      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 ' : 'bg-app-bg text-app-muted border border-app-main ' }}">
+    <a data-settings-nav data-skip-transition href="{{ route('settings.opd.edit') }}" @click.prevent="settingsMenuOpen = true" class="no-soft flex flex-col items-center gap-1 shrink-0 flex-1 snap-center {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') || request()->routeIs('backups.*') ? 'active-menu scale-110' : '' }}">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') || request()->routeIs('backups.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 ' : 'bg-app-bg text-app-muted border border-app-main ' }}">
         <i class="fas fa-sliders text-lg"></i>
       </div>
-      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') ? 'text-indigo-600 ' : 'text-app-muted' }}">Manajemen</span>
+      <span class="text-[8px] font-black uppercase tracking-widest whitespace-nowrap {{ request()->routeIs('settings.opd.*') || request()->routeIs('users.*') || request()->routeIs('activity_log.*') || request()->routeIs('backups.*') ? 'text-indigo-600 ' : 'text-app-muted' }}">Manajemen</span>
     </a>
 
     <!-- Profil (Right 2) -->

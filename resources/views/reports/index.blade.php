@@ -51,6 +51,7 @@
     .print-area {
       border: none !important;
       box-shadow: none !important;
+      font-family: 'Nunito', sans-serif;
     }
 
     /* ============================= */
@@ -379,7 +380,7 @@
     </table>
     {{-- TANDA TANGAN --}}
 
-    <div class="mt-16 w-full text-sm signature-block">
+    <div class="mt-8 w-full text-sm signature-block">
 
       <div class="flex justify-between">
 
@@ -388,7 +389,7 @@
           <p class="font-semibold">Dibuat Oleh</p>
           <p class="font-semibold">Pengurus Barang</p>
 
-          <div style="height:90px;"></div>
+          <div style="height:60px;"></div>
 
           <p class="font-bold underline">
             {{ $opd->pengurus_nama ?? '' }}
@@ -404,7 +405,7 @@
           <p class="font-semibold">Mengetahui</p>
           <p class="font-semibold">Kepala Dinas</p>
 
-          <div style="height:90px;"></div>
+          <div style="height:60px;"></div>
 
           <p class="font-bold underline">
             {{ $opd->kepala_nama ?? '' }}
