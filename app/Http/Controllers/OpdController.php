@@ -106,12 +106,16 @@ class OpdController extends Controller
         ]);
 
         $newSingkatan = $setting->singkatan_opd ?? 'DISKOMINFO';
-        $olds = array_unique(['KOMINFO', $oldSingkatan]);
-        if (($key = array_search($newSingkatan, $olds)) !== false) {
-            unset($olds[$key]);
-        }
-        if (count($olds) > 0) {
-            $this->syncNomorSurat(Auth::id(), $olds, $newSingkatan);
+        
+        // Hanya sinkron nomor surat jika singkatan OPD berubah
+        if ($newSingkatan !== $oldSingkatan) {
+            $olds = array_unique(['KOMINFO', $oldSingkatan]);
+            if (($key = array_search($newSingkatan, $olds)) !== false) {
+                unset($olds[$key]);
+            }
+            if (count($olds) > 0) {
+                $this->syncNomorSurat(Auth::id(), $olds, $newSingkatan);
+            }
         }
 
         Cache::forget('opd_setting_' . Auth::id());
