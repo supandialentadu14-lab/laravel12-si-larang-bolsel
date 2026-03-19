@@ -83,7 +83,7 @@
 
 @if($is_last ?? true)
 <div class="signature-section">
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 40px; text-align: center; font-size: 12px; line-height: 1.25;" class="signature-block">
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 15px; text-align: center; font-size: 12px; line-height: 1.25;" class="signature-block">
   <div>
     <div class="font-bold">Yang Menerima,</div>
     <div class="font-bold">Pengurus Barang Pengguna</div>
@@ -100,7 +100,7 @@
   </div>
 </div>
 
-<div class="text-center signature-block" style="margin-top: 40px; font-size: 12px; line-height: 1.25;">
+<div class="text-center signature-block" style="margin-top: 20px; font-size: 12px; line-height: 1.25;">
   <div class="font-bold">Mengetahui,</div>
   <div class="font-bold">Pengguna Anggaran Selaku PPK</div>
   <div style="height: 60px;"></div>

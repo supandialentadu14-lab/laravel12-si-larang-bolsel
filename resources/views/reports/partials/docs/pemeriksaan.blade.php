@@ -105,7 +105,7 @@
   </div>
 @if($is_last ?? true)
 <div class="signature-section">
-  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 30px; text-align: center; font-size: 12px; line-height: 1.25;" class="signature-block">
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 15px; text-align: center; font-size: 12px; line-height: 1.25;" class="signature-block">
   <div>
     <p style="margin: 2px 0;">&nbsp;</p>
     <p style="margin: 2px 0;">Penyedia</p>
@@ -121,7 +121,7 @@
   </div>
 </div>
 
-<div class="text-center signature-block" style="margin-top: 40px; font-size: 12px; line-height: 1.25;">
+<div class="text-center signature-block" style="margin-top: 20px; font-size: 12px; line-height: 1.25;">
   <p style="margin: 2px 0;">Mengetahui,</p>
   <p style="margin: 2px 0;">Pengguna Anggaran Selaku PPK</p>
   <div style="height: 60px;"></div>

@@ -507,6 +507,8 @@
       });
     })();
   </script>
+  @yield('styles')
+  @stack('styles')
 </head>
 
   <body class="font-sans antialiased bg-app-bg text-app-main min-h-screen" 

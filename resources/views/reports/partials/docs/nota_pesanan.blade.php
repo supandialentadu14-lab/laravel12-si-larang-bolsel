@@ -93,7 +93,7 @@
 
 @if($is_last ?? true)
 <p style="margin-top: 20px; font-size: 14px;" class="font-bold">Dengan Ketentuan :</p>
-<table style="width: 100%; border: none; border-collapse: collapse; margin-bottom: 20px;">
+<table style="width: 100%; border: none; border-collapse: collapse; margin-bottom: 10px;">
   <tr>
     <td style="width: 18px; vertical-align: top; border: none; font-size: 14px;">1.</td>
     <td style="text-align: justify; padding-left: 6px; border: none; font-size: 14px;">
@@ -109,7 +109,7 @@
 </table>
 
 <div class="signature-section">
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 40px; text-align: center; font-size: 12px; line-height: 1.25;" class="signature-block">
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 20px; text-align: center; font-size: 12px; line-height: 1.25;" class="signature-block">
   <div>
     <p style="margin: 2px 0;">&nbsp;</p>
     <p style="margin: 2px 0;">Setuju Untuk Melaksanakan Pekerjaan</p>

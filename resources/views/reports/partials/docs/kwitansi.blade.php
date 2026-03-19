@@ -94,7 +94,7 @@
       </tr>
     </table>
 
-    <div style="text-align: center; margin-top: 30px;">
+    <div style="text-align: center; margin-top: 15px;">
       <div class="font-bold italic">Mengetahui,</div>
       <div class="font-bold italic">Pengguna Anggaran</div>
       <div style="height: 60px;"></div>

@@ -1,324 +1,166 @@
-@extends(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin')
+@extends('layouts.report_print')
 
-@section('content')
-<div class="space-y-6 animate-slide-up pb-20">
-  {{-- Header --}}
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Pratinjau</h1>
-      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Laporan Persediaan Barang</p>
-    </div>
-    <div class="flex gap-2">
-      <a href="{{ route('stock.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
-        <i class="fas fa-arrow-left text-xs"></i>
-      </a>
-      <button onclick="openPrintPreview()" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
-        <i class="fas fa-print text-xs"></i>
-      </button>
-    </div>
-  </div>
+@section('title', 'Laporan Persediaan Barang Habis Pakai')
+@section('body_class', 'landscape')
+@section('back_url', route('stock.index'))
 
-  {{-- Filter Form --}}
-  <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm">
-    <form method="GET" action="{{ route('reports.index') }}" class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Mulai</label>
-          <input type="date" name="start_date" value="{{ $startDate }}" class="w-full rounded-2xl border-slate-100 text-xs bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Sampai</label>
-          <input type="date" name="end_date" value="{{ $endDate }}" class="w-full rounded-2xl border-slate-100 text-xs bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-        </div>
-      </div>
-      <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-indigo-100 active:scale-95 transition-all">
-        Terapkan Filter
-      </button>
+@section('styles')
+<style>
+    .report-table { border-collapse: collapse; width: 100%; min-width: 800px; }
+    .report-table th, .report-table td { border: 1px solid black; padding: 4px; font-size: 11px; color: black; }
+    .report-table th { text-align: center; font-weight: bold; }
+    
+    .report-table thead { display: table-header-group; }
+    .report-table tbody { display: table-row-group; }
+    .report-table tr { page-break-inside: avoid; }
+    
+    .info-table { border-collapse: collapse; margin-bottom: 1rem; font-size: 13px; width: 100%; }
+    .info-table td { border: none !important; padding: 2px 4px; color: black; }
+
+    /* Custom Membelah Kolom Jumlah & Satuan */
+    td.split-col { position: relative; padding: 0 !important; --qty-w: 36px; }
+    td.split-col::after { 
+        content: ''; 
+        position: absolute; 
+        left: var(--qty-w); 
+        top: 0; 
+        bottom: 0; 
+        border-left: 1px solid black; 
+        pointer-events: none; 
+    }
+    .split-cell { display: flex; width: 100%; height: 100%; min-height: 22px; align-items: stretch; }
+    .split-cell .left { flex: 0 0 var(--qty-w); text-align: center; padding: 2px 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: black; }
+    .split-cell .right { flex: 1 1 auto; text-align: center; padding: 2px 4px; font-size: 10px; display: flex; align-items: center; justify-content: center; color: black; }
+
+    @media print {
+        @page { size: landscape; margin: 10mm; }
+    }
+</style>
+@endsection
+
+@section('extra_buttons')
+    <form method="GET" action="{{ route('reports.index') }}" class="flex items-center gap-2">
+        <input type="date" name="start_date" value="{{ $startDate }}" class="rounded-lg border border-gray-300 px-2 py-1 text-[10px] outline-none w-24">
+        <input type="date" name="end_date" value="{{ $endDate }}" class="rounded-lg border border-gray-300 px-2 py-1 text-[10px] outline-none w-24">
+        <button type="submit" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">Apply</button>
     </form>
-  </div>
+@endsection
 
-  {{-- Document Preview Card --}}
-  <div class="bg-white rounded-[2.5rem] p-4 border border-slate-50 shadow-sm overflow-hidden">
-    <div id="paper-container" class="w-full no-scrollbar flex justify-center items-start" style="padding-bottom: 8px;">
-      <div id="paper-scale" class="flex-shrink-0" style="transform-origin: top center; margin: 0 auto;">
-        <style>
-          .preview-paper-mobile-landscape { 
-            width: 330mm; 
-            min-height: 210mm; 
-            margin: 0; 
-            background: #fff; 
-            padding: 15mm; 
-            line-height: 1.4; 
-            color: black; 
-            font-family: 'Nunito', sans-serif;
-            box-shadow: 0 0 30px rgba(0,0,0,0.12);
-            border: 1px solid #f1f5f9;
-          }
-          .preview-paper-mobile-landscape h1 { font-size: 20px; font-weight: 800; text-transform: uppercase; margin: 0; text-align: center; }
-          .preview-paper-mobile-landscape h5 { font-size: 14px; font-weight: 700; margin: 5px 0; text-align: center; }
-          .preview-paper-mobile-landscape table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          .preview-paper-mobile-landscape th, .preview-paper-mobile-landscape td { border: 1px solid black; padding: 4px 6px; font-size: 11px; }
-          .text-center { text-align: center; }
-          .text-right { text-align: right; }
-          .text-left { text-align: left; }
-          .font-bold { font-weight: bold; }
-          .split-cell { position: relative; display: flex; width: 100%; height: 100%; align-items: stretch; }
-          .split-cell .left { flex: 0 0 var(--qty-w, 28px); padding: 4px 0; display: flex; align-items: center; justify-content: center; }
-          .split-cell .right { flex: 1 1 auto; padding: 4px 8px; text-align: center; display: flex; align-items: center; justify-content: center; }
-          td.split-col { position: relative; padding: 0 !important; --qty-w: 28px; }
-          td.split-col::after { 
-            content: ''; 
-            position: absolute; 
-            left: var(--qty-w, 28px); 
-            top: 0; 
-            bottom: 0; 
-            border-left: 1px solid black; 
-            pointer-events: none; 
-          }
-          .signature-block { break-inside: avoid; page-break-inside: avoid; }
-          .signature-block * { break-inside: avoid; page-break-inside: avoid; }
-          .info-table-mobile { border: none !important; margin-bottom: 15px; width: auto !important; }
-          .info-table-mobile td { border: none !important; padding: 2px 5px; font-size: 14px; }
-        </style>
-        <div id="document-preview" class="preview-paper-mobile-landscape">
-          <div class="border-b-2 border-black pb-6 mb-6">
-            <div class="text-center mb-6">
-              <h1>LAPORAN PERSEDIAAN BARANG HABIS PAKAI</h1>
-              <h5>Per {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}</h5>
-            </div>
+@section('report_content')
+    <div class="text-center mb-4 pb-2">
+        <h2 class="text-xl font-bold uppercase underline">Laporan Persediaan Barang Habis Pakai</h2>
+        <h5 class="text-xs font-semibold mt-1">Per {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}</h5>
+    </div>
 
-            <table class="info-table-mobile">
-              <tr>
-                <td width="150"><strong>SKPD</strong></td>
-                <td width="15">:</td>
-                <td>{{ $master['opd']['nama'] ?? null ?: $opd->nama_opd ?? '-' }}</td>
-              </tr>
-              <tr>
-                <td><strong>Kabupaten</strong></td>
-                <td>:</td>
-                <td>Bolaang Mongondow Selatan</td>
-              </tr>
-            </table>
-          </div>
+    <table class="info-table mb-4">
+        <tr>
+            <td width="140"><strong>SKPD</strong></td>
+            <td width="10">:</td>
+            <td><strong>{{ $master['opd']['nama'] ?? null ?: $opd->nama_opd ?? '-' }}</strong></td>
+        </tr>
+    </table>
 
-          <table>
-            <thead>
-              <tr style="background-color: #f8fafc;" class="font-bold">
-                <th rowspan="2" style="width: 24px;">No</th>
-                <th rowspan="2">Nama Barang</th>
+    <table class="report-table text-center w-full">
+        <thead>
+            <tr>
+                <th rowspan="2" style="width: 35px;">No</th>
+                <th rowspan="2" style="width: 14rem;">Nama Barang</th>
                 <th colspan="3">SALDO AWAL</th>
                 <th colspan="3">MUTASI MASUK</th>
                 <th colspan="3">MUTASI KELUAR</th>
                 <th colspan="3">SALDO AKHIR</th>
-              </tr>
-              <tr class="font-bold">
-                @for ($i = 0; $i < 4; $i++)
-                  <th>Jml</th>
-                  <th>Harga</th>
-                  <th>Total</th>
+            </tr>
+            <tr class="text-[9px] font-bold">
+                @for ($i=0; $i<4; $i++)
+                    <th>Jmlh</th><th>Harga</th><th>Jumlah</th>
                 @endfor
-              </tr>
-            </thead>
-            <tbody>
-              @php
-                $no = 1;
+            </tr>
+        </thead>
+        <tbody>
+            @php
                 $saldo = [];
                 $lastSaldoPerProduct = [];
-                $lastDate = null;
-              @endphp
+                $lastDateForChunking = null;
+                $dateNo = 1;
+            @endphp
 
-              @forelse($reportData ?? [] as $item)
+            @forelse ($reportData as $index => $item)
                 @php
-                  $currentDate = \Carbon\Carbon::parse($item['date'])->format('Y-m-d');
+                    $currentDate = \Carbon\Carbon::parse($item['date'])->format('Y-m-d');
+                    
+                    if ($lastDateForChunking !== $currentDate) {
+                        $dateNo = 1;
+                        echo '<tr class="font-bold text-left"><td colspan="14" class="px-2 py-1 text-[11px]">Tanggal : ' . \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') . '</td></tr>';
+                        $lastDateForChunking = $currentDate;
+                    }
+
+                    $productId = $item['product_id'];
+                    $harga = $item['harga'];
+                    $satuan = $item['satuan'] ?? '';
+
+                    if (!isset($saldo[$productId])) $saldo[$productId] = 0;
+                    $saldoAwal = $saldo[$productId];
+                    $masuk = $item['masuk'];
+                    $keluar = $item['keluar'];
+                    $saldoAkhir = $saldoAwal + $masuk - $keluar;
+                    $saldo[$productId] = $saldoAkhir;
+                    $lastSaldoPerProduct[$productId] = ['saldo' => $saldoAkhir, 'harga' => $harga];
                 @endphp
 
-                @if ($lastDate != $currentDate)
-                  <tr class="font-bold text-left">
-                    <td colspan="14" style="padding: 6px 8px;">
-                      Tanggal : {{ \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') }}
-                    </td>
-                  </tr>
-                  @php $lastDate = $currentDate; @endphp
-                @endif
-
-                @php
-                  $productId = $item['product_id'];
-                  $harga = $item['harga'];
-                  $satuan = $item['satuan'] ?? '';
-                  if (!isset($saldo[$productId])) $saldo[$productId] = 0;
-                  $saldoAwal = $saldo[$productId];
-                  $masuk = $item['masuk'];
-                  $keluar = $item['keluar'];
-                  $saldoAkhir = $saldoAwal + $masuk - $keluar;
-                  $saldo[$productId] = $saldoAkhir;
-                  $lastSaldoPerProduct[$productId] = ['saldo' => $saldoAkhir, 'harga' => $harga];
-                @endphp
-
-                <tr>
-                  <td class="text-center" style="width: 24px;">{{ $no++ }}</td>
-                  <td class="text-left">{{ $item['name'] }}</td>
-                  <td class="split-col">
-                    <div class="split-cell">
-                      <div class="left">{{ $saldoAwal }}</div>
-                      <div class="right">{{ $satuan }}</div>
-                    </div>
-                  </td>
-                  <td class="text-right">{{ number_format($harga, 0, ',', '.') }}</td>
-                  <td class="text-right">{{ number_format($saldoAwal * $harga, 0, ',', '.') }}</td>
-                  <td class="split-col">
-                    <div class="split-cell">
-                      <div class="left font-bold">{{ $masuk }}</div>
-                      <div class="right">{{ $satuan }}</div>
-                    </div>
-                  </td>
-                  <td class="text-right">{{ number_format($harga, 0, ',', '.') }}</td>
-                  <td class="text-right">{{ number_format($masuk * $harga, 0, ',', '.') }}</td>
-                  <td class="split-col">
-                    <div class="split-cell">
-                      <div class="left font-bold">{{ $keluar }}</div>
-                      <div class="right">{{ $satuan }}</div>
-                    </div>
-                  </td>
-                  <td class="text-right">{{ number_format($harga, 0, ',', '.') }}</td>
-                  <td class="text-right">{{ number_format($keluar * $harga, 0, ',', '.') }}</td>
-                  <td class="split-col">
-                    <div class="split-cell">
-                      <div class="left font-bold">{{ $saldoAkhir }}</div>
-                      <div class="right">{{ $satuan }}</div>
-                    </div>
-                  </td>
-                  <td class="text-right">{{ number_format($harga, 0, ',', '.') }}</td>
-                  <td class="text-right font-bold">{{ number_format($saldoAkhir * $harga, 0, ',', '.') }}</td>
+                <tr style="font-size: 10px;">
+                    <td>{{ $dateNo++ }}</td>
+                    <td align="left">{{ $item['name'] }}</td>
+                    
+                    <td class="p-0 split-col"><div class="split-cell"><div class="left font-semibold">{{ $saldoAwal }}</div><div class="right">{{ $satuan }}</div></div></td>
+                    <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
+                    <td align="right">{{ number_format($saldoAwal * $harga, 0, ',', '.') }}</td>
+                    
+                    <td class="p-0 split-col"><div class="split-cell"><div class="left font-bold">{{ $masuk ?: '0' }}</div><div class="right">{{ $satuan }}</div></div></td>
+                    <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
+                    <td align="right">{{ number_format($masuk * $harga, 0, ',', '.') }}</td>
+                    
+                    <td class="p-0 split-col"><div class="split-cell"><div class="left font-bold">{{ $keluar ?: '0' }}</div><div class="right">{{ $satuan }}</div></div></td>
+                    <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
+                    <td align="right">{{ number_format($keluar * $harga, 0, ',', '.') }}</td>
+                    
+                    <td class="p-0 split-col font-bold"><div class="split-cell"><div class="left">{{ $saldoAkhir }}</div><div class="right">{{ $satuan }}</div></div></td>
+                    <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
+                    <td align="right" class="font-bold">{{ number_format($saldoAkhir * $harga, 0, ',', '.') }}</td>
                 </tr>
-              @empty
-                <tr>
-                  <td colspan="14" class="text-center" style="padding: 40px; color: #94a3b8;">Tidak ada data</td>
-                </tr>
-              @endforelse
+            @empty
+                <tr><td colspan="14" class="py-6 text-gray-400 text-center">Tidak ada data</td></tr>
+            @endforelse
 
-              @php
-                $grandTotal = 0;
-                foreach ($lastSaldoPerProduct as $data) { $grandTotal += $data['saldo'] * $data['harga']; }
-              @endphp
+            @php
+                $grandTotalAll = 0;
+                foreach ($lastSaldoPerProduct as $d) {
+                    $grandTotalAll += ($d['saldo'] * $d['harga']);
+                }
+            @endphp
+            
+            @if(count($reportData) > 0)
+            <tr class="font-bold">
+                <td colspan="13" align="right" class="px-3 py-1">TOTAL NILAI PERSEDIAAN</td>
+                <td align="right" class="px-3 py-1">{{ number_format($grandTotalAll, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+        </tbody>
+    </table>
 
-              <tr class="font-bold">
-                <td colspan="13" class="text-right" style="padding: 10px;">TOTAL NILAI PERSEDIAAN</td>
-                <td class="text-center" style="font-size: 14px;">{{ number_format($grandTotal, 0, ',', '.') }}</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="signature-block" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-top: 60px; text-align: center;">
-            <div>
-              <p class="font-bold">Dibuat Oleh</p>
-              <p>Pengurus Barang</p>
-              <div style="height: 100px;"></div>
-              <p class="font-bold underline uppercase">{{ $opd->pengurus_nama ?? '' }}</p>
-              <p>NIP. {{ $opd->pengurus_nip ?? '' }}</p>
-            </div>
-            <div>
-              <p class="font-bold">Mengetahui</p>
-              <p>Kepala Dinas</p>
-              <div style="height: 100px;"></div>
-              <p class="font-bold underline uppercase">{{ $opd->kepala_nama ?? '' }}</p>
-              <p>NIP. {{ $opd->kepala_nip ?? '' }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="mt-8 pb-4" style="page-break-inside: avoid;">
+        <table class="w-full text-center" style="font-size: 13px; line-height: 1.2;">
+            <tr>
+                <td width="50%" align="center">
+                    <div style="margin-bottom: 50px;" class="font-semibold">Pengurus Barang</div>
+                    <strong><u>{{ $opd->pengurus_nama ?? '' }}</u></strong><br>
+                    <div>NIP. {{ $opd->pengurus_nip ?? '' }}</div>
+                </td>
+                <td width="50%" align="center">
+                    <div style="margin-bottom: 50px;" class="font-semibold">Kepala Dinas</div>
+                    <strong><u>{{ $opd->kepala_nama ?? '' }}</u></strong><br>
+                    <div>NIP. {{ $opd->kepala_nip ?? '' }}</div>
+                </td>
+            </tr>
+        </table>
     </div>
-  </div>
-</div>
-
-<script>
-  function openPrintPreview() {
-    const printArea = document.getElementById('document-preview');
-    if (!printArea) return;
-    
-    const content = printArea.innerHTML;
-    
-    const win = window.open('', '_blank', 'width=1200,height=900');
-    if (!win) {
-      alert('Silakan izinkan popup untuk mencetak laporan.');
-      return;
-    }
-    
-    win.document.open();
-    win.document.write(`
-      <!doctype html>
-      <html>
-      <head>
-        <title>Cetak Laporan Persediaan</title>
-        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-        <style>
-          body { margin: 0; padding: 20px; font-family: 'Nunito', sans-serif; background: #fff; }
-          .preview-paper-mobile-landscape { width: 330mm; min-height: 210mm; margin: 0 auto; background: #fff; padding: 15mm; line-height: 1.4; color: black; }
-          .preview-paper-mobile-landscape h1 { font-size: 20px; font-weight: 800; text-transform: uppercase; margin: 0; text-align: center; }
-          .preview-paper-mobile-landscape h5 { font-size: 14px; font-weight: 700; margin: 5px 0; text-align: center; }
-          .preview-paper-mobile-landscape table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          .preview-paper-mobile-landscape th, .preview-paper-mobile-landscape td { border: 1px solid black; padding: 6px; font-size: 11px; }
-          .text-center { text-align: center; }
-          .text-right { text-align: right; }
-          .text-left { text-align: left; }
-          .font-bold { font-weight: bold; }
-          .split-cell { position: relative; display: flex; width: 100%; height: 100%; align-items: stretch; }
-          .split-cell .left { flex: 0 0 28px; padding: 4px 0; display: flex; align-items: center; justify-content: center; }
-          .split-cell .right { flex: 1 1 auto; padding: 4px 8px; text-align: center; display: flex; align-items: center; justify-content: center; }
-          td.split-col { position: relative; padding: 0 !important; }
-          td.split-col::after { 
-            content: ''; 
-            position: absolute; 
-            left: 28px; 
-            top: 0; 
-            bottom: 0; 
-            border-left: 1px solid black; 
-            pointer-events: none; 
-          }
-          .signature-block { break-inside: avoid; page-break-inside: avoid; }
-          .signature-block * { break-inside: avoid; page-break-inside: avoid; }
-          .info-table-mobile { border: none !important; margin-bottom: 15px; width: auto !important; }
-          .info-table-mobile td { border: none !important; padding: 2px 5px; font-size: 14px; }
-          @media print { 
-            body { padding: 0; }
-            @page { size: 330mm 210mm; margin: 10mm; }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="preview-paper-mobile-landscape">
-          ${content}
-        </div>
-        <script>
-          window.onload = function() {
-            window.print();
-            window.onafterprint = function() { window.close(); };
-          };
-        <\/script>
-      </body>
-      </html>
-    `);
-    win.document.close();
-  }
-  (function() {
-    const paperScale = document.getElementById('paper-scale');
-    const doc = document.getElementById('document-preview');
-    const container = document.getElementById('paper-container');
-    function fit() {
-      if (!paperScale || !doc || !container) return;
-      const baseW = doc.scrollWidth || paperScale.scrollWidth || 1;
-      const baseH = doc.scrollHeight || 1;
-      const rect = container.getBoundingClientRect();
-      const availW = container.clientWidth;
-      const availH = Math.max(320, window.innerHeight - rect.top - 12);
-      const scale = Math.min(availW / baseW, availH / baseH);
-      const clamped = Math.max(0.18, Math.min(scale, 1));
-      paperScale.style.transform = `scale(${clamped})`;
-      paperScale.style.marginLeft = 'auto';
-      paperScale.style.marginRight = 'auto';
-    }
-    window.addEventListener('resize', fit);
-    document.addEventListener('DOMContentLoaded', fit);
-    setTimeout(fit, 0);
-  })();
-</script>
 @endsection
