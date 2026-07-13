@@ -1,4 +1,4 @@
-<x-guest-layout title="MASUK" subtitle="Silakan masuk ke akun Anda">
+<x-guest-layout title="MASUK" subtitle="Akses manajemen persediaan & pemetaan jaringan telekomunikasi di Kab. Bolsel">
 
   @if (session('success_message'))
     <div class="mb-4 animate__animated animate__fadeIn">

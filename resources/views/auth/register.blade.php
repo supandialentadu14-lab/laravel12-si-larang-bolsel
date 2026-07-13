@@ -1,4 +1,4 @@
-<x-guest-layout title="DAFTAR" subtitle="Buat akun baru untuk mulai mengelola aset">
+<x-guest-layout title="DAFTAR" subtitle="Buat akun untuk manajemen persediaan & pantau jaringan telekomunikasi">
 
   <form method="POST" action="{{ route('register') }}" class="space-y-1.5 sm:space-y-2" x-data="{ loading: false }" @submit="loading = true">
     @csrf

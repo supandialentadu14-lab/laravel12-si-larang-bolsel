@@ -42,7 +42,24 @@
     </td>
     <td class="kop-text">
       <div class="line1">PEMERINTAH KABUPATEN BOLAANG MONGONDOW SELATAN</div>
-      <div class="line2">{{ \Illuminate\Support\Str::upper($opd->nama_opd ?? 'Instansi Belum Diatur') }}</div>
+      <div class="line2">
+        @php
+            $nama_opd = \Illuminate\Support\Str::upper($opd->nama_opd ?? 'Instansi Belum Diatur');
+            $words = explode(' ', $nama_opd);
+            $word_count = count($words);
+            
+            if (strlen($nama_opd) > 40 && $word_count > 1) {
+                // Split by half word count (ceil for more words on top)
+                $mid = ceil($word_count / 2);
+                $line1 = implode(' ', array_slice($words, 0, $mid));
+                $line2 = implode(' ', array_slice($words, $mid));
+                echo $line1 . '<br>' . $line2;
+            } else {
+                echo $nama_opd;
+            }
+        @endphp
+      </div>
+
       <div class="line3">{{ $opd->alamat_opd ?? 'Alamat Instansi Belum Diatur' }}</div>
     </td>
   </tr>

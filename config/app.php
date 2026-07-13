@@ -16,7 +16,7 @@ return [
     | Diambil dari file .env → APP_NAME
     |
     */
-    'name' => env('APP_NAME', 'SI-LARANG'),
+    'name' => env('APP_NAME', 'SIMPATI'),
 
     /*
     |--------------------------------------------------------------------------

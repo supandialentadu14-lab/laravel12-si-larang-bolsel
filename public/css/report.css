@@ -4,57 +4,340 @@
 
 /* Reset basic print visibility */
 @media print {
-  aside,
-  header,
-  nav,
-  footer,
-  .no-print,
-  [class*="sidebar"],
-  [class*="header"],
-  [class*="nav"],
-  button,
-  .btn {
-    display: none !important;
-  }
 
-  body * {
-    visibility: hidden;
-  }
+    aside,
+    header,
+    nav,
+    footer,
+    .no-print,
+    [class*="sidebar"],
+    [class*="header"],
+    [class*="nav"],
+    button,
+    .btn {
+        display: none !important;
+    }
 
-  #print-area,
-  #print-area * {
-    visibility: visible !important;
-  }
-  
-  #print-area {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
+    body * {
+        visibility: hidden;
+    }
+
+    #print-area,
+    #print-area * {
+        visibility: visible !important;
+    }
+
+    #print-area {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 }
 
 /* Base Utility Classes used across reports */
-.text-center { text-align: center !important; }
-.text-right { text-align: right !important; }
-.font-bold { font-weight: bold !important; }
-.underline { text-decoration: underline !important; }
-.uppercase { text-transform: uppercase !important; }
-.italic { font-style: italic !important; }
+.text-center {
+    text-align: center !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.font-bold {
+    font-weight: bold !important;
+}
+
+.underline {
+    text-decoration: underline !important;
+}
+
+.uppercase {
+    text-transform: uppercase !important;
+}
+
+.italic {
+    font-style: italic !important;
+}
 
 /* KOP SURAT (Reusable) */
 .kop {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 0px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0px;
 }
-.kop td { vertical-align: middle; padding: 0; }
-.kop-logo { width: 85px; text-align: center; }
-.kop-logo img { width: 75px; height: auto; }
-.kop-text { text-align: center; padding-right: 40px; }
-.kop-text .line1 { font-weight: bold; font-size: 14pt; display: block; }
-.kop-text .line2 { font-weight: bold; font-size: 18pt; display: block; }
-.kop-text .line3 { font-style: italic; font-size: 10pt; display: block; }
-.kop-divider { border-bottom: 3px solid #000; margin-top: 2px; margin-bottom: 8px; display: block; }
+
+.kop td {
+    vertical-align: middle;
+    padding: 0;
+}
+
+.kop-logo {
+    width: 85px;
+    text-align: center;
+}
+
+.kop-logo img {
+    width: 75px;
+    height: auto;
+}
+
+.kop-text {
+    text-align: center;
+    padding-right: 40px;
+}
+
+.kop-text .line1 {
+    font-weight: bold;
+    font-size: 14pt;
+    display: block;
+}
+
+.kop-text .line2 {
+    font-weight: bold;
+    font-size: 18pt;
+    display: block;
+}
+
+.kop-text .line3 {
+    font-style: italic;
+    font-size: 10pt;
+    display: block;
+}
+
+.kop-divider {
+    border-bottom: 3px solid #000;
+    margin-top: 2px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* 
+   REPORT PREVIEW & PAPER STYLING
+   Ensures the "A4 Paper" look and clean print output are available 
+   immediately during SPA navigation.
+*/
+
+/* Scale and centering for the report container */
+#main-content-wrapper:has(#print-area),
+#main-content-wrapper:has(.report-paper) {
+    padding: 3rem 1rem !important;
+    background-color: #ffffff !important;
+    /* Clean White Background for Preview */
+    transition: background-color 0.3s ease;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* Force parent desktop wrapper to white if report is present */
+html.dark #desktop-content-wrapper:has(#print-area) {
+    background-color: #ffffff !important;
+}
+
+
+
+.report-paper {
+    background: white !important;
+    padding: 15mm 20mm !important;
+    width: 210mm !important;
+    /* Standard A4 Portrait */
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    /* Center the paper */
+    margin-top: 0 !important;
+    margin-bottom: 3rem !important;
+    color: black !important;
+    position: relative;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    min-height: 297mm;
+    border-radius: 0;
+    display: block !important;
+    overflow: visible !important;
+}
+
+
+/* Landscape Mode Support */
+.landscape .report-paper,
+#print-area.landscape,
+.portrait-mode .landscape,
+.landscape-mode {
+    width: 297mm !important;
+}
+
+#print-area.landscape .report-paper,
+.landscape #print-area,
+.landscape .report-paper {
+    width: 297mm !important;
+}
+
+
+/* 
+   FINAL BORDER LOGIC FOR PRINTING
+   Nuclear reset then whitelist authorized borders (tables, dividers).
+*/
+/* Nuclear Reset: Remove borders from ALL elements EXCEPT the official data tables and kop divider */
+html body #print-area table:not(.report-table),
+html body #print-area table:not(.report-table) td,
+html body #print-area table:not(.report-table) th,
+html body #print-area *:not(table.report-table, table.report-table *, .kop-divider, .kop-divider::after, .with-print-border, .with-print-border *) {
+    border-width: 0 !important;
+    border-color: transparent !important;
+    border-style: none !important;
+}
+
+
+html body #print-area {
+    color: black !important;
+    opacity: 1 !important;
+}
+
+/* Whitelist: Main Report Tables */
+html body #print-area table.report-table,
+html body #print-area table.report-table th,
+html body #print-area table.report-table td {
+    border-width: 1px !important;
+    border-color: black !important;
+    border-style: solid !important;
+    border-collapse: collapse !important;
+}
+
+/* Whitelist: Kop Divider lines */
+html body #print-area .kop-divider {
+    border-bottom: 3px solid black !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+    width: auto !important;
+}
+
+html body #print-area .kop-divider::after {
+    border-bottom: 1px solid black !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+    width: auto !important;
+}
+
+/* Common Doc Styling Consolidations */
+.doc-nota,
+.doc-pemeriksaan,
+.doc-penerimaan,
+.doc-kwitansi,
+.doc-pinjam-pakai,
+.doc-opname {
+    color: black !important;
+}
+
+.doc-nota p,
+.doc-pemeriksaan p,
+.doc-penerimaan p,
+.doc-kwitansi p,
+.doc-pinjam-pakai p,
+.doc-opname p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: black;
+}
+
+.doc-nota h2,
+.doc-pemeriksaan h2,
+.doc-penerimaan h2,
+.doc-kwitansi h2 {
+    margin: 5px 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+}
+
+.doc-nota table.report-table,
+.doc-pemeriksaan table.report-table,
+.doc-penerimaan table.report-table,
+.doc-kwitansi table.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.doc-nota table.report-table th,
+.doc-nota table.report-table td,
+.doc-pemeriksaan table.report-table th,
+.doc-pemeriksaan table.report-table td,
+.doc-penerimaan table.report-table th,
+.doc-penerimaan table.report-table td {
+    border: 1px solid black !important;
+    padding: 4px 10px !important;
+    font-size: 12px;
+    color: black;
+}
+
+@media print {
+
+    /* Critical: Reset ALL potential parent containers that might clip content */
+    html,
+    body,
+    #desktop-content-wrapper,
+    #main-content-wrapper,
+    #app-content,
+    .flex-1,
+    .h-screen,
+    .overflow-hidden,
+    #content-container-fade,
+    #desktop-content-wrapper>div {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        display: block !important;
+        position: static !important;
+        /* Avoid clipping from fixed/absolute positioning */
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Hide UI elements */
+    aside,
+    header,
+    nav,
+    footer,
+    .no-print,
+    [class*="sidebar"],
+    [class*="header"],
+    [class*="nav"],
+    button,
+    .btn {
+        display: none !important;
+    }
+
+    @page {
+        margin: 0mm !important;
+        size: auto;
+    }
+
+    /* Target specific bodies/wrappers to be invisible except the PRINT area */
+    body {
+        background-color: white !important;
+        background-image: none !important;
+    }
+
+    /* NEW Simplified Print Reset */
+    #print-area {
+        position: relative !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+
+    #print-area .report-paper {
+        padding: 15mm 20mm !important;
+        /* EXACT match to preview padding */
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        background: white !important;
+        display: block !important;
+        overflow: visible !important;
+    }
+}

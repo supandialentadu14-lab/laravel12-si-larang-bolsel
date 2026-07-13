@@ -47,7 +47,7 @@
             oninput="this.setCustomValidity('')"
             class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
             <option value="">Pilih Satuan</option>
-            @foreach (['pcs','buah','box','pak','rim','kg','galon','paket','liter'] as $u)
+            @foreach (['pcs','bks','lbr','botol','buah','box','pak','rim','kg','galon','paket','liter'] as $u)
               <option value="{{ $u }}" {{ old('unit') === $u ? 'selected' : '' }}>{{ strtoupper($u) }}</option>
             @endforeach
           </select>

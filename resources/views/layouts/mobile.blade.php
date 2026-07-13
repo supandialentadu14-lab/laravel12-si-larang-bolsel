@@ -10,10 +10,10 @@
   <!-- PWA Setup -->
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#4f46e5">
-  <link rel="apple-touch-icon" href="/images/silarang-logo.png">
+  <link rel="apple-touch-icon" href="/images/simpatis.png">
 
   <title>{{ config('app.name', 'Inventory Mobile') }}</title>
-  <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
+  <link rel="icon" type="image/png" href="{{ asset('images/simpatis.png') }}">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -159,6 +159,7 @@
       cursor: pointer !important;
     }
   </style>
+@stack('styles')
 </head>
 
   <body class="antialiased select-none overflow-hidden bg-app-bg text-app-main" 
@@ -608,5 +609,6 @@
       }
     })();
   </script>
+@stack('scripts')
 </body>
 </html>

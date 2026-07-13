@@ -182,6 +182,198 @@
     </div>
   </div>
 
+  <!-- 5b. Sebaran BTS -->
+  <div class="space-y-6">
+    <div class="flex items-center justify-between px-2 mb-4">
+      <h3 class="text-[10px] lg:text-xs font-black text-app-muted uppercase tracking-[0.2em] lg:tracking-[0.3em] transition-colors">Sebaran Jaringan BTS</h3>
+      <a href="{{ route('bts-towers.index') }}" class="text-[10px] font-black text-indigo-500 uppercase tracking-widest hover:underline transition-colors">Lihat Semua</a>
+    </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div class="p-5 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4 group hover:border-indigo-500/30 transition-all duration-300">
+        <div class="w-12 h-12 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+          <i class="fas fa-tower-cell"></i>
+        </div>
+        <div>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest leading-none mb-1 transition-colors">Total BTS</p>
+          <p class="text-xl font-black text-app-main transition-colors">{{ number_format($btsTotal) }}</p>
+        </div>
+      </div>
+      <div class="p-5 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4 group hover:border-emerald-500/30 transition-all duration-300">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+          <i class="fas fa-signal"></i>
+        </div>
+        <div>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest leading-none mb-1 transition-colors">Aktif</p>
+          <p class="text-xl font-black text-emerald-500 transition-colors">{{ number_format($btsAktif) }}</p>
+        </div>
+      </div>
+      <div class="p-5 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4 group hover:border-slate-400/30 transition-all duration-300">
+        <div class="w-12 h-12 rounded-2xl bg-slate-500/10 text-slate-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+          <i class="fas fa-power-off"></i>
+        </div>
+        <div>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest leading-none mb-1 transition-colors">Tidak Aktif</p>
+          <p class="text-xl font-black text-slate-500 transition-colors">{{ number_format($btsTidakAktif) }}</p>
+        </div>
+      </div>
+      <div class="p-5 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-4 group hover:border-amber-500/30 transition-all duration-300">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+          <i class="fas fa-wrench"></i>
+        </div>
+        <div>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest leading-none mb-1 transition-colors">Maintenance</p>
+          <p class="text-xl font-black text-amber-500 transition-colors">{{ number_format($btsMaintenance) }}</p>
+        </div>
+      </div>
+    </div>
+
+    {{-- Charts Row --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {{-- Status Donut --}}
+      <div class="p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm transition-colors duration-300">
+        <h4 class="text-[10px] lg:text-xs font-black text-app-muted uppercase tracking-[0.2em] mb-4 transition-colors">Status Operasional</h4>
+        <div class="flex justify-center"><canvas id="btsStatusChart" style="max-height:200px;"></canvas></div>
+      </div>
+
+      {{-- Provider Bar --}}
+      <div class="p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm transition-colors duration-300">
+        <h4 class="text-[10px] lg:text-xs font-black text-app-muted uppercase tracking-[0.2em] mb-4 transition-colors">BTS per Provider</h4>
+        <div class="flex justify-center"><canvas id="btsProviderChart" style="max-height:200px;"></canvas></div>
+      </div>
+
+      {{-- Kecamatan Bar --}}
+      <div class="p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm transition-colors duration-300">
+        <h4 class="text-[10px] lg:text-xs font-black text-app-muted uppercase tracking-[0.2em] mb-4 transition-colors">BTS per Kecamatan</h4>
+        <div style="max-height:200px;overflow-y:auto;"><canvas id="btsKecamatanChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {{-- BTS by Provider (text) --}}
+      <div class="p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm transition-colors duration-300">
+        <h4 class="text-[10px] lg:text-xs font-black text-app-muted uppercase tracking-[0.2em] mb-4 transition-colors">Detail Provider</h4>
+        <div class="space-y-3">
+          @forelse($btsByProvider as $item)
+            @php
+              $pct = $btsTotal > 0 ? ($item->total / $btsTotal) * 100 : 0;
+            @endphp
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black text-app-main uppercase tracking-wider transition-colors">{{ $item->provider }}</span>
+                <span class="text-[10px] font-black text-app-muted transition-colors">{{ $item->total }} <span class="text-app-muted opacity-60">({{ number_format($pct, 0) }}%)</span></span>
+              </div>
+              <div class="h-2 w-full bg-app-bg rounded-full overflow-hidden border border-app-main transition-colors">
+                <div class="h-full bg-indigo-500 rounded-full transition-all duration-700" style="width: {{ $pct }}%"></div>
+              </div>
+            </div>
+          @empty
+            <p class="text-[10px] text-app-muted font-bold uppercase tracking-widest">Belum ada data BTS</p>
+          @endforelse
+        </div>
+      </div>
+
+      {{-- BTS by Kecamatan (text) --}}
+      <div class="p-6 rounded-[2rem] bg-app-surface border border-app-main shadow-sm transition-colors duration-300">
+        <h4 class="text-[10px] lg:text-xs font-black text-app-muted uppercase tracking-[0.2em] mb-4 transition-colors">Detail Kecamatan</h4>
+        <div class="space-y-3">
+          @forelse($btsByKecamatan as $item)
+            @php
+              $pct = $btsTotal > 0 ? ($item->total / $btsTotal) * 100 : 0;
+            @endphp
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black text-app-main uppercase tracking-wider transition-colors">{{ $item->kecamatan }}</span>
+                <span class="text-[10px] font-black text-app-muted transition-colors">{{ $item->total }} <span class="text-app-muted opacity-60">({{ number_format($pct, 0) }}%)</span></span>
+              </div>
+              <div class="h-2 w-full bg-app-bg rounded-full overflow-hidden border border-app-main transition-colors">
+                <div class="h-full bg-emerald-500 rounded-full transition-all duration-700" style="width: {{ $pct }}%"></div>
+              </div>
+            </div>
+          @empty
+            <p class="text-[10px] text-app-muted font-bold uppercase tracking-widest">Belum ada data BTS</p>
+          @endforelse
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Chart.js for BTS --}}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script>
+    (function() {
+      const providerColors = {
+        'Telkomsel': '#e74c3c', 'Indosat': '#f39c12', 'XL Axiata': '#3498db',
+        'Tri (3)': '#9b59b6', 'Smartfren': '#2ecc71', 'Lainnya': '#95a5a6'
+      };
+      const statusColors = { 'Aktif': '#34d399', 'Tidak Aktif': '#94a3b8', 'Maintenance': '#fbbf24' };
+
+      // Status Donut
+      const statusData = @json($btsChartData);
+      new Chart(document.getElementById('btsStatusChart'), {
+        type: 'doughnut',
+        data: {
+          labels: statusData.map(d => d.label),
+          datasets: [{
+            data: statusData.map(d => d.value),
+            backgroundColor: statusData.map(d => statusColors[d.label] || '#6b7280'),
+            borderWidth: 2,
+            borderColor: 'rgba(255,255,255,0.05)',
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: true, cutout: '65%',
+          plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af', font: { size: 10, weight: 'bold' }, padding: 12 } } }
+        }
+      });
+
+      // Provider Bar
+      const provLabels = @json($btsChartLabels);
+      const provData = @json($btsChartValues);
+      new Chart(document.getElementById('btsProviderChart'), {
+        type: 'bar',
+        data: {
+          labels: provLabels,
+          datasets: [{
+            data: provData,
+            backgroundColor: provLabels.map(p => providerColors[p] || '#95a5a6'),
+            borderRadius: 6, barThickness: 28,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: true, indexAxis: 'y',
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+            y: { grid: { display: false }, ticks: { color: '#d1d5db', font: { size: 10, weight: 'bold' } } }
+          }
+        }
+      });
+
+      // Kecamatan Bar
+      const kecLabels = @json($btsKecLabels);
+      const kecData = @json($btsKecValues);
+      new Chart(document.getElementById('btsKecamatanChart'), {
+        type: 'bar',
+        data: {
+          labels: kecLabels,
+          datasets: [{
+            data: kecData,
+            backgroundColor: '#818cf8',
+            borderRadius: 6, barThickness: 22,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#d1d5db', font: { size: 9, weight: 'bold' }, maxRotation: 45 } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', font: { size: 10 } } }
+          }
+        }
+      });
+    })();
+  </script>
+
   <!-- 6. Analisis Performa & Control System (Side by side for desktop) -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
     {{-- Tren Performa --}}

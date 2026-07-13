@@ -15,7 +15,7 @@
             </div>
             <div>
               <h3 class="text-lg font-black tracking-tight">Halo, Selamat Datang!</h3>
-              <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest">SI-LARANG Bolsel</p>
+              <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest">SIMPATI</p>
             </div>
           </div>
           <p class="text-[10px] font-bold leading-relaxed uppercase tracking-wider bg-black/10 p-3 rounded-2xl border border-white/10">
@@ -198,6 +198,69 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Sebaran BTS -->
+  <div>
+    <div class="flex items-center justify-between mb-4 px-1">
+      <h3 class="text-sm font-extrabold text-app-main uppercase tracking-widest">Sebaran BTS</h3>
+      <a href="{{ route('bts-towers.index') }}" class="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Lihat Semua</a>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center">
+          <i class="fas fa-tower-cell"></i>
+        </div>
+        <div>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Total BTS</p>
+          <p class="text-xl font-black text-app-main">{{ number_format($btsTotal) }}</p>
+        </div>
+      </div>
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+          <i class="fas fa-signal"></i>
+        </div>
+        <div>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Aktif</p>
+          <p class="text-xl font-black text-emerald-500">{{ number_format($btsAktif) }}</p>
+        </div>
+      </div>
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-slate-900/20 text-slate-600 dark:text-slate-400 flex items-center justify-center">
+          <i class="fas fa-power-off"></i>
+        </div>
+        <div>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Tidak Aktif</p>
+          <p class="text-xl font-black text-slate-500">{{ number_format($btsTidakAktif) }}</p>
+        </div>
+      </div>
+      <div class="p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+          <i class="fas fa-wrench"></i>
+        </div>
+        <div>
+          <p class="text-[9px] font-black text-app-muted uppercase tracking-widest">Maintenance</p>
+          <p class="text-xl font-black text-amber-500">{{ number_format($btsMaintenance) }}</p>
+        </div>
+      </div>
+    </div>
+    @if($btsByProvider->count())
+    <div class="mt-4 p-4 rounded-3xl bg-app-surface border border-app-main shadow-sm">
+      <p class="text-[9px] font-black text-app-muted uppercase tracking-widest mb-3">Per Provider</p>
+      <div class="space-y-2">
+        @foreach($btsByProvider as $item)
+          @php $pct = $btsTotal > 0 ? ($item->total / $btsTotal) * 100 : 0; @endphp
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-app-main w-20 truncate">{{ $item->provider }}</span>
+            <div class="flex-1 h-1.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full bg-indigo-500 rounded-full" style="width: {{ $pct }}%"></div>
+            </div>
+            <span class="text-[10px] font-black text-app-muted">{{ $item->total }}</span>
+          </div>
+        @endforeach
+      </div>
+    </div>
+    @endif
   </div>
 
   <!-- Performance Analytics -->

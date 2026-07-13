@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'SI-LARANG') }}</title>
+    <title>{{ config('app.name', 'SIMPATI') }}</title>
     
     {{-- Assets --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,8 +63,8 @@
             <div class="relative z-10 flex flex-col h-full">
                 <div class="flex items-center lg:block">
                     <a href="/" class="flex items-center gap-2 lg:gap-3 group">
-                        <img src="{{ asset('images/silarang-logo.webp') }}" class="h-6 w-6 lg:h-7 lg:w-7 object-contain drop-shadow-lg" alt="Logo">
-                        <span class="font-black text-sm lg:text-lg tracking-tighter">SI-LARANG</span>
+                        <img src="{{ asset('images/simpatis.png') }}" class="h-6 w-6 lg:h-7 lg:w-7 object-contain drop-shadow-lg" alt="Logo">
+                        <span class="font-black text-sm lg:text-lg tracking-tighter">SIMPATI</span>
                     </a>
                 </div>
 
@@ -72,18 +72,32 @@
                     <div class="relative group">
                         <div class="absolute -inset-3 bg-white/20 rounded-[1.8rem] blur-lg group-hover:bg-white/30 transition duration-500"></div>
                         <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-[1.8rem] p-2.5 overflow-hidden shadow-2xl">
-                            <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto rounded-[1.2rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview" loading="lazy">
+                            <img src="{{ asset('images/login-bg-neww.png') }}" class="w-full h-auto rounded-[1.2rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview" loading="lazy">
                         </div>
                     </div>
                     <div class="mt-6 space-y-2">
-                        <h2 class="text-xl font-black leading-tight">Pengelolaan Persediaan Barang <br> Jadi Lebih Mudah</h2>
-                        <p class="text-white/70 font-medium text-[10px] max-w-[250px]">Optimalkan inventarisasi dan pelaporan barang daerah dengan Sistem Informasi Pengelolaan Persediaan Barang.</p>
+                        <h2 class="text-xl font-black leading-tight">Kelola Persediaan & <br> Pantau Jaringan Telekomunikasi</h2>
+                        <p class="text-white/70 font-medium text-[10px] max-w-[250px]">Platform digital untuk manajemen barang daerah dan pemetaan jaringan telekomunikasi di Kab. Bolaang Mongondow Selatan.</p>
+                        <div class="flex gap-3 mt-3">
+                            <div class="flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1.5 border border-white/10">
+                                <i class="fas fa-boxes-stacked text-[9px] text-emerald-300"></i>
+                                <span class="text-[8px] font-bold text-white/80">Persediaan</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1.5 border border-white/10">
+                                <i class="fas fa-tower-cell text-[9px] text-amber-300"></i>
+                                <span class="text-[8px] font-bold text-white/80">Peta BTS</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1.5 border border-white/10">
+                                <i class="fas fa-file-invoice text-[9px] text-sky-300"></i>
+                                <span class="text-[8px] font-bold text-white/80">Laporan</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Simple Mobile Branding Text -->
                 <div class="mt-2 lg:hidden">
-                    <p class="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Sistem Informasi Pengelolaan Persediaan Barang</p>
+                    <p class="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Sistem Informasi Persediaan Barang & Sebaran BTS</p>
                 </div>
 
                 <div class="mt-auto hidden lg:flex items-center gap-4 text-[8px] font-black uppercase tracking-widest text-white/50">

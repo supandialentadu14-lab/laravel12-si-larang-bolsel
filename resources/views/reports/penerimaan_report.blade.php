@@ -1,4 +1,7 @@
 @extends('layouts.report_print')
+@section('default_orientation', 'portrait')
+@section('report_class', 'portrait')
+
 
 @section('title', 'Berita Acara Penerimaan')
 @section('back_url', route('reports.penerimaan.list'))
@@ -20,9 +23,10 @@
     .doc-penerimaan table.report-table td { border: 1px solid black !important; padding: 4px 10px !important; font-size: 12px; color: black; }
     
     @media print {
-        @page { size: portrait; margin: 15mm; }
+        @page { size: 215mm 330mm portrait; margin: 15mm; }
         .doc-penerimaan p { margin: 2px 0 !important; line-height: 1.2 !important; }
-        .signature-section { break-inside: avoid !important; }
+        .signature-section { break-inside: avoid !important; page-break-inside: avoid !important; }
+        .signature-block { break-inside: avoid !important; page-break-inside: avoid !important; }
     }
 </style>
 @endsection
@@ -38,7 +42,7 @@
     document.fonts.ready.then(function () {
         var paper = document.getElementById('terima-paper');
         if (!paper) return;
-        var pageH = 1122; 
+        var pageH = 1247; // F4: 330mm at 96dpi
         var els = paper.querySelectorAll('.signature-section');
         els.forEach(function(el) {
             var relativeTop = el.offsetTop;

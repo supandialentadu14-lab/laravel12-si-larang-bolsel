@@ -1,8 +1,8 @@
 <header class="sticky top-0 z-[45] bg-app-surface/80 backdrop-blur-md px-5 py-3.5 flex lg:hidden items-center justify-between border-b border-app-main shadow-sm transition-colors duration-300">
   <div class="flex items-center gap-3">
     <div class="flex items-center gap-2 text-app-main">
-      <img src="{{ asset('images/silarang-logo.png') }}" class="h-6 w-6 rounded-md" alt="Logo">
-      <h1 class="text-xs font-black tracking-tight uppercase tracking-widest transition-colors">SI-LARANG</h1>
+      <img src="{{ asset('images/simpatis.png') }}" class="h-6 w-6 rounded-md" alt="Logo">
+      <h1 class="text-xs font-black tracking-tight uppercase tracking-widest transition-colors">SIMPATI</h1>
     </div>
   </div>
   <div class="flex items-center gap-5">

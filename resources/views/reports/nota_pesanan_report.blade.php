@@ -1,4 +1,7 @@
 @extends('layouts.report_print')
+@section('default_orientation', 'portrait')
+@section('report_class', 'portrait')
+
 
 @section('title', 'Nota Pesanan')
 @section('back_url', route('reports.nota.list'))
@@ -11,22 +14,36 @@
     @endif
 @endsection
 
-@section('styles')
+@section('extra_styles')
 <style>
-    .doc-nota p { margin: 5px 0; font-size: 14px; color: black; }
-    .doc-nota h2 { margin: 5px 0; font-size: 18px; font-weight: bold; color: black; }
-    .doc-nota table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .doc-nota table.report-table th, 
-    .doc-nota table.report-table td { border: 1px solid black !important; padding: 4px 10px !important; font-size: 12px; color: black; }
-    
+    /* Screen preview: match print margins */
+    #nota-paper {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    .report-paper {
+        padding-top: 8mm !important;
+        padding-bottom: 8mm !important;
+    }
+
     @media print {
-        @page { size: portrait; margin: 15mm; }
+        @page { size: 215mm 330mm portrait; margin: 8mm 15mm; }
         .doc-nota p { margin: 2px 0 !important; line-height: 1.2 !important; }
-        .signature-section { break-inside: avoid !important; }
+        .doc-nota table td, .doc-nota table th { padding: 3px 6px !important; }
+        .signature-section {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            break-before: avoid !important;
+            page-break-before: avoid !important;
+        }
+        .signature-block { break-inside: avoid !important; page-break-inside: avoid !important; }
         #paper-scale { transform: none !important; }
     }
 </style>
 @endsection
+
+
+
 
 @section('report_content')
 <div class="doc-nota" id="nota-paper">
@@ -36,23 +53,9 @@
 
 @section('scripts')
 <script>
-    // Logic for signature breaking if needed
-    document.fonts.ready.then(function () {
-        var paper = document.getElementById('nota-paper');
-        if (!paper) return;
-        var pageH = 1122; // A4 height approx in px at 96dpi
-        var els = paper.querySelectorAll('.signature-section');
-        els.forEach(function(el) {
-            var rect = el.getBoundingClientRect();
-            var relativeTop = el.offsetTop;
-            var bot = relativeTop + el.offsetHeight;
-            var pg = Math.floor(relativeTop / pageH);
-            var nextPgBoundary = (pg + 1) * pageH;
-            
-            if (bot > nextPgBoundary && relativeTop < nextPgBoundary) {
-                el.style.marginTop = (nextPgBoundary - relativeTop + 20) + "px";
-            }
-        });
-    });
+    // Signatures are handled purely via CSS break-inside: avoid
+    // No JS margin manipulation needed — it caused signatures to be pushed off-screen
 </script>
 @endsection
+
+

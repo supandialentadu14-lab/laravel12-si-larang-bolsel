@@ -149,8 +149,8 @@
     html.dark #print-area {
       background-color: #ffffff !important;
       color: #000000 !important;
-      box-shadow: 0 10px 50px rgba(0,0,0,0.2) !important;
     }
+
 
     html.dark #print-area *,
     html.dark #print-area td,
@@ -563,10 +563,10 @@
       <div class="p-8">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <img src="{{ asset('images/silarang-logo.webp') }}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=S&background=4F46E5&color=ffffff'">
+            <img src="{{ asset('images/simpatis.png') }}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=S&background=4F46E5&color=ffffff'">
           </div>
           <div class="flex flex-col flex-1">
-            <span class="text-lg font-black tracking-tight text-white leading-none">SI-LARANG</span>
+            <span class="text-lg font-black tracking-tight text-white leading-none">SIMPATI</span>
             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Bolsel</span>
           </div>
           
@@ -587,6 +587,22 @@
              class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="fas fa-grid-2"></i> Dashboard
           </a>
+        </div>
+
+        <div class="pb-4">
+          <button @click="activeMenu = (activeMenu === 'bts' ? 'none' : 'bts')" 
+                  class="sidebar-link w-full"
+                  :class="activeMenu === 'bts' || {{ json_encode(request()->routeIs('bts-towers.*')) }} ? 'active' : ''">
+            <i class="fas fa-broadcast-tower"></i> 
+            <span class="flex-1 text-left">Peta BTS</span>
+            <i class="fas fa-chevron-down text-[10px] transition-transform" :class="activeMenu === 'bts' ? 'rotate-180' : ''"></i>
+          </button>
+          <div x-show="activeMenu === 'bts'" x-transition class="mt-1 space-y-1">
+            <a href="{{ route('bts-towers.index') }}" class="sub-link {{ request()->routeIs('bts-towers.index') ? 'active' : '' }}">Data & Peta</a>
+            <a href="{{ route('bts-towers.import-form') }}" class="sub-link {{ request()->routeIs('bts-towers.import*') ? 'active' : '' }}">Import Data</a>
+            <a href="{{ route('bts-towers.report-all') }}" target="_blank" class="sub-link">Laporan Kab.</a>
+            <a href="{{ route('bts-towers.alerts') }}" class="sub-link {{ request()->routeIs('bts-towers.alerts') ? 'active' : '' }}">Notifikasi</a>
+          </div>
         </div>
 
         <div class="pb-4">
@@ -621,6 +637,11 @@
             <a href="{{ route('reports.kwitansi.list') }}" class="sub-link {{ request()->routeIs('reports.kwitansi.list') ? 'active' : '' }}">Kwitansi</a>
             <a href="{{ route('reports.opname.list') }}" class="sub-link {{ request()->routeIs('reports.opname.list') ? 'active' : '' }}">BA Opname</a>
             <a href="{{ route('reports.pinjam.list') }}" class="sub-link {{ request()->routeIs('reports.pinjam.list') ? 'active' : '' }}">Pinjam Pakai</a>
+            <div class="mx-3 my-2 h-px bg-slate-700/50"></div>
+            <a href="{{ route('agenda.surat.index') }}" class="sub-link {{ request()->routeIs('agenda.surat.*') ? 'active' : '' }}">
+              <i class="fas fa-book-open text-[10px] mr-0.5"></i> Agenda Surat
+            </a>
+
           </div>
         </div>
 
@@ -674,7 +695,7 @@
                     return \App\Models\OpdSetting::where('user_id', Auth::id())->first();
                 });
                 $opdName = $opdSetting->nama_opd ?? 'OPD';
-                $welcomeText = "Selamat datang di SI-LARANG (Sistem Informasi Pengelolaan Persediaan Barang). " . $opdName . " Kabupaten Bolaang Mongondow Selatan";
+                $welcomeText = "Selamat datang di SIMPATI (Sistem Informasi Manajemen Persediaan dan Telekomunikasi). " . $opdName . " Kabupaten Bolaang Mongondow Selatan";
                 $marqueeText = $welcomeText;
               @endphp
               <div class="flex items-center gap-10">
@@ -766,7 +787,7 @@
         <div class="flex flex-col md:flex-row items-center justify-between gap-6" id="footer-content">
           <!-- Left: Copyright -->
           <p class="text-slate-300 font-bold text-[9px] uppercase tracking-widest">
-            Copyright &copy; 2026 Emon Alentadu . SI-LARANG BOLSEL
+            Copyright &copy; 2026 Emon Alentadu . SIMPATI &mdash; Sistem Informasi Manajemen Persediaan dan Telekomunikasi
           </p>
 
           <!-- Right: Contact Developer & Socials -->
@@ -1335,5 +1356,6 @@
   </style>
 
   </div> <!-- End of Application Boxed Wrapper -->
+@stack('scripts')
 </body>
 </html>

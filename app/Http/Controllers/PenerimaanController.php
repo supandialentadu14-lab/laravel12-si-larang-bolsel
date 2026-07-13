@@ -67,6 +67,25 @@ class PenerimaanController extends Controller
         return $items;
     }
 
+    protected function listPenerimaanDocs(): array
+    {
+        $disk = Storage::disk('local');
+        $dir = 'users/'.Auth::id().'/bap-penerimaan';
+        $files = $disk->exists($dir) ? $disk->files($dir) : [];
+        $items = [];
+        foreach ($files as $file) {
+            if (! str_ends_with($file, '.json')) continue;
+            $data = json_decode($disk->get($file), true) ?: [];
+            $items[] = [
+                'id'      => basename($file, '.json'),
+                'nomor'   => $data['nomor']   ?? '',
+                'tanggal' => $data['tanggal'] ?? '',
+                'total'   => (int)($data['total'] ?? 0),
+            ];
+        }
+        return $items;
+    }
+
     protected function toWordsId(int $value): string
     {
         $huruf = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
@@ -83,6 +102,7 @@ class PenerimaanController extends Controller
 
     public function form(Request $request): View
     {
+        session()->forget(['penerimaan_current', 'penerimaan_current_id']);
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $docs = $this->listPemeriksaanDocs();
         
@@ -334,6 +354,13 @@ class PenerimaanController extends Controller
             return redirect()->route('reports.penerimaan.form')->with('error', 'Data penerimaan tidak ditemukan. Silakan isi form kembali.');
         }
 
+        $nomorFormatted = $data['nomor'] ?? '';
+        foreach ($this->listPenerimaanDocs() as $doc) {
+            if (($doc['nomor'] ?? '') === $nomorFormatted && ($doc['id'] ?? '') !== $id) {
+                return back()->withErrors(['nomor' => 'Nomor BAP Penerimaan sudah digunakan'])->withInput();
+            }
+        }
+
         Storage::disk('local')->put("users/".Auth::id()."/bap-penerimaan/{$id}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         
         // --- STOCK AUTOMATION START ---
@@ -347,7 +374,7 @@ class PenerimaanController extends Controller
         }
         // --- STOCK AUTOMATION END ---
 
-        session()->forget('penerimaan_current_id');
+        session()->forget(['penerimaan_current', 'penerimaan_current_id']);
         if ($currentId) {
             return redirect()->route('reports.penerimaan.list')->with('success', 'BAP Penerimaan "' . $data['nomor'] . '" berhasil diperbarui');
         }

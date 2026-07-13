@@ -1,4 +1,7 @@
 @extends('layouts.report_print')
+@section('default_orientation', 'portrait')
+@section('report_class', 'portrait')
+
 
 @section('title', 'Cetak Berita Acara Stock Opname')
 @section('back_url', route('reports.opname.list'))

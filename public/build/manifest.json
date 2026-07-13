@@ -20,7 +20,7 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "resources/css/desktop.css": {
-    "file": "assets/desktop-DnKDgqds.css",
+    "file": "assets/desktop-JA1mbJD0.css",
     "src": "resources/css/desktop.css",
     "isEntry": true,
     "name": "desktop",
@@ -29,7 +29,7 @@
     ]
   },
   "resources/css/landing.css": {
-    "file": "assets/landing-BuyjzowK.css",
+    "file": "assets/landing-CTHUztD2.css",
     "src": "resources/css/landing.css",
     "isEntry": true,
     "name": "landing",
@@ -38,7 +38,7 @@
     ]
   },
   "resources/css/mobile.css": {
-    "file": "assets/mobile-CLgDMHVK.css",
+    "file": "assets/mobile-zp91MM9y.css",
     "src": "resources/css/mobile.css",
     "isEntry": true,
     "name": "mobile",

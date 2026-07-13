@@ -95,6 +95,7 @@ class NotaPesananController extends Controller
 
     public function form(Request $request): View
     {
+        session()->forget(['nota_current', 'nota_current_id']);
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $options = $this->collectNotaOptions();
         $products = Product::with('category')->orderBy('name')->get();
@@ -348,7 +349,7 @@ class NotaPesananController extends Controller
             ]);
         }
         
-        session()->forget('nota_current_id');
+        session()->forget(['nota_current', 'nota_current_id']);
 
         ActivityLog::create([
             'user_id' => Auth::id(),
@@ -500,7 +501,7 @@ class NotaPesananController extends Controller
 
         $this->syncRelatedDocsAfterNotaUpdate($oldNomor !== '' ? $oldNomor : null, $data);
 
-        session()->forget('nota_current_id');
+        session()->forget(['nota_current', 'nota_current_id']);
 
         if (Schema::hasTable('activity_logs')) {
             ActivityLog::create([

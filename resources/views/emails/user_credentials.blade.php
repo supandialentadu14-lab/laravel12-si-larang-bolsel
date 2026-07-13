@@ -86,12 +86,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="title">SI-LARANG BOLSEL</h1>
+            <h1 class="title">SIMPATI</h1>
         </div>
         
         <div class="content">
             <p>Halo, <strong>{{ $user->name }}</strong>!</p>
-            <p>Registrasi Anda berhasil! Berikut adalah detail akun yang dapat Anda gunakan untuk masuk ke aplikasi SI-LARANG:</p>
+            <p>Registrasi Anda berhasil! Berikut adalah detail akun yang dapat Anda gunakan untuk masuk ke aplikasi SIMPATI:</p>
             
             <div class="credential-box">
                 <div class="credential-item">
@@ -110,7 +110,7 @@
         </div>
         
         <div class="footer">
-            <p>&copy; 2026 SI-LARANG BOLSEL. Sistem Informasi Pengelolaan Persediaan Barang.</p>
+            <p>&copy; 2026 SIMPATI. Sistem Informasi Manajemen Persediaan dan Telekomunikasi.</p>
         </div>
     </div>
 </body>

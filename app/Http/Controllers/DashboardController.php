@@ -12,6 +12,7 @@ use App\Models\Product;
 // Mengimpor Model StockTransaction
 use App\Models\StockTransaction;
 use App\Models\Supplier;
+use App\Models\BtsTower;
 use App\Models\OpdSetting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -201,6 +202,26 @@ class DashboardController extends Controller
         $categoryLabels = $categoryDistribution->pluck('name');
         $categoryValues = $categoryDistribution->pluck('total_stock');
 
+        // ============================
+        // STATISTIK BTS
+        // ============================
+        $btsTotal = BtsTower::count();
+        $btsAktif = BtsTower::where('status_operasional', 'Aktif')->count();
+        $btsTidakAktif = BtsTower::where('status_operasional', 'Tidak Aktif')->count();
+        $btsMaintenance = BtsTower::where('status_operasional', 'Maintenance')->count();
+        $btsByProvider = BtsTower::select('provider', DB::raw('count(*) as total'))->groupBy('provider')->orderByDesc('total')->get();
+        $btsByKecamatan = BtsTower::select('kecamatan', DB::raw('count(*) as total'))->groupBy('kecamatan')->orderByDesc('total')->get();
+
+        $btsChartLabels = $btsByProvider->pluck('provider')->toArray();
+        $btsChartValues = $btsByProvider->pluck('total')->toArray();
+        $btsKecLabels = $btsByKecamatan->pluck('kecamatan')->toArray();
+        $btsKecValues = $btsByKecamatan->pluck('total')->toArray();
+        $btsChartData = [
+            ['label' => 'Aktif', 'value' => $btsAktif],
+            ['label' => 'Tidak Aktif', 'value' => $btsTidakAktif],
+            ['label' => 'Maintenance', 'value' => $btsMaintenance],
+        ];
+
         $isMobile = request()->isMobile();
         $view = $isMobile ? 'mobile.dashboard' : 'dashboard';
 
@@ -237,7 +258,18 @@ class DashboardController extends Controller
             'pemeriksaanCount',
             'penerimaanCount',
             'kwitansiCount',
-            'opnameCount'
+            'opnameCount',
+            'btsTotal',
+            'btsAktif',
+            'btsTidakAktif',
+            'btsMaintenance',
+            'btsByProvider',
+            'btsByKecamatan',
+            'btsChartLabels',
+            'btsChartValues',
+            'btsKecLabels',
+            'btsKecValues',
+            'btsChartData'
         ));
 }
 }

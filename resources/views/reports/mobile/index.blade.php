@@ -1,48 +1,104 @@
 @extends('layouts.report_print')
 
 @section('title', 'Laporan Persediaan Barang Habis Pakai')
-@section('body_class', 'landscape')
+@section('report_class', 'landscape')
+@section('report_size', '330mm 215mm landscape')
+@section('report_width', '330mm')
+@section('report_height', '215mm')
 @section('back_url', route('stock.index'))
 
-@section('styles')
-<style>
-    .report-table { border-collapse: collapse; width: 100%; min-width: 800px; }
-    .report-table th, .report-table td { border: 1px solid black; padding: 4px; font-size: 11px; color: black; }
-    .report-table th { text-align: center; font-weight: bold; }
-    
-    .report-table thead { display: table-header-group; }
-    .report-table tbody { display: table-row-group; }
-    .report-table tr { page-break-inside: avoid; }
-    
-    .info-table { border-collapse: collapse; margin-bottom: 1rem; font-size: 13px; width: 100%; }
-    .info-table td { border: none !important; padding: 2px 4px; color: black; }
+@section('extra_styles')
+    <style>
+        .report-table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1000px;
+        }
 
-    /* Custom Membelah Kolom Jumlah & Satuan */
-    td.split-col { position: relative; padding: 0 !important; --qty-w: 36px; }
-    td.split-col::after { 
-        content: ''; 
-        position: absolute; 
-        left: var(--qty-w); 
-        top: 0; 
-        bottom: 0; 
-        border-left: 1px solid black; 
-        pointer-events: none; 
-    }
-    .split-cell { display: flex; width: 100%; height: 100%; min-height: 22px; align-items: stretch; }
-    .split-cell .left { flex: 0 0 var(--qty-w); text-align: center; padding: 2px 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: black; }
-    .split-cell .right { flex: 1 1 auto; text-align: center; padding: 2px 4px; font-size: 10px; display: flex; align-items: center; justify-content: center; color: black; }
+        .report-table th,
+        .report-table td {
+            border: 1px solid black;
+            padding: 4px;
+            font-size: 11px;
+            color: black;
+            white-space: nowrap;
+        }
 
-    @media print {
-        @page { size: landscape; margin: 10mm; }
-    }
-</style>
+        td.split-col {
+            position: relative;
+            padding: 0 !important;
+            --qty-w: 36px;
+        }
+
+        td.split-col::after {
+            content: '';
+            position: absolute;
+            left: var(--qty-w);
+            top: 0;
+            bottom: 0;
+            border-left: 1px solid black;
+            pointer-events: none;
+        }
+
+        .split-cell {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            min-height: 22px;
+            align-items: stretch;
+            white-space: nowrap;
+        }
+
+        .split-cell .left {
+            flex: 0 0 var(--qty-w);
+            text-align: center;
+            padding: 2px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: black;
+        }
+
+        .split-cell .right {
+            flex: 1 1 auto;
+            text-align: center;
+            padding: 2px 4px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+        }
+
+        @media print {
+            @page {
+                size: landscape;
+                margin: 10mm;
+            }
+        }
+    </style>
 @endsection
 
+
 @section('extra_buttons')
-    <form method="GET" action="{{ route('reports.index') }}" class="flex items-center gap-2">
-        <input type="date" name="start_date" value="{{ $startDate }}" class="rounded-lg border border-gray-300 px-2 py-1 text-[10px] outline-none w-24">
-        <input type="date" name="end_date" value="{{ $endDate }}" class="rounded-lg border border-gray-300 px-2 py-1 text-[10px] outline-none w-24">
-        <button type="submit" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">Apply</button>
+    <form method="GET" action="{{ route('reports.index') }}" class="flex flex-col gap-3 w-full">
+        <div class="grid grid-cols-2 gap-2 w-full text-left">
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] uppercase font-bold text-slate-400">Dari</label>
+                <input type="date" name="start_date" value="{{ $startDate }}"
+                    class="w-full rounded-xl border border-slate-200 px-2 py-2 text-xs outline-none bg-white text-slate-700 shadow-sm focus:border-indigo-500">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] uppercase font-bold text-slate-400">Sampai</label>
+                <input type="date" name="end_date" value="{{ $endDate }}"
+                    class="w-full rounded-xl border border-slate-200 px-2 py-2 text-xs outline-none bg-white text-slate-700 shadow-sm focus:border-indigo-500">
+            </div>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/10 active:scale-[0.98]">
+            Filter Laporan
+        </button>
     </form>
 @endsection
 
@@ -65,14 +121,17 @@
             <tr>
                 <th rowspan="2" style="width: 35px;">No</th>
                 <th rowspan="2" style="width: 14rem;">Nama Barang</th>
-                <th colspan="3">SALDO AWAL</th>
-                <th colspan="3">MUTASI MASUK</th>
-                <th colspan="3">MUTASI KELUAR</th>
-                <th colspan="3">SALDO AKHIR</th>
+                <th colspan="4">SALDO AWAL</th>
+                <th colspan="4">MUTASI MASUK</th>
+                <th colspan="4">MUTASI KELUAR</th>
+                <th colspan="4">SALDO AKHIR</th>
             </tr>
             <tr class="text-[9px] font-bold">
-                @for ($i=0; $i<4; $i++)
-                    <th>Jmlh</th><th>Harga</th><th>Jumlah</th>
+                @for ($i = 0; $i < 4; $i++)
+                    <th style="width: 40px;">Jmlh</th>
+                    <th style="width: 40px;">Satuan</th>
+                    <th style="width: 80px;">Harga</th>
+                    <th style="width: 90px;">Jumlah</th>
                 @endfor
             </tr>
         </thead>
@@ -87,10 +146,10 @@
             @forelse ($reportData as $index => $item)
                 @php
                     $currentDate = \Carbon\Carbon::parse($item['date'])->format('Y-m-d');
-                    
+
                     if ($lastDateForChunking !== $currentDate) {
                         $dateNo = 1;
-                        echo '<tr class="font-bold text-left"><td colspan="14" class="px-2 py-1 text-[11px]">Tanggal : ' . \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') . '</td></tr>';
+                        echo '<tr class="font-bold text-left"><td colspan="18" class="px-2 py-1 text-[11px]">Tanggal : ' . \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') . '</td></tr>';
                         $lastDateForChunking = $currentDate;
                     }
 
@@ -98,7 +157,8 @@
                     $harga = $item['harga'];
                     $satuan = $item['satuan'] ?? '';
 
-                    if (!isset($saldo[$productId])) $saldo[$productId] = 0;
+                    if (!isset($saldo[$productId]))
+                        $saldo[$productId] = 0;
                     $saldoAwal = $saldo[$productId];
                     $masuk = $item['masuk'];
                     $keluar = $item['keluar'];
@@ -108,27 +168,33 @@
                 @endphp
 
                 <tr style="font-size: 10px;">
-                    <td>{{ $dateNo++ }}</td>
+                    <td class="text-center">{{ $dateNo++ }}</td>
                     <td align="left">{{ $item['name'] }}</td>
-                    
-                    <td class="p-0 split-col"><div class="split-cell"><div class="left font-semibold">{{ $saldoAwal }}</div><div class="right">{{ $satuan }}</div></div></td>
+
+                    <td class="text-center">{{ $saldoAwal }}</td>
+                    <td class="text-center">{{ $satuan }}</td>
                     <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
                     <td align="right">{{ number_format($saldoAwal * $harga, 0, ',', '.') }}</td>
-                    
-                    <td class="p-0 split-col"><div class="split-cell"><div class="left font-bold">{{ $masuk ?: '0' }}</div><div class="right">{{ $satuan }}</div></div></td>
+
+                    <td class="text-center font-bold">{{ $masuk ?: '0' }}</td>
+                    <td class="text-center">{{ $satuan }}</td>
                     <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
                     <td align="right">{{ number_format($masuk * $harga, 0, ',', '.') }}</td>
-                    
-                    <td class="p-0 split-col"><div class="split-cell"><div class="left font-bold">{{ $keluar ?: '0' }}</div><div class="right">{{ $satuan }}</div></div></td>
+
+                    <td class="text-center font-bold">{{ $keluar ?: '0' }}</td>
+                    <td class="text-center">{{ $satuan }}</td>
                     <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
                     <td align="right">{{ number_format($keluar * $harga, 0, ',', '.') }}</td>
-                    
-                    <td class="p-0 split-col font-bold"><div class="split-cell"><div class="left">{{ $saldoAkhir }}</div><div class="right">{{ $satuan }}</div></div></td>
+
+                    <td class="text-center font-bold">{{ $saldoAkhir }}</td>
+                    <td class="text-center">{{ $satuan }}</td>
                     <td align="right">{{ number_format($harga, 0, ',', '.') }}</td>
                     <td align="right" class="font-bold">{{ number_format($saldoAkhir * $harga, 0, ',', '.') }}</td>
                 </tr>
             @empty
-                <tr><td colspan="14" class="py-6 text-gray-400 text-center">Tidak ada data</td></tr>
+                <tr>
+                    <td colspan="18" class="py-6 text-gray-400 text-center">Tidak ada data</td>
+                </tr>
             @endforelse
 
             @php
@@ -137,14 +203,15 @@
                     $grandTotalAll += ($d['saldo'] * $d['harga']);
                 }
             @endphp
-            
+
             @if(count($reportData) > 0)
-            <tr class="font-bold">
-                <td colspan="13" align="right" class="px-3 py-1">TOTAL NILAI PERSEDIAAN</td>
-                <td align="right" class="px-3 py-1">{{ number_format($grandTotalAll, 0, ',', '.') }}</td>
-            </tr>
+                <tr class="font-bold" style="font-size: 11px;">
+                    <td colspan="17" align="right" class="px-3 py-2 uppercase">TOTAL NILAI PERSEDIAAN</td>
+                    <td align="right" class="px-3 py-2">Rp {{ number_format($grandTotalAll, 0, ',', '.') }}</td>
+                </tr>
             @endif
         </tbody>
+
     </table>
 
     <div class="mt-8 pb-4" style="page-break-inside: avoid;">

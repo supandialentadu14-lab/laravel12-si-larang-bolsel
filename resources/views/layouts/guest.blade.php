@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name', 'Inventory') }}</title>
-  <link rel="icon" type="image/webp" href="{{ asset('images/silarang-logo.webp') }}">
+  <link rel="icon" type="image/png" href="{{ asset('images/simpatis.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
@@ -34,15 +34,15 @@
       
       <div class="relative z-10 flex flex-col h-full">
         <a href="/" class="inline-flex items-center gap-2 font-black text-xl tracking-tighter hover:opacity-80 transition">
-          <img src="{{ asset('images/silarang-logo.webp') }}" class="h-8 w-8 brightness-0 invert" alt="Logo">
-          SI-LARANG
+          <img src="{{ asset('images/simpatis.png') }}" class="h-8 w-8 brightness-0 invert" alt="Logo">
+          SIMPATI
         </a>
 
         <div class="mt-auto mb-auto">
           <div class="relative group">
             <div class="absolute -inset-4 bg-white/20 rounded-[2rem] blur-xl group-hover:bg-white/30 transition duration-500"></div>
             <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-[2rem] p-4 overflow-hidden shadow-2xl">
-              <img src="{{ asset('images/login-bg-new.webp') }}" class="w-full h-auto rounded-[1.5rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview" loading="lazy">
+              <img src="{{ asset('images/login-bg-neww.png') }}" class="w-full h-auto rounded-[1.5rem] transform group-hover:scale-105 transition duration-700" alt="Dashboard Preview" loading="lazy">
             </div>
           </div>
           

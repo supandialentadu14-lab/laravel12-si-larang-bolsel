@@ -195,6 +195,7 @@ class KwitansiController extends Controller
 
     public function form(Request $request)
     {
+        session()->forget(['kwitansi_current', 'kwitansi_current_id']);
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $docs = $this->listPenerimaanDocs();
         
@@ -415,6 +416,17 @@ class KwitansiController extends Controller
                 Storage::disk('local')->makeDirectory($dirPath);
             }
 
+            // Cek duplikasi nomor kwitansi
+            $files = Storage::disk('local')->files($dirPath);
+            foreach ($files as $file) {
+                if (!str_ends_with($file, '.json')) continue;
+                $kDoc = json_decode(Storage::disk('local')->get($file), true) ?: [];
+                $kId = basename($file, '.json');
+                if (($kDoc['nomor_kwt'] ?? '') === $nomorKwtFormatted && $kId !== $newId) {
+                    return back()->withErrors(['nomor_kwt' => 'Nomor Kwitansi sudah digunakan'])->withInput();
+                }
+            }
+
             // Jika update, hapus transaksi stok lama sebelum menyimpan yang baru
             if ($oldId) {
                 $oldPath = "{$dirPath}/{$oldId}.json";
@@ -455,7 +467,7 @@ class KwitansiController extends Controller
             }
             // --- TRANSACTION RECORDING END ---
 
-            session()->forget('kwitansi_current');
+            session()->forget(['kwitansi_current', 'kwitansi_current_id']);
             
             ActivityLog::create([
                 'user_id' => Auth::id(),

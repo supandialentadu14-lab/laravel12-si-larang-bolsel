@@ -1,4 +1,7 @@
 @extends('layouts.report_print')
+@section('default_orientation', 'portrait')
+@section('report_class', 'portrait')
+
 
 @section('title', 'Berita Acara Pemeriksaan')
 @section('back_url', route('reports.pemeriksaan.list'))
@@ -11,21 +14,25 @@
     @endif
 @endsection
 
-@section('styles')
+@section('extra_styles')
 <style>
-    .doc-pemeriksaan p { margin: 5px 0; font-size: 14px; color: black; }
-    .doc-pemeriksaan h2 { margin: 5px 0; font-size: 18px; font-weight: bold; color: black; }
-    .doc-pemeriksaan table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .doc-pemeriksaan table.report-table th, 
-    .doc-pemeriksaan table.report-table td { border: 1px solid black !important; padding: 4px 10px !important; font-size: 12px; color: black; }
-    
+    .doc-pemeriksaan p { margin: 3px 0; font-size: 13px; color: black; line-height: 1.3; }
+    .doc-pemeriksaan h2 { margin: 4px 0; font-size: 16px; font-weight: bold; color: black; }
+    .doc-pemeriksaan table.report-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    .doc-pemeriksaan table.report-table th,
+    .doc-pemeriksaan table.report-table td { border: 1px solid black !important; padding: 3px 8px !important; font-size: 11px; color: black; }
+    .doc-pemeriksaan .signature-section { page-break-inside: avoid !important; break-inside: avoid !important; }
+    .doc-pemeriksaan .signature-block { page-break-inside: avoid !important; break-inside: avoid !important; }
+
     @media print {
-        @page { size: portrait; margin: 15mm; }
-        .doc-pemeriksaan p { margin: 2px 0 !important; line-height: 1.2 !important; }
-        .signature-section { break-inside: avoid !important; }
+        @page { size: 215mm 330mm portrait; margin: 15mm; }
+        .doc-pemeriksaan p { margin: 1px 0 !important; line-height: 1.2 !important; }
+        .signature-section { break-inside: avoid !important; page-break-inside: avoid !important; }
+        .signature-block { break-inside: avoid !important; page-break-inside: avoid !important; }
     }
 </style>
 @endsection
+
 
 @section('report_content')
 <div class="doc-pemeriksaan" id="periksa-paper">
@@ -35,20 +42,7 @@
 
 @section('scripts')
 <script>
-    document.fonts.ready.then(function () {
-        var paper = document.getElementById('periksa-paper');
-        if (!paper) return;
-        var pageH = 1122; 
-        var els = paper.querySelectorAll('.signature-section');
-        els.forEach(function(el) {
-            var relativeTop = el.offsetTop;
-            var bot = relativeTop + el.offsetHeight;
-            var pg = Math.floor(relativeTop / pageH);
-            var nextPgBoundary = (pg + 1) * pageH;
-            if (bot > nextPgBoundary && relativeTop < nextPgBoundary) {
-                el.style.marginTop = (nextPgBoundary - relativeTop + 20) + "px";
-            }
-        });
-    });
+    // Signature section is kept on same page via CSS break-inside: avoid
+    // No JS pushing needed
 </script>
 @endsection

@@ -8,7 +8,7 @@
 
 <p>{{ $data['tanggal_kata'] ?? '' }}</p>
 
-<table style="border: none; width: 100%; margin: 10px 0; line-height: 1.25;">
+<table style="border: none !important; width: 100%; margin: 10px 0; line-height: 1.25;">
   <tr style="border: none;">
     <td style="border: none; width: 120px; padding: 2px 0;">Nama</td>
     <td style="border: none; width: 15px; padding: 2px 0;">:</td>
@@ -36,9 +36,9 @@
 <table class="report-table">
   <thead>
     <tr class="text-center font-bold" style="background-color: #f8fafc;">
-      <th style="width:30px">No</th>
+      <th style="width:40px">No</th>
       <th>Jenis Bahan/Alat (Barang)</th>
-      <th style="width:80px">Kuantitas</th>
+      <th style="width:100px">Kuantitas</th>
       <th style="width:80px">Satuan</th>
       <th style="width:120px">Harga Satuan</th>
       <th style="width:120px">Total</th>

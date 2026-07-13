@@ -1,12 +1,12 @@
 {
-    "name": "SI-LARANG BOLSEL",
-    "short_name": "SiLarang",
+    "name": "BOLSEL DIGITAL",
+    "short_name": "BolselDig",
     "start_url": "/dashboard",
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#ffffff",
     "theme_color": "#4f46e5",
-    "description": "Sistem Informasi Pengelolaan Persediaan Barang",
+    "description": "Sistem Informasi Pengelolaan Persediaan Barang dan Sebaran BTS di Wilayah Kabupaten Bolaang Mongondow Selatan",
     "icons": [
         {
             "src": "/images/silarang-logo.webp",

@@ -31,7 +31,7 @@ class UserCredentialsMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Detail Akun Login SI-LARANG',
+            subject: 'Detail Akun Login BOLSEL DIGITAL',
         );
     }
 

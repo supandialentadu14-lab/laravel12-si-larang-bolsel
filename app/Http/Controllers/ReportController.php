@@ -50,18 +50,17 @@ class ReportController extends Controller
     {
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $master = $this->loadNotaMaster();
-        $categories = \App\Models\Category::all();
-
+        
+        $allProducts = \App\Models\Product::orderBy('name')->get();
+        $productId = $request->input('product_id');
+        
         $startDate = $request->input('start_date') ?: now()->startOfYear()->toDateString();
         $endDate = $request->input('end_date') ?: now()->toDateString();
-        $categoryId = $request->input('category_id');
 
         $transactions = StockTransaction::with('product')
             ->whereBetween('date', [$startDate, $endDate])
-            ->when($categoryId, function ($q) use ($categoryId) {
-                $q->whereHas('product', function ($q2) use ($categoryId) {
-                    $q2->where('category_id', $categoryId);
-                });
+            ->when($productId, function($q) use ($productId) {
+                $q->where('product_id', $productId);
             })
             ->orderBy('product_id', 'asc')
             ->orderBy('date', 'asc')
@@ -69,52 +68,38 @@ class ReportController extends Controller
             ->get();
 
         $grouped = [];
-
         foreach ($transactions as $trx) {
-            if (! $trx->product) {
-                continue;
-            }
-
-            $productId = (int) $trx->product_id;
-            $date = $trx->date;
-
-            if (! isset($grouped[$productId])) {
-                $grouped[$productId] = [
+            if (!$trx->product) continue;
+            $pid = $trx->product_id;
+            if (!isset($grouped[$pid])) {
+                $grouped[$pid] = [
                     'product' => $trx->product,
                     'rows' => [],
-                    'saldo' => 0,
+                    'saldo_akhir' => 0
                 ];
             }
-
-            $masuk = 0;
-            $keluar = 0;
-
-            if ($trx->type === 'in') {
-                $masuk = $trx->quantity;
-                $grouped[$productId]['saldo'] += $trx->quantity;
-            }
-
-            if ($trx->type === 'out') {
-                $keluar = $trx->quantity;
-                $grouped[$productId]['saldo'] -= $trx->quantity;
-            }
+            $masuk = $trx->type === 'in' ? $trx->quantity : 0;
+            $keluar = $trx->type === 'out' ? $trx->quantity : 0;
+            $grouped[$pid]['saldo_akhir'] += ($masuk - $keluar);
             
-            $grouped[$productId]['rows'][] = [
-                'date' => $date,
+            $grouped[$pid]['rows'][] = [
+                'date' => $trx->date,
                 'nosur' => $trx->nosur ?? '-',
                 'masuk' => $masuk,
                 'keluar' => $keluar,
                 'harga' => $trx->product->price ?? 0,
-                'sisa' => $grouped[$productId]['saldo'],
-                'keterangan' => $trx->notes ?? '-',
+                'saldo' => $grouped[$pid]['saldo_akhir']
             ];
         }
 
+        $product = $productId ? \App\Models\Product::find($productId) : null;
         $isMobile = request()->isMobile();
         $view = $isMobile ? 'reports.mobile.kartu_tahunan' : 'reports.kartu_tahunan';
 
-        return view($view, compact('grouped', 'startDate', 'endDate', 'opd', 'master', 'categories', 'categoryId'));
+        return view($view, compact('product', 'allProducts', 'grouped', 'startDate', 'endDate', 'opd', 'master'));
     }
+
+
 
     /**
      * Display the inventory report based on date range.

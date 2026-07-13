@@ -1,4 +1,7 @@
 @extends('layouts.report_print')
+@section('default_orientation', 'portrait')
+@section('report_class', 'portrait')
+
 
 @section('title', 'Cetak Berita Acara Pinjam Pakai')
 @section('back_url', route('reports.pinjam.list'))
@@ -45,7 +48,7 @@
           <td class="align-top">{{ $data['pihak_pertama']['jabatan'] }}</td>
         </tr>
       </table>
-      <p class="mt-1 text-sm font-bold">PIHAK PERTAMA</p>
+      <p class="mt-1 text-sm">Selanjutnya disebut <span class="font-bold">PIHAK PERTAMA</span></p>
     </div>
 
     <div class="mb-2">
@@ -66,7 +69,7 @@
           <td class="align-top">{{ $data['pihak_kedua']['jabatan'] }}</td>
         </tr>
       </table>
-      <p class="mt-1 text-sm font-bold">PIHAK KEDUA</p>
+      <p class="mt-1 text-sm">Selanjutnya disebut <span class="font-bold">PIHAK KEDUA</span></p>
     </div>
 
     <p class="mb-2 text-sm text-justify">
@@ -140,15 +143,15 @@
 
     <div class="grid grid-cols-2 gap-6 mt-2" style="page-break-inside: avoid;">
       <div class="text-center">
-        <p class="mb-1 font-bold text-xs uppercase">PIHAK KEDUA</p>
+        <p class="mb-1 font-bold text-xs">Pihak Pertama</p>
         <div class="h-20"></div>
-        <p class="font-bold underline uppercase">{{ $data['pihak_kedua']['nama'] }}</p>
+        <p class="font-bold underline">{{ $data['pihak_kedua']['nama'] }}</p>
         <p class="text-xs">NIP. {{ $data['pihak_kedua']['nip'] ?? '-' }}</p>
       </div>
       <div class="text-center">
-        <p class="mb-1 font-bold text-xs uppercase">PIHAK PERTAMA</p>
+        <p class="mb-1 font-bold text-xs">Pihak Kedua</p>
         <div class="h-20"></div>
-        <p class="font-bold underline uppercase">{{ $data['pihak_pertama']['nama'] }}</p>
+        <p class="font-bold underline">{{ $data['pihak_pertama']['nama'] }}</p>
         <p class="text-xs">NIP. {{ $data['pihak_pertama']['nip'] ?? '-' }}</p>
       </div>
     </div>

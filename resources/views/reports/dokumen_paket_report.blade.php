@@ -29,8 +29,8 @@
 
     .bundle-content {
         background: white;
-        width: 210mm;
-        min-height: 297mm;
+        width: 215mm;
+        min-height: 330mm;
         margin: 0 auto 30px auto;
         padding: 10mm 15mm;
         box-sizing: border-box;
@@ -43,7 +43,7 @@
             box-shadow: none !important;
             width: 100% !important;
         }
-        @page { size: portrait; margin: 0; }
+        @page { size: 215mm 330mm portrait; margin: 0; }
         .no-print { display: none !important; }
     }
 </style>
@@ -108,7 +108,7 @@
     document.fonts.ready.then(function () {
         var bundle = document.getElementById('bundle-container');
         if (!bundle) return;
-        var pageH = 1122; 
+        var pageH = 1247; // F4: 330mm at 96dpi
         var sigs = bundle.querySelectorAll('.signature-section');
         sigs.forEach(function(el) {
             // Logic is a bit complex for multi-page bundle, 

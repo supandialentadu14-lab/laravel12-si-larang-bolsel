@@ -100,6 +100,7 @@ class PemeriksaanController extends Controller
 
     public function form(Request $request): View
     {
+        session()->forget(['bap_current', 'bap_current_id']);
         $opd = OpdSetting::where('user_id', Auth::id())->first();
         $notaDocs = $this->listNotaDocs();
         
@@ -121,7 +122,7 @@ class PemeriksaanController extends Controller
         }
         $nextNomorRaw = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
 
-        $data = session('bap_current') ?? [
+        $data = [
             'tanggal' => now()->toDateString(),
             'tempat' => 'Bolaang Uki',
             'nomor' => $nextNomorRaw,
@@ -249,6 +250,10 @@ class PemeriksaanController extends Controller
                 'jabatan' => 'Pejabat Pembuat Komitmen',
                 'alamat' => (trim($master['ppk']['alamat'] ?? '') ?: ''), 
             ],
+            'pejabat' => [
+                'nama' => (trim($master['pejabat']['nama'] ?? '') ?: ($nota['pejabat']['nama'] ?? ($opd->pejabat_nama ?? ''))),
+                'nip' => (trim($master['pejabat']['nip'] ?? '') ?: ($nota['pejabat']['nip'] ?? ($opd->pejabat_nip ?? ''))),
+            ],
             'tanggal_kata' => "Pada hari {$hari} Tanggal {$tanggalKata} Bulan {$bulan} Tahun {$tahunKata}",
         ];
         session(['bap_current' => $data]);
@@ -332,6 +337,10 @@ class PemeriksaanController extends Controller
                     'jabatan' => 'Pejabat Pembuat Komitmen',
                     'alamat' => ($master['ppk']['alamat'] ?? '') ?: (($master['opd']['alamat'] ?? '') ?: ($opd->alamat_opd ?? '')),
                 ],
+                'pejabat' => [
+                    'nama' => ($master['pejabat']['nama'] ?? '') ?: ($nota['pejabat']['nama'] ?? ($opd->pejabat_nama ?? '')),
+                    'nip' => ($master['pejabat']['nip'] ?? '') ?: ($nota['pejabat']['nip'] ?? ($opd->pejabat_nip ?? '')),
+                ],
                 'tanggal_kata' => "Pada hari {$hari} Tanggal {$tanggalKata} Bulan {$bulan} Tahun {$tahunKata}",
             ];
         }
@@ -348,9 +357,8 @@ class PemeriksaanController extends Controller
         $data['nomor'] = $nomorFormatted;
         $data['nomor_raw'] = $rawNomor;
         $data['tempat'] = $data['tempat'] ?? 'Bolaang Uki';
-        session(['bap_current' => $data, 'bap_current_id' => $id]);
         Storage::disk('local')->put("users/".Auth::id()."/bap-pemeriksaan/{$id}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        session()->forget('bap_current_id');
+        session()->forget(['bap_current', 'bap_current_id']);
         $bap = BapPemeriksaan::updateOrCreate(
             ['user_id' => Auth::id(), 'nomor' => $data['nomor'] ?? ''],
             [
@@ -458,6 +466,10 @@ class PemeriksaanController extends Controller
         $data['ppk']['nip'] = (trim($data['ppk']['nip'] ?? '') ?: (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? '')));
         $data['ppk']['alamat'] = (trim($data['ppk']['alamat'] ?? '') ?: trim($master['ppk']['alamat'] ?? ''));
         
+        $data['pejabat'] = $data['pejabat'] ?? [];
+        $data['pejabat']['nama'] = (trim($data['pejabat']['nama'] ?? '') ?: (trim($master['pejabat']['nama'] ?? '') ?: ($data['nota']['pejabat']['nama'] ?? ($opd->pejabat_nama ?? ''))));
+        $data['pejabat']['nip'] = (trim($data['pejabat']['nip'] ?? '') ?: (trim($master['pejabat']['nip'] ?? '') ?: ($data['nota']['pejabat']['nip'] ?? ($opd->pejabat_nip ?? ''))));
+        
         // Supplier Address Fallback
         if (empty($data['nota']['penyedia']['alamat']) && !empty($data['nota']['penyedia']['toko'])) {
             $data['nota']['penyedia']['alamat'] = (Supplier::where('name', $data['nota']['penyedia']['toko'])->first()->address ?? '');
@@ -495,6 +507,13 @@ class PemeriksaanController extends Controller
         }
         if (empty($data['ppk']['nip'])) {
             $data['ppk']['nip'] = (trim($master['ppk']['nip'] ?? '') ?: ($opd->kepala_nip ?? ''));
+        }
+        
+        if (empty($data['pejabat']['nama'])) {
+            $data['pejabat']['nama'] = (trim($master['pejabat']['nama'] ?? '') ?: ($data['nota']['pejabat']['nama'] ?? ($opd->pejabat_nama ?? '')));
+        }
+        if (empty($data['pejabat']['nip'])) {
+            $data['pejabat']['nip'] = (trim($master['pejabat']['nip'] ?? '') ?: ($data['nota']['pejabat']['nip'] ?? ($opd->pejabat_nip ?? '')));
         }
         
         // Supplier Address Fallback

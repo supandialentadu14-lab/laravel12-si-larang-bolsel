@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AgendaSuratController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BelanjaModalController;
 use App\Http\Controllers\CategoryController;
@@ -20,10 +21,22 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BtsTowerController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+
+use App\Models\BtsTower;
 
 Route::get('/', function () {
-    return view('landing');
+    $btsTotal = BtsTower::count();
+    $btsAktif = BtsTower::where('status_operasional', 'Aktif')->count();
+    $btsProvider = BtsTower::select('provider', DB::raw('count(*) as total'))->groupBy('provider')->orderByDesc('total')->get();
+    $btsKecamatan = BtsTower::select('kecamatan', DB::raw('count(*) as total'))->groupBy('kecamatan')->orderByDesc('total')->get();
+    $btsKondisi = BtsTower::select('kondisi', DB::raw('count(*) as total'))->whereNotNull('kondisi')->groupBy('kondisi')->orderByDesc('total')->get();
+    $allBtsPoints = BtsTower::select('id','nama_bts','provider','kecamatan','latitude','longitude','status_operasional')
+        ->whereNotNull('latitude')->whereNotNull('longitude')->get();
+
+    return view('landing', compact('btsTotal', 'btsAktif', 'btsProvider', 'btsKecamatan', 'btsKondisi', 'allBtsPoints'));
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -186,6 +199,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['permission:surat_pesanan', 'permission:pemeriksaan', 'permission:penerimaan', 'permission:berkas_lainnya'])->group(function () {
         Route::get('reports/paket-dokumen/{notaId}', [DokumenPaketController::class, 'show'])->name('reports.paket.show');
     });
+
+    // Agenda Surat
+    Route::get('agenda-surat', [AgendaSuratController::class, 'index'])->name('agenda.surat.index');
     // Unified Settings: OPD Profil & Penandatangan
     Route::middleware('permission:pengaturan_opd')->group(function () {
         Route::get('settings/opd', [OpdController::class, 'edit'])->name('settings.opd.edit');
@@ -219,6 +235,29 @@ Route::middleware(['auth'])->group(function () {
         Route::get('backups/download/{filename}', [\App\Http\Controllers\BackupController::class, 'download'])->name('backups.download');
         Route::delete('backups/{filename}', [\App\Http\Controllers\BackupController::class, 'destroy'])->name('backups.destroy');
     });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('bts-towers-export/excel', [BtsTowerController::class, 'exportExcel'])->name('bts-towers.export-excel');
+    Route::get('bts-towers/{btsTower}/report', [BtsTowerController::class, 'reportPdf'])->name('bts-towers.report');
+    Route::get('bts-towers-laporan/kabupaten', [BtsTowerController::class, 'reportPdfAll'])->name('bts-towers.report-all');
+    Route::post('bts-towers/{btsTower}/toggle-status', [BtsTowerController::class, 'toggleStatus'])->name('bts-towers.toggle-status');
+    Route::post('bts-towers/{btsTower}/notes', [BtsTowerController::class, 'addNote'])->name('bts-towers.add-note');
+    Route::delete('bts-tower-notes/{note}', [BtsTowerController::class, 'destroyNote'])->name('bts-towers.destroy-note');
+    Route::post('bts-towers/bulk-delete', [BtsTowerController::class, 'bulkDelete'])->name('bts-towers.bulk-delete');
+    Route::get('bts-towers/import/form', [BtsTowerController::class, 'importForm'])->name('bts-towers.import-form');
+    Route::post('bts-towers/import', [BtsTowerController::class, 'importStore'])->name('bts-towers.import');
+    Route::post('bts-towers/{btsTower}/photos', [BtsTowerController::class, 'addPhotos'])->name('bts-towers.add-photos');
+    Route::delete('bts-tower-photos/{photo}', [BtsTowerController::class, 'deletePhoto'])->name('bts-towers.delete-photo');
+    Route::post('bts-towers/{btsTower}/coverage', [BtsTowerController::class, 'updateCoverage'])->name('bts-towers.update-coverage');
+    Route::get('bts-towers-export/geojson', [BtsTowerController::class, 'exportGeojson'])->name('bts-towers.export-geojson');
+    Route::get('bts-towers-export/kml', [BtsTowerController::class, 'exportKml'])->name('bts-towers.export-kml');
+    Route::get('bts-towers-compare', [BtsTowerController::class, 'compare'])->name('bts-towers.compare');
+    Route::get('bts-towers-alerts', [BtsTowerController::class, 'alerts'])->name('bts-towers.alerts');
+    Route::post('bts-tower-alerts/{alert}/read', [BtsTowerController::class, 'markAlertRead'])->name('bts-towers.alert-read');
+    Route::post('bts-towers-alerts/read-all', [BtsTowerController::class, 'markAllAlertsRead'])->name('bts-towers.alerts-read-all');
+    Route::delete('bts-tower-alerts/{alert}', [BtsTowerController::class, 'destroyAlert'])->name('bts-towers.destroy-alert');
+    Route::resource('bts-towers', BtsTowerController::class);
+});
 });
 
 require __DIR__.'/auth.php';
