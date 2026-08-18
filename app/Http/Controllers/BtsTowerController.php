@@ -241,13 +241,38 @@ class BtsTowerController extends Controller
 
         // Urutkan kronologis sesuai kapan data dibuat, lalu beri nomor urut berjalan
         $towers = $query->orderBy('created_at')->get();
+
+        // Load photos relationship untuk semua tower
+        $towers->load('photos');
+
         $towers = $towers->values()->map(function ($t, $i) {
             $t->no_urut = $i + 1;
             return $t;
         });
 
-        // Untuk tampilan tabel, kelompokkan per kecamatan (nomor urut tetap mengikuti urutan kronologis di atas)
-        $towersByKecamatan = $towers->groupBy('kecamatan')->sortKeys();
+        // Urutan kecamatan kustom
+        $kecamatanOrder = [
+            'Pinolosian Timur',
+            'Pinolosian Tengah',
+            'Pinolosian',
+            'Bolaang Uki',
+            'Helumo',
+            'Tomini',
+            'Posigadan',
+        ];
+
+        // Kelompokkan per kecamatan dengan urutan kustom
+        $grouped = $towers->groupBy('kecamatan');
+        $towersByKecamatan = $grouped->sortBy(function ($items, $key) use ($kecamatanOrder) {
+            $index = array_search($key, $kecamatanOrder);
+            return $index !== false ? $index : 999;
+        });
+
+        // Siapkan foto base64 untuk setiap tower (untuk PDF)
+        $towerPhotos = $towers->mapWithKeys(function ($t) {
+            $base64 = $this->getFirstPhotoBase64($t);
+            return [$t->id => $base64];
+        });
 
         $rekapStatus = $towers->filter(fn($t) => $t->status_operasional)->groupBy('status_operasional')->map->count();
         $rekapKondisi = $towers->filter(fn($t) => $t->kondisi)->groupBy('kondisi')->map->count();
@@ -256,6 +281,7 @@ class BtsTowerController extends Controller
         $pdf = Pdf::loadView('bts-towers.pdf-all', [
             'towers' => $towers,
             'towersByKecamatan' => $towersByKecamatan,
+            'towerPhotos' => $towerPhotos,
             'rekapStatus' => $rekapStatus,
             'rekapKondisi' => $rekapKondisi,
             'rekapProvider' => $rekapProvider,
@@ -264,7 +290,7 @@ class BtsTowerController extends Controller
                 'provider' => $request->provider,
                 'status_operasional' => $request->status_operasional,
             ],
-        ])->setPaper('a4', 'portrait');
+        ])->setPaper('a4', 'landscape');
 
         $response = $pdf->stream('laporan-bts-kabupaten-bolsel-' . now()->format('Ymd_His') . '.pdf');
 
@@ -815,6 +841,7 @@ class BtsTowerController extends Controller
         $validated = $request->validate([
             'nama_bts' => ['required', 'string', 'max:255'],
             'provider' => ['required', 'in:' . implode(',', BtsTower::$providerList)],
+            'nama_perusahaan' => ['nullable', 'string', 'max:255'],
             'kecamatan' => ['required', 'in:' . implode(',', BtsTower::$kecamatanList)],
             'desa' => ['nullable', 'string', 'max:255'],
             'alamat' => ['nullable', 'string'],
@@ -845,11 +872,38 @@ class BtsTowerController extends Controller
         return $validated;
     }
 
+    private function getFirstPhotoBase64(BtsTower $tower): ?string
+    {
+        $paths = [];
+
+        if ($tower->foto) {
+            $paths[] = storage_path('app/public/' . $tower->foto);
+        }
+
+        $photo = $tower->photos()->first();
+        if ($photo && $photo->path) {
+            $paths[] = storage_path('app/public/' . $photo->path);
+        }
+
+        foreach ($paths as $path) {
+            if ($path && file_exists($path)) {
+                $mime = mime_content_type($path);
+                if ($mime && in_array($mime, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
+                    $data = base64_encode(file_get_contents($path));
+                    return 'data:' . $mime . ';base64,' . $data;
+                }
+            }
+        }
+
+        return null;
+    }
+
     private function logActivity(string $action, BtsTower $tower, ?array $old, ?array $new): void
     {
         try {
             $fieldLabels = [
                 'kode_bts' => 'Kode BTS', 'nama_bts' => 'Nama BTS', 'provider' => 'Provider',
+                'nama_perusahaan' => 'Nama Perusahaan',
                 'kecamatan' => 'Kecamatan', 'desa' => 'Desa', 'alamat' => 'Alamat',
                 'latitude' => 'Latitude', 'longitude' => 'Longitude',
                 'tinggi_tower' => 'Tinggi Tower', 'tipe_tower' => 'Tipe Tower',

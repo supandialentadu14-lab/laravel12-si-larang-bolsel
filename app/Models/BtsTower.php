@@ -17,6 +17,7 @@ class BtsTower extends Model
         'kode_bts',
         'nama_bts',
         'provider',
+        'nama_perusahaan',
         'kecamatan',
         'desa',
         'alamat',

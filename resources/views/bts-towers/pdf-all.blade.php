@@ -53,11 +53,13 @@
 
         table.data { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
         table.data th {
-            text-align: left; padding: 3px 5px; font-size: 7px; font-weight: bold;
+            text-align: left; padding: 4px 6px; font-size: 8px; font-weight: bold;
             color: #fff; text-transform: uppercase; background: #4a5568; border: 1px solid #cbd5e0;
         }
-        table.data td { padding: 3px 5px; border: 1px solid #e2e8f0; font-size: 8px; }
+        table.data td { padding: 4px 6px; border: 1px solid #e2e8f0; font-size: 9px; }
         table.data tbody tr:nth-child(even) td { background: #f7fafc; }
+        table.data td.photo-cell { text-align: center; vertical-align: middle; }
+        table.data td.photo-cell img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e0; }
 
         .footer {
             margin-top: 12px; padding-top: 6px; border-top: 1px solid #cbd5e0;
@@ -159,34 +161,36 @@
         </tbody>
     </table>
 
+    @php $runningNo = 0; @endphp
     @forelse ($towersByKecamatan as $kecamatan => $items)
         <div class="kec-title">Kecamatan {{ $kecamatan }} <span class="kec-count">{{ $items->count() }} BTS</span></div>
         <table class="data">
             <thead>
                 <tr>
-                    <th width="3%">No</th>
-                    <th width="9%">Kode</th>
-                    <th width="17%">Nama BTS</th>
+                    <th width="4%">No</th>
+                    <th width="12%">Desa</th>
+                    <th width="24%">Titik Koordinat</th>
                     <th width="10%">Provider</th>
-                    <th width="10%">Desa</th>
-                    <th width="13%">Koordinat</th>
-                    <th width="10%">Tipe</th>
-                    <th width="9%">Kondisi</th>
-                    <th width="9%">Status</th>
+                    <th width="25%">Nama Perusahaan</th>
+                    <th width="10%">Foto</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($items as $t)
+                    @php $runningNo++; @endphp
                     <tr>
-                        <td style="text-align:center;">{{ $loop->iteration }}</td>
-                        <td>{{ $t->kode_bts }}</td>
-                        <td><strong>{{ $t->nama_bts }}</strong></td>
-                        <td>{{ $t->provider }}</td>
+                        <td style="text-align:center;">{{ $runningNo }}</td>
                         <td>{{ $t->desa ?: '-' }}</td>
-                        <td style="font-size:7px;">{{ $t->latitude }}, {{ $t->longitude }}</td>
-                        <td>{{ $t->tipe_tower ?: '-' }}</td>
-                        <td>{{ $t->kondisi ?: '-' }}</td>
-                        <td>{{ $t->status_operasional ?: '-' }}</td>
+                        <td>{{ $t->latitude }}, {{ $t->longitude }}</td>
+                        <td>{{ $t->provider ?: '-' }}</td>
+                        <td>{{ $t->nama_perusahaan ?? '-' }}</td>
+                        <td class="photo-cell">
+                            @if($towerPhotos[$t->id] ?? null)
+                                <img src="{{ $towerPhotos[$t->id] }}" alt="Foto BTS">
+                            @else
+                                <span style="color:#a0aec0;font-size:7px;">-</span>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -196,9 +200,7 @@
     @endforelse
 
     <div class="footer">
-        <strong>SIMPATI</strong> | Sistem Informasi Manajemen Persediaan dan Telekomunikasi<br>
-        Kabupaten Bolaang Mongondow Selatan, Provinsi Sulawesi Utara<br>
-        Dicetak pada {{ now()->translatedFormat('d F Y, H:i') }} WITA
+        Data Bidang Komunikasi dan Persandian Dinas Komunikasi dan Informatika Kabupaten Bolaang Mongondow Selatan
     </div>
 
 </body>

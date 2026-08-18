@@ -181,6 +181,11 @@
                 </div>
 
                 <div class="c-4 field">
+                    <label>Nama Perusahaan</label>
+                    <input type="text" name="nama_perusahaan" value="{{ old('nama_perusahaan', $tower->nama_perusahaan ?? '') }}" placeholder="Opsional">
+                </div>
+
+                <div class="c-4 field">
                     <label>Kecamatan <span class="req">*</span></label>
                     <select name="kecamatan" id="kecamatan_select" required>
                         <option value="">-- Pilih Kecamatan --</option>

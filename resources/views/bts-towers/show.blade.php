@@ -154,8 +154,24 @@
     .bts-show .empty-icon { font-size: 2rem; margin-bottom: 8px; opacity: 0.3; }
     .bts-show .empty-text { font-size: 11px; color: #4b5563; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
 
-    .bts-show .photo-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .bts-show .photo-grid img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; border: 1px solid #232b4a; }
+    .bts-show .photo-slider { position: relative; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #232b4a; background: #0f1225; }
+    .bts-show .photo-slider-track { display: flex; transition: transform 0.4s cubic-bezier(.4,0,.2,1); }
+    .bts-show .photo-slider-slide { min-width: 100%; position: relative; }
+    .bts-show .photo-slider-slide img { width: 100%; height: 350px; object-fit: cover; display: block; }
+    .bts-show .photo-slider-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent,rgba(0,0,0,0.8)); padding: 30px 14px 12px; font-size: 11px; color: #fff; font-weight: 600; }
+    .bts-show .photo-slider-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: rgba(99,102,241,0.7); border: none; color: #fff; font-size: 14px; cursor: pointer; z-index: 5; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .bts-show .photo-slider-btn:hover { background: rgba(99,102,241,1); }
+    .bts-show .photo-slider-btn.prev { left: 10px; }
+    .bts-show .photo-slider-btn.next { right: 10px; }
+    .bts-show .photo-slider-dots { display: flex; justify-content: center; gap: 6px; padding: 10px 0 4px; }
+    .bts-show .photo-slider-dot { width: 8px; height: 8px; border-radius: 50%; background: #374151; border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; padding: 0; }
+    .bts-show .photo-slider-dot.active { background: #818cf8; transform: scale(1.3); }
+    .bts-show .photo-slider-del { position: absolute; top: 10px; right: 10px; z-index: 5; background: rgba(239,68,68,0.8); color: #fff; border: none; border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+    .bts-show .photo-slider-del:hover { background: rgba(239,68,68,1); }
+    @media (max-width: 768px) {
+        .bts-show .photo-slider-slide img { height: 220px; }
+        .bts-show .photo-slider-btn { width: 28px; height: 28px; font-size: 12px; }
+    }
 
     @media (max-width: 768px) {
         .bts-show .hero-top { padding: 1rem 1rem 0; }
@@ -257,25 +273,44 @@
                     </button>
                 </div>
                 <div class="card-body">
-                    @if($btsTower->foto || $towerPhotos->count() > 0)
-                        <div class="photo-grid">
-                            @if($btsTower->foto)
-                                <img src="{{ $btsTower->foto_url }}" alt="{{ $btsTower->nama_bts }}">
-                            @endif
-                            @foreach($towerPhotos as $photo)
-                                <div style="position:relative;">
-                                    <img src="{{ $photo->url }}" alt="{{ $photo->caption ?? $btsTower->nama_bts }}">
-                                    @if($photo->caption)
-                                        <div style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:3px 8px;border-radius:6px;">{{ $photo->caption }}</div>
-                                    @endif
-                                    <form action="{{ route('bts-towers.delete-photo', $photo) }}" method="POST" onsubmit="return confirm('Hapus foto ini?')" style="position:absolute;top:8px;right:8px;">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" style="background:rgba(239,68,68,0.8);color:#fff;border:none;border-radius:6px;width:24px;height:24px;cursor:pointer;font-size:11px;">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                    @php
+                        $allPhotos = collect();
+                        if ($btsTower->foto) {
+                            $allPhotos->push((object)['url' => $btsTower->foto_url, 'caption' => null, 'id' => null]);
+                        }
+                        foreach ($towerPhotos as $photo) {
+                            $allPhotos->push($photo);
+                        }
+                    @endphp
+
+                    @if($allPhotos->count() > 0)
+                        <div class="photo-slider" id="photoSlider">
+                            <div class="photo-slider-track" id="sliderTrack">
+                                @foreach($allPhotos as $idx => $p)
+                                    <div class="photo-slider-slide">
+                                        <img src="{{ $p->url }}" alt="{{ $p->caption ?? $btsTower->nama_bts }}">
+                                        @if($p->caption)
+                                            <div class="photo-slider-caption">{{ $p->caption }}</div>
+                                        @endif
+                                        @if($p->id)
+                                            <form action="{{ route('bts-towers.delete-photo', $p) }}" method="POST" onsubmit="return confirm('Hapus foto ini?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="photo-slider-del"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            @if($allPhotos->count() > 1)
+                                <button type="button" class="photo-slider-btn prev" onclick="slidePhoto(-1)"><i class="fas fa-chevron-left"></i></button>
+                                <button type="button" class="photo-slider-btn next" onclick="slidePhoto(1)"><i class="fas fa-chevron-right"></i></button>
+                                <div class="photo-slider-dots" id="sliderDots">
+                                    @foreach($allPhotos as $idx => $p)
+                                        <button type="button" class="photo-slider-dot {{ $idx === 0 ? 'active' : '' }}" onclick="goToSlide({{ $idx }})"></button>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
                     @else
                         <div class="empty-state">
@@ -298,6 +333,7 @@
                                 {{ $btsTower->provider }}
                             </span>
                         </td></tr>
+                        <tr><th>Nama Perusahaan</th><td>{{ $btsTower->nama_perusahaan ?: '-' }}</td></tr>
                         <tr><th>Kecamatan</th><td>{{ $btsTower->kecamatan }}</td></tr>
                         <tr><th>Desa / Kelurahan</th><td>{{ $btsTower->desa ?: '-' }}</td></tr>
                         <tr><th>Alamat Lengkap</th><td>{{ $btsTower->alamat ?: '-' }}</td></tr>
@@ -573,6 +609,41 @@
     }
 
     document.querySelector('.tab-btn[data-tab="peta"]').addEventListener('click', initDetailMap);
+
+    // Photo Slider
+    let currentSlide = 0;
+    const totalSlides = document.querySelectorAll('.photo-slider-slide').length;
+
+    function slidePhoto(dir) {
+        currentSlide = (currentSlide + dir + totalSlides) % totalSlides;
+        updateSlider();
+    }
+    function goToSlide(idx) {
+        currentSlide = idx;
+        updateSlider();
+    }
+    function updateSlider() {
+        const track = document.getElementById('sliderTrack');
+        if (!track) return;
+        track.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+        document.querySelectorAll('.photo-slider-dot').forEach((d, i) => {
+            d.classList.toggle('active', i === currentSlide);
+        });
+    }
+
+    // Touch swipe support
+    (function() {
+        const slider = document.getElementById('photoSlider');
+        if (!slider || totalSlides <= 1) return;
+        let startX = 0, moved = false;
+        slider.addEventListener('touchstart', e => { startX = e.touches[0].clientX; moved = false; }, { passive: true });
+        slider.addEventListener('touchmove', e => { moved = true; }, { passive: true });
+        slider.addEventListener('touchend', e => {
+            if (!moved) return;
+            const diff = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) slidePhoto(diff > 0 ? 1 : -1);
+        }, { passive: true });
+    })();
 </script>
 @endpush
 @endsection

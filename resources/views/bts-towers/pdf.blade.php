@@ -153,6 +153,7 @@
         <tr><th>Kode BTS</th><td>{{ $btsTower->kode_bts }}</td></tr>
         <tr><th>Nama BTS</th><td>{{ $btsTower->nama_bts }}</td></tr>
         <tr><th>Provider</th><td>{{ $btsTower->provider }}</td></tr>
+        <tr><th>Nama Perusahaan</th><td>{{ $btsTower->nama_perusahaan ?: '-' }}</td></tr>
         <tr><th>Kecamatan</th><td>{{ $btsTower->kecamatan }}</td></tr>
         <tr><th>Desa / Kelurahan</th><td>{{ $btsTower->desa ?: '-' }}</td></tr>
         <tr><th>Alamat Lengkap</th><td>{{ $btsTower->alamat ?: '-' }}</td></tr>
