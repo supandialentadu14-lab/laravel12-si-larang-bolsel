@@ -83,6 +83,23 @@
 
     .bts-index #bts-map { height: 420px; width: 100%; border-radius: 12px; }
 
+    .bts-marker-tooltip {
+        background: rgba(15,18,37,0.92) !important;
+        color: #e5e7eb !important;
+        border: 1px solid rgba(99,102,241,0.3) !important;
+        border-radius: 8px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        padding: 4px 10px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+    }
+    .bts-marker-tooltip::before {
+        border-right-color: rgba(15,18,37,0.92) !important;
+    }
+    .bts-marker-tooltip-top::before {
+        border-bottom-color: rgba(15,18,37,0.92) !important;
+    }
+
     .bts-index .bulk-bar {
         display: none; padding: 10px 20px; background: rgba(239,68,68,0.06);
         border-bottom: 1px solid rgba(239,68,68,0.1); align-items: center; gap: 10px;
@@ -398,17 +415,22 @@
         const labelParts = [];
         if (p.nama_bts) labelParts.push(p.nama_bts);
         if (p.desa) labelParts.push(p.desa);
-        const labelText = labelParts.join(' - ');
+        const labelText = labelParts.join(' • ');
         const icon = L.divIcon({
             className: '',
             html: `<div style="position:relative;width:24px;height:24px;">
                 <div style="width:24px;height:24px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>
                 <div style="position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:${sc};border:2px solid #1a1f3a;"></div>
-                <div style="position:absolute;left:28px;top:50%;transform:translateY(-50%);white-space:nowrap;background:rgba(15,18,37,0.88);color:#e5e7eb;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid ${color}44;pointer-events:none;max-width:200px;overflow:hidden;text-overflow:ellipsis;">${labelText}</div>
             </div>`,
             iconSize: [24, 24], iconAnchor: [12, 12],
         });
         const marker = L.marker([p.latitude, p.longitude], {icon}).addTo(map);
+
+        marker.bindTooltip(labelText, {
+            permanent: false, direction: 'right', offset: [14, 0],
+            className: 'bts-marker-tooltip'
+        });
+
         marker.bindPopup(`
             <div style="font-family:system-ui;min-width:160px;">
                 <div style="font-weight:800;font-size:13px;margin-bottom:4px;">${p.nama_bts}</div>
