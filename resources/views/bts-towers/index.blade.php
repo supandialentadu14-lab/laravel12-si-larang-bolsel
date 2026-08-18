@@ -395,11 +395,16 @@
         if (!p.latitude || !p.longitude) return;
         const color = providerColors[p.provider] || '#95a5a6';
         const sc = statusColors[p.status_operasional] || '#9ca3af';
+        const labelParts = [];
+        if (p.nama_bts) labelParts.push(p.nama_bts);
+        if (p.desa) labelParts.push(p.desa);
+        const labelText = labelParts.join(' - ');
         const icon = L.divIcon({
             className: '',
             html: `<div style="position:relative;width:24px;height:24px;">
                 <div style="width:24px;height:24px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>
                 <div style="position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:${sc};border:2px solid #1a1f3a;"></div>
+                <div style="position:absolute;left:28px;top:50%;transform:translateY(-50%);white-space:nowrap;background:rgba(15,18,37,0.88);color:#e5e7eb;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid ${color}44;pointer-events:none;max-width:200px;overflow:hidden;text-overflow:ellipsis;">${labelText}</div>
             </div>`,
             iconSize: [24, 24], iconAnchor: [12, 12],
         });
@@ -408,6 +413,7 @@
             <div style="font-family:system-ui;min-width:160px;">
                 <div style="font-weight:800;font-size:13px;margin-bottom:4px;">${p.nama_bts}</div>
                 <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">${p.kode_bts}</div>
+                <div style="font-size:11px;margin-bottom:2px;">${p.desa ? '<i class="fas fa-location-dot" style="margin-right:3px;font-size:9px;"></i>' + p.desa : ''}</div>
                 <div style="font-size:11px;margin-bottom:2px;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${color};"></span> ${p.provider}</div>
                 <div style="font-size:11px;margin-bottom:6px;">${p.kecamatan}</div>
                 <a href="/bts-towers/${p.id}" style="font-size:11px;color:#4f46e5;font-weight:600;text-decoration:none;">Lihat detail &rarr;</a>

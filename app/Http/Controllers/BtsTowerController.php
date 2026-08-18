@@ -42,7 +42,7 @@ class BtsTowerController extends Controller
 
         $towers = $query->latest()->paginate(10)->withQueryString();
 
-        $mapPoints = (clone $query)->get(['id', 'kode_bts', 'nama_bts', 'provider', 'kecamatan', 'latitude', 'longitude', 'status_operasional', 'kondisi']);
+        $mapPoints = (clone $query)->get(['id', 'kode_bts', 'nama_bts', 'provider', 'kecamatan', 'desa', 'latitude', 'longitude', 'status_operasional', 'kondisi', 'coverage_radius']);
 
         $statsQuery = BtsTower::query();
         if ($request->filled('kecamatan')) $statsQuery->where('kecamatan', $request->kecamatan);
