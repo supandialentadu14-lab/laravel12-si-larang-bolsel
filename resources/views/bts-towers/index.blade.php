@@ -400,6 +400,15 @@
         'Telkomsel': '#e74c3c', 'Indosat': '#f39c12', 'XL Axiata': '#3498db',
         'Tri (3)': '#9b59b6', 'Smartfren': '#2ecc71', 'Lainnya': '#95a5a6'
     };
+    const kecamatanColors = {
+        'Pinolosian Timur': '#ef4444',
+        'Pinolosian Tengah': '#f59e0b',
+        'Pinolosian': '#3b82f6',
+        'Bolaang Uki': '#8b5cf6',
+        'Helumo': '#10b981',
+        'Tomini': '#ec4899',
+        'Posigadan': '#06b6d4'
+    };
     const statusColors = { 'Aktif': '#34d399', 'Maintenance': '#fbbf24', 'Tidak Aktif': '#9ca3af' };
 
     const map = L.map('bts-map').setView([0.4317, 123.4817], 10);
@@ -410,7 +419,7 @@
     const markers = [];
     mapPoints.forEach(p => {
         if (!p.latitude || !p.longitude) return;
-        const color = providerColors[p.provider] || '#95a5a6';
+        const color = kecamatanColors[p.kecamatan] || '#95a5a6';
         const sc = statusColors[p.status_operasional] || '#9ca3af';
         const labelParts = [];
         if (p.nama_bts) labelParts.push(p.nama_bts);
@@ -453,9 +462,10 @@
     legend.onAdd = function() {
         const div = L.DomUtil.create('div');
         div.style.cssText = 'background:#171e33;border:1px solid #232b4a;border-radius:10px;padding:10px 12px;font-size:10px;color:#d1d5db;';
-        let html = '<div style="font-weight:800;margin-bottom:6px;color:#a5b4fc;">Provider</div>';
-        for (const [name, color] of Object.entries(providerColors)) {
-            html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;"></span>${name}</div>`;
+        let html = '<div style="font-weight:800;margin-bottom:6px;color:#a5b4fc;">Kecamatan</div>';
+        for (const [name, c] of Object.entries(kecamatanColors)) {
+            const count = mapPoints.filter(p => p.kecamatan === name).length;
+            html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><span style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0;"></span>${name} <span style="color:#6b7280;font-size:9px;">(${count})</span></div>`;
         }
         div.innerHTML = html;
         return div;
