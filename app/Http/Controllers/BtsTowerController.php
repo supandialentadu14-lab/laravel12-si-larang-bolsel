@@ -42,7 +42,7 @@ class BtsTowerController extends Controller
 
         $towers = $query->latest()->paginate(10)->withQueryString();
 
-        $mapPoints = (clone $query)->get(['id', 'kode_bts', 'nama_bts', 'provider', 'kecamatan', 'desa', 'latitude', 'longitude', 'status_operasional', 'kondisi', 'coverage_radius']);
+        $mapPoints = BtsTower::query()->get(['id', 'kode_bts', 'nama_bts', 'provider', 'kecamatan', 'desa', 'latitude', 'longitude', 'status_operasional', 'kondisi', 'coverage_radius']);
 
         $statsQuery = BtsTower::query();
         if ($request->filled('kecamatan')) $statsQuery->where('kecamatan', $request->kecamatan);
@@ -617,11 +617,11 @@ class BtsTowerController extends Controller
 
         $callback = function () use ($towers) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Kode BTS', 'Nama BTS', 'Provider', 'Kecamatan', 'Desa', 'Latitude', 'Longitude', 'Tinggi (m)', 'Tipe Tower', 'Kondisi', 'Status', 'Tahun Dibangun']);
+            fputcsv($file, ['Kode BTS', 'Nama BTS', 'Provider', 'Nama Perusahaan', 'Kecamatan', 'Desa', 'Latitude', 'Longitude', 'Tinggi (m)', 'Tipe Tower', 'Kondisi', 'Status', 'Tahun Dibangun']);
 
             foreach ($towers as $t) {
                 fputcsv($file, [
-                    $t->kode_bts, $t->nama_bts, $t->provider, $t->kecamatan, $t->desa,
+                    $t->kode_bts, $t->nama_bts, $t->provider, $t->nama_perusahaan, $t->kecamatan, $t->desa,
                     $t->latitude, $t->longitude, $t->tinggi_tower, $t->tipe_tower,
                     $t->kondisi, $t->status_operasional, $t->tahun_dibangun,
                 ]);

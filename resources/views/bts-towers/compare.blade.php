@@ -252,6 +252,14 @@
                             @endforeach
                         </tr>
 
+                        {{-- Nama Perusahaan --}}
+                        <tr>
+                            <td class="row-header"><span class="row-icon"><i class="fas fa-building"></i></span>Nama Perusahaan</td>
+                            @foreach($towers as $tower)
+                                <td class="row-value">{{ $tower->nama_perusahaan ?: '-' }}</td>
+                            @endforeach
+                        </tr>
+
                         {{-- Kecamatan --}}
                         <tr>
                             <td class="row-header"><span class="row-icon"><i class="fas fa-map-marker-alt"></i></span>Kecamatan</td>
@@ -405,6 +413,10 @@
                             <span class="m-row-value">
                                 <span class="provider-dot" style="background:{{ $providerColors[$tower->provider] ?? '#95a5a6' }};"></span>{{ $tower->provider }}
                             </span>
+                        </div>
+                        <div class="m-row">
+                            <span class="m-row-label">Nama Perusahaan</span>
+                            <span class="m-row-value">{{ $tower->nama_perusahaan ?: '-' }}</span>
                         </div>
                         <div class="m-row">
                             <span class="m-row-label">Kecamatan</span>
