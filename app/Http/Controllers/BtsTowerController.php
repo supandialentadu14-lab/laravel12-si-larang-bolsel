@@ -278,6 +278,17 @@ class BtsTowerController extends Controller
         $rekapKondisi = $towers->filter(fn($t) => $t->kondisi)->groupBy('kondisi')->map->count();
         $rekapProvider = $towers->filter(fn($t) => $t->provider)->groupBy('provider')->map->count();
 
+        // Generate peta static dari semua BTS
+        $mapImage = null;
+        if ($towers->isNotEmpty()) {
+            [$centerLat, $centerLng, $zoom] = $this->calculateMapCenterAndZoom($towers);
+            $markerPoints = $towers->filter(fn($t) => $t->latitude && $t->longitude)
+                ->map(fn($t) => ['lat' => (float) $t->latitude, 'lng' => (float) $t->longitude])
+                ->values()
+                ->toArray();
+            $mapImage = $this->renderOsmStaticMap($centerLat, $centerLng, $zoom, 800, 500, $markerPoints, 3);
+        }
+
         $pdf = Pdf::loadView('bts-towers.pdf-all', [
             'towers' => $towers,
             'towersByKecamatan' => $towersByKecamatan,
@@ -285,6 +296,7 @@ class BtsTowerController extends Controller
             'rekapStatus' => $rekapStatus,
             'rekapKondisi' => $rekapKondisi,
             'rekapProvider' => $rekapProvider,
+            'mapImage' => $mapImage,
             'filterInfo' => [
                 'kecamatan' => $request->kecamatan,
                 'provider' => $request->provider,
@@ -606,25 +618,46 @@ class BtsTowerController extends Controller
             $query->where('provider', $request->provider);
         }
 
-        $towers = $query->orderBy('kecamatan')->get();
+        // Urutan kecamatan kustom (sama dengan PDF)
+        $kecamatanOrder = [
+            'Pinolosian Timur', 'Pinolosian Tengah', 'Pinolosian',
+            'Bolaang Uki', 'Helumo', 'Tomini', 'Posigadan',
+        ];
 
-        $filename = 'data-bts-' . now()->format('Ymd_His') . '.csv';
+        $towers = $query->orderBy('created_at')->get();
+        $towers = $towers->values()->map(function ($t, $i) {
+            $t->no_urut = $i + 1;
+            return $t;
+        });
+
+        // Kelompokkan per kecamatan dengan urutan kustom
+        $grouped = $towers->groupBy('kecamatan');
+        $sorted = $grouped->sortBy(function ($items, $key) use ($kecamatanOrder) {
+            $index = array_search($key, $kecamatanOrder);
+            return $index !== false ? $index : 999;
+        });
+
+        $filename = 'laporan-bts-kabupaten-' . now()->format('Ymd_His') . '.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 
-        $callback = function () use ($towers) {
+        $callback = function () use ($sorted) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Kode BTS', 'Nama BTS', 'Provider', 'Nama Perusahaan', 'Kecamatan', 'Desa', 'Latitude', 'Longitude', 'Tinggi (m)', 'Tipe Tower', 'Kondisi', 'Status', 'Tahun Dibangun']);
+            fputcsv($file, ['No', 'Desa', 'Titik Koordinat', 'Provider', 'Nama Perusahaan']);
 
-            foreach ($towers as $t) {
-                fputcsv($file, [
-                    $t->kode_bts, $t->nama_bts, $t->provider, $t->nama_perusahaan, $t->kecamatan, $t->desa,
-                    $t->latitude, $t->longitude, $t->tinggi_tower, $t->tipe_tower,
-                    $t->kondisi, $t->status_operasional, $t->tahun_dibangun,
-                ]);
+            foreach ($sorted as $kecamatan => $items) {
+                foreach ($items as $t) {
+                    fputcsv($file, [
+                        $t->no_urut,
+                        $t->desa ?: '-',
+                        $t->latitude . ', ' . $t->longitude,
+                        $t->provider ?: '-',
+                        $t->nama_perusahaan ?? '-',
+                    ]);
+                }
             }
             fclose($file);
         };

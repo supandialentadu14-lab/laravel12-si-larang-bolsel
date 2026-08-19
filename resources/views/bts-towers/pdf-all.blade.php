@@ -120,6 +120,13 @@
         </tr>
     </table>
 
+    @if($mapImage)
+        <div class="section-title st-blue">Peta Sebaran BTS</div>
+        <div style="text-align:center;margin-bottom:10px;">
+            <img src="{{ $mapImage }}" style="width:100%;max-width:700px;border:1px solid #cbd5e0;border-radius:4px;" alt="Peta Sebaran BTS">
+        </div>
+    @endif
+
     <div class="section-title st-dark">Rekapitulasi</div>
 
     <table class="summary-table">
