@@ -286,7 +286,7 @@ class BtsTowerController extends Controller
                 ->map(fn($t) => ['lat' => (float) $t->latitude, 'lng' => (float) $t->longitude])
                 ->values()
                 ->toArray();
-            $mapImage = $this->renderOsmStaticMap($centerLat, $centerLng, $zoom, 800, 500, $markerPoints, 3);
+            $mapImage = $this->renderOsmStaticMap($centerLat, $centerLng, $zoom, 600, 400, $markerPoints, 2);
         }
 
         $pdf = Pdf::loadView('bts-towers.pdf-all', [
