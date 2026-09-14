@@ -200,7 +200,7 @@ class StockController extends Controller
 
         $validator = Validator::make($data, [
             'product_id' => 'required|exists:products,id',
-            'type' => 'required|in:in,out',
+            'type' => 'required|in:in,out,saldo',
             'quantity' => 'required|integer|min:1',
             'date' => 'required|date',
             'nosur' => 'nullable|string|max:255',
@@ -237,12 +237,21 @@ class StockController extends Controller
                 // Update physical stock in product table
                 if (($data['type'] ?? '') === 'in') {
                     $product->increment('stock', (int) $data['quantity']);
-                } else {
+                } elseif (($data['type'] ?? '') === 'out') {
                     $product->decrement('stock', (int) $data['quantity']);
+                } else {
+                    // Tipe "saldo" (saldo awal): set stok langsung ke nilai tersebut
+                    $product->update(['stock' => (int) $data['quantity']]);
                 }
 
+                $label = match ($data['type']) {
+                    'in' => 'masuk',
+                    'out' => 'keluar',
+                    default => 'saldo awal',
+                };
+
                 return redirect()->route('stock.index')
-                    ->with('success', 'Transaksi ' . ($data['type'] === 'in' ? 'masuk' : 'keluar') . ' "' . $product->name . '" berhasil disimpan.');
+                    ->with('success', 'Transaksi ' . $label . ' "' . $product->name . '" berhasil disimpan.');
             });
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage())->withInput();
@@ -271,7 +280,7 @@ class StockController extends Controller
         $validator = Validator::make($data, [
             'product_id' => 'required|exists:products,id',
             'date' => 'required|date',
-            'type' => 'required|in:in,out',
+            'type' => 'required|in:in,out,saldo',
             'quantity' => 'required|integer|min:1',
             'nosur' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
@@ -285,12 +294,12 @@ class StockController extends Controller
 
         try {
             return DB::transaction(function () use ($data, $transaction) {
-                // Revert old product stock
+                // Revert old product stock (saldo tidak menyentuh stok saat revert)
                 $oldProduct = Product::lockForUpdate()->find($transaction->product_id);
                 if ($oldProduct) {
                     if ($transaction->type === 'in') {
                         $oldProduct->decrement('stock', $transaction->quantity);
-                    } else {
+                    } elseif ($transaction->type === 'out') {
                         $oldProduct->increment('stock', $transaction->quantity);
                     }
                 }
@@ -320,12 +329,21 @@ class StockController extends Controller
                 // Apply new stock
                 if (($data['type'] ?? '') === 'in') {
                     $newProduct->increment('stock', (int) $data['quantity']);
-                } else {
+                } elseif (($data['type'] ?? '') === 'out') {
                     $newProduct->decrement('stock', (int) $data['quantity']);
+                } else {
+                    // Tipe "saldo" (saldo awal): set stok langsung ke nilai tersebut
+                    $newProduct->update(['stock' => (int) $data['quantity']]);
                 }
 
+                $label = match ($data['type']) {
+                    'in' => 'masuk',
+                    'out' => 'keluar',
+                    default => 'saldo awal',
+                };
+
                 return redirect()->route('stock.index')
-                    ->with('success', 'Transaksi ' . ($data['type'] === 'in' ? 'masuk' : 'keluar') . ' "' . $newProduct->name . '" berhasil diperbarui.');
+                    ->with('success', 'Transaksi ' . $label . ' "' . $newProduct->name . '" berhasil diperbarui.');
             });
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage())->withInput();
@@ -360,10 +378,10 @@ class StockController extends Controller
                         // Lock product for update
                         $product = Product::lockForUpdate()->find($transaction->product_id);
                         if ($product) {
-                            // Revert stock
+                            // Revert stock (saldo tidak menyentuh stok saat revert)
                             if ($transaction->type === 'in') {
                                 $product->decrement('stock', $transaction->quantity);
-                            } else {
+                            } elseif ($transaction->type === 'out') {
                                 $product->increment('stock', $transaction->quantity);
                             }
                         }
@@ -395,10 +413,10 @@ class StockController extends Controller
 
                 $product = Product::withTrashed()->lockForUpdate()->findOrFail($transaction->product_id);
 
-                // Kembalikan stok seperti sebelum transaksi ini ada
+                // Kembalikan stok seperti sebelum transaksi ini ada (saldo tidak menyentuh stok saat revert)
                 if ($transaction->type === 'in') {
                     $product->decrement('stock', $transaction->quantity);
-                } else {
+                } elseif ($transaction->type === 'out') {
                     $product->increment('stock', $transaction->quantity);
                 }
 

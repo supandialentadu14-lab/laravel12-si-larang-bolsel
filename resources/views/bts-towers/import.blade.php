@@ -259,66 +259,72 @@
                         </tr>
                         <tr>
                             <td><span class="col-num">3</span></td>
-                            <td><span class="col-name">Kecamatan</span></td>
-                            <td><span class="wajib-badge">Wajib</span></td>
-                            <td>Bolaang Timur, Dumoga Barat, Dumoga Tengah, Dumoga Timur, Dumoga Utara, Passi Barat, Poigar</td>
+                            <td><span class="col-name">Nama Perusahaan</span></td>
+                            <td><span class="opsional-badge">Opsional</span></td>
+                            <td>PT Telkom Indonesia Tbk, PT Indosat Tbk</td>
                         </tr>
                         <tr>
                             <td><span class="col-num">4</span></td>
+                            <td><span class="col-name">Kecamatan</span></td>
+                            <td><span class="wajib-badge">Wajib</span></td>
+                            <td>Bolaang Uki, Helumo, Pinolosian, Pinolosian Tengah, Pinolosian Timur, Posigadan, Tomini</td>
+                        </tr>
+                        <tr>
+                            <td><span class="col-num">5</span></td>
                             <td><span class="col-name">Desa</span></td>
                             <td><span class="opsional-badge">Opsional</span></td>
                             <td>Pinogaluman, Bango</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">5</span></td>
+                            <td><span class="col-num">6</span></td>
                             <td><span class="col-name">Alamat</span></td>
                             <td><span class="opsional-badge">Opsional</span></td>
                             <td>Jl. Trans Sulawesi Km 15</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">6</span></td>
+                            <td><span class="col-num">7</span></td>
                             <td><span class="col-name">Latitude</span></td>
                             <td><span class="wajib-badge">Wajib</span></td>
                             <td>0.6534</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">7</span></td>
+                            <td><span class="col-num">8</span></td>
                             <td><span class="col-name">Longitude</span></td>
                             <td><span class="wajib-badge">Wajib</span></td>
                             <td>123.5421</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">8</span></td>
+                            <td><span class="col-num">9</span></td>
                             <td><span class="col-name">Tinggi Tower</span></td>
                             <td><span class="opsional-badge">Opsional</span></td>
                             <td>30 (meter)</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">9</span></td>
+                            <td><span class="col-num">10</span></td>
                             <td><span class="col-name">Tipe Tower</span></td>
                             <td><span class="opsional-badge">Opsional</span></td>
                             <td>BTS, Repeater, Microwave</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">10</span></td>
+                            <td><span class="col-num">11</span></td>
                             <td><span class="col-name">Kondisi</span></td>
                             <td><span class="opsional-badge">Opsional</span></td>
                             <td>Baik, Rusak Ringan, Rusak Berat, Perlu Perbaikan</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">11</span></td>
+                            <td><span class="col-num">12</span></td>
                             <td><span class="col-name">Status</span></td>
                             <td><span class="opsional-badge">Opsional</span></td>
                             <td>Aktif, Maintenance, Tidak Aktif</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">12</span></td>
+                            <td><span class="col-num">13</span></td>
                             <td><span class="col-name">Tahun Dibangun</span></td>
                             <td><span class="opsional-badge">Opsional</span></td>
                             <td>2023</td>
                         </tr>
                         <tr>
-                            <td><span class="col-num">13</span></td>
+                            <td><span class="col-num">14</span></td>
                             <td><span class="col-name">Keterangan</span></td>
                             <td><span class="opsional-badge">Opsional</span></td>
                             <td>Catatan tambahan mengenai tower</td>

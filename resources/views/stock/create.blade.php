@@ -40,7 +40,7 @@
   <div class="flex items-center justify-between px-2">
     <div>
       <h1 class="text-2xl font-black text-app-main transition-colors uppercase tracking-tight">Transaksi Baru</h1>
-      <p class="text-[10px] font-bold text-app-muted uppercase tracking-[0.2em] mt-1">Mutasi Masuk & Keluar</p>
+      <p class="text-[10px] font-bold text-app-muted uppercase tracking-[0.2em] mt-1">Mutasi Masuk, Keluar & Saldo Awal</p>
     </div>
     <a href="{{ route('stock.index') }}" class="btn-icon-mini bg-app-surface text-app-muted border border-app-main shadow-sm flex items-center justify-center transition-colors">
       <i class="fas fa-times text-xs"></i>
@@ -71,6 +71,7 @@
           <div class="relative">
             <select name="type" x-model="type" class="mobile-input appearance-none bg-app-surface" required>
               <option value="in">Masuk</option>
+              <option value="saldo">Saldo Awal</option>
               <option value="out">Keluar</option>
             </select>
             <i class="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-app-muted pointer-events-none text-[10px]"></i>

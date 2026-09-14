@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null'); // Who performed the transaction
-            $table->enum('type', ['in', 'out']);
+$table->enum('type', ['in', 'out', 'saldo']);
             $table->integer('quantity');
             $table->text('notes')->nullable();
             $table->date('date');

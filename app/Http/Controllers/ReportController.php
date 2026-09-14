@@ -78,9 +78,17 @@ class ReportController extends Controller
                     'saldo_akhir' => 0
                 ];
             }
-            $masuk = $trx->type === 'in' ? $trx->quantity : 0;
-            $keluar = $trx->type === 'out' ? $trx->quantity : 0;
-            $grouped[$pid]['saldo_akhir'] += ($masuk - $keluar);
+
+            if ($trx->type === 'saldo') {
+                // Tipe "saldo" = saldo awal pada tanggal tsb, bukan masuk/keluar
+                $masuk = 0;
+                $keluar = 0;
+                $grouped[$pid]['saldo_akhir'] = (int) $trx->quantity;
+            } else {
+                $masuk = $trx->type === 'in' ? $trx->quantity : 0;
+                $keluar = $trx->type === 'out' ? $trx->quantity : 0;
+                $grouped[$pid]['saldo_akhir'] += ($masuk - $keluar);
+            }
             
             $grouped[$pid]['rows'][] = [
                 'date' => $trx->date,

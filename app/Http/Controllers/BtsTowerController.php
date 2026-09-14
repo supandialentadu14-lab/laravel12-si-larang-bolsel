@@ -2,22 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BtsTower;
-use App\Models\BtsTowerNote;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use App\Models\BtsTowerPhoto;
-use App\Models\BtsAlert;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\BtsTowersImport;
 use App\Models\ActivityLog;
+use App\Models\BtsAlert;
+use App\Models\BtsTower;
+use App\Models\BtsTowerNote;
+use App\Models\BtsTowerPhoto;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BtsTowerController extends Controller
 {
+    /**
+     * Warna marker per kecamatan — harus sama persis dengan kecamatanColors
+     * di resources/views/bts-towers/index.blade.php.
+     */
+    private const KECAMATAN_COLORS = [
+        'Pinolosian Timur' => [239, 68, 68],   // #ef4444
+        'Pinolosian Tengah' => [245, 158, 11], // #f59e0b
+        'Pinolosian' => [59, 130, 246],        // #3b82f6
+        'Bolaang Uki' => [139, 92, 246],       // #8b5cf6
+        'Helumo' => [16, 185, 129],            // #10b981
+        'Tomini' => [236, 72, 153],            // #ec4899
+        'Posigadan' => [6, 182, 212],          // #06b6d4
+    ];
+
+    /**
+     * Warna dot status operasional — sama dengan statusColors di index.blade.php.
+     */
+    private const STATUS_DOT_COLORS = [
+        'Aktif' => [52, 211, 153],       // #34d399
+        'Maintenance' => [251, 191, 36], // #fbbf24
+        'Tidak Aktif' => [156, 163, 175],// #9ca3af
+    ];
+
     public function index(Request $request)
     {
         $query = BtsTower::query();
@@ -35,8 +58,8 @@ class BtsTowerController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('nama_bts', 'like', "%{$search}%")
-                  ->orWhere('kode_bts', 'like', "%{$search}%")
-                  ->orWhere('desa', 'like', "%{$search}%");
+                    ->orWhere('kode_bts', 'like', "%{$search}%")
+                    ->orWhere('desa', 'like', "%{$search}%");
             });
         }
 
@@ -45,9 +68,15 @@ class BtsTowerController extends Controller
         $mapPoints = BtsTower::query()->get(['id', 'kode_bts', 'nama_bts', 'provider', 'kecamatan', 'desa', 'latitude', 'longitude', 'status_operasional', 'kondisi', 'coverage_radius']);
 
         $statsQuery = BtsTower::query();
-        if ($request->filled('kecamatan')) $statsQuery->where('kecamatan', $request->kecamatan);
-        if ($request->filled('provider')) $statsQuery->where('provider', $request->provider);
-        if ($request->filled('status_operasional')) $statsQuery->where('status_operasional', $request->status_operasional);
+        if ($request->filled('kecamatan')) {
+            $statsQuery->where('kecamatan', $request->kecamatan);
+        }
+        if ($request->filled('provider')) {
+            $statsQuery->where('provider', $request->provider);
+        }
+        if ($request->filled('status_operasional')) {
+            $statsQuery->where('status_operasional', $request->status_operasional);
+        }
 
         $stats = [
             'total' => $statsQuery->count(),
@@ -97,12 +126,12 @@ class BtsTowerController extends Controller
                 'bts_tower_id' => BtsTower::latest()->first()->id,
                 'user_id' => Auth::id(),
                 'type' => 'status_changed',
-                'title' => 'BTS Tidak Aktif: ' . $validated['nama_bts'],
-                'message' => 'BTS baru "' . $validated['nama_bts'] . '" (' . $validated['kode_bts'] . ') tercatat dalam status Tidak Aktif.',
+                'title' => 'BTS Tidak Aktif: '.$validated['nama_bts'],
+                'message' => 'BTS baru "'.$validated['nama_bts'].'" ('.$validated['kode_bts'].') tercatat dalam status Tidak Aktif.',
             ]);
         }
 
-        return redirect()->route('bts-towers.index')->with('success', 'Data BTS berhasil ditambahkan dengan kode ' . $validated['kode_bts'] . '.');
+        return redirect()->route('bts-towers.index')->with('success', 'Data BTS berhasil ditambahkan dengan kode '.$validated['kode_bts'].'.');
     }
 
     /**
@@ -115,7 +144,7 @@ class BtsTowerController extends Controller
         $count = BtsTower::whereYear('created_at', $year)->count() + 1;
 
         do {
-            $kode = 'BTS-BOLSEL-' . $year . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+            $kode = 'BTS-BOLSEL-'.$year.'-'.str_pad($count, 3, '0', STR_PAD_LEFT);
             $exists = BtsTower::where('kode_bts', $kode)->exists();
             $count++;
         } while ($exists);
@@ -125,7 +154,9 @@ class BtsTowerController extends Controller
 
     public function show(BtsTower $btsTower)
     {
-        $btsTower->load(['notes' => function ($q) { $q->latest(); }]);
+        $btsTower->load(['notes' => function ($q) {
+            $q->latest();
+        }]);
 
         $nearbyTowers = BtsTower::where('id', '!=', $btsTower->id)
             ->select('id', 'kode_bts', 'nama_bts', 'provider', 'kecamatan', 'latitude', 'longitude', 'status_operasional')
@@ -135,6 +166,7 @@ class BtsTowerController extends Controller
                     (float) $btsTower->latitude, (float) $btsTower->longitude,
                     (float) $t->latitude, (float) $t->longitude
                 );
+
                 return $t;
             })
             ->sortBy('distance')
@@ -159,6 +191,7 @@ class BtsTowerController extends Controller
         $dLat = deg2rad($lat2 - $lat1);
         $dLng = deg2rad($lng2 - $lng1);
         $a = sin($dLat / 2) ** 2 + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLng / 2) ** 2;
+
         return $earthRadius * 2 * atan2(sqrt($a), sqrt(1 - $a));
     }
 
@@ -205,6 +238,8 @@ class BtsTowerController extends Controller
 
     public function reportPdf(BtsTower $btsTower)
     {
+        @ini_set('memory_limit', '512M');
+
         $mapImage = $this->renderOsmStaticMap(
             (float) $btsTower->latitude,
             (float) $btsTower->longitude,
@@ -220,13 +255,15 @@ class BtsTowerController extends Controller
             'mapImage' => $mapImage,
         ])->setPaper('a4', 'portrait');
 
-        $response = $pdf->stream('laporan-bts-' . Str::slug($btsTower->kode_bts) . '.pdf');
+        $response = $pdf->stream('laporan-bts-'.Str::slug($btsTower->kode_bts).'.pdf');
 
         return $response;
     }
 
     public function reportPdfAll(Request $request)
     {
+        @ini_set('memory_limit', '512M');
+
         $query = BtsTower::query();
 
         if ($request->filled('kecamatan')) {
@@ -247,6 +284,7 @@ class BtsTowerController extends Controller
 
         $towers = $towers->values()->map(function ($t, $i) {
             $t->no_urut = $i + 1;
+
             return $t;
         });
 
@@ -265,28 +303,35 @@ class BtsTowerController extends Controller
         $grouped = $towers->groupBy('kecamatan');
         $towersByKecamatan = $grouped->sortBy(function ($items, $key) use ($kecamatanOrder) {
             $index = array_search($key, $kecamatanOrder);
+
             return $index !== false ? $index : 999;
         });
 
         // Siapkan foto base64 untuk setiap tower (untuk PDF)
         $towerPhotos = $towers->mapWithKeys(function ($t) {
             $base64 = $this->getFirstPhotoBase64($t);
+
             return [$t->id => $base64];
         });
 
-        $rekapStatus = $towers->filter(fn($t) => $t->status_operasional)->groupBy('status_operasional')->map->count();
-        $rekapKondisi = $towers->filter(fn($t) => $t->kondisi)->groupBy('kondisi')->map->count();
-        $rekapProvider = $towers->filter(fn($t) => $t->provider)->groupBy('provider')->map->count();
+        $rekapStatus = $towers->filter(fn ($t) => $t->status_operasional)->groupBy('status_operasional')->map->count();
+        $rekapKondisi = $towers->filter(fn ($t) => $t->kondisi)->groupBy('kondisi')->map->count();
+        $rekapProvider = $towers->filter(fn ($t) => $t->provider)->groupBy('provider')->map->count();
 
         // Generate peta static dari semua BTS
         $mapImage = null;
         if ($towers->isNotEmpty()) {
             [$centerLat, $centerLng, $zoom] = $this->calculateMapCenterAndZoom($towers);
-            $markerPoints = $towers->filter(fn($t) => $t->latitude && $t->longitude)
-                ->map(fn($t) => ['lat' => (float) $t->latitude, 'lng' => (float) $t->longitude])
+            $markerPoints = $towers->filter(fn ($t) => $t->latitude && $t->longitude)
+                ->map(fn ($t) => [
+                    'lat' => (float) $t->latitude,
+                    'lng' => (float) $t->longitude,
+                    'kecamatan' => $t->kecamatan,
+                    'status_operasional' => $t->status_operasional,
+                ])
                 ->values()
                 ->toArray();
-            $mapImage = $this->renderOsmStaticMap($centerLat, $centerLng, $zoom, 600, 400, $markerPoints, 2);
+            $mapImage = $this->renderOsmStaticMap($centerLat, $centerLng, $zoom, 900, 560, $markerPoints, 3, true);
         }
 
         $pdf = Pdf::loadView('bts-towers.pdf-all', [
@@ -304,7 +349,7 @@ class BtsTowerController extends Controller
             ],
         ])->setPaper('a4', 'landscape');
 
-        $response = $pdf->stream('laporan-bts-kabupaten-bolsel-' . now()->format('Ymd_His') . '.pdf');
+        $response = $pdf->stream('laporan-bts-kabupaten-bolsel-'.now()->format('Ymd_His').'.pdf');
 
         return $response;
     }
@@ -377,7 +422,7 @@ class BtsTowerController extends Controller
             return null;
         }
 
-        if (!is_dir($cacheDir)) {
+        if (! is_dir($cacheDir)) {
             @mkdir($cacheDir, 0755, true);
         }
         @file_put_contents($cacheFile, $data);
@@ -397,9 +442,10 @@ class BtsTowerController extends Controller
         int $outWidth,
         int $outHeight,
         array $markerPoints = [],
-        int $tileRadius = 2
+        int $tileRadius = 2,
+        bool $showKecamatanLegend = false
     ): ?string {
-        if (!function_exists('imagecreatetruecolor')) {
+        if (! function_exists('imagecreatetruecolor')) {
             return null;
         }
 
@@ -444,7 +490,7 @@ class BtsTowerController extends Controller
                     }
 
                     $tileImg = @imagecreatefromstring($data);
-                    if (!$tileImg) {
+                    if (! $tileImg) {
                         continue;
                     }
 
@@ -454,8 +500,9 @@ class BtsTowerController extends Controller
                 }
             }
 
-            if (!$anyTileLoaded) {
+            if (! $anyTileLoaded) {
                 imagedestroy($canvas);
+
                 return null;
             }
 
@@ -477,10 +524,19 @@ class BtsTowerController extends Controller
                     continue;
                 }
 
-                $markerPixelPositions[] = ['x' => $px, 'y' => $py];
+                // Warna marker mengikuti kecamatan (sama seperti peta di aplikasi),
+                // fallback merah kalau data kecamatan tidak tersedia.
+                $color = self::KECAMATAN_COLORS[$point['kecamatan'] ?? ''] ?? [220, 38, 38];
+
+                $markerPixelPositions[] = [
+                    'x' => $px,
+                    'y' => $py,
+                    'color' => $color,
+                    'status' => $point['status_operasional'] ?? null,
+                ];
             }
 
-            if (!empty($markerPixelPositions)) {
+            if (! empty($markerPixelPositions)) {
                 $minX = min(array_column($markerPixelPositions, 'x'));
                 $maxX = max(array_column($markerPixelPositions, 'x'));
                 $minY = min(array_column($markerPixelPositions, 'y'));
@@ -510,14 +566,37 @@ class BtsTowerController extends Controller
             $fDarkRed = imagecolorallocate($final, 153, 0, 0);
             $fBlack = imagecolorallocate($final, 255, 255, 255);
 
+            // Gaya marker meniru divIcon di peta aplikasi: lingkaran warna kecamatan
+            // dengan border putih tebal + shadow, dan dot status kecil di pojok
+            // kanan-bawah (hijau/kuning/abu-abu).
+            $markerShadowColor = imagecolorallocatealpha($final, 0, 0, 0, 80);
+            $statusDotBorderColor = imagecolorallocate($final, 26, 31, 58); // #1a1f3a
+
             foreach ($markerPixelPositions as $mp) {
                 $fx = (int) round($mp['x'] - $cropLeft);
                 $fy = (int) round($mp['y'] - $cropTop);
 
-                imagefilledellipse($final, $fx, $fy, 30, 30, $fDarkRed);
-                imagefilledellipse($final, $fx, $fy, 24, 24, $fRed);
-                imageellipse($final, $fx, $fy, 24, 24, $fWhite);
-                imagefilledellipse($final, $fx, $fy, 8, 8, $fWhite);
+                if ($fx < -30 || $fx > $outWidth + 30 || $fy < -30 || $fy > $outHeight + 30) {
+                    continue;
+                }
+
+                [$r, $g, $b] = $mp['color'];
+                $mainColor = imagecolorallocate($final, $r, $g, $b);
+
+                imagefilledellipse($final, $fx + 1, $fy + 2, 28, 28, $markerShadowColor);
+                imagefilledellipse($final, $fx, $fy, 26, 26, $fWhite);
+                imagefilledellipse($final, $fx, $fy, 20, 20, $mainColor);
+
+                if (! empty($mp['status'])) {
+                    $sc = self::STATUS_DOT_COLORS[$mp['status']] ?? null;
+                    if ($sc !== null) {
+                        $sx = $fx + 8;
+                        $sy = $fy + 8;
+
+                        imagefilledellipse($final, $sx, $sy, 14, 14, $statusDotBorderColor);
+                        imagefilledellipse($final, $sx, $sy, 10, 10, imagecolorallocate($final, $sc[0], $sc[1], $sc[2]));
+                    }
+                }
             }
 
             $textColor = imagecolorallocate($final, 60, 60, 60);
@@ -525,15 +604,89 @@ class BtsTowerController extends Controller
             imagefilledrectangle($final, 0, $outHeight - 14, 195, $outHeight, $bgText);
             imagestring($final, 2, 3, $outHeight - 13, '(c) OpenStreetMap contributors', $textColor);
 
+            if ($showKecamatanLegend) {
+                $this->drawKecamatanLegend($final, $markerPoints, $outWidth, $outHeight);
+            }
+
             ob_start();
             imagejpeg($final, null, 85);
             $imageData = ob_get_clean();
 
             imagedestroy($final);
 
-            return 'data:image/jpeg;base64,' . base64_encode($imageData);
+            return 'data:image/jpeg;base64,'.base64_encode($imageData);
         } catch (\Throwable $e) {
             return null;
+        }
+    }
+
+    /**
+     * Gambar legend kecamatan di pojok kanan-bawah peta, meniru tampilan legend
+     * Leaflet control di halaman aplikasi (background gelap, judul ungu muda,
+     * dot warna + nama + jumlah).
+     */
+    private function drawKecamatanLegend($img, array $points, int $outWidth, int $outHeight): void
+    {
+        $items = [];
+        foreach (self::KECAMATAN_COLORS as $name => $rgb) {
+            $count = count(array_filter($points, fn ($p) => ($p['kecamatan'] ?? '') === $name));
+            if ($count > 0) {
+                $items[] = [$name, $rgb, $count];
+            }
+        }
+
+        if (empty($items)) {
+            return;
+        }
+
+        $bg = imagecolorallocate($img, 23, 30, 51);        // #171e33
+        $border = imagecolorallocate($img, 35, 43, 74);    // #232b4a
+        $titleColor = imagecolorallocate($img, 165, 180, 252); // #a5b4fc
+        $textColor = imagecolorallocate($img, 209, 213, 219);  // #d1d5db
+        $white = imagecolorallocate($img, 255, 255, 255);
+
+        $fs = 3;
+        $padX = 10;
+        $padY = 8;
+        $titleH = 18;
+        $rowH = 14;
+        $dotD = 9;
+
+        $maxTextW = 0;
+        foreach ($items as [$name, , $count]) {
+            $label = $name.' ('.$count.')';
+            $maxTextW = max($maxTextW, imagefontwidth($fs) * strlen($label));
+        }
+
+        $legW = $padX * 2 + $dotD + 7 + $maxTextW;
+        $legH = $padY * 2 + $titleH + count($items) * $rowH;
+
+        $x2 = $outWidth - 8;
+        $y2 = $outHeight - 20;
+        $x1 = $x2 - $legW;
+        $y1 = $y2 - $legH;
+
+        if ($x1 < 0 || $y1 < 0) {
+            return;
+        }
+
+        imagefilledrectangle($img, $x1, $y1, $x2, $y2, $bg);
+        imagerectangle($img, $x1, $y1, $x2, $y2, $border);
+
+        imagestring($img, 4, $x1 + $padX, $y1 + 5, 'Kecamatan', $titleColor);
+
+        $ry = $y1 + $padY + $titleH;
+        foreach ($items as [$name, $rgb, $count]) {
+            $cx = $x1 + $padX + (int) ($dotD / 2);
+            $cy = $ry + (int) ($rowH / 2);
+
+            imagefilledellipse($img, $cx, $cy, $dotD + 2, $dotD + 2, $white);
+            imagefilledellipse($img, $cx, $cy, $dotD, $dotD, imagecolorallocate($img, $rgb[0], $rgb[1], $rgb[2]));
+
+            $ty = $ry + (int) (($rowH - imagefontheight($fs)) / 2);
+            imagestring($img, $fs, $x1 + $padX + $dotD + 7, $ty, $name.' ('.$count.')', $textColor);
+
+            $ry += $rowH;
         }
     }
 
@@ -552,12 +705,12 @@ class BtsTowerController extends Controller
                 'bts_tower_id' => $btsTower->id,
                 'user_id' => Auth::id(),
                 'type' => 'status_changed',
-                'title' => 'BTS Tidak Aktif: ' . $btsTower->nama_bts,
-                'message' => 'Status BTS "' . $btsTower->nama_bts . '" (' . $btsTower->kode_bts . ') diubah ke Tidak Aktif oleh ' . Auth::user()->name . '.',
+                'title' => 'BTS Tidak Aktif: '.$btsTower->nama_bts,
+                'message' => 'Status BTS "'.$btsTower->nama_bts.'" ('.$btsTower->kode_bts.') diubah ke Tidak Aktif oleh '.Auth::user()->name.'.',
             ]);
         }
 
-        return back()->with('success', 'Status "' . $btsTower->kode_bts . '" diubah ke ' . $statuses[$next] . '.');
+        return back()->with('success', 'Status "'.$btsTower->kode_bts.'" diubah ke '.$statuses[$next].'.');
     }
 
     public function addNote(Request $request, BtsTower $btsTower)
@@ -604,7 +757,7 @@ class BtsTowerController extends Controller
             $tower->delete();
         }
 
-        return back()->with('success', count($towers) . ' data BTS berhasil dihapus.');
+        return back()->with('success', count($towers).' data BTS berhasil dihapus.');
     }
 
     public function exportExcel(Request $request)
@@ -627,6 +780,7 @@ class BtsTowerController extends Controller
         $towers = $query->orderBy('created_at')->get();
         $towers = $towers->values()->map(function ($t, $i) {
             $t->no_urut = $i + 1;
+
             return $t;
         });
 
@@ -634,10 +788,11 @@ class BtsTowerController extends Controller
         $grouped = $towers->groupBy('kecamatan');
         $sorted = $grouped->sortBy(function ($items, $key) use ($kecamatanOrder) {
             $index = array_search($key, $kecamatanOrder);
+
             return $index !== false ? $index : 999;
         });
 
-        $filename = 'laporan-bts-kabupaten-' . now()->format('Ymd_His') . '.csv';
+        $filename = 'laporan-bts-kabupaten-'.now()->format('Ymd_His').'.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -653,7 +808,7 @@ class BtsTowerController extends Controller
                     fputcsv($file, [
                         $t->no_urut,
                         $t->desa ?: '-',
-                        $t->latitude . ', ' . $t->longitude,
+                        $t->latitude.', '.$t->longitude,
                         $t->provider ?: '-',
                         $t->nama_perusahaan ?? '-',
                     ]);
@@ -682,7 +837,7 @@ class BtsTowerController extends Controller
         $file = $request->file('file');
         $ext = strtolower($file->getClientOriginalExtension());
 
-        if (!in_array($ext, ['csv', 'xls', 'xlsx'])) {
+        if (! in_array($ext, ['csv', 'xls', 'xlsx'])) {
             return back()->withErrors(['file' => 'Format file tidak didukung. Gunakan CSV, XLS, atau XLSX.']);
         }
 
@@ -694,7 +849,8 @@ class BtsTowerController extends Controller
             return redirect()->route('bts-towers.index')->with('success', 'Data BTS berhasil diimport.');
         } catch (\Throwable $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal import: ' . $e->getMessage());
+
+            return back()->with('error', 'Gagal import: '.$e->getMessage());
         }
     }
 
@@ -720,7 +876,7 @@ class BtsTowerController extends Controller
             ]);
         }
 
-        return back()->with('success', count($request->file('photos')) . ' foto berhasil ditambahkan.');
+        return back()->with('success', count($request->file('photos')).' foto berhasil ditambahkan.');
     }
 
     public function deletePhoto(BtsTowerPhoto $photo)
@@ -747,8 +903,12 @@ class BtsTowerController extends Controller
     public function exportGeojson(Request $request)
     {
         $query = BtsTower::query();
-        if ($request->filled('kecamatan')) $query->where('kecamatan', $request->kecamatan);
-        if ($request->filled('provider')) $query->where('provider', $request->provider);
+        if ($request->filled('kecamatan')) {
+            $query->where('kecamatan', $request->kecamatan);
+        }
+        if ($request->filled('provider')) {
+            $query->where('provider', $request->provider);
+        }
 
         $towers = $query->get();
 
@@ -757,7 +917,7 @@ class BtsTowerController extends Controller
                 'type' => 'Feature',
                 'geometry' => [
                     'type' => 'Point',
-                    'coordinates' => [(float)$t->longitude, (float)$t->latitude],
+                    'coordinates' => [(float) $t->longitude, (float) $t->latitude],
                 ],
                 'properties' => [
                     'id' => $t->id,
@@ -778,7 +938,7 @@ class BtsTowerController extends Controller
             'features' => $features->toArray(),
         ];
 
-        $filename = 'bts-bolsel-' . now()->format('Ymd_His') . '.geojson';
+        $filename = 'bts-bolsel-'.now()->format('Ymd_His').'.geojson';
 
         return response()->json($geojson)
             ->header('Content-Disposition', "attachment; filename=\"$filename\"")
@@ -788,16 +948,20 @@ class BtsTowerController extends Controller
     public function exportKml(Request $request)
     {
         $query = BtsTower::query();
-        if ($request->filled('kecamatan')) $query->where('kecamatan', $request->kecamatan);
-        if ($request->filled('provider')) $query->where('provider', $request->provider);
+        if ($request->filled('kecamatan')) {
+            $query->where('kecamatan', $request->kecamatan);
+        }
+        if ($request->filled('provider')) {
+            $query->where('provider', $request->provider);
+        }
 
         $towers = $query->get();
 
-        $kml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $kml .= '<kml xmlns="http://www.opengis.net/kml/2.2">' . "\n";
-        $kml .= '<Document>' . "\n";
-        $kml .= '<name>BTS Bolaang Mongondow Selatan</name>' . "\n";
-        $kml .= '<description>Data Sebaran BTS Kab. Bolsel</description>' . "\n";
+        $kml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+        $kml .= '<kml xmlns="http://www.opengis.net/kml/2.2">'."\n";
+        $kml .= '<Document>'."\n";
+        $kml .= '<name>BTS Bolaang Mongondow Selatan</name>'."\n";
+        $kml .= '<description>Data Sebaran BTS Kab. Bolsel</description>'."\n";
 
         $providerColors = [
             'Telkomsel' => 'ff0000ff', 'Indosat' => 'ff00ccff', 'XL Axiata' => 'ffdb4d00',
@@ -807,18 +971,18 @@ class BtsTowerController extends Controller
         foreach ($towers as $t) {
             $color = $providerColors[$t->provider] ?? 'ff808080';
             $desc = "Kode: {$t->kode_bts}\nProvider: {$t->provider}\nKecamatan: {$t->kecamatan}\nStatus: {$t->status_operasional}";
-            $kml .= '<Placemark>' . "\n";
-            $kml .= '<name>' . htmlspecialchars($t->nama_bts) . '</name>' . "\n";
-            $kml .= '<description><![CDATA[' . nl2br($desc) . ']]></description>' . "\n";
-            $kml .= '<Style><IconStyle><color>' . $color . '</color></IconStyle></Style>' . "\n";
-            $kml .= '<Point><coordinates>' . $t->longitude . ',' . $t->latitude . ',0</coordinates></Point>' . "\n";
-            $kml .= '</Placemark>' . "\n";
+            $kml .= '<Placemark>'."\n";
+            $kml .= '<name>'.htmlspecialchars($t->nama_bts).'</name>'."\n";
+            $kml .= '<description><![CDATA['.nl2br($desc).']]></description>'."\n";
+            $kml .= '<Style><IconStyle><color>'.$color.'</color></IconStyle></Style>'."\n";
+            $kml .= '<Point><coordinates>'.$t->longitude.','.$t->latitude.',0</coordinates></Point>'."\n";
+            $kml .= '</Placemark>'."\n";
         }
 
-        $kml .= '</Document>' . "\n";
+        $kml .= '</Document>'."\n";
         $kml .= '</kml>';
 
-        $filename = 'bts-bolsel-' . now()->format('Ymd_His') . '.kml';
+        $filename = 'bts-bolsel-'.now()->format('Ymd_His').'.kml';
 
         return response($kml, 200)
             ->header('Content-Type', 'application/vnd.google-earth.kml+xml')
@@ -848,24 +1012,28 @@ class BtsTowerController extends Controller
     public function alerts()
     {
         $alerts = BtsAlert::with('tower')->latest()->paginate(20);
+
         return view('bts-towers.alerts', compact('alerts'));
     }
 
     public function markAlertRead(BtsAlert $alert)
     {
         $alert->update(['is_read' => true]);
+
         return back();
     }
 
     public function markAllAlertsRead()
     {
         BtsAlert::where('is_read', false)->update(['is_read' => true]);
+
         return back()->with('success', 'Semua notifikasi ditandai sudah dibaca.');
     }
 
     public function destroyAlert(BtsAlert $alert)
     {
         $alert->delete();
+
         return back()->with('success', 'Notifikasi dihapus.');
     }
 
@@ -873,18 +1041,18 @@ class BtsTowerController extends Controller
     {
         $validated = $request->validate([
             'nama_bts' => ['required', 'string', 'max:255'],
-            'provider' => ['required', 'in:' . implode(',', BtsTower::$providerList)],
+            'provider' => ['required', 'in:'.implode(',', BtsTower::$providerList)],
             'nama_perusahaan' => ['nullable', 'string', 'max:255'],
-            'kecamatan' => ['required', 'in:' . implode(',', BtsTower::$kecamatanList)],
+            'kecamatan' => ['required', 'in:'.implode(',', BtsTower::$kecamatanList)],
             'desa' => ['nullable', 'string', 'max:255'],
             'alamat' => ['nullable', 'string'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'tinggi_tower' => ['nullable', 'numeric', 'min:0'],
             'tipe_tower' => ['nullable', 'string', 'max:100'],
-            'kondisi' => ['nullable', 'in:' . implode(',', BtsTower::$kondisiList)],
-            'status_operasional' => ['nullable', 'in:' . implode(',', BtsTower::$statusList)],
-            'tahun_dibangun' => ['nullable', 'digits:4', 'integer', 'min:1990', 'max:' . (date('Y') + 1)],
+            'kondisi' => ['nullable', 'in:'.implode(',', BtsTower::$kondisiList)],
+            'status_operasional' => ['nullable', 'in:'.implode(',', BtsTower::$statusList)],
+            'tahun_dibangun' => ['nullable', 'digits:4', 'integer', 'min:1990', 'max:'.(date('Y') + 1)],
             'foto' => ['nullable', 'image', 'max:2048'],
             'keterangan' => ['nullable', 'string'],
             'coverage_radius' => ['nullable', 'numeric', 'min:0', 'max:50'],
@@ -910,25 +1078,88 @@ class BtsTowerController extends Controller
         $paths = [];
 
         if ($tower->foto) {
-            $paths[] = storage_path('app/public/' . $tower->foto);
+            $paths[] = storage_path('app/public/'.$tower->foto);
         }
 
         $photo = $tower->photos()->first();
         if ($photo && $photo->path) {
-            $paths[] = storage_path('app/public/' . $photo->path);
+            $paths[] = storage_path('app/public/'.$photo->path);
         }
 
         foreach ($paths as $path) {
             if ($path && file_exists($path)) {
+                if ($thumbnail = $this->imageToThumbnailBase64($path)) {
+                    return $thumbnail;
+                }
+
                 $mime = mime_content_type($path);
                 if ($mime && in_array($mime, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
                     $data = base64_encode(file_get_contents($path));
-                    return 'data:' . $mime . ';base64,' . $data;
+
+                    return 'data:'.$mime.';base64,'.$data;
                 }
             }
         }
 
         return null;
+    }
+
+    private function imageToThumbnailBase64(string $path, int $maxSize = 320, int $quality = 75): ?string
+    {
+        try {
+            $info = @getimagesize($path);
+
+            if (! $info || empty($info['mime'])) {
+                return null;
+            }
+
+            $mime = $info['mime'];
+
+            if (! in_array($mime, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'], true)) {
+                return null;
+            }
+
+            [$width, $height] = $info;
+
+            if (! $width || ! $height) {
+                return null;
+            }
+
+            $src = match ($mime) {
+                'image/jpeg' => @imagecreatefromjpeg($path),
+                'image/png' => @imagecreatefrompng($path),
+                'image/gif' => @imagecreatefromgif($path),
+                default => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($path) : null,
+            };
+
+            if (! $src) {
+                return null;
+            }
+
+            $scale = min(1.0, $maxSize / max($width, $height));
+            $newWidth = max(1, (int) round($width * $scale));
+            $newHeight = max(1, (int) round($height * $scale));
+
+            $thumb = imagecreatetruecolor($newWidth, $newHeight);
+            $white = imagecolorallocate($thumb, 255, 255, 255);
+            imagefill($thumb, 0, 0, $white);
+            imagecopyresampled($thumb, $src, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+            imagedestroy($src);
+
+            ob_start();
+            imagejpeg($thumb, null, $quality);
+            imagedestroy($thumb);
+            $bytes = ob_get_clean();
+
+            if ($bytes === false || $bytes === '') {
+                return null;
+            }
+
+            return 'data:image/jpeg;base64,'.base64_encode($bytes);
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     private function logActivity(string $action, BtsTower $tower, ?array $old, ?array $new): void
@@ -948,12 +1179,12 @@ class BtsTowerController extends Controller
             $filteredOld = $old ? array_intersect_key($old, $fieldLabels) : null;
             $filteredNew = $new ? array_intersect_key($new, $fieldLabels) : null;
 
-            $desc = match($action) {
-                'create' => 'Menambahkan BTS baru: ' . $tower->nama_bts . ' (' . $tower->kode_bts . ')',
-                'update' => 'Mengubah data BTS: ' . $tower->nama_bts,
-                'delete' => 'Menghapus BTS: ' . $tower->nama_bts . ' (' . $tower->kode_bts . ')',
-                'status_toggle' => 'Status BTS "' . $tower->nama_bts . '" diubah',
-                default => 'Aksi pada BTS: ' . $tower->nama_bts,
+            $desc = match ($action) {
+                'create' => 'Menambahkan BTS baru: '.$tower->nama_bts.' ('.$tower->kode_bts.')',
+                'update' => 'Mengubah data BTS: '.$tower->nama_bts,
+                'delete' => 'Menghapus BTS: '.$tower->nama_bts.' ('.$tower->kode_bts.')',
+                'status_toggle' => 'Status BTS "'.$tower->nama_bts.'" diubah',
+                default => 'Aksi pada BTS: '.$tower->nama_bts,
             };
 
             ActivityLog::create([

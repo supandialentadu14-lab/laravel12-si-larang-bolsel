@@ -1,0 +1,269 @@
+<?php $__env->startSection('content'); ?>
+<div class="space-y-6 pb-24 <?php echo e(!($isMobile ?? false) ? 'pt-10' : ''); ?>">
+  
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-black text-slate-800 transition-colors uppercase tracking-tight"><?php echo e(request()->routeIs('profile.edit') ? 'Profil' : 'Edit User'); ?></h1>
+      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1"><?php echo e(request()->routeIs('profile.edit') ? 'Pengaturan Akun Anda' : 'Perbarui Data Pengguna'); ?></p>
+    </div>
+    <a href="<?php echo e(request()->routeIs('profile.edit') ? route('dashboard') : route('users.index')); ?>" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-colors">
+      <i class="fas fa-times text-xs"></i>
+    </a>
+  </div>
+
+  <form action="<?php echo e(request()->routeIs('profile.edit') ? route('profile.update') : route('users.update', $user)); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <?php echo csrf_field(); ?>
+    <?php echo method_field('PUT'); ?>
+
+    
+    <div x-data="{ 
+        imageUrl: '<?php echo e($user->avatar ? asset('media/'.$user->avatar . '?v=' . ($user->avatar_updated_at?->timestamp ?? time())) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=ffffff&color=4F46E5'); ?>',
+        fileChosen(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                this.imageUrl = e.target.result;
+            };
+        }
+    }" class="bg-indigo-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 transition-all flex flex-col items-center text-center space-y-4">
+      <div class="relative">
+        <img class="w-24 h-24 rounded-[2rem] object-cover ring-4 ring-white/20 shadow-2xl"
+           :src="imageUrl"
+           alt="Avatar">
+        <label class="absolute -bottom-2 -right-2 w-10 h-10 bg-white text-indigo-600 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer active:scale-90 transition-transform">
+          <i class="fas fa-camera text-sm"></i>
+          <input type="file" name="avatar" accept="image/*" class="hidden" @change="fileChosen">
+        </label>
+      </div>
+      <div>
+        <h3 class="text-lg font-black uppercase tracking-tight"><?php echo e($user->name); ?></h3>
+        <p class="text-[10px] font-bold opacity-60 tracking-[0.2em]"><?php echo e($user->email); ?></p>
+      </div>
+    </div>
+
+    
+    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6 transition-colors">
+      <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <i class="fas fa-user-circle text-xs"></i>
+        </div>
+        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest transition-colors">Informasi Profil</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-1.5 md:col-span-2">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Lengkap</label>
+          <input type="text" name="name" value="<?php echo e(old('name', $user->name)); ?>" 
+            oninvalid="this.setCustomValidity('Kolom Nama Lengkap harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[9px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal Lahir</label>
+          <input type="date" name="tanggal_lahir" value="<?php echo e(old('tanggal_lahir', $user->tanggal_lahir?->format('Y-m-d'))); ?>" 
+            oninvalid="this.setCustomValidity('Kolom Tanggal Lahir harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          <?php $__errorArgs = ['tanggal_lahir'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[9px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Jenis Kelamin</label>
+          <select name="jenis_kelamin" 
+            oninvalid="this.setCustomValidity('Kolom Jenis Kelamin harus dipilih')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none transition-colors" required>
+            <option value="" disabled <?php echo e(old('jenis_kelamin', $user->jenis_kelamin) ? '' : 'selected'); ?>>Pilih</option>
+            <option value="L" <?php echo e(old('jenis_kelamin', $user->jenis_kelamin) == 'L' ? 'selected' : ''); ?>>Laki-laki</option>
+            <option value="P" <?php echo e(old('jenis_kelamin', $user->jenis_kelamin) == 'P' ? 'selected' : ''); ?>>Perempuan</option>
+          </select>
+          <?php $__errorArgs = ['jenis_kelamin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[9px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama OPD</label>
+          <input type="text" name="nama_opd" value="<?php echo e(old('nama_opd', $user->nama_opd)); ?>" 
+            oninvalid="this.setCustomValidity('Kolom Nama OPD harus diisi')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          <?php $__errorArgs = ['nama_opd'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[9px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Alamat Email</label>
+          <input type="email" name="email" value="<?php echo e(old('email', $user->email)); ?>" 
+            oninvalid="this.setCustomValidity('Kolom Email harus diisi dengan format yang benar')" 
+            oninput="this.setCustomValidity('')"
+            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors" required>
+          <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[9px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+      </div>
+    </div>
+
+    
+    <?php if(auth()->user()->isAdmin() && !request()->routeIs('profile.edit')): ?>
+    <div x-data="{ role: '<?php echo e(old('role', $user->role)); ?>' }" class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6 transition-colors">
+      <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+          <i class="fas fa-shield-alt text-xs"></i>
+        </div>
+        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest transition-colors">Hak Akses & Izin</h3>
+      </div>
+
+      <div class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Peran Pengguna</label>
+          <div class="flex p-1.5 bg-slate-50 rounded-2xl transition-colors">
+            <label class="flex-1 cursor-pointer">
+              <input type="radio" name="role" value="staff" x-model="role" class="peer hidden">
+              <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all">Staff</div>
+            </label>
+            <label class="flex-1 cursor-pointer">
+              <input type="radio" name="role" value="admin" x-model="role" class="peer hidden">
+              <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-slate-400 peer-checked:bg-white peer-checked:text-purple-600 peer-checked:shadow-sm transition-all">Admin</div>
+            </label>
+          </div>
+        </div>
+
+        
+        <div x-show="role === 'staff'" x-transition class="space-y-3 pt-2 transition-colors">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Izin Akses Menu & Fitur</label>
+          <div class="grid grid-cols-1 gap-2">
+            
+            <label class="flex items-center justify-between p-4 bg-indigo-50/30 rounded-2xl border border-indigo-100/50 hover:border-indigo-200 transition-all cursor-pointer group">
+              <div class="flex items-center gap-3 transition-colors">
+                <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center transition-colors">
+                  <i class="fas fa-comment-dots text-[10px]"></i>
+                </div>
+                <span class="text-[10px] font-black text-slate-700 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">Akses Fitur Chat (Internal)</span>
+              </div>
+              <div class="relative inline-flex items-center cursor-pointer transition-colors">
+                <input type="checkbox" name="chat_enabled" value="1" <?php echo e(old('chat_enabled', $user->chat_enabled) ? 'checked' : ''); ?> class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 transition-all"></div>
+              </div>
+            </label>
+
+            <?php $__currentLoopData = config('permissions', []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <?php
+                $userPermissions = old('permissions', $user->permissions ?? []);
+                if (!is_array($userPermissions)) $userPermissions = [];
+              ?>
+              <label class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-indigo-100 transition-all cursor-pointer group">
+                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-tight group-hover:text-indigo-600 "><?php echo e($label); ?></span>
+                <div class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" name="permissions[]" value="<?php echo e($key); ?>" <?php echo e(in_array($key, $userPermissions) ? 'checked' : ''); ?> class="sr-only peer">
+                  <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                </div>
+              </label>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php endif; ?>
+
+    
+    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6 transition-colors">
+      <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+          <i class="fas fa-lock text-xs"></i>
+        </div>
+        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest transition-colors">Ganti Password</h3>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 leading-relaxed transition-colors">
+          <i class="fas fa-info-circle text-indigo-400 mr-1"></i> Kosongkan jika tidak ingin mengubah password
+        </p>
+        <div class="space-y-1.5" x-data="{ show: false }">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Password Baru</label>
+          <div class="relative flex items-center">
+            <input :type="show ? 'text' : 'password'" name="password" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors">
+            <button type="button" @click="show = !show" class="absolute right-5 text-slate-400 hover:text-indigo-600 transition-colors">
+              <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+          <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[9px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+        <div class="space-y-1.5" x-data="{ show: false }">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Konfirmasi Password</label>
+          <div class="relative flex items-center">
+            <input :type="show ? 'text' : 'password'" name="password_confirmation" placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors">
+            <button type="button" @click="show = !show" class="absolute right-5 text-slate-400 hover:text-indigo-600 transition-colors">
+              <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="flex gap-3 px-2">
+      <a href="<?php echo e(request()->routeIs('profile.edit') ? route('dashboard') : route('users.index')); ?>" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center transition-colors">Batal</a>
+      <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all"><?php echo e(request()->routeIs('profile.edit') ? 'Simpan Profil' : 'Perbarui User'); ?></button>
+    </div>
+
+  </form>
+  
+  <?php if(request()->routeIs('profile.edit')): ?>
+    
+    <div class="px-2 pt-4">
+      <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST" class="no-soft" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari akun?')">
+        <?php echo csrf_field(); ?>
+        <button type="submit" class="w-full py-5 bg-rose-50 text-rose-600 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 border border-rose-100 active:scale-95 transition-all">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </form>
+    </div>
+  <?php endif; ?>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SI-LARANG\resources\views/users/edit.blade.php ENDPATH**/ ?>

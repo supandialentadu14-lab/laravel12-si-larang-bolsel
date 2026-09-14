@@ -64,6 +64,7 @@
               <div class="relative">
                 <select name="type" class="mobile-input appearance-none bg-app-surface {{ $isAutomatic ? 'opacity-60 cursor-not-allowed' : '' }}" required @if($isAutomatic) readonly style="pointer-events: none;" @endif>
                   <option value="in" {{ old('type', $transaction->type) === 'in' ? 'selected' : '' }}>Masuk</option>
+                  <option value="saldo" {{ old('type', $transaction->type) === 'saldo' ? 'selected' : '' }}>Saldo Awal</option>
                   <option value="out" {{ old('type', $transaction->type) === 'out' ? 'selected' : '' }}>Keluar</option>
                 </select>
                 <i class="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-app-muted pointer-events-none text-[10px]"></i>

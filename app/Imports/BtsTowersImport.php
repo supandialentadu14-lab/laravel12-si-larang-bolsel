@@ -22,17 +22,18 @@ class BtsTowersImport implements ToCollection, WithStartRow
         foreach ($rows as $row) {
             $nama_bts = trim($row[0] ?? '');
             $provider = trim($row[1] ?? '');
-            $kecamatan = trim($row[2] ?? '');
-            $desa = trim($row[3] ?? '');
-            $alamat = trim($row[4] ?? '');
-            $latitude = (float) ($row[5] ?? 0);
-            $longitude = (float) ($row[6] ?? 0);
-            $tinggi_tower = is_numeric($row[7] ?? null) ? (float) $row[7] : null;
-            $tipe_tower = trim($row[8] ?? '');
-            $kondisi = trim($row[9] ?? '');
-            $status_operasional = trim($row[10] ?? '');
-            $tahun_dibangun = is_numeric($row[11] ?? null) ? (int) $row[11] : null;
-            $keterangan = trim($row[12] ?? '');
+            $nama_perusahaan = trim($row[2] ?? '');
+            $kecamatan = trim($row[3] ?? '');
+            $desa = trim($row[4] ?? '');
+            $alamat = trim($row[5] ?? '');
+            $latitude = (float) ($row[6] ?? 0);
+            $longitude = (float) ($row[7] ?? 0);
+            $tinggi_tower = is_numeric($row[8] ?? null) ? (float) $row[8] : null;
+            $tipe_tower = trim($row[9] ?? '');
+            $kondisi = trim($row[10] ?? '');
+            $status_operasional = trim($row[11] ?? '');
+            $tahun_dibangun = is_numeric($row[12] ?? null) ? (int) $row[12] : null;
+            $keterangan = trim($row[13] ?? '');
 
             if (!$nama_bts || !$provider || !$kecamatan) continue;
 
@@ -58,6 +59,7 @@ class BtsTowersImport implements ToCollection, WithStartRow
                 'kode_bts' => $kode,
                 'nama_bts' => $nama_bts,
                 'provider' => $provider,
+                'nama_perusahaan' => $nama_perusahaan ?: null,
                 'kecamatan' => $kecamatan,
                 'desa' => $desa ?: null,
                 'alamat' => $alamat ?: null,

@@ -1,0 +1,284 @@
+<?php $__env->startSection('content'); ?>
+  <script>
+    window.notaForm = function () {
+      return {
+        tahun: '<?php echo e($data['tahun'] ?? now()->year); ?>',
+        tanggal: '<?php echo e($data['tanggal'] ?? now()->toDateString()); ?>',
+        belanja: '<?php echo e($data['belanja'] ?? ($categories->first()->name ?? '')); ?>',
+        items: <?php echo json_encode(($data['items'] ?? [])); ?>,
+        nextKey: 1,
+        products: <?php echo json_encode($products->map(fn($p) => ['id'=>$p->id,'name'=>$p->name,'unit'=>$p->unit,'price'=>$p->price ?? 0,'category_id'=>$p->category_id,'category_name'=>optional($p->category)->name])); ?>,
+        init() {
+          if (this.items.length === 0) this.addItem();
+          this.ensureKeys();
+        },
+        ensureKeys() {
+          this.items = (this.items || []).map(it => ({ ...it, _key: it._key || (this.nextKey++) }));
+        },
+        addItem() {
+          this.items.push({ _key: this.nextKey++, name: '', qty: '', unit: '', price: '', total: '' });
+        },
+        removeItem(i) { 
+          if (this.items.length > 1) {
+            this.items.splice(i, 1); 
+          }
+        },
+        onProductChange(i, name) {
+          const p = this.products.find(x => x.name === name);
+          if (p) {
+            const raw = Number(p.price ?? 0);
+            const price = Number.isFinite(raw) ? Math.round(raw) : (parseInt(String(p.price).replace(/\D+/g,''),10) || '');
+            this.items[i].unit = p.unit || '';
+            this.items[i].price = price;
+          } else {
+            this.items[i].unit = '';
+            this.items[i].price = '';
+          }
+          this.recalc(i);
+        },
+        productsByBelanja() {
+          const b = (this.belanja || '').trim();
+          if (!b) return this.products;
+          return this.products.filter(p => (p.category_name || '') === b);
+        },
+        recalc(i) {
+          const it = this.items[i] || {};
+          const qty = parseFloat(it.qty || 0);
+          const price = parseFloat(it.price || 0);
+          if (!isNaN(qty) && !isNaN(price)) {
+            this.items[i].total = qty * price;
+          } else {
+            this.items[i].total = 0;
+          }
+        },
+        getTotal() {
+          return this.items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
+        }
+      }
+    }
+  </script>
+
+  <div class="space-y-6 pb-24">
+    
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Nota Pesanan</h1>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Buat Surat Pesanan Baru</p>
+      </div>
+      <a href="<?php echo e(route('reports.nota.list')); ?>" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
+        <i class="fas fa-times text-xs"></i>
+      </a>
+    </div>
+
+    <form method="POST" action="<?php echo e(route('reports.nota.save')); ?>" x-data="notaForm()" x-init="init()" class="space-y-6">
+      <?php echo csrf_field(); ?>
+
+      
+      <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+        <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <i class="fas fa-project-diagram text-xs"></i>
+          </div>
+          <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Informasi Kegiatan</h3>
+        </div>
+
+        <div class="space-y-4">
+          <div class="space-y-1.5">
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nama Kegiatan</label>
+            <textarea name="kegiatan" rows="2" 
+              oninvalid="this.setCustomValidity('Kolom Nama Kegiatan harus diisi')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed" placeholder="Contoh: Penyediaan Jasa Penunjang..." required><?php echo e(old('kegiatan', $data['kegiatan'] ?? '')); ?></textarea>
+            <?php $__errorArgs = ['kegiatan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[10px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Sub Kegiatan</label>
+            <textarea name="sub_kegiatan" rows="2" 
+              oninvalid="this.setCustomValidity('Kolom Sub Kegiatan harus diisi')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none leading-relaxed" placeholder="Contoh: Penyelenggaraan Rapat..." required><?php echo e(old('sub_kegiatan', $data['sub_kegiatan'] ?? '')); ?></textarea>
+            <?php $__errorArgs = ['sub_kegiatan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[10px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6">
+        <div class="flex items-center gap-3 border-b border-slate-50 pb-4">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <i class="fas fa-file-invoice text-xs"></i>
+          </div>
+          <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Detail Dokumen</h3>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Kode Rekening</label>
+              <input type="text" name="rekening" value="<?php echo e(old('rekening', $data['rekening'] ?? '')); ?>" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-mono font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="5.1.02.01...">
+              <?php $__errorArgs = ['rekening'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[10px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Tanggal</label>
+              <input type="date" name="tanggal" x-model="tanggal" 
+                oninvalid="this.setCustomValidity('Kolom Tanggal harus diisi')" 
+                oninput="this.setCustomValidity('')"
+                class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" required>
+              <?php $__errorArgs = ['tanggal'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[10px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Nomor Nota Pesanan</label>
+            <input type="text" name="nomor" value="<?php echo e(old('nomor', $data['nomor'] ?? '')); ?>" 
+              oninvalid="this.setCustomValidity('Kolom Nomor Nota harus diisi')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="001/NPB/..." required>
+            <?php $__errorArgs = ['nomor'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="text-[10px] font-bold text-rose-600 mt-1 ml-4"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Kategori Belanja</label>
+            <select name="belanja" x-model="belanja" 
+              oninvalid="this.setCustomValidity('Kolom Kategori Belanja harus dipilih')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+              <option value="">-- Pilih Kategori --</option>
+              <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($cat->name); ?>"><?php echo e($cat->name); ?></option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Penyedia / Supplier</label>
+            <select name="supplier_id" 
+              oninvalid="this.setCustomValidity('Kolom Penyedia harus dipilih')" 
+              oninput="this.setCustomValidity('')"
+              class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none appearance-none" required>
+              <option value="">-- Pilih Penyedia --</option>
+              <?php $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($s->id); ?>" <?php echo e((old('supplier_id', $data['supplier_id'] ?? '') == $s->id) ? 'selected' : ''); ?>>
+                  <?php echo e($s->name); ?> (<?php echo e($s->toko); ?>)
+                </option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-6 overflow-hidden">
+        <div class="flex items-center justify-between border-b border-slate-50 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <i class="fas fa-boxes text-xs"></i>
+            </div>
+            <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Rincian Barang</h3>
+          </div>
+          <button type="button" @click="addItem()" class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 transition active:scale-90">
+            <i class="fas fa-plus text-[10px]"></i>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto -mx-6 px-6">
+          <table class="min-w-[800px] w-full text-left">
+            <thead class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+              <tr>
+                <th class="pb-4 px-3 w-[250px]">Nama Barang</th>
+                <th class="pb-4 px-3 w-[80px] text-center">Qty</th>
+                <th class="pb-4 px-3 w-[100px] text-center">Satuan</th>
+                <th class="pb-4 px-3 w-[150px] text-right">Harga (Rp)</th>
+                <th class="pb-4 px-3 w-[150px] text-right">Total (Rp)</th>
+                <th class="pb-4 px-3 w-[50px]"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+              <template x-for="(item, i) in items" :key="item._key">
+                <tr class="hover:bg-slate-50/50 transition">
+                  <td class="py-3 px-1">
+                    <select :name="`items[${i}][name]`" x-model="item.name" @change="onProductChange(i, $event.target.value)" 
+                      oninvalid="this.setCustomValidity('Barang harus dipilih')" 
+                      oninput="this.setCustomValidity('')"
+                      class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:ring-1 focus:ring-indigo-500/20 appearance-none" required>
+                      <option value="">-- Pilih Barang --</option>
+                      <template x-for="p in productsByBelanja()" :key="p.id">
+                        <option :value="p.name" x-text="p.name" :selected="item.name === p.name"></option>
+                      </template>
+                    </select>
+                  </td>
+                  <td class="py-3 px-1">
+                    <input type="number" :name="`items[${i}][qty]`" x-model="item.qty" @input="recalc(i)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold text-center outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="0">
+                  </td>
+                  <td class="py-3 px-1 text-center uppercase font-bold text-[10px] text-slate-400">
+                    <input type="text" :name="`items[${i}][unit]`" x-model="item.unit" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-bold text-center outline-none focus:ring-1 focus:ring-indigo-500/20 uppercase" placeholder="...">
+                  </td>
+                  <td class="py-3 px-1">
+                    <input type="number" :name="`items[${i}][price]`" x-model="item.price" @input="recalc(i)" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] font-mono font-bold text-right outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="0">
+                  </td>
+                  <td class="py-3 px-3 text-right font-mono text-[11px] font-black text-indigo-600" x-text="new Intl.NumberFormat('id-ID').format(item.total || 0)"></td>
+                  <td class="py-3 px-1 text-center">
+                    <button type="button" @click="removeItem(i)" class="text-slate-300 hover:text-rose-500 transition">
+                      <i class="fas fa-trash-alt text-[10px]"></i>
+                    </button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+            <tfoot>
+              <tr class="bg-indigo-600 text-white">
+                <td colspan="4" class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Total Keseluruhan</td>
+                <td class="px-3 py-4 text-right font-mono text-sm font-black" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(getTotal())"></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      
+      <div class="flex gap-3 px-2">
+        <a href="<?php echo e(route('reports.nota.list')); ?>" class="flex-1 py-5 bg-slate-100 text-slate-400 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] text-center">Batal</a>
+        <button type="submit" class="flex-[2] py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 active:scale-95 transition-all">Simpan Nota</button>
+      </div>
+    </form>
+  </div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make($isMobile ? 'layouts.mobile' : 'layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SI-LARANG\resources\views/nota_pesanan/create.blade.php ENDPATH**/ ?>

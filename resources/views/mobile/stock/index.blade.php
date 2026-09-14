@@ -255,10 +255,14 @@
 
           <div class="space-y-1.5">
             <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-4">Tipe Mutasi</label>
-            <div class="grid grid-cols-2 p-1.5 bg-gray-50 rounded-2xl">
+            <div class="grid grid-cols-3 p-1.5 bg-gray-50 rounded-2xl">
               <label class="flex-1 cursor-pointer">
                 <input type="radio" class="peer hidden" name="type_radio" value="in" @change="type = 'in'" :checked="type === 'in'">
                 <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm transition-all">Masuk</div>
+              </label>
+              <label class="flex-1 cursor-pointer">
+                <input type="radio" class="peer hidden" name="type_radio" value="saldo" @change="type = 'saldo'" :checked="type === 'saldo'">
+                <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all">Saldo</div>
               </label>
               <label class="flex-1 cursor-pointer">
                 <input type="radio" class="peer hidden" name="type_radio" value="out" @change="type = 'out'" :checked="type === 'out'">
@@ -355,10 +359,14 @@
 
           <div class="space-y-1.5">
             <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-4">Tipe Mutasi</label>
-            <div class="grid grid-cols-2 p-1.5 bg-gray-50 rounded-2xl">
+            <div class="grid grid-cols-3 p-1.5 bg-gray-50 rounded-2xl">
               <label class="flex-1 cursor-pointer">
                 <input type="radio" class="peer hidden" name="type_radio" value="in" @change="editType = 'in'" :checked="editType === 'in'">
                 <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm transition-all">Masuk</div>
+              </label>
+              <label class="flex-1 cursor-pointer">
+                <input type="radio" class="peer hidden" name="type_radio" value="saldo" @change="editType = 'saldo'" :checked="editType === 'saldo'">
+                <div class="py-3 rounded-xl text-center text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all">Saldo</div>
               </label>
               <label class="flex-1 cursor-pointer">
                 <input type="radio" class="peer hidden" name="type_radio" value="out" @change="editType = 'out'" :checked="editType === 'out'">

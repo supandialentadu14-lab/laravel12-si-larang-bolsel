@@ -122,12 +122,16 @@
           @endphp
           <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300 relative overflow-hidden group">
             {{-- Decoration --}}
-            <div class="absolute -right-6 -top-6 w-16 h-16 {{ $transaction->type === 'in' ? 'bg-emerald-500/5' : 'bg-rose-500/5' }} rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+            <div class="absolute -right-6 -top-6 w-16 h-16 {{ $transaction->type === 'in' ? 'bg-emerald-500/5' : ($transaction->type === 'out' ? 'bg-rose-500/5' : 'bg-indigo-500/5') }} rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
 
             <div class="flex items-start gap-4 relative z-10">
               {{-- Type Icon --}}
-              <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 {{ $transaction->type === 'in' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }} shadow-sm">
-                <i class="fas {{ $transaction->type === 'in' ? 'fa-arrow-down-long' : 'fa-arrow-up-long' }} text-sm"></i>
+              @php
+                $typeLabel = $transaction->type === 'in' ? 'Masuk' : ($transaction->type === 'out' ? 'Keluar' : 'Saldo Awal');
+                $typeColor = $transaction->type === 'in' ? 'bg-emerald-50 text-emerald-600' : ($transaction->type === 'out' ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-600');
+              @endphp
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 {{ $typeColor }} shadow-sm">
+                <i class="fas {{ $transaction->type === 'in' ? 'fa-arrow-down-long' : ($transaction->type === 'out' ? 'fa-arrow-up-long' : 'fa-scale-balanced') }} text-sm"></i>
               </div>
 
               {{-- Transaction Info --}}
@@ -136,8 +140,8 @@
                   <div class="min-w-0">
                     <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-indigo-600 transition-colors">{{ $productName }}</h3>
                     <div class="flex items-center flex-wrap gap-2 mt-2">
-                      <span class="text-[9px] font-black px-2 py-0.5 rounded-lg {{ $transaction->type === 'in' ? 'bg-emerald-100 text-emerald-700 ' : 'bg-rose-100 text-rose-700 ' }} uppercase tracking-widest transition-colors">
-                        {{ $transaction->type === 'in' ? 'Masuk' : 'Keluar' }}
+                      <span class="text-[9px] font-black px-2 py-0.5 rounded-lg {{ $transaction->type === 'in' ? 'bg-emerald-100 text-emerald-700' : ($transaction->type === 'out' ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700') }} uppercase tracking-widest transition-colors">
+                        {{ $typeLabel }}
                       </span>
                       @if($transaction->nosur)
                         <a href="{{ route('reports.penerimaan.list', ['search' => $transaction->nosur]) }}" class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg uppercase tracking-widest transition-all hover:bg-indigo-100 flex items-center gap-1.5 border border-indigo-100/50">
@@ -148,8 +152,8 @@
                     </div>
                   </div>
                   <div class="text-right flex-shrink-0 ml-auto pt-0.5">
-                    <span class="text-lg font-black {{ $transaction->type === 'in' ? 'text-emerald-600' : 'text-rose-600' }} block leading-none">
-                      {{ $transaction->type === 'in' ? '+' : '-' }}{{ $transaction->quantity }}
+                    <span class="text-lg font-black {{ $transaction->type === 'in' ? 'text-emerald-600' : ($transaction->type === 'out' ? 'text-rose-600' : 'text-indigo-600') }} block leading-none">
+                      {{ $transaction->type === 'in' ? '+' : ($transaction->type === 'out' ? '-' : '') }}{{ $transaction->quantity }}
                     </span>
                     <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.1em] mt-1">{{ $productUnit }}</p>
                   </div>

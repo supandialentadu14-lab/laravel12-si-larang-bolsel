@@ -44,21 +44,27 @@
 
       <div class="space-y-3">
         <label class="text-[10px] font-bold uppercase opacity-60 ml-1 tracking-widest">Tipe Mutasi</label>
-        <div class="grid grid-cols-2 p-1 bg-white/10 rounded-2xl border border-white/5 relative">
+        <div class="grid grid-cols-3 p-1 bg-white/10 rounded-2xl border border-white/5 relative">
           <!-- Sliding Background -->
-          <div class="absolute inset-y-1 transition-all duration-300 ease-out bg-white rounded-xl shadow-sm w-[calc(50%-4px)]"
-            :class="type === 'in' ? 'left-1' : 'left-[calc(50%+2px)]'"></div>
+          <div class="absolute inset-y-1 transition-all duration-300 ease-out bg-white rounded-xl shadow-sm w-[calc(33.333%-4px)]"
+            :class="type === 'in' ? 'left-1' : (type === 'saldo' ? 'left-[calc(33.333%+2px)]' : 'left-[calc(66.666%+2px)]')"></div>
           
           <button type="button" @click="type = 'in'" 
-            class="relative z-10 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-2"
+            class="relative z-10 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-1"
             :class="type === 'in' ? 'text-indigo-900' : 'text-white/60'">
-            <i class="fas fa-arrow-down-long text-[10px]" :class="type === 'in' ? 'text-green-500' : ''"></i>
+            <i class="fas fa-arrow-down-long text-[9px]" :class="type === 'in' ? 'text-green-500' : ''"></i>
             Masuk
           </button>
+          <button type="button" @click="type = 'saldo'"
+            class="relative z-10 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-1"
+            :class="type === 'saldo' ? 'text-indigo-900' : 'text-white/60'">
+            <i class="fas fa-scale-balanced text-[9px]" :class="type === 'saldo' ? 'text-indigo-400' : ''"></i>
+            Saldo
+          </button>
           <button type="button" @click="type = 'out'" 
-            class="relative z-10 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-2"
+            class="relative z-10 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-1"
             :class="type === 'out' ? 'text-indigo-900' : 'text-white/60'">
-            <i class="fas fa-arrow-up-long text-[10px]" :class="type === 'out' ? 'text-rose-500' : ''"></i>
+            <i class="fas fa-arrow-up-long text-[9px]" :class="type === 'out' ? 'text-rose-500' : ''"></i>
             Keluar
           </button>
         </div>
@@ -120,7 +126,7 @@
       </div>
       <div class="space-y-1">
         <h4 class="text-xs font-black text-gray-900 uppercase tracking-widest">Petunjuk Pengisian</h4>
-        <p class="text-[10px] text-gray-400 font-medium leading-relaxed">Pilih barang yang akan dimutasi, tentukan tipe mutasi (masuk untuk menambah stok, keluar untuk mengurangi), masukkan jumlah barang, dan simpan.</p>
+        <p class="text-[10px] text-gray-400 font-medium leading-relaxed">Pilih barang yang akan dimutasi, tentukan tipe mutasi (masuk untuk menambah stok, keluar untuk mengurangi, saldo untuk menetapkan saldo awal), masukkan jumlah barang, dan simpan.</p>
       </div>
     </div>
   </div>

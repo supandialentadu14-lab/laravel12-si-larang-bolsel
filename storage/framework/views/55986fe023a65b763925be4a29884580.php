@@ -1,0 +1,128 @@
+<?php $__env->startSection('content'); ?>
+<div x-data="{
+  showFilters: <?php echo e(request('search') ? 'true' : 'false'); ?>
+
+}" class="space-y-6">
+
+  
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-black text-slate-800 transition-colors uppercase tracking-tight">Penyedia</h1>
+      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1 transition-colors">Vendor & Supplier</p>
+    </div>
+    <div class="flex gap-2">
+      <button @click="showFilters = !showFilters" class="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 transition-all" :class="showFilters ? 'text-indigo-600 border-indigo-100 ring-4 ring-indigo-50 ' : ''">
+        <i class="fas fa-filter text-xs"></i>
+      </button>
+      <a href="<?php echo e(route('suppliers.create')); ?>" class="w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 flex items-center justify-center active:scale-90 transition-transform">
+        <i class="fas fa-plus text-xs"></i>
+      </a>
+    </div>
+  </div>
+
+  
+  <div x-show="showFilters" x-collapse x-cloak>
+    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-50 shadow-sm space-y-4 transition-colors">
+      <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 transition-colors">Cari Penyedia</h3>
+      <form action="<?php echo e(route('suppliers.index')); ?>" method="GET" class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4 transition-colors">Nama atau NPWP</label>
+          <div class="relative">
+            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 text-xs transition-colors"></i>
+            <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari penyedia..." class="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100 transition-all">
+            Cari
+          </button>
+          <a href="<?php echo e(route('suppliers.index')); ?>" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center transition-colors">
+            Reset
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  
+  <div class="bg-blue-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-blue-100 overflow-hidden relative group transition-all">
+    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+    <div class="relative z-10">
+      <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Total Rekanan</p>
+      <h2 class="text-3xl font-black mt-2 tracking-tight"><?php echo e($suppliers->total()); ?> Penyedia</h2>
+      <p class="text-[9px] font-bold mt-2 opacity-80 uppercase tracking-widest transition-colors">Telah Bekerja Sama</p>
+    </div>
+  </div>
+
+  
+  <div class="space-y-4">
+    <div class="flex items-center justify-between px-2">
+      <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] transition-colors">Daftar Rekanan Penyedia</h3>
+      <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest transition-colors"><?php echo e($suppliers->count()); ?> Ditampilkan</span>
+    </div>
+
+    <?php $__empty_1 = true; $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supplier): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+    <div class="bg-white rounded-[2.5rem] p-5 border border-slate-50 shadow-sm hover:shadow-xl transition-all duration-300">
+      <div class="flex items-start gap-4">
+        
+        <div class="w-14 h-14 rounded-[1.5rem] bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-black shadow-inner flex-shrink-0 transition-colors">
+          <?php echo e(substr($supplier->name, 0, 1)); ?>
+
+        </div>
+
+        
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight truncate leading-tight transition-colors"><?php echo e($supplier->name); ?></h3>
+              <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 transition-colors">Dir: <?php echo e($supplier->dir ?: '-'); ?></p>
+            </div>
+          </div>
+
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center gap-2 text-slate-500 transition-colors">
+              <i class="fas fa-map-marker-alt text-[9px] opacity-40"></i>
+              <span class="text-[10px] font-medium truncate"><?php echo e($supplier->address); ?></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[9px] font-mono bg-slate-50 px-2 py-1 rounded-lg text-slate-400 border border-slate-100 uppercase transition-colors">NPWP: <?php echo e($supplier->npwp); ?></span>
+              
+              
+              <div class="flex items-center gap-1.5">
+                <a href="<?php echo e(route('suppliers.edit', $supplier->id)); ?>" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                  <i class="fas fa-edit text-[10px]"></i>
+                </a>
+                <form action="<?php echo e(route('suppliers.destroy', $supplier->id)); ?>" method="POST" class="inline">
+                  <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                  <button type="submit" @click.prevent="if(confirm('Hapus penyedia ini?')) $el.form.submit()" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                    <i class="fas fa-trash text-[10px]"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+    <div class="bg-white rounded-[3rem] p-16 text-center border border-slate-50 shadow-sm transition-colors">
+      <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors">
+        <i class="fas fa-store-slash text-3xl text-slate-200 "></i>
+      </div>
+      <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest transition-colors">Tidak Ada Penyedia</h3>
+      <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest transition-colors">Klik (+) untuk menambah penyedia baru</p>
+    </div>
+    <?php endif; ?>
+  </div>
+
+  
+  <div class="mt-8">
+    <?php echo e($suppliers->links()); ?>
+
+  </div>
+
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make(($isMobile ?? false) ? 'layouts.mobile' : 'layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SI-LARANG\resources\views/suppliers/index.blade.php ENDPATH**/ ?>

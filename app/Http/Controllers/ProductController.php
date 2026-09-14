@@ -224,6 +224,7 @@ class ProductController extends Controller
                 'unit' => $trx->product->unit, // ✅ TAMBAH AGAR SATUAN SESUAI DATABASE
                 'masuk' => $trx->type === 'in' ? $trx->quantity : 0,
                 'keluar' => $trx->type === 'out' ? $trx->quantity : 0,
+                'saldo_awal' => $trx->type === 'saldo' ? $trx->quantity : null,
                 'harga' => $trx->price ?? $trx->product->price,
                 'keterangan' => $trx->notes ?? '',
             ];
