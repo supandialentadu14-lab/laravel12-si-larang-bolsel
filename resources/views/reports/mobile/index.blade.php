@@ -159,6 +159,12 @@
 
                     if (!isset($saldo[$productId]))
                         $saldo[$productId] = 0;
+
+                    // Jika baris adalah transaksi "saldo", set saldo awal langsung ke nilainya
+                    if (!empty($item['is_saldo'])) {
+                        $saldo[$productId] = (int) ($item['saldo_value'] ?? 0);
+                    }
+
                     $saldoAwal = $saldo[$productId];
                     $masuk = $item['masuk'];
                     $keluar = $item['keluar'];

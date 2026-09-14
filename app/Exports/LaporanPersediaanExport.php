@@ -60,14 +60,27 @@ class LaporanPersediaanExport implements FromArray, WithTitle, WithColumnWidths,
 
         foreach ($grouped as $items) {
             $first  = $items->first();
+            $saldoTrx = $items->firstWhere('type', 'saldo');
+            $isSaldo = $saldoTrx !== null;
+
+            if ($isSaldo) {
+                $masuk  = 0;
+                $keluar = 0;
+            } else {
+                $masuk  = $items->where('type', 'in')->sum('quantity');
+                $keluar = $items->where('type', 'out')->sum('quantity');
+            }
+
             $rows[] = [
                 'date'       => $first->date,
                 'product_id' => $first->product_id,
                 'name'       => $first->product->name ?? '-',
                 'harga'      => $first->product->price ?? 0,
                 'satuan'     => $first->product->unit ?? '',
-                'masuk'      => $items->where('type', 'in')->sum('quantity'),
-                'keluar'     => $items->where('type', 'out')->sum('quantity'),
+                'masuk'      => $masuk,
+                'keluar'     => $keluar,
+                'is_saldo'   => $isSaldo,
+                'saldo_value'=> (int) ($saldoTrx?->quantity ?? 0),
             ];
         }
 
@@ -156,6 +169,11 @@ class LaporanPersediaanExport implements FromArray, WithTitle, WithColumnWidths,
             $keluar = $item['keluar'];
 
             if (!isset($saldo[$pid])) $saldo[$pid] = 0;
+
+            // Jika baris adalah transaksi "saldo", set saldo awal langsung ke nilainya
+            if (!empty($item['is_saldo'])) {
+                $saldo[$pid] = (int) ($item['saldo_value'] ?? 0);
+            }
 
             $saldoAwal  = $saldo[$pid];
             $saldoAkhir = $saldoAwal + $masuk - $keluar;

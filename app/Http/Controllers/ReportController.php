@@ -141,8 +141,18 @@ class ReportController extends Controller
 
         foreach ($grouped as $items) {
             $first = $items->first();
-            $masuk = $items->where('type', 'in')->sum('quantity');
-            $keluar = $items->where('type', 'out')->sum('quantity');
+            $saldoTrx = $items->firstWhere('type', 'saldo');
+            $isSaldo = $saldoTrx !== null;
+
+            // Jika baris ini berisi transaksi "saldo", itu menetapkan saldo awal,
+            // bukan masuk/keluar.
+            if ($isSaldo) {
+                $masuk = 0;
+                $keluar = 0;
+            } else {
+                $masuk = $items->where('type', 'in')->sum('quantity');
+                $keluar = $items->where('type', 'out')->sum('quantity');
+            }
 
             $reportData[] = [
                 'date' => $first->date,
@@ -152,6 +162,8 @@ class ReportController extends Controller
                 'satuan' => $first->product?->unit ?? '',
                 'masuk' => $masuk,
                 'keluar' => $keluar,
+                'is_saldo' => $isSaldo,
+                'saldo_value' => (int) ($saldoTrx?->quantity ?? 0),
             ];
         }
 
