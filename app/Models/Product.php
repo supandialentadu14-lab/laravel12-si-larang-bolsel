@@ -73,18 +73,27 @@ class Product extends Model
      */
     public function getCalculatedStockAttribute()
     {
-        // Hitung total stok masuk
-        $in = $this->transactions()
-            ->where('type', 'in')
-            ->sum('quantity');
+        // Saldo akhir mengikuti logika laporan persediaan:
+        // - tipe 'saldo' => set saldo langsung ke jumlahnya (saldo awal)
+        // - tipe 'in'    => tambah
+        // - tipe 'out'   => kurang
+        $balance = 0;
+        $txs = $this->transactions()
+            ->orderBy('date')
+            ->orderBy('id')
+            ->get(['type', 'quantity']);
 
-        // Hitung total stok keluar
-        $out = $this->transactions()
-            ->where('type', 'out')
-            ->sum('quantity');
+        foreach ($txs as $t) {
+            if ($t->type === 'saldo') {
+                $balance = (int) $t->quantity;
+            } elseif ($t->type === 'in') {
+                $balance += (int) $t->quantity;
+            } elseif ($t->type === 'out') {
+                $balance -= (int) $t->quantity;
+            }
+        }
 
-        // Stok akhir = masuk - keluar
-        return $in - $out;
+        return $balance;
     }
 
     public function getMinStockAttribute($value)

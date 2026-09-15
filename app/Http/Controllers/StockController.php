@@ -89,17 +89,7 @@ class StockController extends Controller
 
         // --- Keep the rest of original logic for products and totals ---
         $editTransaction = null;
-        $products = Product::withSum(['transactions as stock_in' => function ($q) {
-            $q->where('type', 'in');
-        }], 'quantity')
-            ->withSum(['transactions as stock_out' => function ($q) {
-                $q->where('type', 'out');
-            }], 'quantity')
-            ->get();
-
-        foreach ($products as $product) {
-            $product->calculated_stock = ($product->stock_in ?? 0) - ($product->stock_out ?? 0);
-        }
+        $products = $this->productsWithSaldoAkhir();
 
         $totalSaldoAkhir = $products->sum('calculated_stock');
         $grandTotal = $products->sum(function ($product) {
@@ -126,11 +116,42 @@ class StockController extends Controller
      */
     public function create(Request $request)
     {
-        $products = Product::orderBy('name')->get();
+        $products = $this->productsWithSaldoAkhir();
         $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
         $singkatanOpd = strtoupper($opdSetting->singkatan_opd ?? 'DISKOMINFO');
 
         return view('stock.create', compact('products', 'singkatanOpd'));
+    }
+
+    /**
+     * Ambil semua produk lengkap dengan nilai stok (saldo akhir) yang
+     * mengikuti logika laporan persediaan:
+     * saldo ('saldo') = set, in = tambah, out = kurang.
+     * Nilai stok DB ($product->stock) ikut disamakan agar tampilan form
+     * & pengecekan stok keluar selalu konsisten dengan laporan.
+     */
+    protected function productsWithSaldoAkhir()
+    {
+        $products = Product::with(['transactions' => function ($q) {
+            $q->orderBy('date')->orderBy('id');
+        }])->get();
+
+        foreach ($products as $product) {
+            $balance = 0;
+            foreach ($product->transactions as $t) {
+                if ($t->type === 'saldo') {
+                    $balance = (int) $t->quantity;
+                } elseif ($t->type === 'in') {
+                    $balance += (int) $t->quantity;
+                } elseif ($t->type === 'out') {
+                    $balance -= (int) $t->quantity;
+                }
+            }
+            $product->calculated_stock = $balance;
+            $product->stock = $balance; // samakan agar konsisten di form/list
+        }
+
+        return $products;
     }
 
     public function syncFromDocs(Request $request)
@@ -261,7 +282,7 @@ class StockController extends Controller
     public function edit($id)
     {
         $transaction = StockTransaction::with('product')->findOrFail($id);
-        $products = Product::orderBy('name')->get();
+        $products = $this->productsWithSaldoAkhir();
         $opdSetting = \App\Models\OpdSetting::where('user_id', auth()->id())->first();
         $singkatanOpd = strtoupper($opdSetting->singkatan_opd ?? 'DISKOMINFO');
 
