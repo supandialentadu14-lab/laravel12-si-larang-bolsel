@@ -154,6 +154,44 @@ class StockController extends Controller
         return $products;
     }
 
+    /**
+     * Hitung saldo akhir (stok efektif) sebuah produk dari seluruh transaksinya,
+     * mengikuti logika laporan persediaan: saldo = set, in = tambah, out = kurang.
+     * Opsional: kecualikan satu transaksi (mis. transaksi yang sedang diedit).
+     */
+    protected function effectiveStock(Product $product, ?int $excludeId = null): int
+    {
+        $balance = 0;
+        $q = $product->transactions();
+        if ($excludeId) {
+            $q = $q->where('id', '!=', $excludeId);
+        }
+
+        foreach ($q->orderBy('date')->orderBy('id')->get(['type', 'quantity']) as $t) {
+            if ($t->type === 'saldo') {
+                $balance = (int) $t->quantity;
+            } elseif ($t->type === 'in') {
+                $balance += (int) $t->quantity;
+            } elseif ($t->type === 'out') {
+                $balance -= (int) $t->quantity;
+            }
+        }
+
+        return $balance;
+    }
+
+    /**
+     * Sinkronkan kolom stok di tabel products agar selalu sama dengan saldo akhir
+     * hasil perhitungan transaksi (agar form & pengecekan tidak memakai stok stale).
+     */
+    protected function reconcileStock(Product $product): void
+    {
+        $balance = $this->effectiveStock($product);
+        if ((int) $product->stock !== $balance) {
+            Product::where('id', $product->id)->update(['stock' => $balance]);
+        }
+    }
+
     public function syncFromDocs(Request $request)
     {
         try {
@@ -239,9 +277,12 @@ class StockController extends Controller
                 // Lock product for update to ensure stock consistency
                 $product = Product::lockForUpdate()->findOrFail($data['product_id']);
 
+                // Saldo saat ini dihitung dari seluruh transaksi (bukan field stock yang stale)
+                $currentBalance = $this->effectiveStock($product);
+
                 // Jika tipe transaksi adalah stok keluar, cek apakah stok mencukupi
-                if (($data['type'] ?? '') === 'out' && $product->stock < (int) $data['quantity']) {
-                    throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini.');
+                if (($data['type'] ?? '') === 'out' && $currentBalance < (int) $data['quantity']) {
+                    throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini. Stok tersedia: ' . $currentBalance . ' ' . ($product->unit ?? '') . '.');
                 }
 
                 // Simpan transaksi stok ke database
@@ -255,15 +296,8 @@ class StockController extends Controller
                     'user_id' => auth()->id(),
                 ]);
 
-                // Update physical stock in product table
-                if (($data['type'] ?? '') === 'in') {
-                    $product->increment('stock', (int) $data['quantity']);
-                } elseif (($data['type'] ?? '') === 'out') {
-                    $product->decrement('stock', (int) $data['quantity']);
-                } else {
-                    // Tipe "saldo" (saldo awal): set stok langsung ke nilai tersebut
-                    $product->update(['stock' => (int) $data['quantity']]);
-                }
+                // Rekonsiliasi: stok DB selalu disamakan dengan saldo akhir dari transaksi
+                $this->reconcileStock($product);
 
                 $label = match ($data['type']) {
                     'in' => 'masuk',
@@ -315,26 +349,20 @@ class StockController extends Controller
 
         try {
             return DB::transaction(function () use ($data, $transaction) {
-                // Revert old product stock (saldo tidak menyentuh stok saat revert)
-                $oldProduct = Product::lockForUpdate()->find($transaction->product_id);
-                if ($oldProduct) {
-                    if ($transaction->type === 'in') {
-                        $oldProduct->decrement('stock', $transaction->quantity);
-                    } elseif ($transaction->type === 'out') {
-                        $oldProduct->increment('stock', $transaction->quantity);
-                    }
-                }
+                $oldProductId = $transaction->product_id;
+                $oldProduct = Product::lockForUpdate()->find($oldProductId);
 
                 // Load target product (could be the same)
-                $newProduct = (($data['product_id'] ?? null) == $transaction->product_id)
+                $newProduct = (($data['product_id'] ?? null) == $oldProductId)
                     ? $oldProduct
                     : Product::lockForUpdate()->findOrFail($data['product_id']);
 
+                // Saldo saat ini (tanpa transaksi yang sedang diedit) dihitung dari transaksi
+                $currentBalance = $this->effectiveStock($newProduct, (int) $transaction->id);
+
                 // Check if stock enough for "out" transaction
-                if (($data['type'] ?? '') === 'out') {
-                    if ($newProduct->stock < (int) $data['quantity']) {
-                        throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini.');
-                    }
+                if (($data['type'] ?? '') === 'out' && $currentBalance < (int) $data['quantity']) {
+                    throw new \Exception('Stok tidak mencukupi untuk transaksi keluar ini. Stok tersedia: ' . $currentBalance . ' ' . ($newProduct->unit ?? '') . '.');
                 }
 
                 // Update transaction
@@ -347,14 +375,10 @@ class StockController extends Controller
                     'notes' => $data['notes'] ?? null,
                 ]);
 
-                // Apply new stock
-                if (($data['type'] ?? '') === 'in') {
-                    $newProduct->increment('stock', (int) $data['quantity']);
-                } elseif (($data['type'] ?? '') === 'out') {
-                    $newProduct->decrement('stock', (int) $data['quantity']);
-                } else {
-                    // Tipe "saldo" (saldo awal): set stok langsung ke nilai tersebut
-                    $newProduct->update(['stock' => (int) $data['quantity']]);
+                // Rekonsiliasi: stok DB selalu disamakan dengan saldo akhir dari transaksi
+                $this->reconcileStock($newProduct);
+                if ($oldProduct && $oldProduct->id !== $newProduct->id) {
+                    $this->reconcileStock($oldProduct);
                 }
 
                 $label = match ($data['type']) {
@@ -398,15 +422,12 @@ class StockController extends Controller
 
                         // Lock product for update
                         $product = Product::lockForUpdate()->find($transaction->product_id);
-                        if ($product) {
-                            // Revert stock (saldo tidak menyentuh stok saat revert)
-                            if ($transaction->type === 'in') {
-                                $product->decrement('stock', $transaction->quantity);
-                            } elseif ($transaction->type === 'out') {
-                                $product->increment('stock', $transaction->quantity);
-                            }
-                        }
+                        $productId = $transaction->product_id;
                         $transaction->delete();
+                        // Rekonsiliasi stok dari transaksi setelah penghapusan
+                        if ($product) {
+                            $this->reconcileStock($product);
+                        }
                     }
                 }
             });
@@ -434,14 +455,10 @@ class StockController extends Controller
 
                 $product = Product::withTrashed()->lockForUpdate()->findOrFail($transaction->product_id);
 
-                // Kembalikan stok seperti sebelum transaksi ini ada (saldo tidak menyentuh stok saat revert)
-                if ($transaction->type === 'in') {
-                    $product->decrement('stock', $transaction->quantity);
-                } elseif ($transaction->type === 'out') {
-                    $product->increment('stock', $transaction->quantity);
-                }
-
                 $transaction->delete();
+
+                // Rekonsiliasi stok dari transaksi setelah penghapusan
+                $this->reconcileStock($product);
 
                 return redirect()->route('stock.index')
                     ->with('success', 'Transaksi berhasil dihapus dan stok telah disesuaikan.');
