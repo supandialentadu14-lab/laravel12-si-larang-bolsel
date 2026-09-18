@@ -1,33 +1,33 @@
-@extends('layouts.report_print')
-@section('default_orientation', 'portrait')
-@section('report_class', 'portrait')
+<?php $__env->startSection('default_orientation', 'portrait'); ?>
+<?php $__env->startSection('report_class', 'portrait'); ?>
 
 
-@section('title', 'Cetak Berita Acara Pinjam Pakai')
-@section('back_url', route('reports.pinjam.list'))
+<?php $__env->startSection('title', 'Cetak Berita Acara Pinjam Pakai'); ?>
+<?php $__env->startSection('back_url', route('reports.pinjam.list')); ?>
 
-@section('styles')
+<?php $__env->startSection('styles'); ?>
 <style>
     .report-paper { max-width: 210mm !important; }
     @media print {
         @page { size: 210mm 330mm; margin: 10mm 15mm; }
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('report_content')
+<?php $__env->startSection('report_content'); ?>
 <div id="print-area">
     <div class="mb-4">
-      @include('partials.kop', ['opd' => $opd])
+      <?php echo $__env->make('partials.kop', ['opd' => $opd], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </div>
 
     <div class="text-center mb-1">
       <h2 class="font-extrabold text-lg underline ">BERITA ACARA SERAH TERIMA BARANG INVENTARIS</h2>
-      <p class="text-sm">NO: {{ $data['nomor'] }}</p>
+      <p class="text-sm">NO: <?php echo e($data['nomor']); ?></p>
     </div>
 
     <p class="mb-2 text-sm">
-        {{ $data['pembuka'] ?? ('Pada hari ini ' . \Illuminate\Support\Carbon::parse($data['tanggal'])->translatedFormat('l d F Y') . ', bertempat di ' . \Illuminate\Support\Str::title(($opd->nama_opd ?? null) ?: ($data['tempat'] ?? '-')) . ' Kabupaten Bolaang Mongondow Selatan, yang bertanda tangan dibawah ini:') }}
+        <?php echo e($data['pembuka'] ?? ('Pada hari ini ' . \Illuminate\Support\Carbon::parse($data['tanggal'])->translatedFormat('l d F Y') . ', bertempat di ' . \Illuminate\Support\Str::title(($opd->nama_opd ?? null) ?: ($data['tempat'] ?? '-')) . ' Kabupaten Bolaang Mongondow Selatan, yang bertanda tangan dibawah ini:')); ?>
+
     </p>
 
     <div class="mb-2">
@@ -35,17 +35,17 @@
         <tr>
           <td class="w-28 align-top">N a m a</td>
           <td class="w-4 align-top">:</td>
-          <td class="align-top font-bold">{{ $data['pihak_pertama']['nama'] }}</td>
+          <td class="align-top font-bold"><?php echo e($data['pihak_pertama']['nama']); ?></td>
         </tr>
         <tr>
           <td class="align-top">N I P</td>
           <td class="align-top">:</td>
-          <td class="align-top">{{ $data['pihak_pertama']['nip'] ?? '-' }}</td>
+          <td class="align-top"><?php echo e($data['pihak_pertama']['nip'] ?? '-'); ?></td>
         </tr>
         <tr>
           <td class="align-top">Jabatan</td>
           <td class="align-top">:</td>
-          <td class="align-top">{{ $data['pihak_pertama']['jabatan'] }}</td>
+          <td class="align-top"><?php echo e($data['pihak_pertama']['jabatan']); ?></td>
         </tr>
       </table>
       <p class="mt-1 text-sm">Selanjutnya disebut <span class="font-bold">PIHAK PERTAMA</span></p>
@@ -56,17 +56,17 @@
         <tr>
           <td class="w-28 align-top">N a m a</td>
           <td class="w-4 align-top">:</td>
-          <td class="align-top font-bold">{{ $data['pihak_kedua']['nama'] }}</td>
+          <td class="align-top font-bold"><?php echo e($data['pihak_kedua']['nama']); ?></td>
         </tr>
         <tr>
           <td class="align-top">N I P</td>
           <td class="align-top">:</td>
-          <td class="align-top">{{ $data['pihak_kedua']['nip'] ?? '-' }}</td>
+          <td class="align-top"><?php echo e($data['pihak_kedua']['nip'] ?? '-'); ?></td>
         </tr>
         <tr>
           <td class="align-top">Jabatan</td>
           <td class="align-top">:</td>
-          <td class="align-top">{{ $data['pihak_kedua']['jabatan'] }}</td>
+          <td class="align-top"><?php echo e($data['pihak_kedua']['jabatan']); ?></td>
         </tr>
       </table>
       <p class="mt-1 text-sm">Selanjutnya disebut <span class="font-bold">PIHAK KEDUA</span></p>
@@ -91,24 +91,24 @@
           </tr>
         </thead>
         <tbody>
-          @foreach ($data['items'] as $i => $item)
+          <?php $__currentLoopData = $data['items']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <tr>
-              <td class="border border-black p-1 text-center">{{ $i + 1 }}</td>
-              <td class="border border-black p-1">{{ $item['nama'] }}</td>
-              <td class="border border-black p-1 text-center">{{ $item['merk'] ?? '-' }}</td>
-              <td class="border border-black p-1 text-center">{{ $item['tipe'] ?? '-' }}</td>
-              <td class="border border-black p-1 text-center">{{ $item['identitas'] ?? '-' }}</td>
-              <td class="border border-black p-1 text-center">{{ $item['tahun'] ?? '-' }}</td>
-              <td class="border border-black p-1 text-center">{{ $item['kondisi'] ?? '-' }}</td>
-              <td class="border border-black p-1 text-center font-bold">{{ $item['jumlah'] }}</td>
+              <td class="border border-black p-1 text-center"><?php echo e($i + 1); ?></td>
+              <td class="border border-black p-1"><?php echo e($item['nama']); ?></td>
+              <td class="border border-black p-1 text-center"><?php echo e($item['merk'] ?? '-'); ?></td>
+              <td class="border border-black p-1 text-center"><?php echo e($item['tipe'] ?? '-'); ?></td>
+              <td class="border border-black p-1 text-center"><?php echo e($item['identitas'] ?? '-'); ?></td>
+              <td class="border border-black p-1 text-center"><?php echo e($item['tahun'] ?? '-'); ?></td>
+              <td class="border border-black p-1 text-center"><?php echo e($item['kondisi'] ?? '-'); ?></td>
+              <td class="border border-black p-1 text-center font-bold"><?php echo e($item['jumlah']); ?></td>
             </tr>
-          @endforeach
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </tbody>
       </table>
     </div>
 
     <p class="mb-1 text-sm font-bold">Ketentuan:</p>
-    @php
+    <?php
       $rulesLines = preg_split("/\r\n|\n|\r/", $data['ketentuan'] ?? '');
       $rulesLines = array_values(array_filter($rulesLines, fn($l) => trim($l) !== ''));
       $defaultRules = [
@@ -120,40 +120,43 @@
         'Berita Acara Serah Terima ini berlaku hingga 31 Desember 2026.',
       ];
       $list = count($rulesLines) ? $rulesLines : $defaultRules;
-    @endphp
+    ?>
     <table class="text-sm mb-3">
-      @foreach ($list as $i => $line)
-        @php
+      <?php $__currentLoopData = $list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $line): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php
             $content = trim($line);
             if (preg_match('/^\s*[a-zA-Z]\.\s*(.*)$/', $line, $m)) { $content = $m[1]; }
             $letter = chr(97 + $i);
-        @endphp
+        ?>
         <tr>
-          <td valign="top" style="width: 20px;">{{ $letter }}.</td>
-          <td class="text-justify">{!! $content !!}</td>
+          <td valign="top" style="width: 20px;"><?php echo e($letter); ?>.</td>
+          <td class="text-justify"><?php echo $content; ?></td>
         </tr>
-      @endforeach
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </table>
     
     <p class="mb-1 text-sm">Demikian Berita Acara Serah Terima Penggunaan Barang Milik Daerah ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
     
     <div class="text-right text-sm mb-1">
-      {{'Bolaang Uki' }}, {{ \Illuminate\Support\Carbon::parse($data['tanggal'])->translatedFormat('d F Y') }}
+      <?php echo e('Bolaang Uki'); ?>, <?php echo e(\Illuminate\Support\Carbon::parse($data['tanggal'])->translatedFormat('d F Y')); ?>
+
     </div>
 
     <div class="grid grid-cols-2 gap-6 mt-2" style="page-break-inside: avoid;">
       <div class="text-center">
         <p class="mb-1 font-bold text-xs">Pihak Kedua</p>
         <div class="h-20"></div>
-        <p class="font-bold underline">{{ $data['pihak_kedua']['nama'] }}</p>
-        <p class="text-xs">NIP. {{ $data['pihak_kedua']['nip'] ?? '-' }}</p>
+        <p class="font-bold underline"><?php echo e($data['pihak_kedua']['nama']); ?></p>
+        <p class="text-xs">NIP. <?php echo e($data['pihak_kedua']['nip'] ?? '-'); ?></p>
       </div>
       <div class="text-center">
         <p class="mb-1 font-bold text-xs">Pihak Pertama</p>
         <div class="h-20"></div>
-        <p class="font-bold underline">{{ $data['pihak_pertama']['nama'] }}</p>
-        <p class="text-xs">NIP. {{ $data['pihak_pertama']['nip'] ?? '-' }}</p>
+        <p class="font-bold underline"><?php echo e($data['pihak_pertama']['nama']); ?></p>
+        <p class="text-xs">NIP. <?php echo e($data['pihak_pertama']['nip'] ?? '-'); ?></p>
       </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.report_print', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SI-LARANG\resources\views/reports/pinjam_pakai_report.blade.php ENDPATH**/ ?>
